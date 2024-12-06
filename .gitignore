@@ -1,36 +1,135 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# local env files
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for instrumented libs
+lib-cov
+
+# Coverage directories
+coverage
+*.lcov
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Dependency directories
+node_modules/
+bower_components
+jspm_packages/
+web_modules/
+
+# Snowpack
+web_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# npm cache
+.npm
+
+# eslint cache
+.eslintcache
+
+# stylelint cache
+.stylelintcache
+
+# REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity
+.yarn-integrity
+
+# dotenv files
+.env
 .env*.local
 
-# vercel
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Build outputs
+.next
+out
+.nuxt
+dist
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Local environment files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Next.js cache
+.next
+out
+
+# Junk
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+.AppleDouble
+.LSOverride
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# General caches and temp files
+.sass-cache/
+*.css.map
+*.sass.map
+*.scss.map
+
+# Yarn v2
+.yarn/*
+!.yarn/releases
+!.yarn/patches
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+
