@@ -136,6 +136,22 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
+    title: 'Tools',
+    url: '/dashboard/tools',
+    icon: 'wrench',
+    isActive: false,
+    shortcut: ['t', 't'],
+    items: [] // No child items
+  },
+  {
+    title: 'Resources',
+    url: '/dashboard/resources',
+    icon: 'book',
+    isActive: false,
+    shortcut: ['r', 'r'],
+    items: [] // No child items
+  },
+  {
     title: 'Admin',
     url: '/dashboard/employee',
     icon: 'user',
