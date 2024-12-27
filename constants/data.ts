@@ -168,6 +168,14 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
+    title: 'Support',
+    url: '/dashboard/support',
+    icon: 'messageCircleQuestion',
+    isActive: false,
+    shortcut: ['s', 's'],
+    items: [] // No child items
+  },
+  {
     title: 'Settings',
     url: '#', // Placeholder as there is no direct link for the parent
     icon: 'billing',

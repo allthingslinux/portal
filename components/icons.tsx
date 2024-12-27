@@ -33,7 +33,8 @@ import {
   X,
   Wrench,
   BookOpen,
-  GitMerge
+  GitMerge,
+  MessageCircleQuestion,
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -70,6 +71,7 @@ export const Icons = {
   wrench: Wrench,
   book: BookOpen,
   gitMerge: GitMerge,
+  messageCircleQuestion: MessageCircleQuestion,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
