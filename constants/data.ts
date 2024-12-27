@@ -160,6 +160,14 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
+    title: 'Changelog',
+    url: '/dashboard/changelog',
+    icon: 'gitMerge',
+    isActive: false,
+    shortcut: ['l', 'l'],
+    items: [] // No child items
+  },
+  {
     title: 'Settings',
     url: '#', // Placeholder as there is no direct link for the parent
     icon: 'billing',
