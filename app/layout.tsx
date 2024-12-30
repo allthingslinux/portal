@@ -1,14 +1,19 @@
 import { auth } from '@/auth';
-import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
+import NextTopLoader from 'nextjs-toploader';
+import KBar from '@/components/kbar';
+import SidebarNav from '@/components/layout/sidebar-nav';
+import Header from '@/components/layout/header';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import NextTopLoader from 'nextjs-toploader';
+import { cookies } from 'next/headers';
 import './globals.css';
+import Providers from '@/components/layout/providers';
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: 'Portal',
+  description: 'Your portal to All Things Linux'
 };
 
 const inter = Inter({
@@ -23,6 +28,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+
+  const cookieStore = cookies();
+
+  const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
+
   return (
     <html
       lang="en"
@@ -33,7 +43,15 @@ export default async function RootLayout({
         <NextTopLoader showSpinner={false} />
         <Providers session={session}>
           <Toaster />
-          {children}
+          <KBar>
+            <SidebarProvider defaultOpen={defaultOpen}>
+              <SidebarNav />
+              <SidebarInset>
+                <Header />
+                {children}
+              </SidebarInset>
+            </SidebarProvider>
+          </KBar>
         </Providers>
       </body>
     </html>

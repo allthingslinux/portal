@@ -1,10 +1,20 @@
 'use client';
+
+import * as React from 'react';
+
+import Link from 'next/link';
+
+import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger
 } from '@/components/ui/collapsible';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+
 import {
   Sidebar,
   SidebarContent,
@@ -29,7 +40,7 @@ import {
   SidebarMenuSubItem,
   SidebarRail
 } from '@/components/ui/sidebar';
-import { navItems } from '@/constants/data';
+
 import {
   BadgeCheck,
   Bell,
@@ -39,11 +50,10 @@ import {
   GalleryVerticalEnd,
   LogOut
 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import * as React from 'react';
+
 import { Icons } from '../icons';
+
+import { navItems } from '@/constants/data';
 
 export const company = {
   name: 'All Things Linux',
@@ -51,8 +61,9 @@ export const company = {
   plan: 'Portal'
 };
 
-export default function AppSidebar() {
+export default function SidebarNav() {
   const { data: session } = useSession();
+
   const pathname = usePathname();
 
   return (
@@ -74,6 +85,7 @@ export default function AppSidebar() {
           <SidebarMenu>
             {navItems.map((item) => {
               const Icon = item.icon ? Icons[item.icon] : Icons.logo;
+
               return item?.items && item?.items?.length > 0 ? (
                 <Collapsible
                   key={item.title}
@@ -92,6 +104,7 @@ export default function AppSidebar() {
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
+
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.items?.map((subItem) => (
@@ -137,15 +150,16 @@ export default function AppSidebar() {
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                  <Avatar className="h-8 w-8 rounded-lg">
+                  <Avatar className="h-8 w-8 rounded-2xl">
                     <AvatarImage
                       src={session?.user?.image || ''}
                       alt={session?.user?.name || ''}
                     />
-                    <AvatarFallback className="rounded-lg">
-                      {session?.user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
+                    <AvatarFallback className="rounded-2xl">
+                      {session?.user?.name?.slice(0, 2)?.toUpperCase() || 'ATL'}
                     </AvatarFallback>
                   </Avatar>
+
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
                       {session?.user?.name || ''}
@@ -154,6 +168,7 @@ export default function AppSidebar() {
                       {session?.user?.email || ''}
                     </span>
                   </div>
+
                   <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -165,14 +180,14 @@ export default function AppSidebar() {
               >
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="h-8 w-8 rounded-lg">
+                    <Avatar className="h-8 w-8 rounded-2xl">
                       <AvatarImage
                         src={session?.user?.image || ''}
                         alt={session?.user?.name || ''}
                       />
-                      <AvatarFallback className="rounded-lg">
+                      <AvatarFallback className="rounded-2xl">
                         {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
-                          'CN'}
+                          'ATL'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
@@ -186,6 +201,7 @@ export default function AppSidebar() {
                     </div>
                   </div>
                 </DropdownMenuLabel>
+
                 <DropdownMenuSeparator />
 
                 <DropdownMenuGroup>
@@ -193,16 +209,20 @@ export default function AppSidebar() {
                     <BadgeCheck />
                     Account
                   </DropdownMenuItem>
+
                   <DropdownMenuItem>
                     <CreditCard />
                     Billing
                   </DropdownMenuItem>
+
                   <DropdownMenuItem>
                     <Bell />
                     Notifications
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
+
                 <DropdownMenuSeparator />
+
                 <DropdownMenuItem>
                   <LogOut />
                   Log out

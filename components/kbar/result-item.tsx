@@ -15,10 +15,14 @@ const ResultItem = React.forwardRef(
     ref: React.Ref<HTMLDivElement>
   ) => {
     const ancestors = React.useMemo(() => {
-      if (!currentRootActionId) return action.ancestors;
+      if (!currentRootActionId) {
+        return action.ancestors;
+      }
+
       const index = action.ancestors.findIndex(
         (ancestor) => ancestor.id === currentRootActionId
       );
+
       return action.ancestors.slice(index + 1);
     }, [action.ancestors, currentRootActionId]);
 
@@ -44,6 +48,7 @@ const ResultItem = React.forwardRef(
                     <span className="mr-2">&rsaquo;</span>
                   </React.Fragment>
                 ))}
+
               <span>{action.name}</span>
             </div>
             {action.subtitle && (
@@ -53,6 +58,7 @@ const ResultItem = React.forwardRef(
             )}
           </div>
         </div>
+
         {action.shortcut?.length ? (
           <div className="relative z-10 grid grid-flow-col gap-1">
             {action.shortcut.map((sc, i) => (

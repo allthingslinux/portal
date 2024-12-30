@@ -34,7 +34,7 @@ import {
   Wrench,
   BookOpen,
   GitMerge,
-  MessageCircleQuestion,
+  MessageCircleQuestion
 } from 'lucide-react';
 
 export type Icon = LucideIcon;

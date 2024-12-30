@@ -112,8 +112,8 @@ export type Employee = {
 
 export const navItems: NavItem[] = [
   {
-    title: 'Dashboard',
-    url: '/dashboard/overview',
+    title: 'Overview',
+    url: '/overview',
     icon: 'dashboard',
     isActive: false,
     shortcut: ['d', 'd'],
@@ -121,7 +121,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Services',
-    url: '/dashboard/services',
+    url: '/services',
     icon: 'media',
     isActive: true,
     shortcut: ['s', 's'],
@@ -129,7 +129,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Community',
-    url: '/dashboard/community',
+    url: '/community',
     icon: 'userPen',
     isActive: true,
     shortcut: ['c', 'c'],
@@ -137,7 +137,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Tools',
-    url: '/dashboard/tools',
+    url: '/tools',
     icon: 'wrench',
     isActive: false,
     shortcut: ['t', 't'],
@@ -145,7 +145,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Resources',
-    url: '/dashboard/resources',
+    url: '/resources',
     icon: 'book',
     isActive: false,
     shortcut: ['r', 'r'],
@@ -153,7 +153,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Admin',
-    url: '/dashboard/employee',
+    url: '/employee',
     icon: 'user',
     shortcut: ['e', 'e'],
     isActive: false,
@@ -161,7 +161,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Changelog',
-    url: '/dashboard/changelog',
+    url: '/changelog',
     icon: 'gitMerge',
     isActive: false,
     shortcut: ['l', 'l'],
@@ -169,7 +169,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Support',
-    url: '/dashboard/support',
+    url: '/support',
     icon: 'messageCircleQuestion',
     isActive: false,
     shortcut: ['s', 's'],
@@ -180,18 +180,17 @@ export const navItems: NavItem[] = [
     url: '#', // Placeholder as there is no direct link for the parent
     icon: 'billing',
     isActive: false,
-
     items: [
       {
         title: 'Profile',
-        url: '/dashboard/profile',
+        url: '/profile',
         icon: 'userPen',
         shortcut: ['m', 'm']
       },
       {
         title: 'Login',
         shortcut: ['l', 'l'],
-        url: '/',
+        url: '/login',
         icon: 'login'
       }
     ]
