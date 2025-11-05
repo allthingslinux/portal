@@ -803,7 +803,6 @@ export class DatabaseTool {
         'Load comprehensive team account data with permissions',
       has_role_on_account: 'Check if user has access to a specific account',
       has_permission: 'Verify user permissions for specific account operations',
-      get_user_billing_account: 'Retrieve billing account information for user',
       create_team_account: 'Create new team account with proper permissions',
       invite_user_to_account: 'Send invitation to join team account',
       accept_invitation: 'Process and accept team invitation',
@@ -1072,9 +1071,6 @@ export class DatabaseTool {
       '05-memberships.sql': 'teams',
       '06-roles-permissions.sql': 'permissions',
       '07-invitations.sql': 'teams',
-      '08-billing-customers.sql': 'billing',
-      '09-subscriptions.sql': 'billing',
-      '10-orders.sql': 'billing',
       '11-notifications.sql': 'notifications',
       '12-one-time-tokens.sql': 'auth',
       '13-mfa.sql': 'auth',
@@ -1092,11 +1088,6 @@ export class DatabaseTool {
     const contentLower = content.toLowerCase();
     if (contentLower.includes('account') && contentLower.includes('team'))
       return 'accounts';
-    if (
-      contentLower.includes('subscription') ||
-      contentLower.includes('billing')
-    )
-      return 'billing';
     if (
       contentLower.includes('auth') ||
       contentLower.includes('mfa') ||
@@ -1321,7 +1312,7 @@ function createGetSchemaContentTool(server: McpServer) {
 function createGetSchemasByTopicTool(server: McpServer) {
   return server.tool(
     'get_schemas_by_topic',
-    '🎯 Find schema files by topic (accounts, auth, billing, permissions, etc.) - Fastest way to find relevant schemas',
+    '🎯 Find schema files by topic (accounts, auth, permissions, etc.) - Fastest way to find relevant schemas',
     {
       state: z.object({
         topic: z.string(),
@@ -1335,7 +1326,7 @@ function createGetSchemasByTopicTool(server: McpServer) {
           content: [
             {
               type: 'text',
-              text: `No schema files found for topic "${state.topic}". Available topics: accounts, auth, billing, permissions, teams, notifications, storage, admin, security, types, configuration.`,
+              text: `No schema files found for topic "${state.topic}". Available topics: accounts, auth, permissions, teams, notifications, storage, admin, security, types, configuration.`,
             },
           ],
         };

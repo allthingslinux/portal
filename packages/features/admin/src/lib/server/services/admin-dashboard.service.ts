@@ -28,11 +28,6 @@ export class AdminDashboardService {
     // Convert count parameter to Drizzle's count method
     const countMethod = count === 'exact' ? 'exact' : 'estimated';
 
-    // Note: Subscriptions queries are commented out since billing features were removed
-    // If billing is re-enabled, these would need to be restored with proper schema
-
-    const subscriptionsPromise = Promise.resolve(0); // Placeholder since billing removed
-    const trialsPromise = Promise.resolve(0); // Placeholder since billing removed
 
     const accountsPromise = adminClient
       .$count(accounts, eq(accounts.isPersonalAccount, true))

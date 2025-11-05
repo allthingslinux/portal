@@ -98,10 +98,6 @@ function TabsPlayground({
           <Settings className="mr-2 h-4 w-4" />
           Settings
         </TabsTrigger>
-        <TabsTrigger value="billing" className={fullWidth ? 'flex-1' : ''}>
-          <CreditCard className="mr-2 h-4 w-4" />
-          Billing
-        </TabsTrigger>
       </TabsList>
 
       <div className={orientation === 'vertical' ? 'flex-1' : 'mt-4'}>
@@ -162,27 +158,6 @@ function TabsPlayground({
           </Card>
         </TabsContent>
 
-        <TabsContent value="billing" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Billing Information
-              </CardTitle>
-              <CardDescription>Manage your account settings.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                  <p className="font-medium">Pro Plan</p>
-                  <p className="text-muted-foreground text-sm">$29/month</p>
-                </div>
-                <Badge>Active</Badge>
-              </div>
-              <Button>Upgrade Plan</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </div>
     </Tabs>
   );
@@ -1089,9 +1064,6 @@ export default function TabsStory() {
     <TabsTrigger value="settings"${triggerClassName ? ` className="${triggerClassName}"` : ''}>
       Settings
     </TabsTrigger>
-    <TabsTrigger value="billing"${triggerClassName ? ` className="${triggerClassName}"` : ''}>
-      Billing
-    </TabsTrigger>
   </TabsList>
 
   <div${contentClassName ? ` className="${contentClassName}"` : ''}>
@@ -1100,9 +1072,6 @@ export default function TabsStory() {
     </TabsContent>
     <TabsContent value="settings">
       Settings content goes here
-    </TabsContent>
-    <TabsContent value="billing">
-      Billing content goes here
     </TabsContent>
   </div>
 </Tabs>`;
@@ -1155,7 +1124,6 @@ export default function TabsStory() {
               <SelectContent>
                 <SelectItem value="overview">Overview</SelectItem>
                 <SelectItem value="settings">Settings</SelectItem>
-                <SelectItem value="billing">Billing</SelectItem>
               </SelectContent>
             </Select>
           </div>

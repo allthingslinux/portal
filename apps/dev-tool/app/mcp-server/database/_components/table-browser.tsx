@@ -64,7 +64,6 @@ interface TableBrowserProps {
 const topicColors: Record<string, string> = {
   accounts: 'bg-green-100 text-green-800',
   teams: 'bg-teal-100 text-teal-800',
-  billing: 'bg-yellow-100 text-yellow-800',
   configuration: 'bg-blue-100 text-blue-800',
   auth: 'bg-indigo-100 text-indigo-800',
   notifications: 'bg-pink-100 text-pink-800',

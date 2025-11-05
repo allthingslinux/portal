@@ -35,7 +35,6 @@ const topicColors: Record<string, string> = {
   accounts: 'bg-green-100 text-green-800',
   permissions: 'bg-orange-100 text-orange-800',
   teams: 'bg-teal-100 text-teal-800',
-  billing: 'bg-yellow-100 text-yellow-800',
   notifications: 'bg-pink-100 text-pink-800',
   auth: 'bg-indigo-100 text-indigo-800',
   admin: 'bg-gray-100 text-gray-800',

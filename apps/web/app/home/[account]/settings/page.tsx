@@ -1,5 +1,4 @@
-// import { getSupabaseServerClient } from '@portal/supabase/server-client';
-// import { createTeamAccountsApi } from '@portal/team-accounts/api';
+import { createTeamAccountsApi } from '@portal/team-accounts/api';
 import { TeamAccountSettingsContainer } from '@portal/team-accounts/components';
 import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
 import { PageBody } from '@portal/ui/page';
@@ -30,7 +29,7 @@ const paths = {
 };
 
 async function TeamAccountSettingsPage(props: TeamAccountSettingsPageProps) {
-  const api = createTeamAccountsApiDrizzle();
+  const api = createTeamAccountsApi();
   const slug = (await props.params).account;
   const data = await api.getTeamAccount(slug);
 

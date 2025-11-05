@@ -200,7 +200,6 @@ ALTER TABLE {{table_name}} ENABLE ROW LEVEL SECURITY;
       examples: [
         'Design RLS for a documents table',
         'Create policies for team collaboration data',
-        'Set up RLS for billing and subscription data',
       ],
     },
   ];

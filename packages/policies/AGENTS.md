@@ -102,14 +102,9 @@ const preliminaryGroup = {
   policies: [emailValidationPolicy, authenticationPolicy],
 };
 
-const billingGroup = {
-  operator: 'ANY' as const,
-  policies: [subscriptionPolicy, trialPolicy],
-};
-
 // Evaluate groups in sequence
 const result = await evaluator.evaluateGroups(
-  [preliminaryGroup, billingGroup],
+  [preliminaryGroup],
   context,
 );
 ```
@@ -121,7 +116,7 @@ const result = await evaluator.evaluateGroups(
 ```typescript
 import { createPolicy, createPolicyEvaluator } from '@portal/policies';
 
-// Complex business logic: (Authentication AND Email Validation) AND (Subscription OR Trial) AND Billing Limits
+// Complex business logic: (Authentication AND Email Validation) AND Feature Limits
 async function validateTeamInvitation(context: InvitationContext) {
   const evaluator = createPolicyEvaluator();
 
@@ -147,24 +142,24 @@ async function validateTeamInvitation(context: InvitationContext) {
     ],
   };
 
-  // Stage 2: Subscription Validation (ANY sufficient - flexible billing)
-  const subscriptionGroup = {
+  // Stage 2: Feature Access Validation (ANY sufficient)
+  const featureAccessGroup = {
     operator: 'ANY' as const,
     policies: [
       createPolicy(async (ctx) =>
-        ctx.subscription?.active && ctx.subscription.plan === 'enterprise'
-          ? allow({ billing: 'enterprise' })
-          : deny('Enterprise subscription required'),
+        ctx.user.role === 'admin'
+          ? allow({ access: 'admin' })
+          : deny('Admin access required'),
       ),
       createPolicy(async (ctx) =>
-        ctx.subscription?.active && ctx.subscription.plan === 'pro'
-          ? allow({ billing: 'pro' })
-          : deny('Pro subscription required'),
+        ctx.user.features.includes('team-invitations')
+          ? allow({ access: 'feature-enabled' })
+          : deny('Team invitations feature not enabled'),
       ),
       createPolicy(async (ctx) =>
-        ctx.trial?.active && ctx.trial.daysRemaining > 0
-          ? allow({ billing: 'trial', daysLeft: ctx.trial.daysRemaining })
-          : deny('Active trial required'),
+        ctx.user.accountAge > 30 // days
+          ? allow({ access: 'established-user' })
+          : deny('Account must be at least 30 days old'),
       ),
     ],
   };
@@ -174,9 +169,9 @@ async function validateTeamInvitation(context: InvitationContext) {
     operator: 'ALL' as const,
     policies: [
       createPolicy(async (ctx) =>
-        ctx.team.memberCount < ctx.subscription?.maxMembers
+        ctx.team.memberCount < 50
           ? allow({ constraint: 'member-limit' })
-          : deny('Member limit exceeded'),
+          : deny('Team cannot have more than 50 members'),
       ),
       createPolicy(async (ctx) =>
         ctx.invitations.length <= 10
@@ -188,7 +183,7 @@ async function validateTeamInvitation(context: InvitationContext) {
 
   // Execute all groups sequentially - ALL groups must pass
   const result = await evaluator.evaluateGroups(
-    [authenticationGroup, subscriptionGroup, constraintsGroup],
+    [authenticationGroup, featureAccessGroup, constraintsGroup],
     context,
   );
 
@@ -200,8 +195,8 @@ async function validateTeamInvitation(context: InvitationContext) {
       authenticationPassed: result.results.some(
         (r) => r.metadata?.step === 'authenticated',
       ),
-      billingType: result.results.find((r) => r.metadata?.billing)?.metadata
-        ?.billing,
+      accessType: result.results.find((r) => r.metadata?.access)?.metadata
+        ?.access,
       constraintsChecked: result.results.some((r) => r.metadata?.constraint),
     },
   };
@@ -252,9 +247,9 @@ async function processApiRequest(context: ApiContext) {
           : deny('Resource access denied'),
       ),
       createPolicy(async (ctx) =>
-        ctx.user.subscription?.includes('api-access')
-          ? allow({ access: 'subscription-based' })
-          : deny('Subscription access denied'),
+        ctx.user.features?.includes('api-access')
+          ? allow({ access: 'feature-based' })
+          : deny('Feature access denied'),
       ),
     ],
   };
@@ -396,23 +391,23 @@ async function createContextAwarePolicyFlow(context: DynamicContext) {
   }
 
   // Add feature-specific policies based on requested feature
-  if (context.feature.requiresBilling) {
-    const billingGroup = {
+  if (context.feature.requiresPremium) {
+    const premiumGroup = {
       operator: 'ANY' as const,
       policies: [
         createPolicy(async (ctx) =>
-          ctx.subscription?.active
-            ? allow({ billing: 'subscription' })
-            : deny('Active subscription required'),
+          ctx.user.plan === 'premium'
+            ? allow({ access: 'premium' })
+            : deny('Premium plan required'),
         ),
         createPolicy(async (ctx) =>
-          ctx.credits && ctx.credits > ctx.feature.creditCost
-            ? allow({ billing: 'credits' })
+          ctx.user.credits && ctx.user.credits > ctx.feature.creditCost
+            ? allow({ access: 'credits' })
             : deny('Insufficient credits'),
         ),
       ],
     };
-    groups.push(billingGroup);
+    groups.push(premiumGroup);
   }
 
   // Add rate limiting for high-impact features

@@ -103,14 +103,6 @@ export async function loadDatabaseToolsData() {
         func.name.includes('invite')
       ) {
         category = 'Invitations';
-      } else if (
-        func.name.includes('billing') ||
-        func.name.includes('subscription') ||
-        func.name.includes('payment') ||
-        func.name.includes('order')
-      ) {
-        category = 'Billing';
-      }
 
       return {
         name: func.name,
@@ -135,26 +127,7 @@ export async function loadDatabaseToolsData() {
           category = 'Security & Permissions';
           description =
             'Application-level permissions that can be assigned to roles for granular access control';
-        } else if (
-          name.includes('billing') ||
-          name.includes('payment') ||
-          name.includes('subscription')
-        ) {
-          category = 'Billing & Payments';
-          if (name === 'billing_provider') {
-            description =
-              'Supported payment processing providers for handling subscriptions and transactions';
-          } else if (name === 'payment_status') {
-            description =
-              'Status values for tracking the state of payment transactions';
-          } else if (name === 'subscription_status') {
-            description =
-              'Comprehensive status tracking for subscription lifecycle management';
-          } else if (name === 'subscription_item_type') {
-            description =
-              'Different pricing models for subscription line items and billing calculations';
-          }
-        } else if (name.includes('notification')) {
+ else if (name.includes('notification')) {
           category = 'Notifications';
           if (name === 'notification_channel') {
             description =

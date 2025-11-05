@@ -244,8 +244,8 @@ const pathname = usePathname();
                   active={false}
                 />
                 <BorderedNavigationMenuItem
-                  path="/billing"
-                  label="Billing & Usage"
+                  path="/settings"
+                  label="Settings"
                   active={false}
                 />
                 <BorderedNavigationMenuItem

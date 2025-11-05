@@ -1,6 +1,6 @@
 import { cache } from 'react';
 
-// import { createAccountsApi } from '@portal/accounts/api';
+import { createAccountsApi } from '@portal/accounts/api';
 
 import featureFlagsConfig from '~/config/feature-flags.config';
 import { requireUserInServerComponent } from '~/lib/server/require-user-in-server-component';
@@ -18,7 +18,7 @@ export type UserWorkspace = Awaited<ReturnType<typeof loadUserWorkspace>>;
 export const loadUserWorkspace = cache(workspaceLoader);
 
 async function workspaceLoader() {
-  const api = createAccountsApiDrizzle();
+  const api = createAccountsApi();
 
   const accountsPromise = shouldLoadAccounts
     ? () => api.loadUserAccounts()

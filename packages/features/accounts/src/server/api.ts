@@ -97,5 +97,5 @@ class _AccountsApi {
 }
 
 export function createAccountsApi() {
-  return new AccountsApiDrizzle();
+  return new _AccountsApi();
 }

@@ -163,10 +163,10 @@
   "invitationsBlockedDefault": "Invitations are currently not allowed due to policy restrictions.",
   "policyErrors": {
     "subscriptionRequired": "An active subscription is required to invite team members.",
-    "paddleTrialRestriction": "Cannot invite members during trial period with per-seat billing on Paddle."
+    "trialRestriction": "Cannot invite members during trial period."
   },
   "policyRemediation": {
     "subscriptionRequired": "Please upgrade your plan or activate your subscription",
-    "paddleTrialRestriction": "Wait until trial period ends or upgrade to full plan"
+    "trialRestriction": "Wait until trial period ends or upgrade to full plan"
   }
 }

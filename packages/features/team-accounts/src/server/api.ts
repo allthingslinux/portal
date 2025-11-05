@@ -16,7 +16,7 @@ import {
 } from '@portal/supabase/drizzle-schema';
 
 export function createTeamAccountsApi() {
-  return new TeamAccountsApiDrizzle();
+  return new _TeamAccountsApi();
 }
 
 /**
@@ -237,13 +237,6 @@ class _TeamAccountsApi {
     }
   }
 
-  /**
-   * Get customer ID (placeholder - billing related)
-   */
-  async getCustomerId(_accountId: string) {
-    // TODO: Implement when billing schema is available
-    return null;
-  }
 
   /**
    * @name getInvitation
@@ -278,25 +271,5 @@ class _TeamAccountsApi {
     };
   }
 
-  /**
-   * Get subscription (placeholder - billing related)
-   */
-  async getSubscription(_accountId: string) {
-    // TODO: Implement when billing schema is available
-    return {
-      error: null,
-      data: null,
-    };
-  }
 
-  /**
-   * Get order (placeholder - billing related)
-   */
-  async getOrder(_accountId: string) {
-    // TODO: Implement when billing schema is available
-    return {
-      error: null,
-      data: null,
-    };
-  }
 }

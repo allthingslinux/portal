@@ -51,7 +51,6 @@ const categoryIcons: Record<string, React.ComponentType<any>> = {
 const valueColors: Record<string, string> = {
   // Permission colors
   'roles.manage': 'bg-purple-100 text-purple-800',
-  'billing.manage': 'bg-green-100 text-green-800',
   'settings.manage': 'bg-blue-100 text-blue-800',
   'members.manage': 'bg-orange-100 text-orange-800',
   'invites.manage': 'bg-teal-100 text-teal-800',
