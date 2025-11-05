@@ -47,3 +47,5 @@ yarn-error.log*
 
 # ts-node cache
 node-compile-cache/
+
+.amazonq/
