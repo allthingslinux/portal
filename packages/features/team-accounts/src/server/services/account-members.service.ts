@@ -1,10 +1,13 @@
 import 'server-only';
 
-import { eq, and } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { getLogger } from '@portal/shared/logger';
-import { getDrizzleSupabaseClient, getDrizzleSupabaseAdminClient } from '@portal/supabase/drizzle-client';
+import {
+  getDrizzleSupabaseAdminClient,
+  getDrizzleSupabaseClient,
+} from '@portal/supabase/drizzle-client';
 import { accountsMemberships } from '@portal/supabase/drizzle-schema';
 
 import type { RemoveMemberSchema } from '../../schema/remove-member.schema';
@@ -43,8 +46,8 @@ class AccountMembersService {
           .where(
             and(
               eq(accountsMemberships.accountId, params.accountId),
-              eq(accountsMemberships.userId, params.userId)
-            )
+              eq(accountsMemberships.userId, params.userId),
+            ),
           );
       });
 
@@ -92,8 +95,8 @@ class AccountMembersService {
         .where(
           and(
             eq(accountsMemberships.accountId, params.accountId),
-            eq(accountsMemberships.userId, params.userId)
-          )
+            eq(accountsMemberships.userId, params.userId),
+          ),
         );
 
       logger.info(ctx, `Successfully updated member role`);
@@ -116,7 +119,9 @@ class AccountMembersService {
    * @description Transfers ownership of an account to another user.
    * @param params
    */
-  async transferOwnership(params: z.infer<typeof TransferOwnershipConfirmationSchema>) {
+  async transferOwnership(
+    params: z.infer<typeof TransferOwnershipConfirmationSchema>,
+  ) {
     const logger = await getLogger();
 
     const ctx = {

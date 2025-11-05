@@ -1,32 +1,37 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import { eq } from 'drizzle-orm';
 
-import { Database } from '@portal/supabase/database';
+import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
+import {
+  accounts,
+  userAccountWorkspace,
+  userAccounts,
+} from '@portal/supabase/drizzle-schema';
 
 /**
- * Class representing an API for interacting with user accounts.
- * @constructor
- * @param {SupabaseClient<Database>} client - The Supabase client instance.
+ * Class representing an API for interacting with user accounts using Drizzle.
  */
-class AccountsApi {
-  constructor(private readonly client: SupabaseClient<Database>) {}
-
+class _AccountsApi {
   /**
    * @name getAccount
    * @description Get the account data for the given ID.
    * @param id
    */
   async getAccount(id: string) {
-    const { data, error } = await this.client
-      .from('accounts')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const drizzleClient = await getDrizzleSupabaseClient();
 
-    if (error) {
-      throw error;
+    const result = await drizzleClient.runTransaction(async (tx) => {
+      return await tx
+        .select()
+        .from(accounts)
+        .where(eq(accounts.id, id))
+        .limit(1);
+    });
+
+    if (result.length === 0) {
+      throw new Error('Account not found');
     }
 
-    return data;
+    return result[0];
   }
 
   /**
@@ -34,16 +39,17 @@ class AccountsApi {
    * @description Get the account workspace data.
    */
   async getAccountWorkspace() {
-    const { data, error } = await this.client
-      .from('user_account_workspace')
-      .select(`*`)
-      .single();
+    const drizzleClient = await getDrizzleSupabaseClient();
 
-    if (error) {
-      throw error;
+    const result = await drizzleClient.runTransaction(async (tx) => {
+      return await tx.select().from(userAccountWorkspace).limit(1);
+    });
+
+    if (result.length === 0) {
+      throw new Error('Workspace not found');
     }
 
-    return data;
+    return result[0];
   }
 
   /**
@@ -51,21 +57,23 @@ class AccountsApi {
    * Load the user accounts.
    */
   async loadUserAccounts() {
-    const { data: accounts, error } = await this.client
-      .from('user_accounts')
-      .select(`name, slug, picture_url`);
+    const drizzleClient = await getDrizzleSupabaseClient();
 
-    if (error) {
-      throw error;
-    }
-
-    return accounts.map(({ name, slug, picture_url }) => {
-      return {
-        label: name,
-        value: slug,
-        image: picture_url,
-      };
+    const accounts = await drizzleClient.runTransaction(async (tx) => {
+      return await tx
+        .select({
+          name: userAccounts.name,
+          slug: userAccounts.slug,
+          pictureUrl: userAccounts.pictureUrl,
+        })
+        .from(userAccounts);
     });
+
+    return accounts.map(({ name, slug, pictureUrl }) => ({
+      label: name,
+      value: slug,
+      image: pictureUrl,
+    }));
   }
 
   /**
@@ -73,39 +81,21 @@ class AccountsApi {
    * Get the subscription data for the given user.
    * @param accountId
    */
-  async getSubscription(accountId: string) {
-    const response = await this.client
-      .from('subscriptions')
-      .select('*, items: subscription_items !inner (*)')
-      .eq('account_id', accountId)
-      .maybeSingle();
-
-    if (response.error) {
-      throw response.error;
-    }
-
-    return response.data;
+  async getSubscription(_accountId: string) {
+    // TODO: Implement with Drizzle when subscriptions schema is available
+    throw new Error('Not implemented yet - requires subscriptions schema');
   }
 
   /**
    * Get the orders data for the given account.
    * @param accountId
    */
-  async getOrder(accountId: string) {
-    const response = await this.client
-      .from('orders')
-      .select('*, items: order_items !inner (*)')
-      .eq('account_id', accountId)
-      .maybeSingle();
-
-    if (response.error) {
-      throw response.error;
-    }
-
-    return response.data;
+  async getOrder(_accountId: string) {
+    // TODO: Implement with Drizzle when orders schema is available
+    throw new Error('Not implemented yet - requires orders schema');
   }
 }
 
-export function createAccountsApi(client: SupabaseClient<Database>) {
-  return new AccountsApi(client);
+export function createAccountsApi() {
+  return new AccountsApiDrizzle();
 }

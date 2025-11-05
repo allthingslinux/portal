@@ -21,10 +21,7 @@ class DeleteTeamAccountService {
    *
    * @param params
    */
-  async deleteTeamAccount(params: {
-    accountId: string;
-    userId: string;
-  }) {
+  async deleteTeamAccount(params: { accountId: string; userId: string }) {
     const logger = await getLogger();
     const adminClient = getDrizzleSupabaseAdminClient();
 

@@ -50,7 +50,10 @@ export default function SkeletonStory() {
       {},
     );
 
-    const imports = generateImportStatement(['Skeleton'], '@portal/ui/skeleton');
+    const imports = generateImportStatement(
+      ['Skeleton'],
+      '@portal/ui/skeleton',
+    );
 
     return `${imports}\n\nfunction LoadingComponent() {\n  return (\n    <div className="space-y-3">\n      <Skeleton${propsString} />\n      <Skeleton className="h-4 w-3/4" />\n      <Skeleton className="h-4 w-1/2" />\n    </div>\n  );\n}`;
   };

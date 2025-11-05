@@ -1,8 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 import type { Database } from '@portal/supabase/database';
+import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
+import { accounts, accountsMemberships } from '@portal/supabase/drizzle-schema';
 import { JWTUserData } from '@portal/supabase/types';
 
 import { InviteMembersSchema } from '../../schema/invite-members.schema';
@@ -69,17 +72,21 @@ class InvitationContextBuilder {
    * @returns
    */
   private async getAccount(accountSlug: string) {
-    const { data: account } = await this.client
-      .from('accounts')
-      .select('id')
-      .eq('slug', accountSlug)
-      .single();
+    const drizzleClient = await getDrizzleSupabaseClient();
 
-    if (!account) {
+    const result = await drizzleClient.runTransaction(async (tx) => {
+      return await tx
+        .select({ id: accounts.id })
+        .from(accounts)
+        .where(eq(accounts.slug, accountSlug))
+        .limit(1);
+    });
+
+    if (result.length === 0) {
       throw new Error('Account not found');
     }
 
-    return account;
+    return result[0];
   }
 
   /**
@@ -135,11 +142,17 @@ class InvitationContextBuilder {
    * @returns
    */
   private async getMemberCount(accountId: string) {
-    const { count } = await this.client
-      .from('accounts_memberships')
-      .select('*', { count: 'exact', head: true })
-      .eq('account_id', accountId);
+    const drizzleClient = await getDrizzleSupabaseClient();
 
-    return count || 0;
+    const result = await drizzleClient.runTransaction(async (tx) => {
+      const countResult = await tx
+        .select({ count: accountsMemberships.userId })
+        .from(accountsMemberships)
+        .where(eq(accountsMemberships.accountId, accountId));
+
+      return countResult.length;
+    });
+
+    return result;
   }
 }

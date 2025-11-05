@@ -1,12 +1,16 @@
 import 'server-only';
 
-import { eq, and } from 'drizzle-orm';
 import { addDays, formatISO } from 'date-fns';
+import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { getLogger } from '@portal/shared/logger';
 import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
-import { accounts, accountsMemberships, invitations } from '@portal/supabase/drizzle-schema';
+import {
+  accounts,
+  accountsMemberships,
+  invitations,
+} from '@portal/supabase/drizzle-schema';
 
 import type { DeleteInvitationSchema } from '../../schema/delete-invitation.schema';
 import type { InviteMembersSchema } from '../../schema/invite-members.schema';
@@ -104,20 +108,22 @@ class AccountInvitationsService {
     const drizzleClient = await getDrizzleSupabaseClient();
 
     // Check if user is already a member by looking at accounts_memberships
-    const existingMembership = await drizzleClient.runTransaction(async (tx) => {
-      return await tx
-        .select()
-        .from(accountsMemberships)
-        .innerJoin(accounts, eq(accountsMemberships.accountId, accounts.id))
-        .where(
-          and(
-            eq(accounts.slug, accountSlug),
-            // We would need to join with users table to check by email
-            // For now, this is a simplified version
+    const existingMembership = await drizzleClient.runTransaction(
+      async (tx) => {
+        return await tx
+          .select()
+          .from(accountsMemberships)
+          .innerJoin(accounts, eq(accountsMemberships.accountId, accounts.id))
+          .where(
+            and(
+              eq(accounts.slug, accountSlug),
+              // We would need to join with users table to check by email
+              // For now, this is a simplified version
+            ),
           )
-        )
-        .limit(1);
-    });
+          .limit(1);
+      },
+    );
 
     if (existingMembership.length > 0) {
       throw new Error('User already member of the team');

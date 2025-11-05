@@ -1,10 +1,11 @@
 import { cache } from 'react';
 
+import { eq } from 'drizzle-orm';
+
 import { AdminAccountPage } from '@portal/admin/components/admin-account-page';
 import { AdminGuard } from '@portal/admin/components/admin-guard';
 import { getDrizzleSupabaseAdminClient } from '@portal/supabase/drizzle-client';
 import { accounts, accountsMemberships } from '@portal/supabase/drizzle-schema';
-import { eq, leftJoin } from 'drizzle-orm';
 
 interface Params {
   params: Promise<{
@@ -57,7 +58,10 @@ async function accountLoader(id: string) {
       },
     })
     .from(accounts)
-    .leftJoin(accountsMemberships, eq(accounts.id, accountsMemberships.accountId))
+    .leftJoin(
+      accountsMemberships,
+      eq(accounts.id, accountsMemberships.accountId),
+    )
     .where(eq(accounts.id, id));
 
   if (result.length === 0) {
@@ -66,7 +70,7 @@ async function accountLoader(id: string) {
 
   // Transform the result to match the expected structure
   const account = result[0];
-  const memberships = result.map(r => r.memberships).filter(Boolean);
+  const memberships = result.map((r) => r.memberships).filter(Boolean);
 
   return {
     ...account,

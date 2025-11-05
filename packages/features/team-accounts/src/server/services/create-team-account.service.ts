@@ -1,6 +1,5 @@
 import 'server-only';
 
-
 import { getLogger } from '@portal/shared/logger';
 import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
 import { accounts } from '@portal/supabase/drizzle-schema';
@@ -20,7 +19,6 @@ class CreateTeamAccountService {
 
     // Check if team accounts are enabled (hardcoded for now)
     const teamAccountsEnabled = true; // TODO: Implement config check with Drizzle
-
 
     if (!teamAccountsEnabled) {
       logger.error(ctx, 'Team accounts are not enabled');

@@ -73,7 +73,10 @@ export default function TextareaStory() {
       },
     );
 
-    const imports = generateImportStatement(['Textarea'], '@portal/ui/textarea');
+    const imports = generateImportStatement(
+      ['Textarea'],
+      '@portal/ui/textarea',
+    );
     const labelImport = `\nimport { Label } from '@portal/ui/label';`;
 
     return `${imports}${labelImport}\n\nfunction MessageForm() {\n  const [message, setMessage] = useState('');\n\n  return (\n    <div className="space-y-2">\n      <Label htmlFor="message">Message</Label>\n      <Textarea\n        id="message"\n        value={message}\n        onChange={(e) => setMessage(e.target.value)}${propsString}\n      />\n      ${controls.showCharCount ? `<div className="text-xs text-muted-foreground text-right">\n        {message.length} / ${controls.maxLength}\n      </div>` : ''}\n    </div>\n  );\n}`;

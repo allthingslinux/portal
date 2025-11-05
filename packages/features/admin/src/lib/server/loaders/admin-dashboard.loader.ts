@@ -2,9 +2,9 @@ import 'server-only';
 
 import { cache } from 'react';
 
-import { getSupabaseServerClient } from '@portal/supabase/server-client';
+// import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
-import { createAdminDashboardService } from '../services/admin-dashboard.service.drizzle';
+import { createAdminDashboardService } from '../services/admin-dashboard.service';
 
 /**
  * @name loadAdminDashboard

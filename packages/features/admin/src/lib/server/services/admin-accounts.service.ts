@@ -1,23 +1,37 @@
 import 'server-only';
 
-import { SupabaseClient } from '@supabase/supabase-js';
+import { eq } from 'drizzle-orm';
 
-import { Database } from '@portal/supabase/database';
+import { getLogger } from '@portal/shared/logger';
+import { getDrizzleSupabaseAdminClient } from '@portal/supabase/drizzle-client';
+import { accounts } from '@portal/supabase/drizzle-schema';
 
-export function createAdminAccountsService(client: SupabaseClient<Database>) {
-  return new AdminAccountsService(client);
+export function createAdminAccountsService() {
+  return new AdminAccountsService();
 }
 
 class AdminAccountsService {
-  constructor(private adminClient: SupabaseClient<Database>) {}
-
   async deleteAccount(accountId: string) {
-    const { error } = await this.adminClient
-      .from('accounts')
-      .delete()
-      .eq('id', accountId);
+    const logger = await getLogger();
+    const adminClient = getDrizzleSupabaseAdminClient();
 
-    if (error) {
+    const ctx = {
+      name: 'admin.accounts.delete',
+      accountId,
+    };
+
+    logger.info(ctx, 'Admin deleting account');
+
+    try {
+      const result = await adminClient
+        .delete(accounts)
+        .where(eq(accounts.id, accountId));
+
+      logger.info(ctx, 'Account successfully deleted by admin');
+
+      return result;
+    } catch (error) {
+      logger.error({ ...ctx, error }, 'Failed to delete account');
       throw error;
     }
   }

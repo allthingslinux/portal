@@ -4,8 +4,7 @@ import { cache } from 'react';
 
 import { redirect } from 'next/navigation';
 
-import { getSupabaseServerClient } from '@portal/supabase/server-client';
-import { createTeamAccountsApiDrizzle } from '@portal/team-accounts/api.drizzle';
+import { createTeamAccountsApi } from '@portal/team-accounts/api';
 
 import pathsConfig from '~/config/paths.config';
 import { requireUserInServerComponent } from '~/lib/server/require-user-in-server-component';
@@ -26,8 +25,7 @@ export type TeamAccountWorkspace = Awaited<
 export const loadTeamWorkspace = cache(workspaceLoader);
 
 async function workspaceLoader(accountSlug: string) {
-  const client = getSupabaseServerClient();
-  const api = createTeamAccountsApiDrizzle();
+  const api = createTeamAccountsApi();
 
   const [workspace, user] = await Promise.all([
     api.getAccountWorkspace(accountSlug),

@@ -2,17 +2,18 @@
 
 import { revalidatePath } from 'next/cache';
 
+import { eq } from 'drizzle-orm';
+
 import { enhanceAction } from '@portal/next/actions';
 import { createOtpApi } from '@portal/otp';
 import { getLogger } from '@portal/shared/logger';
 import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
 import { accounts } from '@portal/supabase/drizzle-schema';
-import { eq } from 'drizzle-orm';
 
 import { RemoveMemberSchema } from '../../schema/remove-member.schema';
 import { TransferOwnershipConfirmationSchema } from '../../schema/transfer-ownership-confirmation.schema';
 import { UpdateMemberRoleSchema } from '../../schema/update-member-role.schema';
-import { createAccountMembersService } from '../services/account-members.service.drizzle';
+import { createAccountMembersService } from '../services/account-members.service';
 
 /**
  * @name removeMemberFromAccountAction

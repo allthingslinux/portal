@@ -2,15 +2,16 @@
 
 import { redirect } from 'next/navigation';
 
+import { and, eq } from 'drizzle-orm';
+
 import { enhanceAction } from '@portal/next/actions';
 import { createOtpApi } from '@portal/otp';
 import { getLogger } from '@portal/shared/logger';
 import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
 import { accounts } from '@portal/supabase/drizzle-schema';
-import { eq, and } from 'drizzle-orm';
 
 import { DeleteTeamAccountSchema } from '../../schema/delete-team-account.schema';
-import { createDeleteTeamAccountService } from '../services/delete-team-account.service.drizzle';
+import { createDeleteTeamAccountService } from '../services/delete-team-account.service';
 
 const enableTeamAccountDeletion =
   process.env.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION === 'true';
@@ -89,8 +90,8 @@ async function assertUserPermissionsToDeleteTeamAccount(
       .where(
         and(
           eq(accounts.id, accountId),
-          eq(accounts.primaryOwnerUserId, userId)
-        )
+          eq(accounts.primaryOwnerUserId, userId),
+        ),
       )
       .limit(1);
   });

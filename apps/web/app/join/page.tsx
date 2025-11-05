@@ -1,16 +1,19 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 
+import { and, eq } from 'drizzle-orm';
 import { ArrowLeft } from 'lucide-react';
 
 import { AuthLayoutShell } from '@portal/auth/shared';
-import { MultiFactorAuthError, requireUser } from '@portal/supabase/require-user';
-import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
-import { getSupabaseServerClient } from '@portal/supabase/server-client';
 import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
 import { accountsMemberships } from '@portal/supabase/drizzle-schema';
-import { eq, and } from 'drizzle-orm';
-import { createTeamAccountsApiDrizzle } from '@portal/team-accounts/api.drizzle';
+import {
+  MultiFactorAuthError,
+  requireUser,
+} from '@portal/supabase/require-user';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
+import { createTeamAccountsApi } from '@portal/team-accounts/api';
 import { AcceptInvitationContainer } from '@portal/team-accounts/components';
 import { Button } from '@portal/ui/button';
 import { Heading } from '@portal/ui/heading';
@@ -78,7 +81,7 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
 
   // get api to interact with team accounts
   const adminClient = getSupabaseServerAdminClient();
-  const api = createTeamAccountsApiDrizzle();
+  const api = createTeamAccountsApi();
 
   // the user is logged in, we can now check if the token is valid
   const invitation = await api.getInvitation(adminClient, token);
@@ -104,8 +107,8 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
       .where(
         and(
           eq(accountsMemberships.accountId, invitation.account.id),
-          eq(accountsMemberships.userId, user.id)
-        )
+          eq(accountsMemberships.userId, user.id),
+        ),
       )
       .limit(1);
   });

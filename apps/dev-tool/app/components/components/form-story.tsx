@@ -116,9 +116,15 @@ export default function FormStory() {
       formComponents.push('FormDescription');
     }
 
-    const formImport = generateImportStatement(formComponents, '@portal/ui/form');
+    const formImport = generateImportStatement(
+      formComponents,
+      '@portal/ui/form',
+    );
     const inputImport = generateImportStatement(['Input'], '@portal/ui/input');
-    const buttonImport = generateImportStatement(['Button'], '@portal/ui/button');
+    const buttonImport = generateImportStatement(
+      ['Button'],
+      '@portal/ui/button',
+    );
     const hookFormImports = `import { useForm } from 'react-hook-form';\nimport { zodResolver } from '@hookform/resolvers/zod';\nimport { z } from 'zod';`;
 
     let schemaCode = '';

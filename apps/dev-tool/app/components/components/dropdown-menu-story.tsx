@@ -836,7 +836,10 @@ export default function DropdownMenuStory() {
       components,
       '@portal/ui/dropdown-menu',
     );
-    const buttonImport = generateImportStatement(['Button'], '@portal/ui/button');
+    const buttonImport = generateImportStatement(
+      ['Button'],
+      '@portal/ui/button',
+    );
     const iconImport = generateImportStatement(
       ['User', 'Settings', 'LogOut'],
       'lucide-react',

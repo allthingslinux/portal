@@ -34,19 +34,576 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      accounts: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          email: string | null
+          id: string
+          is_personal_account: boolean
+          name: string
+          picture_url: string | null
+          primary_owner_user_id: string
+          public_data: Json
+          slug: string | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_personal_account?: boolean
+          name: string
+          picture_url?: string | null
+          primary_owner_user_id?: string
+          public_data?: Json
+          slug?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_personal_account?: boolean
+          name?: string
+          picture_url?: string | null
+          primary_owner_user_id?: string
+          public_data?: Json
+          slug?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      accounts_memberships: {
+        Row: {
+          account_id: string
+          account_role: string
+          created_at: string
+          created_by: string | null
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          account_role: string
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          account_role?: string
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accounts_memberships_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accounts_memberships_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "user_account_workspace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accounts_memberships_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "user_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accounts_memberships_account_role_fkey"
+            columns: ["account_role"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
+      config: {
+        Row: {
+          enable_team_accounts: boolean
+        }
+        Insert: {
+          enable_team_accounts?: boolean
+        }
+        Update: {
+          enable_team_accounts?: boolean
+        }
+        Relationships: []
+      }
+      invitations: {
+        Row: {
+          account_id: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: number
+          invite_token: string
+          invited_by: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: number
+          invite_token: string
+          invited_by: string
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: number
+          invite_token?: string
+          invited_by?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "user_account_workspace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "user_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_role_fkey"
+            columns: ["role"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
+      nonces: {
+        Row: {
+          client_token: string
+          created_at: string
+          expires_at: string
+          id: string
+          last_verification_at: string | null
+          last_verification_ip: unknown
+          last_verification_user_agent: string | null
+          metadata: Json | null
+          nonce: string
+          purpose: string
+          revoked: boolean
+          revoked_reason: string | null
+          scopes: string[] | null
+          used_at: string | null
+          user_id: string | null
+          verification_attempts: number
+        }
+        Insert: {
+          client_token: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          last_verification_at?: string | null
+          last_verification_ip?: unknown
+          last_verification_user_agent?: string | null
+          metadata?: Json | null
+          nonce: string
+          purpose: string
+          revoked?: boolean
+          revoked_reason?: string | null
+          scopes?: string[] | null
+          used_at?: string | null
+          user_id?: string | null
+          verification_attempts?: number
+        }
+        Update: {
+          client_token?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          last_verification_at?: string | null
+          last_verification_ip?: unknown
+          last_verification_user_agent?: string | null
+          metadata?: Json | null
+          nonce?: string
+          purpose?: string
+          revoked?: boolean
+          revoked_reason?: string | null
+          scopes?: string[] | null
+          used_at?: string | null
+          user_id?: string | null
+          verification_attempts?: number
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          account_id: string
+          body: string
+          channel: Database["public"]["Enums"]["notification_channel"]
+          created_at: string
+          dismissed: boolean
+          expires_at: string | null
+          id: number
+          link: string | null
+          type: Database["public"]["Enums"]["notification_type"]
+        }
+        Insert: {
+          account_id: string
+          body: string
+          channel?: Database["public"]["Enums"]["notification_channel"]
+          created_at?: string
+          dismissed?: boolean
+          expires_at?: string | null
+          id?: never
+          link?: string | null
+          type?: Database["public"]["Enums"]["notification_type"]
+        }
+        Update: {
+          account_id?: string
+          body?: string
+          channel?: Database["public"]["Enums"]["notification_channel"]
+          created_at?: string
+          dismissed?: boolean
+          expires_at?: string | null
+          id?: never
+          link?: string | null
+          type?: Database["public"]["Enums"]["notification_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "user_account_workspace"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "user_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_permissions: {
+        Row: {
+          id: number
+          permission: Database["public"]["Enums"]["app_permissions"]
+          role: string
+        }
+        Insert: {
+          id?: number
+          permission: Database["public"]["Enums"]["app_permissions"]
+          role: string
+        }
+        Update: {
+          id?: number
+          permission?: Database["public"]["Enums"]["app_permissions"]
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_role_fkey"
+            columns: ["role"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          hierarchy_level: number
+          name: string
+        }
+        Insert: {
+          hierarchy_level: number
+          name: string
+        }
+        Update: {
+          hierarchy_level?: number
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      user_account_workspace: {
+        Row: {
+          id: string | null
+          name: string | null
+          picture_url: string | null
+        }
+        Relationships: []
+      }
+      user_accounts: {
+        Row: {
+          id: string | null
+          name: string | null
+          picture_url: string | null
+          role: string | null
+          slug: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accounts_memberships_account_role_fkey"
+            columns: ["role"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      accept_invitation: {
+        Args: { token: string; user_id: string }
+        Returns: string
+      }
+      add_invitations_to_account: {
+        Args: {
+          account_slug: string
+          invitations: Database["public"]["CompositeTypes"]["invitation"][]
+        }
+        Returns: Database["public"]["Tables"]["invitations"]["Row"][]
+      }
+      can_action_account_member: {
+        Args: { target_team_account_id: string; target_user_id: string }
+        Returns: boolean
+      }
+      cleanup_expired_nonces: {
+        Args: {
+          p_include_revoked?: boolean
+          p_include_used?: boolean
+          p_older_than_days?: number
+        }
+        Returns: number
+      }
+      create_invitation: {
+        Args: { account_id: string; email: string; role: string }
+        Returns: {
+          account_id: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: number
+          invite_token: string
+          invited_by: string
+          role: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "invitations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_nonce: {
+        Args: {
+          p_expires_in_seconds?: number
+          p_metadata?: Json
+          p_purpose?: string
+          p_revoke_previous?: boolean
+          p_scopes?: string[]
+          p_user_id?: string
+        }
+        Returns: Json
+      }
+      create_team_account: {
+        Args: { account_name: string }
+        Returns: {
+          created_at: string | null
+          created_by: string | null
+          email: string | null
+          id: string
+          is_personal_account: boolean
+          name: string
+          picture_url: string | null
+          primary_owner_user_id: string
+          public_data: Json
+          slug: string | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "accounts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      get_account_invitations: {
+        Args: { account_slug: string }
+        Returns: {
+          account_id: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: number
+          invited_by: string
+          inviter_email: string
+          inviter_name: string
+          role: string
+          updated_at: string
+        }[]
+      }
+      get_account_members: {
+        Args: { account_slug: string }
+        Returns: {
+          account_id: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          picture_url: string
+          primary_owner_user_id: string
+          role: string
+          role_hierarchy_level: number
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      get_config: { Args: never; Returns: Json }
+      get_nonce_status: { Args: { p_id: string }; Returns: Json }
+      get_storage_filename_as_uuid: { Args: { name: string }; Returns: string }
+      get_upper_system_role: { Args: never; Returns: string }
+      has_more_elevated_role: {
+        Args: {
+          role_name: string
+          target_account_id: string
+          target_user_id: string
+        }
+        Returns: boolean
+      }
+      has_permission: {
+        Args: {
+          account_id: string
+          permission_name: Database["public"]["Enums"]["app_permissions"]
+          user_id: string
+        }
+        Returns: boolean
+      }
+      has_role_on_account: {
+        Args: { account_id: string; account_role?: string }
+        Returns: boolean
+      }
+      has_same_role_hierarchy_level: {
+        Args: {
+          role_name: string
+          target_account_id: string
+          target_user_id: string
+        }
+        Returns: boolean
+      }
+      is_aal2: { Args: never; Returns: boolean }
+      is_account_owner: { Args: { account_id: string }; Returns: boolean }
+      is_account_team_member: {
+        Args: { target_account_id: string }
+        Returns: boolean
+      }
+      is_mfa_compliant: { Args: never; Returns: boolean }
+      is_set: { Args: { field_name: string }; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
+      is_team_member: {
+        Args: { account_id: string; user_id: string }
+        Returns: boolean
+      }
+      revoke_nonce: {
+        Args: { p_id: string; p_reason?: string }
+        Returns: boolean
+      }
+      slugify: { Args: { value: string }; Returns: string }
+      team_account_workspace: {
+        Args: { account_slug: string }
+        Returns: {
+          id: string
+          name: string
+          permissions: Database["public"]["Enums"]["app_permissions"][]
+          picture_url: string
+          primary_owner_user_id: string
+          role: string
+          role_hierarchy_level: number
+          slug: string
+        }[]
+      }
+      transfer_team_account_ownership: {
+        Args: { new_owner_id: string; target_account_id: string }
+        Returns: undefined
+      }
+      unaccent: { Args: { "": string }; Returns: string }
+      verify_nonce: {
+        Args: {
+          p_ip?: unknown
+          p_max_verification_attempts?: number
+          p_purpose: string
+          p_required_scopes?: string[]
+          p_token: string
+          p_user_agent?: string
+          p_user_id?: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_permissions:
+        | "roles.manage"
+        | "settings.manage"
+        | "members.manage"
+        | "invites.manage"
+      notification_channel: "in_app" | "email"
+      notification_type: "info" | "warning" | "error"
     }
     CompositeTypes: {
-      [_ in never]: never
+      invitation: {
+        email: string | null
+        role: string | null
+      }
     }
   }
   storage: {
@@ -684,7 +1241,16 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      app_permissions: [
+        "roles.manage",
+        "settings.manage",
+        "members.manage",
+        "invites.manage",
+      ],
+      notification_channel: ["in_app", "email"],
+      notification_type: ["info", "warning", "error"],
+    },
   },
   storage: {
     Enums: {

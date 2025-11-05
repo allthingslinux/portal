@@ -6,11 +6,10 @@ import { redirect } from 'next/navigation';
 import { enhanceAction } from '@portal/next/actions';
 import { createOtpApi } from '@portal/otp';
 import { getLogger } from '@portal/shared/logger';
-import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
 import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 import { DeletePersonalAccountSchema } from '../schema/delete-personal-account.schema';
-import { createDeletePersonalAccountService } from './services/delete-personal-account.service.drizzle';
+import { createDeletePersonalAccountService } from './services/delete-personal-account.service';
 
 const enableAccountDeletion =
   process.env.NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_DELETION === 'true';

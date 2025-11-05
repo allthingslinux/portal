@@ -9,6 +9,10 @@
     "typecheck": "tsc --noEmit"
   },
   "prettier": "@portal/prettier-config",
+  "dependencies": {
+    "@portal/supabase": "workspace:*",
+    "drizzle-orm": "^0.44.7"
+  },
   "devDependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@makerkit/data-loader-supabase-core": "^0.0.10",
@@ -17,7 +21,6 @@
     "@portal/next": "workspace:*",
     "@portal/prettier-config": "workspace:*",
     "@portal/shared": "workspace:*",
-    "@portal/supabase": "workspace:*",
     "@portal/tsconfig": "workspace:*",
     "@portal/ui": "workspace:*",
     "@supabase/supabase-js": "2.78.0",

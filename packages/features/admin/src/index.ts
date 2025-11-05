@@ -1,1 +1,1 @@
-export * from './lib/server/utils/is-super-admin.drizzle';
+export * from './lib/server/utils/is-super-admin';

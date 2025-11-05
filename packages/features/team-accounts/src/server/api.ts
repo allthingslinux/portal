@@ -1,28 +1,28 @@
 import 'server-only';
 
-import { eq, and } from 'drizzle-orm';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+import { and, eq } from 'drizzle-orm';
 
 import { getLogger } from '@portal/shared/logger';
+import type { Database } from '@portal/supabase/database';
 import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
 import {
   accounts,
   accountsMemberships,
-  roles,
   rolePermissions,
-  userAccounts
+  roles,
+  userAccounts,
 } from '@portal/supabase/drizzle-schema';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@portal/supabase/database';
-
-export function createTeamAccountsApiDrizzle() {
+export function createTeamAccountsApi() {
   return new TeamAccountsApiDrizzle();
 }
 
 /**
  * Team Accounts API using Drizzle ORM
  */
-class TeamAccountsApiDrizzle {
+class _TeamAccountsApi {
   private readonly namespace = 'team-accounts.api';
 
   /**
@@ -109,9 +109,15 @@ class TeamAccountsApiDrizzle {
             permissions: rolePermissions.permission,
           })
           .from(accounts)
-          .innerJoin(accountsMemberships, eq(accounts.id, accountsMemberships.accountId))
+          .innerJoin(
+            accountsMemberships,
+            eq(accounts.id, accountsMemberships.accountId),
+          )
           .innerJoin(roles, eq(accountsMemberships.accountRole, roles.name))
-          .leftJoin(rolePermissions, eq(accountsMemberships.accountRole, rolePermissions.role))
+          .leftJoin(
+            rolePermissions,
+            eq(accountsMemberships.accountRole, rolePermissions.role),
+          )
           .where(eq(accounts.slug, slug));
       });
 
@@ -129,7 +135,7 @@ class TeamAccountsApiDrizzle {
       // Group permissions by account (similar to the RPC)
       const accountData = accountResult[0];
       const permissions = accountResult
-        .map(row => row.permissions)
+        .map((row) => row.permissions)
         .filter(Boolean) as string[];
 
       const workspaceData = {
@@ -141,7 +147,7 @@ class TeamAccountsApiDrizzle {
         error: null,
         data: {
           account: workspaceData,
-          accounts: accountsResult.map(acc => ({
+          accounts: accountsResult.map((acc) => ({
             label: acc.name,
             value: acc.slug,
             image: acc.pictureUrl,
@@ -152,7 +158,7 @@ class TeamAccountsApiDrizzle {
       const logger = await getLogger();
       logger.error(
         { ...error, slug, namespace: this.namespace },
-        'Failed to get account workspace'
+        'Failed to get account workspace',
       );
 
       return {
@@ -177,13 +183,16 @@ class TeamAccountsApiDrizzle {
         return await tx
           .select()
           .from(accountsMemberships)
-          .innerJoin(rolePermissions, eq(accountsMemberships.accountRole, rolePermissions.role))
+          .innerJoin(
+            rolePermissions,
+            eq(accountsMemberships.accountRole, rolePermissions.role),
+          )
           .where(
             and(
               eq(accountsMemberships.userId, params.userId),
               eq(accountsMemberships.accountId, params.accountId),
-              eq(rolePermissions.permission, params.permission)
-            )
+              eq(rolePermissions.permission, params.permission),
+            ),
           )
           .limit(1);
       });
@@ -193,7 +202,7 @@ class TeamAccountsApiDrizzle {
       const logger = await getLogger();
       logger.error(
         { ...error, ...params, namespace: this.namespace },
-        'Failed to check permission'
+        'Failed to check permission',
       );
 
       return false;
@@ -221,7 +230,7 @@ class TeamAccountsApiDrizzle {
       const logger = await getLogger();
       logger.error(
         { ...error, accountId, namespace: this.namespace },
-        'Failed to get members count'
+        'Failed to get members count',
       );
 
       return 0;

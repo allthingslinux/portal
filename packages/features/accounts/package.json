@@ -14,8 +14,7 @@
     "./personal-account-settings": "./src/components/personal-account-settings/index.ts",
     "./components": "./src/components/index.ts",
     "./hooks/*": "./src/hooks/*.ts",
-    "./api": "./src/server/api.ts",
-    "./api.drizzle": "./src/server/api.drizzle.ts"
+    "./api": "./src/server/api.ts"
   },
   "dependencies": {
     "@portal/supabase": "workspace:*",

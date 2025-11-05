@@ -69,7 +69,7 @@ class DatabaseWebhookHandlerService {
       // if a custom handler is provided, call it
       if (params?.handleEvent) {
         // The handleEvent is generic and we can't infer the specific table type here
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (params.handleEvent as any)(params.body);
       }
 

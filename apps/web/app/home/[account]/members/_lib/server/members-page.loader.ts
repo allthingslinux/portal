@@ -1,9 +1,14 @@
 import 'server-only';
 
-import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
-import { accounts, accountsMemberships, invitations } from '@portal/supabase/drizzle-schema';
 import { eq } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+
+import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
+import {
+  accounts,
+  accountsMemberships,
+  invitations,
+} from '@portal/supabase/drizzle-schema';
 
 import { loadTeamWorkspace } from '~/home/[account]/_lib/server/team-account-workspace.loader';
 
@@ -41,7 +46,10 @@ async function canAddMember() {
  * @param drizzleClient
  * @param accountSlug
  */
-async function loadAccountMembers(drizzleClient: Awaited<ReturnType<typeof getDrizzleSupabaseClient>>, accountSlug: string) {
+async function loadAccountMembers(
+  drizzleClient: Awaited<ReturnType<typeof getDrizzleSupabaseClient>>,
+  accountSlug: string,
+) {
   const userAccount = alias(accounts, 'userAccount');
 
   const data = await drizzleClient.runTransaction(async (tx) => {
@@ -60,7 +68,10 @@ async function loadAccountMembers(drizzleClient: Awaited<ReturnType<typeof getDr
       })
       .from(accountsMemberships)
       .innerJoin(accounts, eq(accountsMemberships.accountId, accounts.id))
-      .innerJoin(userAccount, eq(accountsMemberships.userId, userAccount.primaryOwnerUserId))
+      .innerJoin(
+        userAccount,
+        eq(accountsMemberships.userId, userAccount.primaryOwnerUserId),
+      )
       .where(eq(accounts.slug, accountSlug));
   });
 
@@ -72,7 +83,10 @@ async function loadAccountMembers(drizzleClient: Awaited<ReturnType<typeof getDr
  * @param drizzleClient
  * @param accountSlug
  */
-async function loadInvitations(drizzleClient: Awaited<ReturnType<typeof getDrizzleSupabaseClient>>, accountSlug: string) {
+async function loadInvitations(
+  drizzleClient: Awaited<ReturnType<typeof getDrizzleSupabaseClient>>,
+  accountSlug: string,
+) {
   const data = await drizzleClient.runTransaction(async (tx) => {
     return await tx
       .select({

@@ -19,7 +19,12 @@ The FeaturePolicy API provides:
 ```typescript
 import { z } from 'zod';
 
-import { allow, createPolicyRegistry, definePolicy, deny } from '@portal/policies';
+import {
+  allow,
+  createPolicyRegistry,
+  definePolicy,
+  deny,
+} from '@portal/policies';
 
 const registry = createPolicyRegistry();
 

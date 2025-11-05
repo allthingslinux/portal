@@ -4,9 +4,9 @@ import { redirect } from 'next/navigation';
 
 import { enhanceAction } from '@portal/next/actions';
 import { getLogger } from '@portal/shared/logger';
-import { createUpdateTeamAccountService } from '../services/update-team-account.service.drizzle';
 
 import { UpdateTeamNameSchema } from '../../schema/update-team-name.schema';
+import { createUpdateTeamAccountService } from '../services/update-team-account.service';
 
 export const updateTeamAccountName = enhanceAction(
   async (params) => {

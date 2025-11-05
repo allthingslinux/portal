@@ -1,22 +1,36 @@
 import 'server-only';
 
-import { SupabaseClient } from '@supabase/supabase-js';
+import { getLogger } from '@portal/shared/logger';
+import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
+import { notifications } from '@portal/supabase/drizzle-schema';
 
-import { Database } from '@portal/supabase/database';
+type Notification = typeof notifications.$inferInsert;
 
-type Notification = Database['public']['Tables']['notifications'];
-
-export function createNotificationsService(client: SupabaseClient<Database>) {
-  return new NotificationsService(client);
+export function createNotificationsService() {
+  return new NotificationsService();
 }
 
 class NotificationsService {
-  constructor(private readonly client: SupabaseClient<Database>) {}
+  async createNotification(params: Notification) {
+    const logger = await getLogger();
+    const client = await getDrizzleSupabaseClient();
 
-  async createNotification(params: Notification['Insert']) {
-    const { error } = await this.client.from('notifications').insert(params);
+    const ctx = {
+      name: 'notifications.create',
+      type: params.type,
+      channel: params.channel,
+    };
 
-    if (error) {
+    logger.info(ctx, 'Creating notification');
+
+    try {
+      await client.runTransaction(async (tx) => {
+        await tx.insert(notifications).values(params);
+      });
+
+      logger.info(ctx, 'Notification created successfully');
+    } catch (error) {
+      logger.error({ ...ctx, error }, 'Failed to create notification');
       throw error;
     }
   }

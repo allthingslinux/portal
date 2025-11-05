@@ -1,5 +1,5 @@
-import { getSupabaseServerClient } from '@portal/supabase/server-client';
 import { getLogger } from '@portal/shared/logger';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 /**
  * @name isSuperAdmin
@@ -18,7 +18,9 @@ export async function isSuperAdmin(client?: any): Promise<boolean> {
     }
 
     // Decode JWT token to check app_metadata.role
-    const payload = JSON.parse(atob(session.session.access_token.split('.')[1]));
+    const payload = JSON.parse(
+      atob(session.session.access_token.split('.')[1]),
+    );
     const appMetadata = payload.app_metadata || {};
     const role = appMetadata.role;
 

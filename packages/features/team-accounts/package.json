@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "exports": {
-    "./api.drizzle": "./src/server/api.drizzle.ts",
+    "./api": "./src/server/api.ts",
     "./components": "./src/components/index.ts",
     "./hooks/*": "./src/hooks/*.ts",
     "./webhooks": "./src/server/services/webhooks/index.ts",

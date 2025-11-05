@@ -16,13 +16,11 @@
  * ```
  *
  */
-import { SupabaseClient } from '@supabase/supabase-js';
+import { notifications } from '@portal/supabase/drizzle-schema';
 
-import { Database } from '@portal/supabase/database';
+import { createNotificationsService } from './notifications.service';
 
-import { createNotificationsService } from './notifications.service.drizzle';
-
-type Notification = Database['public']['Tables']['notifications'];
+type NotificationInsert = typeof notifications.$inferInsert;
 
 /**
  * @name createNotificationsApi
@@ -46,7 +44,7 @@ class NotificationsApi {
    * @description Create a new notification in the database
    * @param params
    */
-  createNotification(params: Notification['Insert']) {
+  createNotification(params: NotificationInsert) {
     return this.service.createNotification(params);
   }
 }

@@ -606,6 +606,13 @@ importers:
         version: 3.25.76
 
   packages/features/admin:
+    dependencies:
+      '@portal/supabase':
+        specifier: workspace:*
+        version: link:../../supabase
+      drizzle-orm:
+        specifier: ^0.44.7
+        version: 0.44.7(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(postgres@3.4.7)
     devDependencies:
       '@hookform/resolvers':
         specifier: ^5.2.2
@@ -628,9 +635,6 @@ importers:
       '@portal/shared':
         specifier: workspace:*
         version: link:../../shared
-      '@portal/supabase':
-        specifier: workspace:*
-        version: link:../../supabase
       '@portal/tsconfig':
         specifier: workspace:*
         version: link:../../../tooling/typescript
@@ -737,6 +741,9 @@ importers:
       '@portal/prettier-config':
         specifier: workspace:*
         version: link:../../../tooling/prettier
+      '@portal/shared':
+        specifier: workspace:*
+        version: link:../../shared
       '@portal/supabase':
         specifier: workspace:*
         version: link:../../supabase
@@ -755,6 +762,9 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.2
+      drizzle-orm:
+        specifier: ^0.44.7
+        version: 0.44.7(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(postgres@3.4.7)
       lucide-react:
         specifier: ^0.552.0
         version: 0.552.0(react@19.2.0)

@@ -1,11 +1,16 @@
+import { eq } from 'drizzle-orm';
 import { BadgeX, Ban, ShieldPlus, VenetianMask } from 'lucide-react';
 
 import { Tables } from '@portal/supabase/database';
+import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
+import {
+  accounts,
+  accountsMemberships,
+  roles,
+  usersInAuth,
+} from '@portal/supabase/drizzle-schema';
 import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
 import { getSupabaseServerClient } from '@portal/supabase/server-client';
-import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
-import { accounts, accountsMemberships, roles, usersInAuth } from '@portal/supabase/drizzle-schema';
-import { eq } from 'drizzle-orm';
 import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
 import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
 import { Badge } from '@portal/ui/badge';
@@ -289,8 +294,7 @@ async function SubscriptionsTable(props: { accountId: string }) {
                       <span>{subscription.id}</span>
                     </TableCell>
 
-                    <TableCell>
-                    </TableCell>
+                    <TableCell></TableCell>
 
                     <TableCell>
                       <span>{subscription.status}</span>

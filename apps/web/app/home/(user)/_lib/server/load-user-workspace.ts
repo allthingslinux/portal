@@ -1,6 +1,6 @@
 import { cache } from 'react';
 
-import { createAccountsApiDrizzle } from '@portal/accounts/api.drizzle';
+// import { createAccountsApi } from '@portal/accounts/api';
 
 import featureFlagsConfig from '~/config/feature-flags.config';
 import { requireUserInServerComponent } from '~/lib/server/require-user-in-server-component';

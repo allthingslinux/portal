@@ -1,7 +1,8 @@
 import 'server-only';
 
-import { eq, and } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
+
 import { invitations, usersInAuth } from '../drizzle/schema';
 
 /**
@@ -53,7 +54,7 @@ export function getValidInvitationByToken(token: string) {
     from: invitations,
     where: and(
       eq(invitations.inviteToken, token),
-      sql`${invitations.expiresAt} > NOW()`
+      sql`${invitations.expiresAt} > NOW()`,
     ),
   };
 }
@@ -61,7 +62,10 @@ export function getValidInvitationByToken(token: string) {
 /**
  * Get invitation by email and account
  */
-export function getInvitationByEmailAndAccount(email: string, accountId: string) {
+export function getInvitationByEmailAndAccount(
+  email: string,
+  accountId: string,
+) {
   return {
     select: {
       id: invitations.id,
@@ -71,8 +75,7 @@ export function getInvitationByEmailAndAccount(email: string, accountId: string)
     from: invitations,
     where: and(
       eq(invitations.email, email),
-      eq(invitations.accountId, accountId)
+      eq(invitations.accountId, accountId),
     ),
   };
 }
-

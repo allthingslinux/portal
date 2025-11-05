@@ -29,13 +29,17 @@ export async function ContentRenderer({
 }
 
 cmsContentRendererRegistry.register('keystatic', async () => {
-  const { KeystaticContentRenderer } = await import('@portal/keystatic/renderer');
+  const { KeystaticContentRenderer } = await import(
+    '@portal/keystatic/renderer'
+  );
 
   return KeystaticContentRenderer;
 });
 
 cmsContentRendererRegistry.register('wordpress', async () => {
-  const { WordpressContentRenderer } = await import('@portal/wordpress/renderer');
+  const { WordpressContentRenderer } = await import(
+    '@portal/wordpress/renderer'
+  );
 
   return WordpressContentRenderer;
 });

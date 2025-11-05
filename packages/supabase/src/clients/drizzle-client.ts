@@ -12,7 +12,8 @@ import { getSupabaseServerClient } from './server-client';
 const SUPABASE_DATABASE_URL = z
   .string({
     description: `The URL of the Supabase database. Please provide the variable SUPABASE_DATABASE_URL.`,
-    required_error: 'The environment variable SUPABASE_DATABASE_URL is required',
+    required_error:
+      'The environment variable SUPABASE_DATABASE_URL is required',
   })
   .url()
   .optional()
@@ -25,7 +26,9 @@ const config = {
 
 function getDatabaseUrl(): string {
   if (!SUPABASE_DATABASE_URL) {
-    throw new Error('SUPABASE_DATABASE_URL environment variable is required for Drizzle operations');
+    throw new Error(
+      'SUPABASE_DATABASE_URL environment variable is required for Drizzle operations',
+    );
   }
   return SUPABASE_DATABASE_URL;
 }
@@ -62,9 +65,12 @@ export async function getDrizzleSupabaseClient() {
   const accessToken = data.session?.access_token ?? '';
   const token = decode(accessToken);
 
-  const runTransaction = ((transaction: (tx: ReturnType<typeof drizzle>) => Promise<unknown>, config?: unknown) => {
+  const runTransaction = (
+    transaction: (tx: ReturnType<typeof drizzle>) => Promise<unknown>,
+    config?: unknown,
+  ) => {
     const client = getRlsClient();
-          return client.transaction(async (tx: any) => {
+    return client.transaction(async (tx: any) => {
       try {
         // Set up Supabase auth context
         await tx.execute(sql`
@@ -92,7 +98,7 @@ export async function getDrizzleSupabaseClient() {
         }
       }
     }, config as any);
-  });
+  };
 
   return {
     runTransaction,
@@ -106,4 +112,3 @@ function decode(accessToken: string) {
     return { role: 'anon' } as JwtPayload & { role: string };
   }
 }
-

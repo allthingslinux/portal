@@ -6,7 +6,7 @@ import { enhanceAction } from '@portal/next/actions';
 import { getLogger } from '@portal/shared/logger';
 
 import { CreateTeamSchema } from '../../schema/create-team.schema';
-import { createCreateTeamAccountService } from '../services/create-team-account.service.drizzle';
+import { createCreateTeamAccountService } from '../services/create-team-account.service';
 
 export const createTeamAccountAction = enhanceAction(
   async ({ name }, user) => {

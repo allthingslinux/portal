@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { eq, and } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { getLogger } from '@portal/shared/logger';

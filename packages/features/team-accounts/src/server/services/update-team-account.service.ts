@@ -1,9 +1,10 @@
 import 'server-only';
 
 import { eq } from 'drizzle-orm';
+
+import { getLogger } from '@portal/shared/logger';
 import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
 import { accounts } from '@portal/supabase/drizzle-schema';
-import { getLogger } from '@portal/shared/logger';
 
 export function createUpdateTeamAccountService() {
   return new UpdateTeamAccountService();

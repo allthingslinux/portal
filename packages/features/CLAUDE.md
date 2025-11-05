@@ -43,9 +43,9 @@ const customerId = await api.getCustomerId(accountId);
 Located at: `packages/features/team-accounts/src/server/api.ts`
 
 ```typescript
-import { createTeamAccountsApiDrizzle } from '@portal/team-accounts/api.drizzle';
+import { createTeamAccountsApi } from '@portal/team-accounts/api';
 
-const api = createTeamAccountsApi(client);
+const api = createTeamAccountsApi();
 
 // Get team account by slug
 const account = await api.getTeamAccount(slug);
@@ -241,9 +241,9 @@ async function featureOperation() {
 ### Team Permissions
 
 ```typescript
-import { createTeamAccountsApiDrizzle } from '@portal/team-accounts/api.drizzle';
+import { createTeamAccountsApi } from '@portal/team-accounts/api';
 
-const api = createTeamAccountsApi(client);
+const api = createTeamAccountsApi();
 
 // Check if user has specific permission on account
   accountId,

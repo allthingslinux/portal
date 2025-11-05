@@ -1,15 +1,14 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import { eq } from 'drizzle-orm';
 
 import { getLogger } from '@portal/shared/logger';
-import { Database } from '@portal/supabase/database';
+import { getDrizzleSupabaseAdminClient } from '@portal/supabase/drizzle-client';
+import { accounts } from '@portal/supabase/drizzle-schema';
 
-export function createAdminDashboardService(client: SupabaseClient<Database>) {
-  return new AdminDashboardService(client);
+export function createAdminDashboardService() {
+  return new AdminDashboardService();
 }
 
 export class AdminDashboardService {
-  constructor(private readonly client: SupabaseClient<Database>) {}
-
   /**
    * Get the dashboard data for the admin dashboard
    * @param count
@@ -20,94 +19,55 @@ export class AdminDashboardService {
     },
   ) {
     const logger = await getLogger();
+    const adminClient = getDrizzleSupabaseAdminClient();
+
     const ctx = {
       name: `admin.dashboard`,
     };
 
-    const selectParams = {
-      count,
-      head: true,
-    };
+    // Convert count parameter to Drizzle's count method
+    const countMethod = count === 'exact' ? 'exact' : 'estimated';
 
-    const subscriptionsPromise = this.client
-      .from('subscriptions')
-      .select('*', selectParams)
-      .eq('status', 'active')
-      .then((response) => {
-        if (response.error) {
-          logger.error(
-            { ...ctx, error: response.error.message },
-            `Error fetching active subscriptions`,
-          );
+    // Note: Subscriptions queries are commented out since billing features were removed
+    // If billing is re-enabled, these would need to be restored with proper schema
 
-          throw new Error();
-        }
+    const subscriptionsPromise = Promise.resolve(0); // Placeholder since billing removed
+    const trialsPromise = Promise.resolve(0); // Placeholder since billing removed
 
-        return response.count;
+    const accountsPromise = adminClient
+      .$count(accounts, eq(accounts.isPersonalAccount, true))
+      .then((count) => count)
+      .catch((error) => {
+        logger.error(
+          { ...ctx, error: error.message },
+          `Error fetching personal accounts`,
+        );
+        return 0;
       });
 
-    const trialsPromise = this.client
-      .from('subscriptions')
-      .select('*', selectParams)
-      .eq('status', 'trialing')
-      .then((response) => {
-        if (response.error) {
-          logger.error(
-            { ...ctx, error: response.error.message },
-            `Error fetching trialing subscriptions`,
-          );
-
-          throw new Error();
-        }
-
-        return response.count;
+    const teamAccountsPromise = adminClient
+      .$count(accounts, eq(accounts.isPersonalAccount, false))
+      .then((count) => count)
+      .catch((error) => {
+        logger.error(
+          { ...ctx, error: error.message },
+          `Error fetching team accounts`,
+        );
+        return 0;
       });
 
-    const accountsPromise = this.client
-      .from('accounts')
-      .select('*', selectParams)
-      .eq('is_personal_account', true)
-      .then((response) => {
-        if (response.error) {
-          logger.error(
-            { ...ctx, error: response.error.message },
-            `Error fetching personal accounts`,
-          );
-
-          throw new Error();
-        }
-
-        return response.count;
-      });
-
-    const teamAccountsPromise = this.client
-      .from('accounts')
-      .select('*', selectParams)
-      .eq('is_personal_account', false)
-      .then((response) => {
-        if (response.error) {
-          logger.error(
-            { ...ctx, error: response.error.message },
-            `Error fetching team accounts`,
-          );
-
-          throw new Error();
-        }
-
-        return response.count;
-      });
-
-    const [subscriptions, trials, accounts, teamAccounts] = await Promise.all([
-      subscriptionsPromise,
-      trialsPromise,
-      accountsPromise,
-      teamAccountsPromise,
-    ]);
+    const [subscriptions, trials, accountsCount, teamAccounts] =
+      await Promise.all([
+        subscriptionsPromise,
+        trialsPromise,
+        accountsPromise,
+        teamAccountsPromise,
+      ]);
 
     return {
       subscriptions,
       trials,
-      accounts,
+      accounts: accountsCount,
       teamAccounts,
     };
   }

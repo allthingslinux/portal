@@ -24,7 +24,9 @@ export const onRequestError: Instrumentation.onRequestError = async (
   request,
   context,
 ) => {
-  const { getServerMonitoringService } = await import('@portal/monitoring/server');
+  const { getServerMonitoringService } = await import(
+    '@portal/monitoring/server'
+  );
 
   const service = await getServerMonitoringService();
 

@@ -16,7 +16,7 @@ import { RenewInvitationSchema } from '../../schema/renew-invitation.schema';
 import { UpdateInvitationSchema } from '../../schema/update-invitation.schema';
 import { createInvitationContextBuilder } from '../policies/invitation-context-builder';
 import { createInvitationsPolicyEvaluator } from '../policies/invitation-policies';
-import { createAccountInvitationsService } from '../services/account-invitations.service.drizzle';
+import { createAccountInvitationsService } from '../services/account-invitations.service';
 
 /**
  * @name createInvitationsAction

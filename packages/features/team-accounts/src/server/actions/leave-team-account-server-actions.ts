@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 import { enhanceAction } from '@portal/next/actions';
 
 import { LeaveTeamAccountSchema } from '../../schema/leave-team-account.schema';
-import { createLeaveTeamAccountService } from '../services/leave-team-account.service.drizzle';
+import { createLeaveTeamAccountService } from '../services/leave-team-account.service';
 
 export const leaveTeamAccountAction = enhanceAction(
   async (formData: FormData, user) => {
