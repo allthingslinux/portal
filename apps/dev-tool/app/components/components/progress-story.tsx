@@ -4,20 +4,20 @@ import { useEffect, useState } from 'react';
 
 import { Download, Pause, Play, RotateCcw, Upload, Zap } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
-import { Progress } from '@kit/ui/progress';
+import { Button } from '@portal/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
+import { Progress } from '@portal/ui/progress';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Slider } from '@kit/ui/slider';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/select';
+import { Slider } from '@portal/ui/slider';
+import { Switch } from '@portal/ui/switch';
 
 import {
   generateImportStatement,
@@ -478,7 +478,7 @@ const apiReference = {
   examples: [
     {
       title: 'Basic Usage',
-      code: `import { Progress } from '@kit/ui/progress';
+      code: `import { Progress } from '@portal/ui/progress';
 
 <Progress value={75} />`,
     },
@@ -606,7 +606,7 @@ export default function ProgressStory() {
 
     const importStatement = generateImportStatement(
       ['Progress'],
-      '@kit/ui/progress',
+      '@portal/ui/progress',
     );
     const progressComponent = `<Progress${propsString} />`;
 

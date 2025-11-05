@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 import { ColumnDef } from '@tanstack/react-table';
 
-import { Tables } from '@kit/supabase/database';
-import { DataTable } from '@kit/ui/enhanced-data-table';
+import { Tables } from '@portal/supabase/database';
+import { DataTable } from '@portal/ui/enhanced-data-table';
 
 type Membership = Tables<'accounts_memberships'> & {
   account: {

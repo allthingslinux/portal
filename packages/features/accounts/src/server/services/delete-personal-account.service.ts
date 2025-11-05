@@ -4,8 +4,8 @@ import { SupabaseClient } from '@supabase/supabase-js';
 
 import { z } from 'zod';
 
-import { getLogger } from '@kit/shared/logger';
-import { Database } from '@kit/supabase/database';
+import { getLogger } from '@portal/shared/logger';
+import { Database } from '@portal/supabase/database';
 
 export function createDeletePersonalAccountService() {
   return new DeletePersonalAccountService();
@@ -108,8 +108,8 @@ class DeletePersonalAccountService {
   private async sendDeleteAccountEmail(account: { email: string }) {
     const emailSettings = this.getEmailSettings();
 
-    const { renderAccountDeleteEmail } = await import('@kit/email-templates');
-    const { getMailer } = await import('@kit/mailers');
+    const { renderAccountDeleteEmail } = await import('@portal/email-templates');
+    const { getMailer } = await import('@portal/mailers');
 
     const mailer = await getMailer();
 

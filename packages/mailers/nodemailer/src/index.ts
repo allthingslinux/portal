@@ -2,7 +2,7 @@ import 'server-only';
 
 import { z } from 'zod';
 
-import { Mailer, MailerSchema } from '@kit/mailers-shared';
+import { Mailer, MailerSchema } from '@portal/mailers-shared';
 
 import { getSMTPConfiguration } from './smtp-configuration';
 

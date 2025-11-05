@@ -9,23 +9,23 @@ import {
   TruckIcon,
 } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Label } from '@kit/ui/label';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Label } from '@portal/ui/label';
 import {
   RadioGroup,
   RadioGroupItem,
   RadioGroupItemLabel,
-} from '@kit/ui/radio-group';
+} from '@portal/ui/radio-group';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
 
 import {
   generateImportStatement,
@@ -118,12 +118,12 @@ export default function RadioGroupStory() {
       controls.useLabels
         ? ['RadioGroup', 'RadioGroupItem', 'RadioGroupItemLabel']
         : ['RadioGroup', 'RadioGroupItem'],
-      '@kit/ui/radio-group',
+      '@portal/ui/radio-group',
     );
 
     const labelImport = controls.useLabels
       ? ''
-      : `\nimport { Label } from '@kit/ui/label';`;
+      : `\nimport { Label } from '@portal/ui/label';`;
 
     const itemsCode = controls.useLabels
       ? `  {paymentMethods.map((method) => (
@@ -699,8 +699,8 @@ export default function RadioGroupStory() {
             </p>
             <div className="bg-muted/50 rounded-lg p-4">
               <pre className="overflow-x-auto text-sm">
-                {`import { RadioGroup, RadioGroupItem } from '@kit/ui/radio-group';
-import { Label } from '@kit/ui/label';
+                {`import { RadioGroup, RadioGroupItem } from '@portal/ui/radio-group';
+import { Label } from '@portal/ui/label';
 
 function PaymentForm() {
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -784,7 +784,7 @@ function SettingsForm() {
             <h3 className="mb-4 text-lg font-semibold">Enhanced Labels</h3>
             <div className="bg-muted/50 rounded-lg p-4">
               <pre className="overflow-x-auto text-sm">
-                {`import { RadioGroupItemLabel } from '@kit/ui/radio-group';
+                {`import { RadioGroupItemLabel } from '@portal/ui/radio-group';
 
 <RadioGroup value={selected} onValueChange={setSelected}>
   {options.map((option) => (

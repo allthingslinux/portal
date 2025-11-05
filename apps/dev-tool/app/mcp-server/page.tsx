@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { withI18n } from '@/lib/i18n/with-i18n';
 import { DatabaseIcon, FileTextIcon, ServerIcon } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Page, PageBody, PageHeader } from '@kit/ui/page';
+import { Button } from '@portal/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Page, PageBody, PageHeader } from '@portal/ui/page';
 
 export const metadata = {
   title: 'MCP Server',

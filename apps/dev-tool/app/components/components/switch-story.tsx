@@ -19,12 +19,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/card';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { cn } from '@portal/ui/utils';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';

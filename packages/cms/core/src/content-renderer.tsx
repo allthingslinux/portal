@@ -1,5 +1,5 @@
-import { CmsType } from '@kit/cms-types';
-import { createRegistry } from '@kit/shared/registry';
+import { CmsType } from '@portal/cms-types';
+import { createRegistry } from '@portal/shared/registry';
 
 const CMS_CLIENT = process.env.CMS_CLIENT as CmsType;
 
@@ -29,13 +29,13 @@ export async function ContentRenderer({
 }
 
 cmsContentRendererRegistry.register('keystatic', async () => {
-  const { KeystaticContentRenderer } = await import('@kit/keystatic/renderer');
+  const { KeystaticContentRenderer } = await import('@portal/keystatic/renderer');
 
   return KeystaticContentRenderer;
 });
 
 cmsContentRendererRegistry.register('wordpress', async () => {
-  const { WordpressContentRenderer } = await import('@kit/wordpress/renderer');
+  const { WordpressContentRenderer } = await import('@portal/wordpress/renderer');
 
   return WordpressContentRenderer;
 });

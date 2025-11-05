@@ -6,8 +6,8 @@ import {
 } from '@/app/variables/lib/env-scanner';
 import { EnvMode } from '@/app/variables/lib/types';
 
-import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
-import { Page, PageBody, PageHeader } from '@kit/ui/page';
+import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
+import { Page, PageBody, PageHeader } from '@portal/ui/page';
 
 import { AppEnvironmentVariablesManager } from './components/app-environment-variables-manager';
 

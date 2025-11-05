@@ -5,15 +5,15 @@ import { EnvMode } from '@/app/variables/lib/types';
 import { EnvModeSelector } from '@/components/env-mode-selector';
 import { IFrame } from '@/components/iframe';
 
-import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
-import { Button } from '@kit/ui/button';
+import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
+import { Button } from '@portal/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from '@kit/ui/dialog';
-import { Page, PageBody, PageHeader } from '@kit/ui/page';
+} from '@portal/ui/dialog';
+import { Page, PageBody, PageHeader } from '@portal/ui/page';
 
 type EmailPageProps = React.PropsWithChildren<{
   params: Promise<{

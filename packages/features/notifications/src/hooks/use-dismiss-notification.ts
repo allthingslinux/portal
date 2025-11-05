@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
 
 export function useDismissNotification() {
   const client = useSupabase();

@@ -1,8 +1,8 @@
 'use client';
 
-import { useSignOut } from '@kit/supabase/hooks/use-sign-out';
-import { Button } from '@kit/ui/button';
-import { Trans } from '@kit/ui/trans';
+import { useSignOut } from '@portal/supabase/hooks/use-sign-out';
+import { Button } from '@portal/ui/button';
+import { Trans } from '@portal/ui/trans';
 
 export function SignOutInvitationButton(
   props: React.PropsWithChildren<{

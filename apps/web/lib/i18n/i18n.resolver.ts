@@ -1,4 +1,4 @@
-import { getLogger } from '@kit/shared/logger';
+import { getLogger } from '@portal/shared/logger';
 
 /**
  * @name i18nResolver

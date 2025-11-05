@@ -286,7 +286,7 @@ $$;
 grant execute on function public.revoke_nonce to service_role;
 
 -- Create a function to clean up expired nonces
-CREATE OR REPLACE FUNCTION kit.cleanup_expired_nonces(
+CREATE OR REPLACE FUNCTION public.cleanup_expired_nonces(
   p_older_than_days INTEGER DEFAULT 1,
   p_include_used BOOLEAN DEFAULT TRUE,
   p_include_revoked BOOLEAN DEFAULT TRUE
@@ -361,5 +361,5 @@ COMMENT ON TABLE public.nonces IS 'Table for storing one-time tokens with enhanc
 COMMENT ON FUNCTION public.create_nonce IS 'Creates a new one-time token for a specific purpose with enhanced options';
 COMMENT ON FUNCTION public.verify_nonce IS 'Verifies a one-time token, checks scopes, and marks it as used';
 COMMENT ON FUNCTION public.revoke_nonce IS 'Administratively revokes a token to prevent its use';
-COMMENT ON FUNCTION kit.cleanup_expired_nonces IS 'Cleans up expired, used, or revoked tokens based on parameters';
+COMMENT ON FUNCTION public.cleanup_expired_nonces IS 'Cleans up expired, used, or revoked tokens based on parameters';
 COMMENT ON FUNCTION public.get_nonce_status IS 'Retrieves the status of a token for administrative purposes';

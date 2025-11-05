@@ -8,21 +8,21 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import type { z } from 'zod';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
+} from '@portal/ui/form';
+import { If } from '@portal/ui/if';
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from '@kit/ui/input-group';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/input-group';
+import { Trans } from '@portal/ui/trans';
 
 import { PasswordSignInSchema } from '../schemas/password-sign-in.schema';
 import { PasswordInput } from './password-input';

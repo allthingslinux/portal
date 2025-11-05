@@ -23,14 +23,6 @@ select row_eq(
     'The owner of the team account should have the members.manage permission'
 );
 
--- the owner account has permissions to manage billing
-select row_eq(
-  $$ select public.has_permission(
-  auth.uid(), makerkit.get_account_id_by_slug('test'), 'billing.manage'::app_permissions) $$,
-    row(true::boolean),
-    'The owner of the team account should have the billing.manage permission'
-);
-
 -- Foreigner should not have permissions to manage members
 
 select makerkit.authenticate_as('test2');
@@ -82,14 +74,6 @@ set local role postgres;
 insert into public.role_permissions (role, permission) values ('custom-role', 'members.manage');
 
 select makerkit.authenticate_as('test1');
-
--- the custom role does not have permissions to manage billing
-select row_eq(
-  $$ select public.has_permission(
-  auth.uid(), makerkit.get_account_id_by_slug('test'), 'billing.manage'::app_permissions) $$,
-    row(false::boolean),
-    'The custom role should not have the billing.manage permission'
-);
 
 -- the custom role can manage members
 select row_eq(

@@ -9,9 +9,9 @@ import { useSearchParams } from 'next/navigation';
 import { UserCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, AlertDescription } from '@kit/ui/alert';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+import { Alert, AlertDescription } from '@portal/ui/alert';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 import { useLastAuthMethod } from '../hooks/use-last-auth-method';
 

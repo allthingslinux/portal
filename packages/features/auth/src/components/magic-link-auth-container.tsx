@@ -6,10 +6,10 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
-import { useAppEvents } from '@kit/shared/events';
-import { useSignInWithOtp } from '@kit/supabase/hooks/use-sign-in-with-otp';
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Button } from '@kit/ui/button';
+import { useAppEvents } from '@portal/shared/events';
+import { useSignInWithOtp } from '@portal/supabase/hooks/use-sign-in-with-otp';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
@@ -17,10 +17,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { toast } from '@kit/ui/sonner';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/form';
+import { If } from '@portal/ui/if';
+import { toast } from '@portal/ui/sonner';
+import { Trans } from '@portal/ui/trans';
 
 import { useCaptcha } from '../captcha/client';
 import { useLastAuthMethod } from '../hooks/use-last-auth-method';

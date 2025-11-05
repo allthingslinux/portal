@@ -4,14 +4,14 @@ import { useCallback, useEffect, useEffectEvent } from 'react';
 
 import { usePathname, useSearchParams } from 'next/navigation';
 
-import { analytics } from '@kit/analytics';
+import { analytics } from '@portal/analytics';
 import {
   AppEvent,
   AppEventType,
   ConsumerProvidedEventTypes,
   useAppEvents,
-} from '@kit/shared/events';
-import { isBrowser } from '@kit/shared/utils';
+} from '@portal/shared/events';
+import { isBrowser } from '@portal/shared/utils';
 
 type AnalyticsMapping<
   T extends ConsumerProvidedEventTypes = NonNullable<unknown>,
@@ -75,9 +75,6 @@ const analyticsMapping: AnalyticsMapping = {
     }
   },
   'user.signedUp': (event) => {
-    return analytics.trackEvent(event.type, event.payload);
-  },
-  'checkout.started': (event) => {
     return analytics.trackEvent(event.type, event.payload);
   },
   'user.updated': (event) => {

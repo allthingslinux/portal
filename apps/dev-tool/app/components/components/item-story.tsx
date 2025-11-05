@@ -4,16 +4,16 @@ import { useMemo } from 'react';
 
 import { ArrowUpRight, Calendar, CheckCircle2, Clock3 } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@kit/ui/avatar';
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@portal/ui/avatar';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   Item,
   ItemActions,
@@ -25,11 +25,11 @@ import {
   ItemMedia,
   ItemSeparator,
   ItemTitle,
-} from '@kit/ui/item';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/item';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { cn } from '@portal/ui/utils';
 
 import {
   formatCodeBlock,
@@ -139,9 +139,9 @@ export function ItemStory() {
 
     return formatCodeBlock(lines.join('\n'), [
       "import { ArrowUpRight, Calendar, Clock3 } from 'lucide-react';",
-      "import { Badge } from '@kit/ui/badge';",
-      "import { Button } from '@kit/ui/button';",
-      "import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemMedia, ItemTitle } from '@kit/ui/item';",
+      "import { Badge } from '@portal/ui/badge';",
+      "import { Button } from '@portal/ui/button';",
+      "import { Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemMedia, ItemTitle } from '@portal/ui/item';",
     ]);
   }, [controls, itemPropsString]);
 

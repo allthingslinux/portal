@@ -10,8 +10,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Label } from '@kit/ui/label';
+} from '@portal/ui/card';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
@@ -21,10 +21,10 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/select';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { cn } from '@portal/ui/utils';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';

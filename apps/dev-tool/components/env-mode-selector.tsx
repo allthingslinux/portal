@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
+} from '@portal/ui/select';
 
 export function EnvModeSelector({ mode }: { mode: EnvMode }) {
   const router = useRouter();

@@ -7,9 +7,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { NavigationMenu, NavigationMenuList } from '@kit/ui/navigation-menu';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/dropdown-menu';
+import { NavigationMenu, NavigationMenuList } from '@portal/ui/navigation-menu';
+import { Trans } from '@portal/ui/trans';
 
 import { SiteNavigationItem } from './site-navigation-item';
 

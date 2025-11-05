@@ -1,5 +1,5 @@
-import { Button } from '@kit/ui/button';
-import { OauthProviderLogoImage } from '@kit/ui/oauth-provider-logo-image';
+import { Button } from '@portal/ui/button';
+import { OauthProviderLogoImage } from '@portal/ui/oauth-provider-logo-image';
 
 export function AuthProviderButton({
   providerId,

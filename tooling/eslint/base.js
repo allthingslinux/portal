@@ -58,7 +58,7 @@ export default defineConfig(
             {
               name: 'react-i18next',
               importNames: ['Trans'],
-              message: 'Please use `@kit/ui/trans` instead',
+              message: 'Please use `@portal/ui/trans` instead',
             },
           ],
         },

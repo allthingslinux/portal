@@ -95,20 +95,6 @@ create policy restrict_mfa_accounts_memberships
     to authenticated
     using (public.is_mfa_compliant());
 
--- Restrict access to subscriptions if MFA is enabled
-create policy restrict_mfa_subscriptions
-    on public.subscriptions
-    as restrictive
-    to authenticated
-    using (public.is_mfa_compliant());
-
--- Restrict access to subscription items if MFA is enabled
-create policy restrict_mfa_subscription_items
-    on public.subscription_items
-    as restrictive
-    to authenticated
-    using (public.is_mfa_compliant());
-
 -- Restrict access to role permissions if MFA is enabled
 create policy restrict_mfa_role_permissions
     on public.role_permissions
@@ -123,21 +109,7 @@ create policy restrict_mfa_invitations
     to authenticated
     using (public.is_mfa_compliant());
 
--- Restrict access to orders if MFA is enabled
-create policy restrict_mfa_orders
-    on public.orders
-    as restrictive
-    to authenticated
-    using (public.is_mfa_compliant());
-
--- Restrict access to orders items if MFA is enabled
-create policy restrict_mfa_order_items
-    on public.order_items
-    as restrictive
-    to authenticated
-    using (public.is_mfa_compliant());
-
--- Restrict access to orders if MFA is enabled
+-- Restrict access to notifications if MFA is enabled
 create policy restrict_mfa_notifications
     on public.notifications
     as restrictive

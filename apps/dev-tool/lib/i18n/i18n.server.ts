@@ -1,4 +1,4 @@
-import { initializeServerI18n } from '@kit/i18n/server';
+import { initializeServerI18n } from '@portal/i18n/server';
 
 import { i18nResolver } from './i18n.resolver';
 import { getI18nSettings } from './i18n.settings';

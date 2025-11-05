@@ -1,5 +1,5 @@
 {
-  "name": "@kit/i18n",
+  "name": "@portal/i18n",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     ".": "./src/index.ts",
     "./server": "./src/i18n.server.ts",
@@ -16,10 +16,10 @@
     "./provider": "./src/i18n-provider.tsx"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/shared": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "@tanstack/react-query": "5.90.5",
     "next": "catalog:",
     "react": "19.2.0",

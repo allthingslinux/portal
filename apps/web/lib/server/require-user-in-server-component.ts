@@ -4,8 +4,8 @@ import { cache } from 'react';
 
 import { redirect } from 'next/navigation';
 
-import { requireUser } from '@kit/supabase/require-user';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { requireUser } from '@portal/supabase/require-user';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 /**
  * @name requireUserInServerComponent

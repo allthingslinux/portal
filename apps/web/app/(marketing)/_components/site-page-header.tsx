@@ -1,4 +1,4 @@
-import { cn } from '@kit/ui/utils';
+import { cn } from '@portal/ui/utils';
 
 export function SitePageHeader({
   title,

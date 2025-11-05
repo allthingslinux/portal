@@ -2,8 +2,8 @@
 
 import { useFormStatus } from 'react-dom';
 
-import { Button } from '@kit/ui/button';
-import { Trans } from '@kit/ui/trans';
+import { Button } from '@portal/ui/button';
+import { Trans } from '@portal/ui/trans';
 
 export function InvitationSubmitButton(props: {
   accountName: string;

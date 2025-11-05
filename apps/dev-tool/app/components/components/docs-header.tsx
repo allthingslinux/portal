@@ -2,7 +2,7 @@
 
 import { Settings } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
+import { Badge } from '@portal/ui/badge';
 
 import { COMPONENTS_REGISTRY } from '../lib/components-data';
 

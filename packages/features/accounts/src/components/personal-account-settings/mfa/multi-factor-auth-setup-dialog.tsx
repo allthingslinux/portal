@@ -10,10 +10,10 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
-import { useFactorsMutationKey } from '@kit/supabase/hooks/use-user-factors-mutation-key';
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Button } from '@kit/ui/button';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
+import { useFactorsMutationKey } from '@portal/supabase/hooks/use-user-factors-mutation-key';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { Button } from '@portal/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -21,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@kit/ui/dialog';
+} from '@portal/ui/dialog';
 import {
   Form,
   FormControl,
@@ -30,17 +30,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
+} from '@portal/ui/form';
+import { If } from '@portal/ui/if';
+import { Input } from '@portal/ui/input';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@kit/ui/input-otp';
-import { toast } from '@kit/ui/sonner';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/input-otp';
+import { toast } from '@portal/ui/sonner';
+import { Trans } from '@portal/ui/trans';
 
 import { refreshAuthSession } from '../../../server/personal-accounts-server-actions';
 

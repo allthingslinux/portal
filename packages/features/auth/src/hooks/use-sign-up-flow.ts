@@ -4,8 +4,8 @@ import { useCallback } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useAppEvents } from '@kit/shared/events';
-import { useSignUpWithEmailAndPassword } from '@kit/supabase/hooks/use-sign-up-with-email-password';
+import { useAppEvents } from '@portal/shared/events';
+import { useSignUpWithEmailAndPassword } from '@portal/supabase/hooks/use-sign-up-with-email-password';
 
 import { useLastAuthMethod } from './use-last-auth-method';
 

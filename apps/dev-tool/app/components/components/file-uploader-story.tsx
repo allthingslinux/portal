@@ -8,12 +8,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { FileUploader } from '@kit/ui/file-uploader';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { toast } from '@kit/ui/sonner';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/card';
+import { FileUploader } from '@portal/ui/file-uploader';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { toast } from '@portal/ui/sonner';
+import { Switch } from '@portal/ui/switch';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
@@ -148,8 +148,8 @@ export function FileUploaderStory() {
       .map((prop) => `  ${prop}`)
       .join('\n');
 
-    return `import { FileUploader } from '@kit/ui/file-uploader';
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+    return `import { FileUploader } from '@portal/ui/file-uploader';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
 
 const supabase = useSupabase();
 

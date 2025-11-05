@@ -2,16 +2,17 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { enhanceAction } from '@kit/next/actions';
-import { createOtpApi } from '@kit/otp';
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from '@portal/next/actions';
+import { createOtpApi } from '@portal/otp';
+import { getLogger } from '@portal/shared/logger';
+import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
+import { accounts } from '@portal/supabase/drizzle-schema';
+import { eq } from 'drizzle-orm';
 
 import { RemoveMemberSchema } from '../../schema/remove-member.schema';
 import { TransferOwnershipConfirmationSchema } from '../../schema/transfer-ownership-confirmation.schema';
 import { UpdateMemberRoleSchema } from '../../schema/update-member-role.schema';
-import { createAccountMembersService } from '../services/account-members.service';
+import { createAccountMembersService } from '../services/account-members.service.drizzle';
 
 /**
  * @name removeMemberFromAccountAction
@@ -19,8 +20,7 @@ import { createAccountMembersService } from '../services/account-members.service
  */
 export const removeMemberFromAccountAction = enhanceAction(
   async ({ accountId, userId }) => {
-    const client = getSupabaseServerClient();
-    const service = createAccountMembersService(client);
+    const service = createAccountMembersService();
 
     await service.removeMemberFromAccount({
       accountId,
@@ -43,12 +43,10 @@ export const removeMemberFromAccountAction = enhanceAction(
  */
 export const updateMemberRoleAction = enhanceAction(
   async (data) => {
-    const client = getSupabaseServerClient();
-    const service = createAccountMembersService(client);
-    const adminClient = getSupabaseServerAdminClient();
+    const service = createAccountMembersService();
 
     // update the role of the member
-    await service.updateMemberRole(data, adminClient);
+    await service.updateMemberRole(data);
 
     // revalidate all pages that depend on the account
     revalidatePath('/home/[account]', 'layout');
@@ -79,11 +77,18 @@ export const transferOwnershipAction = enhanceAction(
     logger.info(ctx, 'Processing team ownership transfer request...');
 
     // assert that the user is the owner of the account
-    const { data: isOwner, error } = await client.rpc('is_account_owner', {
-      account_id: data.accountId,
+    const drizzleClient = await getDrizzleSupabaseClient();
+    const ownerCheck = await drizzleClient.runTransaction(async (tx) => {
+      return tx
+        .select({ count: true })
+        .from(accounts)
+        .where(eq(accounts.id, data.accountId))
+        .where(eq(accounts.primaryOwnerUserId, user.id));
     });
 
-    if (error || !isOwner) {
+    const isOwner = ownerCheck.length > 0;
+
+    if (!isOwner) {
       logger.error(ctx, 'User is not the owner of this account');
 
       throw new Error(
@@ -120,14 +125,13 @@ export const transferOwnershipAction = enhanceAction(
       'OTP verification successful. Proceeding with ownership transfer...',
     );
 
-    const service = createAccountMembersService(client);
+    const service = createAccountMembersService();
 
     // at this point, the user is authenticated, is the owner of the account, and has verified via OTP
     // so we proceed with the transfer of ownership with admin privileges
-    const adminClient = getSupabaseServerAdminClient();
 
     // transfer the ownership of the account
-    await service.transferOwnership(data, adminClient);
+    await service.transferOwnership(data);
 
     // revalidate all pages that depend on the account
     revalidatePath('/home/[account]', 'layout');

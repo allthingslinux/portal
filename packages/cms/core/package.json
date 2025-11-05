@@ -1,5 +1,5 @@
 {
-  "name": "@kit/cms",
+  "name": "@portal/cms",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,18 +8,18 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     ".": "./src/index.ts"
   },
   "devDependencies": {
-    "@kit/cms-types": "workspace:*",
-    "@kit/eslint-config": "workspace:*",
-    "@kit/keystatic": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
-    "@kit/wordpress": "workspace:*",
+    "@portal/cms-types": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/keystatic": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/shared": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
+    "@portal/wordpress": "workspace:*",
     "@types/node": "catalog:"
   },
   "typesVersions": {

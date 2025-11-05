@@ -31,16 +31,16 @@ import {
   User,
 } from 'lucide-react';
 
-import { Avatar, AvatarFallback } from '@kit/ui/avatar';
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { Avatar, AvatarFallback } from '@portal/ui/avatar';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   Command,
   CommandDialog,
@@ -51,11 +51,11 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from '@kit/ui/command';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
-import { Switch } from '@kit/ui/switch';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/command';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
+import { Switch } from '@portal/ui/switch';
+import { cn } from '@portal/ui/utils';
 
 import {
   generateImportStatement,
@@ -683,7 +683,7 @@ const apiReference = {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@kit/ui/command';
+} from '@portal/ui/command';
 
 <Command>
   <CommandInput placeholder="Type a command..." />
@@ -699,7 +699,7 @@ const apiReference = {
     },
     {
       title: 'Command Dialog',
-      code: `import { CommandDialog } from '@kit/ui/command';
+      code: `import { CommandDialog } from '@portal/ui/command';
 
 const [open, setOpen] = useState(false);
 
@@ -833,7 +833,7 @@ export default function CommandStory() {
 
     const importStatement = generateImportStatement(
       components,
-      '@kit/ui/command',
+      '@portal/ui/command',
     );
     const iconImport = generateImportStatement(
       ['User', 'Settings', 'CreditCard'],

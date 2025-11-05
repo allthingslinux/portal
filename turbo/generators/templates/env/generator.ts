@@ -111,10 +111,7 @@ export function createEnvironmentVariablesGenerator(
       },
       {
         type: 'confirm',
-        name: 'values.NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_BILLING',
-        message: `Do you want to enable personal account billing? \nFor more info: ${getUrlToDocs('NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_BILLING')}\n`,
         default: getBoolean(
-          allVariables.NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_BILLING,
           true,
         ),
       },
@@ -138,10 +135,7 @@ export function createEnvironmentVariablesGenerator(
       },
       {
         type: 'confirm',
-        name: 'values.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_BILLING',
-        message: `Do you want to enable team account billing? \nFor more info: ${getUrlToDocs('NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_BILLING')}\n`,
         default: getBoolean(
-          allVariables.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_BILLING,
           true,
         ),
       },
@@ -200,43 +194,27 @@ export function createEnvironmentVariablesGenerator(
       },
       {
         type: 'list',
-        name: 'values.NEXT_PUBLIC_BILLING_PROVIDER',
-        message: `What is the billing provider you want to use?\nFor more info: ${getUrlToDocs('NEXT_PUBLIC_BILLING_PROVIDER')}\n`,
-        choices: ['stripe', 'lemon-squeezy'],
-        default: allVariables.NEXT_PUBLIC_BILLING_PROVIDER ?? 'stripe',
       },
       {
         when: (answers) =>
-          answers.values.NEXT_PUBLIC_BILLING_PROVIDER === 'stripe',
         type: 'input',
-        name: 'values.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
-        message: `What is the Stripe publishable key?\nFor more info: ${getUrlToDocs('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY')}\n`,
-        default: allVariables.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
       },
       {
         when: (answers) =>
-          answers.values.NEXT_PUBLIC_BILLING_PROVIDER === 'stripe',
         type: 'input',
-        name: 'values.STRIPE_SECRET_KEY',
-        message: `What is the Stripe secret key? \nFor more info: ${getUrlToDocs('NEXT_PUBLIC_BILLING_PROVIDER')}\n`,
       },
       {
         when: (answers) =>
-          answers.values.NEXT_PUBLIC_BILLING_PROVIDER === 'stripe',
         type: 'input',
-        name: 'values.STRIPE_WEBHOOK_SECRET',
-        message: `What is the Stripe webhook secret? \nFor more info: ${getUrlToDocs('STRIPE_WEBHOOK_SECRET')}\n`,
       },
       {
         when: (answers) =>
-          answers.values.NEXT_PUBLIC_BILLING_PROVIDER === 'lemon-squeezy',
         type: 'input',
         name: 'values.LEMON_SQUEEZY_SECRET_KEY',
         message: `What is the Lemon Squeezy secret key? \nFor more info: ${getUrlToDocs('LEMON_SQUEEZY_SECRET_KEY')}\n`,
       },
       {
         when: (answers) =>
-          answers.values.NEXT_PUBLIC_BILLING_PROVIDER === 'lemon-squeezy',
         type: 'input',
         name: 'values.LEMON_SQUEEZY_STORE_ID',
         message: `What is the Lemon Squeezy store ID? \nFor more info: ${getUrlToDocs('LEMON_SQUEEZY_STORE_ID')}\n`,
@@ -244,7 +222,6 @@ export function createEnvironmentVariablesGenerator(
       },
       {
         when: (answers) =>
-          answers.values.NEXT_PUBLIC_BILLING_PROVIDER === 'lemon-squeezy',
         type: 'input',
         name: 'values.LEMON_SQUEEZY_SIGNING_SECRET',
         message: `What is the Lemon Squeezy signing secret?\nFor more info: ${getUrlToDocs('LEMON_SQUEEZY_SIGNING_SECRET')}\n`,
@@ -265,15 +242,10 @@ export function createEnvironmentVariablesGenerator(
         type: 'list',
         name: 'values.MAILER_PROVIDER',
         message: `What is the mailer provider you want to use?\nFor more info: ${getUrlToDocs('MAILER_PROVIDER')}\n`,
-        choices: ['nodemailer', 'resend'],
+        choices: ['nodemailer'],
         default: allVariables.MAILER_PROVIDER ?? 'nodemailer',
       },
       {
-        when: (answers) => answers.values.MAILER_PROVIDER === 'resend',
-        type: 'input',
-        name: 'values.RESEND_API_KEY',
-        message: `What is the Resend API key?\nFor more info: ${getUrlToDocs('RESEND_API_KEY')}\n`,
-      },
       {
         type: 'input',
         name: 'values.EMAIL_SENDER',

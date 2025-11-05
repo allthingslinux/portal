@@ -1,6 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '@kit/supabase/database';
+import { Database } from '@portal/supabase/database';
 
 import { RecordChange, Tables } from '../record-change.type';
 
@@ -20,29 +20,10 @@ class DatabaseWebhookRouterService {
   /**
    * @name handleWebhook
    * @description Handle the webhook event
-   * @param body
+   * @param _body
    */
-  async handleWebhook(body: RecordChange<keyof Tables>) {
-    switch (body.table) {
-      case 'subscriptions': {
-        const payload = body as RecordChange<typeof body.table>;
-
-        return this.handleSubscriptionsWebhook(payload);
-      }
-    }
-  }
-
-  private async handleSubscriptionsWebhook(
-    body: RecordChange<'subscriptions'>,
-  ) {
-    if (body.type === 'DELETE' && body.old_record) {
-      const { createBillingWebhooksService } = await import(
-        '@kit/billing-gateway'
-      );
-
-      const service = createBillingWebhooksService();
-
-      return service.handleSubscriptionDeletedWebhook(body.old_record);
-    }
+  async handleWebhook(_body: RecordChange<keyof Tables>) {
+    // Add webhook handlers here as needed
+    return;
   }
 }

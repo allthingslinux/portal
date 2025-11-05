@@ -24,41 +24,9 @@ create policy super_admins_access_accounts_memberships
     to authenticated
     using (public.is_super_admin());
 
--- Allow Super Admins to access the subscriptions table
-create policy super_admins_access_subscriptions
-    on public.subscriptions
-    as permissive
-    for select
-    to authenticated
-    using (public.is_super_admin());
-
--- Allow Super Admins to access the subscription items table
-create policy super_admins_access_subscription_items
-    on public.subscription_items
-    as permissive
-    for select
-    to authenticated
-    using (public.is_super_admin());
-
 -- Allow Super Admins to access the invitations items table
 create policy super_admins_access_invitations
     on public.invitations
-    as permissive
-    for select
-    to authenticated
-    using (public.is_super_admin());
-
--- Allow Super Admins to access the orders table
-create policy super_admins_access_orders
-    on public.orders
-    as permissive
-    for select
-    to authenticated
-    using (public.is_super_admin());
-
--- Allow Super Admins to access the order items table
-create policy super_admins_access_order_items
-    on public.order_items
     as permissive
     for select
     to authenticated

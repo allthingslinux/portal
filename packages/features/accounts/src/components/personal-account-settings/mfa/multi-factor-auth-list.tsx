@@ -9,10 +9,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ShieldCheck, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { useFetchAuthFactors } from '@kit/supabase/hooks/use-fetch-mfa-factors';
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
-import { useFactorsMutationKey } from '@kit/supabase/hooks/use-user-factors-mutation-key';
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
+import { useFetchAuthFactors } from '@portal/supabase/hooks/use-fetch-mfa-factors';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
+import { useFactorsMutationKey } from '@portal/supabase/hooks/use-user-factors-mutation-key';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,19 +22,19 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@kit/ui/alert-dialog';
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
-import { If } from '@kit/ui/if';
+} from '@portal/ui/alert-dialog';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
+import { If } from '@portal/ui/if';
 import {
   Item,
   ItemContent,
   ItemDescription,
   ItemMedia,
   ItemTitle,
-} from '@kit/ui/item';
-import { toast } from '@kit/ui/sonner';
-import { Spinner } from '@kit/ui/spinner';
+} from '@portal/ui/item';
+import { toast } from '@portal/ui/sonner';
+import { Spinner } from '@portal/ui/spinner';
 import {
   Table,
   TableBody,
@@ -42,14 +42,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@kit/ui/table';
+} from '@portal/ui/table';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@kit/ui/tooltip';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/tooltip';
+import { Trans } from '@portal/ui/trans';
 
 import { MultiFactorAuthSetupDialog } from './multi-factor-auth-setup-dialog';
 

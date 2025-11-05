@@ -1,5 +1,5 @@
-import { allow, definePolicy, deny } from '@kit/policies';
-import { createPolicyRegistry } from '@kit/policies';
+import { allow, definePolicy, deny } from '@portal/policies';
+import { createPolicyRegistry } from '@portal/policies';
 
 import { FeaturePolicyInvitationContext } from './feature-policy-invitation-context';
 
@@ -29,42 +29,5 @@ export const subscriptionRequiredInvitationsPolicy =
     },
   });
 
-/**
- * Paddle billing policy
- * Checks if the account has a paddle subscription and is in a trial period
- */
-export const paddleBillingInvitationsPolicy =
-  definePolicy<FeaturePolicyInvitationContext>({
-    id: 'paddle-billing',
-    stages: ['preliminary', 'submission'],
-    evaluate: async ({ subscription }) => {
-      // combine with subscriptionRequiredPolicy if subscription must be required
-      if (!subscription) {
-        return allow();
-      }
-
-      // Paddle specific constraint: cannot update subscription items during trial
-      if (
-        subscription.provider === 'paddle' &&
-        subscription.status === 'trialing'
-      ) {
-        const hasPerSeatItems = subscription.items.some(
-          (item) => item.type === 'per_seat',
-        );
-
-        if (hasPerSeatItems) {
-          return deny({
-            code: 'PADDLE_TRIAL_RESTRICTION',
-            message: 'teams:policyErrors.paddleTrialRestriction',
-            remediation: 'teams:policyRemediation.paddleTrialRestriction',
-          });
-        }
-      }
-
-      return allow();
-    },
-  });
-
 // register policies below to apply them
-//
 //

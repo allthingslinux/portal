@@ -17,17 +17,7 @@ create or replace view
 select
     accounts.id as id,
     accounts.name as name,
-    accounts.picture_url as picture_url,
-    (
-        select
-            status
-        from
-            public.subscriptions
-        where
-            account_id = accounts.id
-        limit
-            1
-    ) as subscription_status
+    accounts.picture_url as picture_url
 from
     public.accounts
 where
@@ -87,7 +77,6 @@ returns table (
     role varchar(50),
     role_hierarchy_level int,
     primary_owner_user_id uuid,
-    subscription_status public.subscription_status,
     permissions public.app_permissions[]
 )
 set search_path to ''
@@ -102,12 +91,10 @@ begin
         accounts_memberships.account_role,
         roles.hierarchy_level,
         accounts.primary_owner_user_id,
-        subscriptions.status,
         array_agg(role_permissions.permission)
     from
         public.accounts
         join public.accounts_memberships on accounts.id = accounts_memberships.account_id
-        left join public.subscriptions on accounts.id = subscriptions.account_id
         join public.roles on accounts_memberships.account_role = roles.name
         left join public.role_permissions on accounts_memberships.account_role = role_permissions.role
     where
@@ -116,7 +103,6 @@ begin
     group by
         accounts.id,
         accounts_memberships.account_role,
-        subscriptions.status,
         roles.hierarchy_level;
 end;
 $$ language plpgsql;

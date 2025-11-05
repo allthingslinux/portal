@@ -1,5 +1,5 @@
-import { JWTUserData } from '@kit/supabase/types';
-import { Header } from '@kit/ui/marketing';
+import { JWTUserData } from '@portal/supabase/types';
+import { Header } from '@portal/ui/marketing';
 
 import { AppLogo } from '~/components/app-logo';
 

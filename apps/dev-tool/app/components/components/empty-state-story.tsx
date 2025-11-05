@@ -2,26 +2,26 @@
 
 import { Bell, FileText, Package, Plus, Search, Users } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   EmptyMedia,
   EmptyState,
   EmptyStateButton,
   EmptyStateHeading,
   EmptyStateText,
-} from '@kit/ui/empty-state';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { Textarea } from '@kit/ui/textarea';
+} from '@portal/ui/empty-state';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { Textarea } from '@portal/ui/textarea';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';

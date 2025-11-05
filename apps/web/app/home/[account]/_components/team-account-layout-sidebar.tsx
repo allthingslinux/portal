@@ -1,10 +1,10 @@
-import { JWTUserData } from '@kit/supabase/types';
+import { JWTUserData } from '@portal/supabase/types';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-} from '@kit/ui/shadcn-sidebar';
+} from '@portal/ui/shadcn-sidebar';
 
 import { ProfileAccountDropdownContainer } from '~/components//personal-account-dropdown-container';
 import { getTeamAccountSidebarConfig } from '~/config/team-account-navigation.config';

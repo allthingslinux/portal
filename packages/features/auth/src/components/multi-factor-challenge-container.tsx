@@ -10,11 +10,11 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useFetchAuthFactors } from '@kit/supabase/hooks/use-fetch-mfa-factors';
-import { useSignOut } from '@kit/supabase/hooks/use-sign-out';
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Button } from '@kit/ui/button';
+import { useFetchAuthFactors } from '@portal/supabase/hooks/use-fetch-mfa-factors';
+import { useSignOut } from '@portal/supabase/hooks/use-sign-out';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
@@ -22,17 +22,17 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from '@kit/ui/form';
-import { Heading } from '@kit/ui/heading';
-import { If } from '@kit/ui/if';
+} from '@portal/ui/form';
+import { Heading } from '@portal/ui/heading';
+import { If } from '@portal/ui/if';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@kit/ui/input-otp';
-import { Spinner } from '@kit/ui/spinner';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/input-otp';
+import { Spinner } from '@portal/ui/spinner';
+import { Trans } from '@portal/ui/trans';
 
 export function MultiFactorChallengeContainer({
   paths,

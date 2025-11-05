@@ -59,10 +59,10 @@ service_role;
 -- Enable RLS on the invitations table
 alter table public.invitations enable row level security;
 
--- Function "kit.check_team_account"
+-- Function "public.check_team_account"
 -- Function to check if the account is a team account or not when inserting or updating an invitation
 create
-or replace function kit.check_team_account () returns trigger
+or replace function public.check_team_account () returns trigger
 set
   search_path = '' as $$
 begin
@@ -86,7 +86,7 @@ $$ language plpgsql;
 create trigger only_team_accounts_check before insert
 or
 update on public.invitations for each row
-execute procedure kit.check_team_account ();
+execute procedure public.check_team_account ();
 
 -- RLS on the invitations table
 -- SELECT(invitations):

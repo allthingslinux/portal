@@ -1,5 +1,5 @@
 {
-  "name": "@kit/mcp-server",
+  "name": "@portal/mcp-server",
   "private": true,
   "version": "0.1.0",
   "main": "./build/index.js",
@@ -22,14 +22,14 @@
     "build:watch": "tsc --watch"
   },
   "devDependencies": {
-    "@kit/prettier-config": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
     "@modelcontextprotocol/sdk": "1.20.2",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "postgres": "3.4.7",
     "zod": "^3.25.74"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "typesVersions": {
     "*": {
       "*": [

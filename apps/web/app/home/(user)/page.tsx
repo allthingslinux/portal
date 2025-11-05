@@ -1,5 +1,5 @@
-import { PageBody } from '@kit/ui/page';
-import { Trans } from '@kit/ui/trans';
+import { PageBody } from '@portal/ui/page';
+import { Trans } from '@portal/ui/trans';
 
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';

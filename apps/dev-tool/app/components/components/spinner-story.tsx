@@ -1,15 +1,15 @@
 'use client';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Label } from '@kit/ui/label';
-import { Spinner } from '@kit/ui/spinner';
+} from '@portal/ui/card';
+import { Label } from '@portal/ui/label';
+import { Spinner } from '@portal/ui/spinner';
 
 import {
   formatCodeBlock,
@@ -50,7 +50,7 @@ export function SpinnerStory() {
     );
 
     return formatCodeBlock(`<Spinner${propsString} />`, [
-      "import { Spinner } from '@kit/ui/spinner';",
+      "import { Spinner } from '@portal/ui/spinner';",
     ]);
   };
 

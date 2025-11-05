@@ -1,12 +1,12 @@
 import { ServerDataLoader } from '@makerkit/data-loader-supabase-nextjs';
 
-import { AdminAccountsTable } from '@kit/admin/components/admin-accounts-table';
-import { AdminCreateUserDialog } from '@kit/admin/components/admin-create-user-dialog';
-import { AdminGuard } from '@kit/admin/components/admin-guard';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
-import { Button } from '@kit/ui/button';
-import { PageBody, PageHeader } from '@kit/ui/page';
+import { AdminAccountsTable } from '@portal/admin/components/admin-accounts-table';
+import { AdminCreateUserDialog } from '@portal/admin/components/admin-create-user-dialog';
+import { AdminGuard } from '@portal/admin/components/admin-guard';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
+import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
+import { Button } from '@portal/ui/button';
+import { PageBody, PageHeader } from '@portal/ui/page';
 
 interface SearchParams {
   page?: string;

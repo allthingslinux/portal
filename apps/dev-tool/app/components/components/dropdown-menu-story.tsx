@@ -32,16 +32,16 @@ import {
   Video,
 } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@kit/ui/avatar';
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@portal/ui/avatar';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -58,18 +58,18 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
+} from '@portal/ui/dropdown-menu';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
+import { cn } from '@portal/ui/utils';
 
 import {
   generateImportStatement,
@@ -683,7 +683,7 @@ const apiReference = {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
+} from '@portal/ui/dropdown-menu';
 
 <DropdownMenu>
   <DropdownMenuTrigger>Open</DropdownMenuTrigger>
@@ -834,9 +834,9 @@ export default function DropdownMenuStory() {
 
     const importStatement = generateImportStatement(
       components,
-      '@kit/ui/dropdown-menu',
+      '@portal/ui/dropdown-menu',
     );
-    const buttonImport = generateImportStatement(['Button'], '@kit/ui/button');
+    const buttonImport = generateImportStatement(['Button'], '@portal/ui/button');
     const iconImport = generateImportStatement(
       ['User', 'Settings', 'LogOut'],
       'lucide-react',

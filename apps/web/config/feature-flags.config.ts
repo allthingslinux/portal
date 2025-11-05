@@ -26,16 +26,6 @@ const FeatureFlagsSchema = z.object({
     required_error:
       'Provide the variable NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_CREATION',
   }),
-  enablePersonalAccountBilling: z.boolean({
-    description: 'Enable personal account billing.',
-    required_error:
-      'Provide the variable NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_BILLING',
-  }),
-  enableTeamAccountBilling: z.boolean({
-    description: 'Enable team account billing.',
-    required_error:
-      'Provide the variable NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_BILLING',
-  }),
   languagePriority: z
     .enum(['user', 'application'], {
       required_error: 'Provide the variable NEXT_PUBLIC_LANGUAGE_PRIORITY',
@@ -77,19 +67,11 @@ const featuresFlagConfig = FeatureFlagsSchema.parse({
     process.env.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_CREATION,
     true,
   ),
-  enablePersonalAccountBilling: getBoolean(
-    process.env.NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_BILLING,
-    false,
-  ),
-  enableTeamAccountBilling: getBoolean(
-    process.env.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_BILLING,
-    false,
-  ),
   languagePriority: process.env
     .NEXT_PUBLIC_LANGUAGE_PRIORITY as LanguagePriority,
   enableNotifications: getBoolean(
     process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS,
-    true,
+    false,
   ),
   realtimeNotifications: getBoolean(
     process.env.NEXT_PUBLIC_REALTIME_NOTIFICATIONS,

@@ -2,7 +2,7 @@ import 'server-only';
 
 import { relative } from 'node:path';
 
-import { PRDManager } from '@kit/mcp-server/prd-manager';
+import { PRDManager } from '@portal/mcp-server/prd-manager';
 
 export interface CustomPhase {
   id: string;

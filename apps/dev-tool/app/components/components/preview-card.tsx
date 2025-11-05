@@ -6,8 +6,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/card';
+import { cn } from '@portal/ui/utils';
 
 interface PreviewCardProps {
   title?: string;

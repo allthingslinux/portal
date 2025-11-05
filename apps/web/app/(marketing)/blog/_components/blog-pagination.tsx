@@ -4,9 +4,9 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+import { Button } from '@portal/ui/button';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 export function BlogPagination(props: {
   currentPage: number;

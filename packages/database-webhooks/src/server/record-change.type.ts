@@ -1,4 +1,4 @@
-import { Database } from '@kit/supabase/database';
+import { Database } from '@portal/supabase/database';
 
 export type Tables = Database['public']['Tables'];
 

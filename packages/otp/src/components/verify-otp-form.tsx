@@ -7,8 +7,8 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Button } from '@kit/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
@@ -16,16 +16,16 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
+} from '@portal/ui/form';
+import { If } from '@portal/ui/if';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@kit/ui/input-otp';
-import { Spinner } from '@kit/ui/spinner';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/input-otp';
+import { Spinner } from '@portal/ui/spinner';
+import { Trans } from '@portal/ui/trans';
 
 import { sendOtpEmailAction } from '../server/server-actions';
 

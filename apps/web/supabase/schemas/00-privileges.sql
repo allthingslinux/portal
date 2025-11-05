@@ -8,7 +8,7 @@
 -- Create a private Makerkit schema
 create schema if not exists kit;
 
-create extension if not exists "unaccent" schema kit;
+create extension if not exists "unaccent" schema public;
 
 -- We remove all default privileges from public schema on functions to
 --   prevent public access to them

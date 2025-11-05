@@ -122,7 +122,7 @@ CREATE POLICY "notes_manage" ON public.notes FOR ALL
 ## Type Generation
 
 ```typescript
-import { Tables } from '@kit/supabase/database';
+import { Tables } from '@portal/supabase/database';
 
 type Account = Tables<'accounts'>;
 ```
@@ -134,7 +134,7 @@ Always prefer inferring types from generated Database types.
 ### Server Components (Preferred)
 
 ```typescript
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 async function NotesPage() {
   const client = getSupabaseServerClient();
@@ -150,7 +150,7 @@ async function NotesPage() {
 
 ```typescript
 'use client';
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
 
 function InteractiveNotes() {
   const supabase = useSupabase();
@@ -161,7 +161,7 @@ function InteractiveNotes() {
 ### Admin Client (Use with Extreme Caution) ⚠️
 
 ```typescript
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
 
 async function adminFunction() {
   const adminClient = getSupabaseServerAdminClient();
@@ -183,7 +183,7 @@ async function adminFunction() {
 ### Multi-Factor Authentication
 
 ```typescript
-import { checkRequiresMultiFactorAuthentication } from '@kit/supabase/check-requires-mfa';
+import { checkRequiresMultiFactorAuthentication } from '@portal/supabase/check-requires-mfa';
 
 const requiresMultiFactorAuthentication = 
   await checkRequiresMultiFactorAuthentication(supabase);
@@ -196,7 +196,7 @@ if (requiresMultiFactorAuthentication) {
 ### User Requirements
 
 ```typescript
-import { requireUser } from '@kit/supabase/require-user';
+import { requireUser } from '@portal/supabase/require-user';
 
 const client = getSupabaseServerClient();
 const user = await requireUser(client, { verifyMfa: false });
@@ -275,7 +275,7 @@ create index if not exists ix_notes_created_at on public.notes (created_at);
 ## Error Handling
 
 ```typescript
-import { getLogger } from '@kit/shared/logger';
+import { getLogger } from '@portal/shared/logger';
 
 async function databaseOperation() {
   const logger = await getLogger();

@@ -4,9 +4,9 @@
  * Usage
  *
  * ```typescript
- * import { createOtpApi } from '@kit/otp/api';
- * import { getSupabaseServerClient } from '@kit/supabase/server-client';
- * import { NoncePurpose } from '@kit/otp/types';
+ * import { createOtpApi } from '@portal/otp/api';
+ * import { getSupabaseServerClient } from '@portal/supabase/server-client';
+ * import { NoncePurpose } from '@portal/otp/types';
  *
  * const client = getSupabaseServerClient();
  * const api = createOtpApi(client);
@@ -36,7 +36,7 @@
  */
 import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '@kit/supabase/database';
+import { Database } from '@portal/supabase/database';
 
 import { createOtpEmailService } from '../server/otp-email.service';
 import { createOtpService } from '../server/otp.service';

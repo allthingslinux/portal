@@ -2,7 +2,7 @@
 
 import { lazy } from 'react';
 
-import { createRegistry } from '@kit/shared/registry';
+import { createRegistry } from '@portal/shared/registry';
 
 import {
   MonitoringProvider as MonitoringProviderType,
@@ -28,7 +28,7 @@ const monitoringProviderRegistry = createRegistry<
 
 // Register the Sentry provider
 monitoringProviderRegistry.register('sentry', async () => {
-  const { SentryProvider } = await import('@kit/sentry/provider');
+  const { SentryProvider } = await import('@portal/sentry/provider');
 
   return {
     default: function SentryProviderWrapper({

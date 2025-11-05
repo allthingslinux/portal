@@ -1,6 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '@kit/supabase/database';
+import { Database } from '@portal/supabase/database';
 
 /**
  * Class representing an API for interacting with user accounts.
@@ -103,26 +103,6 @@ class AccountsApi {
     }
 
     return response.data;
-  }
-
-  /**
-   * @name getCustomerId
-   * Get the billing customer ID for the given user.
-   * If the user does not have a billing customer ID, it will return null.
-   * @param accountId
-   */
-  async getCustomerId(accountId: string) {
-    const response = await this.client
-      .from('billing_customers')
-      .select('customer_id')
-      .eq('account_id', accountId)
-      .maybeSingle();
-
-    if (response.error) {
-      throw response.error;
-    }
-
-    return response.data?.customer_id;
   }
 }
 

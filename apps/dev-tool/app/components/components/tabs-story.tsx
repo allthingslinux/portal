@@ -16,27 +16,27 @@ import {
   User,
 } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
+} from '@portal/ui/card';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@kit/ui/tabs';
-import { Textarea } from '@kit/ui/textarea';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@portal/ui/tabs';
+import { Textarea } from '@portal/ui/textarea';
 
 import {
   generateImportStatement,
@@ -170,7 +170,7 @@ function TabsPlayground({
                 Billing Information
               </CardTitle>
               <CardDescription>
-                Manage your subscription and payment details.
+                Manage your account settings.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -912,7 +912,7 @@ const apiReference = {
   examples: [
     {
       title: 'Basic Usage',
-      code: `import { Tabs, TabsContent, TabsList, TabsTrigger } from '@kit/ui/tabs';
+      code: `import { Tabs, TabsContent, TabsList, TabsTrigger } from '@portal/ui/tabs';
 
 <Tabs defaultValue="tab1">
   <TabsList>
@@ -1080,7 +1080,7 @@ export default function TabsStory() {
 
     const importStatement = generateImportStatement(
       ['Tabs', 'TabsContent', 'TabsList', 'TabsTrigger'],
-      '@kit/ui/tabs',
+      '@portal/ui/tabs',
     );
 
     const exampleCode = `<Tabs${tabsPropsString}>

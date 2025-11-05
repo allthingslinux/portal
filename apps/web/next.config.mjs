@@ -5,22 +5,22 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === 'true';
 
 const INTERNAL_PACKAGES = [
-  '@kit/ui',
-  '@kit/auth',
-  '@kit/accounts',
-  '@kit/admin',
-  '@kit/team-accounts',
-  '@kit/shared',
-  '@kit/supabase',
-  '@kit/i18n',
-  '@kit/mailers',
-  '@kit/billing-gateway',
-  '@kit/email-templates',
-  '@kit/database-webhooks',
-  '@kit/cms',
-  '@kit/monitoring',
-  '@kit/next',
-  '@kit/notifications',
+  '@portal/ui',
+  '@portal/auth',
+  '@portal/accounts',
+  '@portal/admin',
+  '@portal/team-accounts',
+  '@portal/shared',
+  '@portal/supabase',
+  '@portal/i18n',
+  '@portal/mailers',
+
+  '@portal/email-templates',
+  '@portal/database-webhooks',
+  '@portal/cms',
+  '@portal/monitoring',
+  '@portal/next',
+  '@portal/notifications',
 ];
 
 /** @type {import('next').NextConfig} */
@@ -135,13 +135,11 @@ function getModulesAliases() {
   }
 
   const monitoringProvider = process.env.NEXT_PUBLIC_MONITORING_PROVIDER;
-  const billingProvider = process.env.NEXT_PUBLIC_BILLING_PROVIDER;
   const mailerProvider = process.env.MAILER_PROVIDER;
   const captchaProvider = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY;
 
   // exclude the modules that are not needed
   const excludeSentry = monitoringProvider !== 'sentry';
-  const excludeStripe = billingProvider !== 'stripe';
   const excludeNodemailer = mailerProvider !== 'nodemailer';
   const excludeTurnstile = !captchaProvider;
 
@@ -153,11 +151,6 @@ function getModulesAliases() {
 
   if (excludeSentry) {
     aliases['@sentry/nextjs'] = noopPath;
-  }
-
-  if (excludeStripe) {
-    aliases['stripe'] = noopPath;
-    aliases['@stripe/stripe-js'] = noopPath;
   }
 
   if (excludeNodemailer) {

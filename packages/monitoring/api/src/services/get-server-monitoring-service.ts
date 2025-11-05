@@ -1,8 +1,8 @@
 import {
   ConsoleMonitoringService,
   MonitoringService,
-} from '@kit/monitoring-core';
-import { createRegistry } from '@kit/shared/registry';
+} from '@portal/monitoring-core';
+import { createRegistry } from '@portal/shared/registry';
 
 import {
   MonitoringProvider,
@@ -17,7 +17,7 @@ const serverMonitoringRegistry = createRegistry<
 
 // Register the 'sentry' monitoring service
 serverMonitoringRegistry.register('sentry', async () => {
-  const { SentryMonitoringService } = await import('@kit/sentry');
+  const { SentryMonitoringService } = await import('@portal/sentry');
 
   return new SentryMonitoringService();
 });

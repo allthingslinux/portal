@@ -5,11 +5,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { Bell, CircleAlert, Info, TriangleAlert, XIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@kit/ui/button';
-import { If } from '@kit/ui/if';
-import { Popover, PopoverContent, PopoverTrigger } from '@kit/ui/popover';
-import { Separator } from '@kit/ui/separator';
-import { cn } from '@kit/ui/utils';
+import { Button } from '@portal/ui/button';
+import { If } from '@portal/ui/if';
+import { Popover, PopoverContent, PopoverTrigger } from '@portal/ui/popover';
+import { Separator } from '@portal/ui/separator';
+import { cn } from '@portal/ui/utils';
 
 import { useDismissNotification, useFetchNotifications } from '../hooks';
 import { Notification } from '../types';

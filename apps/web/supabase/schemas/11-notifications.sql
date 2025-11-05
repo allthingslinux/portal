@@ -91,10 +91,10 @@ for update
     or has_role_on_account (account_id)
   );
 
--- Function "kit.update_notification_dismissed_status"
+-- Function "public.update_notification_dismissed_status"
 -- Make sure the only updatable field is the dismissed status and nothing else
 create
-or replace function kit.update_notification_dismissed_status () returns trigger
+or replace function public.update_notification_dismissed_status () returns trigger
 set
   search_path to '' as $$
 begin
@@ -111,4 +111,4 @@ $$ language plpgsql;
 -- add trigger when updating a notification to update the dismissed status
 create trigger update_notification_dismissed_status before
 update on public.notifications for each row
-execute procedure kit.update_notification_dismissed_status ();
+execute procedure public.update_notification_dismissed_status ();

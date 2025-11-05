@@ -14,7 +14,7 @@ import {
   XAxis,
 } from 'recharts';
 
-import { Badge } from '@kit/ui/badge';
+import { Badge } from '@portal/ui/badge';
 import {
   Card,
   CardContent,
@@ -22,13 +22,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@kit/ui/chart';
+} from '@portal/ui/chart';
 import {
   Table,
   TableBody,
@@ -36,7 +36,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@kit/ui/table';
+} from '@portal/ui/table';
 
 export default function DashboardDemo() {
   const mrr = useMemo(() => generateDemoData(), []);

@@ -4,23 +4,23 @@ import { useState } from 'react';
 
 import { LockIcon, ShieldIcon, SmartphoneIcon } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@kit/ui/input-otp';
+} from '@portal/ui/input-otp';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
 
 import {
   generateImportStatement,
@@ -66,7 +66,7 @@ export default function InputOTPStory() {
 
     const importStatement = generateImportStatement(
       components,
-      '@kit/ui/input-otp',
+      '@portal/ui/input-otp',
     );
     const stateImport = "const [value, setValue] = useState('');";
 
@@ -680,7 +680,7 @@ pattern={/^[0-9-]+$/}`}
   InputOTPGroup,
   InputOTPSlot,
   InputOTPSeparator,
-} from '@kit/ui/input-otp';
+} from '@portal/ui/input-otp';
 
 function OTPForm() {
   const [value, setValue] = useState('');

@@ -3,19 +3,19 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 
-import { PersonalAccountDropdown } from '@kit/accounts/personal-account-dropdown';
-import { useSignOut } from '@kit/supabase/hooks/use-sign-out';
-import { JWTUserData } from '@kit/supabase/types';
-import { Button } from '@kit/ui/button';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+import { PersonalAccountDropdown } from '@portal/accounts/personal-account-dropdown';
+import { useSignOut } from '@portal/supabase/hooks/use-sign-out';
+import { JWTUserData } from '@portal/supabase/types';
+import { Button } from '@portal/ui/button';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 import featuresFlagConfig from '~/config/feature-flags.config';
 import pathsConfig from '~/config/paths.config';
 
 const ModeToggle = dynamic(
   () =>
-    import('@kit/ui/mode-toggle').then((mod) => ({
+    import('@portal/ui/mode-toggle').then((mod) => ({
       default: mod.ModeToggle,
     })),
   { ssr: false },
@@ -23,7 +23,7 @@ const ModeToggle = dynamic(
 
 const MobileModeToggle = dynamic(
   () =>
-    import('@kit/ui/mobile-mode-toggle').then((mod) => ({
+    import('@portal/ui/mobile-mode-toggle').then((mod) => ({
       default: mod.MobileModeToggle,
     })),
   { ssr: false },

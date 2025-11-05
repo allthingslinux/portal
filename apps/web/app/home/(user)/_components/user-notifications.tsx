@@ -1,4 +1,4 @@
-import { NotificationsPopover } from '@kit/notifications/components';
+import { NotificationsPopover } from '@portal/notifications/components';
 
 import featuresFlagConfig from '~/config/feature-flags.config';
 

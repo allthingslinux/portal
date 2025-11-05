@@ -1,5 +1,5 @@
-import { Heading } from '@kit/ui/heading';
-import { Trans } from '@kit/ui/trans';
+import { Heading } from '@portal/ui/heading';
+import { Trans } from '@portal/ui/trans';
 
 import { SitePageHeader } from '~/(marketing)/_components/site-page-header';
 import { ContactForm } from '~/(marketing)/contact/_components/contact-form';

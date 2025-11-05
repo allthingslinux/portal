@@ -2,9 +2,9 @@
 
 import { Eye, Heart, MoreHorizontal, Star, User } from 'lucide-react';
 
-import { Avatar, AvatarFallback } from '@kit/ui/avatar';
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { Avatar, AvatarFallback } from '@portal/ui/avatar';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
@@ -12,14 +12,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
-import { Progress } from '@kit/ui/progress';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { Textarea } from '@kit/ui/textarea';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/card';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
+import { Progress } from '@portal/ui/progress';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { Textarea } from '@portal/ui/textarea';
+import { cn } from '@portal/ui/utils';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';

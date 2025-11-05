@@ -1,5 +1,5 @@
 {
-  "name": "@kit/policies",
+  "name": "@portal/policies",
   "private": true,
   "version": "0.1.0",
   "exports": {
@@ -19,11 +19,11 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/shared": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "zod": "^3.25.74"
   },
-  "prettier": "@kit/prettier-config"
+  "prettier": "@portal/prettier-config"
 }

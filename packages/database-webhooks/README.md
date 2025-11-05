@@ -1,4 +1,4 @@
-# Database Webhooks - @kit/database-webhooks
+# Database Webhooks - @portal/database-webhooks
 
 This package is responsible for handling webhooks from database changes.
 

@@ -3,15 +3,18 @@ import { notFound, redirect } from 'next/navigation';
 
 import { ArrowLeft } from 'lucide-react';
 
-import { AuthLayoutShell } from '@kit/auth/shared';
-import { MultiFactorAuthError, requireUser } from '@kit/supabase/require-user';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { createTeamAccountsApi } from '@kit/team-accounts/api';
-import { AcceptInvitationContainer } from '@kit/team-accounts/components';
-import { Button } from '@kit/ui/button';
-import { Heading } from '@kit/ui/heading';
-import { Trans } from '@kit/ui/trans';
+import { AuthLayoutShell } from '@portal/auth/shared';
+import { MultiFactorAuthError, requireUser } from '@portal/supabase/require-user';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
+import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
+import { accountsMemberships } from '@portal/supabase/drizzle-schema';
+import { eq, and } from 'drizzle-orm';
+import { createTeamAccountsApiDrizzle } from '@portal/team-accounts/api.drizzle';
+import { AcceptInvitationContainer } from '@portal/team-accounts/components';
+import { Button } from '@portal/ui/button';
+import { Heading } from '@portal/ui/heading';
+import { Trans } from '@portal/ui/trans';
 
 import { AppLogo } from '~/components/app-logo';
 import authConfig from '~/config/auth.config';
@@ -75,7 +78,7 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
 
   // get api to interact with team accounts
   const adminClient = getSupabaseServerAdminClient();
-  const api = createTeamAccountsApi(client);
+  const api = createTeamAccountsApiDrizzle();
 
   // the user is logged in, we can now check if the token is valid
   const invitation = await api.getInvitation(adminClient, token);
@@ -92,18 +95,26 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
   }
 
   // we need to verify the user isn't already in the account
-  // we do so by checking if the user can read the account
-  // if the user can read the account, then they are already in the account
-  const { data: isAlreadyTeamMember } = await client.rpc(
-    'is_account_team_member',
-    {
-      target_account_id: invitation.account.id,
-    },
-  );
+  // we do so by checking if the user is already a member of the account
+  const drizzleClient = await getDrizzleSupabaseClient();
+  const membershipCheck = await drizzleClient.runTransaction(async (tx) => {
+    return await tx
+      .select()
+      .from(accountsMemberships)
+      .where(
+        and(
+          eq(accountsMemberships.accountId, invitation.account.id),
+          eq(accountsMemberships.userId, user.id)
+        )
+      )
+      .limit(1);
+  });
+
+  const isAlreadyTeamMember = membershipCheck.length > 0;
 
   // if the user is already in the account redirect to the home page
   if (isAlreadyTeamMember) {
-    const { getLogger } = await import('@kit/shared/logger');
+    const { getLogger } = await import('@portal/shared/logger');
     const logger = await getLogger();
 
     logger.warn(

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { cn } from '@kit/ui/utils';
+import { cn } from '@portal/ui/utils';
 
 function LogoImage({
   className,

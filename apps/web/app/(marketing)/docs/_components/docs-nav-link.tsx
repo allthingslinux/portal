@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { SidebarMenuButton, SidebarMenuItem } from '@kit/ui/shadcn-sidebar';
-import { cn, isRouteActive } from '@kit/ui/utils';
+import { SidebarMenuButton, SidebarMenuItem } from '@portal/ui/shadcn-sidebar';
+import { cn, isRouteActive } from '@portal/ui/utils';
 
 export function DocsNavLink({
   label,

@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority';
 
-import { Badge } from '@kit/ui/badge';
-import { Trans } from '@kit/ui/trans';
+import { Badge } from '@portal/ui/badge';
+import { Trans } from '@portal/ui/trans';
 
 type Role = string;
 

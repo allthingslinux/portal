@@ -4,15 +4,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Button } from '@kit/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { Button } from '@portal/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@kit/ui/dialog';
+} from '@portal/ui/dialog';
 import {
   Form,
   FormControl,
@@ -21,9 +21,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/form';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 import { RoleSchema } from '../../schema/update-member-role.schema';
 import { updateInvitationAction } from '../../server/actions/team-invitations-server-actions';

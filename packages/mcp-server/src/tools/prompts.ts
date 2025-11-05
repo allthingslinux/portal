@@ -106,7 +106,7 @@ export class PromptsManager {
 - No unnecessary complexity or overly abstract code
 - Consistent file structure following monorepo patterns
 - Proper package organization in Turborepo structure
-- Use of @kit/ui components and established patterns
+- Use of @portal/ui components and established patterns
 
 {{#if severity_level}}
 **Severity Filter:** Only report issues of {{severity_level}} severity or higher.

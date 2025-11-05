@@ -4,11 +4,11 @@ import { useMemo } from 'react';
 
 import { ThemeProvider } from 'next-themes';
 
-import { I18nProvider } from '@kit/i18n/provider';
-import { MonitoringProvider } from '@kit/monitoring/components';
-import { AppEventsProvider } from '@kit/shared/events';
-import { If } from '@kit/ui/if';
-import { VersionUpdater } from '@kit/ui/version-updater';
+import { I18nProvider } from '@portal/i18n/provider';
+import { MonitoringProvider } from '@portal/monitoring/components';
+import { AppEventsProvider } from '@portal/shared/events';
+import { If } from '@portal/ui/if';
+import { VersionUpdater } from '@portal/ui/version-updater';
 
 import { AnalyticsProvider } from '~/components/analytics-provider';
 import { AuthProvider } from '~/components/auth-provider';

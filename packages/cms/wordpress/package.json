@@ -1,5 +1,5 @@
 {
-  "name": "@kit/wordpress",
+  "name": "@portal/wordpress",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -9,17 +9,17 @@
     "typecheck": "tsc --noEmit",
     "start": "docker compose up"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     ".": "./src/index.ts",
     "./renderer": "./src/content-renderer.tsx"
   },
   "devDependencies": {
-    "@kit/cms-types": "workspace:*",
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
-    "@kit/ui": "workspace:*",
+    "@portal/cms-types": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
+    "@portal/ui": "workspace:*",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "wp-types": "^4.68.3"

@@ -6,9 +6,9 @@ import { usePathname } from 'next/navigation';
 
 import { Menu } from 'lucide-react';
 
-import { isBrowser } from '@kit/shared/utils';
-import { Button } from '@kit/ui/button';
-import { If } from '@kit/ui/if';
+import { isBrowser } from '@portal/shared/utils';
+import { Button } from '@portal/ui/button';
+import { If } from '@portal/ui/if';
 
 export function FloatingDocumentationNavigation(
   props: React.PropsWithChildren,

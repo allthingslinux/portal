@@ -1,6 +1,6 @@
 'use client';
 
-import { isBrowser } from '@kit/shared/utils';
+import { isBrowser } from '@portal/shared/utils';
 
 // Key for localStorage
 const LAST_AUTH_METHOD_KEY = 'auth_last_method';

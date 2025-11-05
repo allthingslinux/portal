@@ -1,6 +1,5 @@
 # Feature Packages Instructions
 
-This file contains instructions for working with feature packages including accounts, teams, billing, auth, and notifications.
 
 ## Feature Package Structure
 
@@ -17,8 +16,8 @@ This file contains instructions for working with feature packages including acco
 Located at: `packages/features/accounts/src/server/api.ts`
 
 ```typescript
-import { createAccountsApi } from '@kit/accounts/api';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { createAccountsApi } from '@portal/accounts/api';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 const client = getSupabaseServerClient();
 const api = createAccountsApi(client);
@@ -44,7 +43,7 @@ const customerId = await api.getCustomerId(accountId);
 Located at: `packages/features/team-accounts/src/server/api.ts`
 
 ```typescript
-import { createTeamAccountsApi } from '@kit/team-accounts/api';
+import { createTeamAccountsApiDrizzle } from '@portal/team-accounts/api.drizzle';
 
 const api = createTeamAccountsApi(client);
 
@@ -58,7 +57,6 @@ const workspace = await api.getAccountWorkspace(slug);
 const hasPermission = await api.hasPermission({
   accountId,
   userId,
-  permission: 'billing.manage'
 });
 
 // Get members count
@@ -94,7 +92,7 @@ Context provider: `packages/features/accounts/src/components/user-workspace-cont
 Use in `apps/web/app/home/[account]` routes:
 
 ```tsx
-import { useTeamAccountWorkspace } from '@kit/team-accounts/hooks/use-team-account-workspace';
+import { useTeamAccountWorkspace } from '@portal/team-accounts/hooks/use-team-account-workspace';
 
 function TeamComponent() {
   const { account, user, accounts } = useTeamAccountWorkspace();
@@ -109,47 +107,31 @@ function TeamComponent() {
 
 Context provider: `packages/features/team-accounts/src/components/team-account-workspace-context-provider.tsx`
 
-## Billing Services
 
-### Personal Billing
 
-Located at: `apps/web/app/home/(user)/billing/_lib/server/user-billing.service.ts`
 
 ```typescript
-// Personal billing operations
 // - Manage individual user subscriptions
 // - Handle personal account payments
-// - Process individual billing changes
 ```
 
-### Team Billing  
 
-Located at: `apps/web/app/home/[account]/billing/_lib/server/team-billing.service.ts`
 
 ```typescript
-// Team billing operations
 // - Manage team subscriptions
 // - Handle team payments
-// - Process team billing changes
 ```
 
-### Per-Seat Billing Service
 
-Located at: `packages/features/team-accounts/src/server/services/account-per-seat-billing.service.ts`
 
 ```typescript
-import { createAccountPerSeatBillingService } from '@kit/team-accounts/billing';
 
-const billingService = createAccountPerSeatBillingService(client);
 
 // Increase seats when adding team members
-await billingService.increaseSeats(accountId);
 
 // Decrease seats when removing team members  
-await billingService.decreaseSeats(accountId);
 
 // Get per-seat subscription item
-const subscription = await billingService.getPerSeatSubscriptionItem(accountId);
 ```
 
 ## Authentication Features
@@ -159,7 +141,7 @@ const subscription = await billingService.getPerSeatSubscriptionItem(accountId);
 Use one-time tokens from `packages/otp/src/api/index.ts`:
 
 ```tsx
-import { VerifyOtpForm } from '@kit/otp/components';
+import { VerifyOtpForm } from '@portal/otp/components';
 
 <VerifyOtpForm
   purpose="account-deletion"
@@ -179,7 +161,7 @@ import { VerifyOtpForm } from '@kit/otp/components';
 For admin routes, use `AdminGuard`:
 
 ```tsx
-import { AdminGuard } from '@kit/admin/components/admin-guard';
+import { AdminGuard } from '@portal/admin/components/admin-guard';
 
 function AdminPage() {
   return (
@@ -208,7 +190,7 @@ Located at: `packages/features/admin/src/lib/server/services/admin.service.ts`
 ### Checking Admin Status
 
 ```typescript
-import { isSuperAdmin } from '@kit/admin';
+import { isSuperAdmin } from '@portal/admin';
 
 function criticalAdminFeature() {
   const isAdmin = await isSuperAdmin(client);
@@ -228,7 +210,7 @@ function criticalAdminFeature() {
 Use logger from `packages/shared/src/logger/logger.ts`:
 
 ```typescript
-import { getLogger } from '@kit/shared/logger';
+import { getLogger } from '@portal/shared/logger';
 
 async function featureOperation() {
   const logger = await getLogger();
@@ -259,18 +241,15 @@ async function featureOperation() {
 ### Team Permissions
 
 ```typescript
-import { createTeamAccountsApi } from '@kit/team-accounts/api';
+import { createTeamAccountsApiDrizzle } from '@portal/team-accounts/api.drizzle';
 
 const api = createTeamAccountsApi(client);
 
 // Check if user has specific permission on account
-const canManageBilling = await api.hasPermission({
   accountId,
   userId,
-  permission: 'billing.manage'
 });
 
-if (!canManageBilling) {
   throw new Error('Insufficient permissions');
 }
 ```

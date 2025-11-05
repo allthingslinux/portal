@@ -2,8 +2,8 @@
 
 import { z } from 'zod';
 
-import { getMailer } from '@kit/mailers';
-import { enhanceAction } from '@kit/next/actions';
+import { getMailer } from '@portal/mailers';
+import { enhanceAction } from '@portal/next/actions';
 
 import { ContactEmailSchema } from '../contact-email.schema';
 

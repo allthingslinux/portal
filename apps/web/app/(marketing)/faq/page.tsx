@@ -2,8 +2,8 @@ import Link from 'next/link';
 
 import { ArrowRight, ChevronDown } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
-import { Trans } from '@kit/ui/trans';
+import { Button } from '@portal/ui/button';
+import { Trans } from '@portal/ui/trans';
 
 import { SitePageHeader } from '~/(marketing)/_components/site-page-header';
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
@@ -26,23 +26,7 @@ async function FAQPage() {
       // or: t('marketing:faq.question1')
       question: `Do you offer a free trial?`,
       // or: t('marketing:faq.answer1')
-      answer: `Yes, we offer a 14-day free trial. You can cancel at any time during the trial period and you won't be charged.`,
-    },
-    {
-      question: `Can I cancel my subscription?`,
-      answer: `You can cancel your subscription at any time. You can do this from your account settings.`,
-    },
-    {
-      question: `Where can I find my invoices?`,
-      answer: `You can find your invoices in your account settings.`,
-    },
-    {
-      question: `What payment methods do you accept?`,
-      answer: `We accept all major credit cards and PayPal.`,
-    },
-    {
-      question: `Can I upgrade or downgrade my plan?`,
-      answer: `Yes, you can upgrade or downgrade your plan at any time. You can do this from your account settings.`,
+      answer: `Yes, we offer a 14-day free trial. You can cancel at any time during the trial period.`,
     },
     {
       question: `Do you offer discounts for non-profits?`,

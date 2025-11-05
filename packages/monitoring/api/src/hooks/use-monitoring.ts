@@ -2,7 +2,7 @@
 
 import { useContext } from 'react';
 
-import { MonitoringContext } from '@kit/monitoring-core';
+import { MonitoringContext } from '@portal/monitoring-core';
 
 /**
  * @name useMonitoring

@@ -4,30 +4,30 @@ import { useMemo } from 'react';
 
 import { Filter, Plus, Settings } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   ButtonGroup,
   ButtonGroupSeparator,
   ButtonGroupText,
-} from '@kit/ui/button-group';
+} from '@portal/ui/button-group';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Label } from '@kit/ui/label';
+} from '@portal/ui/card';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/select';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { cn } from '@portal/ui/utils';
 
 import {
   formatCodeBlock,
@@ -176,9 +176,9 @@ export function ButtonGroupStory() {
 
     return formatCodeBlock(code, [
       "import { Filter, Plus, Settings } from 'lucide-react';",
-      "import { Button } from '@kit/ui/button';",
-      "import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from '@kit/ui/button-group';",
-      "import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@kit/ui/select';",
+      "import { Button } from '@portal/ui/button';",
+      "import { ButtonGroup, ButtonGroupSeparator, ButtonGroupText } from '@portal/ui/button-group';",
+      "import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@portal/ui/select';",
     ]);
   }, [buttonGroupPropsString, controls]);
 

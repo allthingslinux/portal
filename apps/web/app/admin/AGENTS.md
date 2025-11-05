@@ -14,8 +14,8 @@ This file provides specific guidance for AI agents working in the super admin se
 ### Admin Client Usage Pattern
 
 ```typescript
-import { isSuperAdmin } from '@kit/admin';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+import { isSuperAdmin } from '@portal/admin';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
 
 async function adminOperation() {
   const adminClient = getSupabaseServerAdminClient();
@@ -37,9 +37,9 @@ async function adminOperation() {
 ### Standard Admin Page Template
 
 ```typescript
-import { AdminGuard } from '@kit/admin/components/admin-guard';
-import { PageBody, PageHeader } from '@kit/ui/page';
-import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
+import { AdminGuard } from '@portal/admin/components/admin-guard';
+import { PageBody, PageHeader } from '@portal/ui/page';
+import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
 
 async function AdminPageComponent() {
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@kit/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@portal/ui/tabs';
 
 import { CodeCard } from './code-card';
 import { ControlPanel } from './control-panel';

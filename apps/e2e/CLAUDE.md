@@ -99,7 +99,7 @@ await this.page.click('button:nth-child(2)');
 
 ### Test Organization
 
-- **Feature-based folders**: `/tests/authentication/`, `/tests/billing/`
+- **Feature-based folders**: `/tests/authentication/`
 - **Page Objects**: `*.po.ts` files for reusable page interactions
 - **Setup files**: `auth.setup.ts` for global test setup
 - **Utility classes**: `/tests/utils/` for shared functionality

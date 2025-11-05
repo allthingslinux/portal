@@ -1,5 +1,5 @@
 {
-  "name": "@kit/nodemailer",
+  "name": "@portal/nodemailer",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -16,10 +16,10 @@
     "nodemailer": "^7.0.10"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/mailers-shared": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/mailers-shared": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "@types/nodemailer": "7.0.3",
     "zod": "^3.25.74"
   },

@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { Stepper } from '@kit/ui/stepper';
+} from '@portal/ui/card';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { Stepper } from '@portal/ui/stepper';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';

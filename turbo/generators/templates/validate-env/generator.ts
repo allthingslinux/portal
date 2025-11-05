@@ -52,10 +52,8 @@ const Schema: Record<string, z.ZodType> = {
   NEXT_PUBLIC_AUTH_PASSWORD: BooleanStringEnum,
   NEXT_PUBLIC_AUTH_MAGIC_LINK: BooleanStringEnum,
   NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_DELETION: BooleanStringEnum,
-  NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_BILLING: BooleanStringEnum,
   NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS: BooleanStringEnum,
   NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION: BooleanStringEnum,
-  NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_BILLING: BooleanStringEnum,
   NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_CREATION: BooleanStringEnum,
   NEXT_PUBLIC_REALTIME_NOTIFICATIONS: BooleanStringEnum,
   NEXT_PUBLIC_ENABLE_NOTIFICATIONS: BooleanStringEnum,
@@ -74,119 +72,4 @@ const Schema: Record<string, z.ZodType> = {
     message: 'Supabase service role key must be a string',
     description: `This is the key provided by Supabase. It is a private key used server-side.`,
   }),
-  NEXT_PUBLIC_BILLING_PROVIDER: z.enum(['stripe', 'lemon-squeezy'], {
-    message: 'Billing provider must be stripe or lemon-squeezy',
-    description: `This is the billing provider you want to use. It should be stripe or lemon-squeezy.`,
   }),
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z
-    .string({
-      message: 'Stripe publishable key must be a string',
-      description: `This is the publishable key from your Stripe dashboard. It should start with pk_`,
-    })
-    .refine(
-      (value) => {
-        return value.startsWith('pk_');
-      },
-      {
-        message: 'Stripe publishable key must start with pk_',
-        path: ['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'],
-      },
-    ),
-  STRIPE_SECRET_KEY: z
-    .string({
-      message: 'Stripe secret key must be a string',
-      description: `This is the secret key from your Stripe dashboard. It should start with sk_`,
-    })
-    .refine(
-      (value) => {
-        return value.startsWith('sk_');
-      },
-      {
-        message: 'Stripe secret key must start with sk_',
-        path: ['STRIPE_SECRET_KEY'],
-      },
-    ),
-  STRIPE_WEBHOOK_SECRET: z
-    .string({
-      message: 'Stripe webhook secret must be a string',
-      description: `This is the signing secret you copy after creating a webhook in your Stripe dashboard.`,
-    })
-    .min(1)
-    .refine(
-      (value) => {
-        return value.startsWith('whsec_');
-      },
-      {
-        message: 'Stripe webhook secret must start with whsec_',
-        path: ['STRIPE_WEBHOOK_SECRET'],
-      },
-    ),
-  LEMON_SQUEEZY_SECRET_KEY: z
-    .string({
-      message: 'Lemon Squeezy API key must be a string',
-      description: `This is the API key from your Lemon Squeezy account`,
-    })
-    .min(1),
-  LEMON_SQUEEZY_STORE_ID: z
-    .string({
-      message: 'Lemon Squeezy store ID must be a string',
-      description: `This is the store ID of your Lemon Squeezy account`,
-    })
-    .min(1),
-  LEMON_SQUEEZY_SIGNING_SECRET: z
-    .string({
-      message: 'Lemon Squeezy signing secret must be a string',
-      description: `This is a shared secret that you must set in your Lemon Squeezy account when you create an API Key`,
-    })
-    .min(1),
-  MAILER_PROVIDER: z.enum(['nodemailer', 'resend'], {
-    message: 'Mailer provider must be nodemailer or resend',
-    description: `This is the mailer provider you want to use for sending emails. nodemailer is a generic SMTP mailer, resend is a service.`,
-  }),
-};
-
-export function createEnvironmentVariablesValidatorGenerator(
-  plop: PlopTypes.NodePlopAPI,
-) {
-  return plop.setGenerator('validate-env', {
-    description: 'Validate the environment variables to be used in the app',
-    actions: [
-      async (answers) => {
-        if (!('path' in answers) || !answers.path) {
-          throw new Error('URL is required');
-        }
-
-        const env = generator.loadEnvironmentVariables(answers.path as string);
-
-        for (const key of Object.keys(env)) {
-          const property = Schema[key];
-          const value = env[key];
-
-          if (property) {
-            // parse with Zod
-            const { error } = property.safeParse(value);
-
-            if (error) {
-              throw new Error(
-                `Encountered a validation error for key ${key}:${value} \n\n${JSON.stringify(error, null, 2)}`,
-              );
-            } else {
-              console.log(`Key ${key} is valid!`);
-            }
-          }
-        }
-
-        return 'Environment variables are valid!';
-      },
-    ],
-    prompts: [
-      {
-        type: 'input',
-        name: 'path',
-        message:
-          'Where is the path to the environment variables file? Leave empty to use the generated turbo/generators/templates/env/.env.local',
-        default: 'turbo/generators/templates/env/.env.local',
-      },
-    ],
-  });
-}

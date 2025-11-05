@@ -1,5 +1,5 @@
 {
-  "name": "@kit/sentry",
+  "name": "@portal/sentry",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     ".": "./src/index.ts",
     "./provider": "./src/components/provider.tsx",
@@ -19,10 +19,10 @@
     "@sentry/nextjs": "^10.22.0"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/monitoring-core": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/monitoring-core": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "@types/react": "catalog:",
     "react": "19.2.0"
   },

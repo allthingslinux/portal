@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 
 import type { z } from 'zod';
 
-import { useSignInWithEmailPassword } from '@kit/supabase/hooks/use-sign-in-with-email-password';
+import { useSignInWithEmailPassword } from '@portal/supabase/hooks/use-sign-in-with-email-password';
 
 import { useCaptcha } from '../captcha/client';
 import { useLastAuthMethod } from '../hooks/use-last-auth-method';

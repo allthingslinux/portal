@@ -69,17 +69,6 @@ export class TeamAccountsPageObject {
     }).toPass();
   }
 
-  goToBilling() {
-    return expect(async () => {
-      await this.page
-        .locator('a', {
-          hasText: 'Billing',
-        })
-        .click();
-
-      return await this.page.waitForURL('**/home/*/billing');
-    }).toPass();
-  }
 
   openAccountsSelector() {
     return expect(async () => {

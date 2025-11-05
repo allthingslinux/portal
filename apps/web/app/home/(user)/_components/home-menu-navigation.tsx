@@ -1,8 +1,8 @@
 import {
   BorderedNavigationMenu,
   BorderedNavigationMenuItem,
-} from '@kit/ui/bordered-navigation-menu';
-import { If } from '@kit/ui/if';
+} from '@portal/ui/bordered-navigation-menu';
+import { If } from '@portal/ui/if';
 
 import { AppLogo } from '~/components/app-logo';
 import { ProfileAccountDropdownContainer } from '~/components/personal-account-dropdown-container';

@@ -1,4 +1,4 @@
-# CMS/Keystatic - @kit/keystatic
+# CMS/Keystatic - @portal/keystatic
 
 Implementation of the CMS layer using the Keystatic library.
 

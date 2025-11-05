@@ -2,15 +2,15 @@
 
 import { redirect } from 'next/navigation';
 
-import { enhanceAction } from '@kit/next/actions';
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from '@portal/next/actions';
+import { getLogger } from '@portal/shared/logger';
+import { createUpdateTeamAccountService } from '../services/update-team-account.service.drizzle';
 
 import { UpdateTeamNameSchema } from '../../schema/update-team-name.schema';
 
 export const updateTeamAccountName = enhanceAction(
   async (params) => {
-    const client = getSupabaseServerClient();
+    const service = createUpdateTeamAccountService();
     const logger = await getLogger();
     const { name, path, slug } = params;
 
@@ -21,25 +21,8 @@ export const updateTeamAccountName = enhanceAction(
 
     logger.info(ctx, `Updating team name...`);
 
-    const { error, data } = await client
-      .from('accounts')
-      .update({
-        name,
-        slug,
-      })
-      .match({
-        slug,
-      })
-      .select('slug')
-      .single();
-
-    if (error) {
-      logger.error({ ...ctx, error }, `Failed to update team name`);
-
-      throw error;
-    }
-
-    const newSlug = data.slug;
+    const result = await service.updateTeamName({ name, slug });
+    const newSlug = result.slug;
 
     logger.info(ctx, `Team name updated`);
 

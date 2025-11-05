@@ -6,14 +6,14 @@ import {
   CardButton,
   CardButtonHeader,
   CardButtonTitle,
-} from '@kit/ui/card-button';
+} from '@portal/ui/card-button';
 import {
   EmptyState,
   EmptyStateButton,
   EmptyStateHeading,
   EmptyStateText,
-} from '@kit/ui/empty-state';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/empty-state';
+import { Trans } from '@portal/ui/trans';
 
 import { loadUserWorkspace } from '../_lib/server/load-user-workspace';
 import { HomeAddAccountButton } from './home-add-account-button';

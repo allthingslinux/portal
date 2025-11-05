@@ -316,8 +316,6 @@ export const envVariables: EnvVariableModel[] = [
     },
   },
   {
-    name: 'NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_BILLING',
-    description: 'Enables billing features for personal accounts.',
     category: 'Features',
     type: 'boolean',
     validate: ({ value }) => {
@@ -352,8 +350,6 @@ export const envVariables: EnvVariableModel[] = [
     },
   },
   {
-    name: 'NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_BILLING',
-    description: 'Enables billing features for team accounts.',
     category: 'Features',
     type: 'boolean',
     validate: ({ value }) => {
@@ -521,46 +517,29 @@ export const envVariables: EnvVariableModel[] = [
     },
   },
   {
-    name: 'NEXT_PUBLIC_BILLING_PROVIDER',
     description:
-      'Your chosen billing provider. Options: stripe or lemon-squeezy.',
-    category: 'Billing',
     required: true,
     type: 'enum',
-    values: ['stripe', 'lemon-squeezy'],
     validate: ({ value }) => {
-      return z.enum(['stripe', 'lemon-squeezy']).optional().safeParse(value);
     },
   },
   {
-    name: 'BILLING_MODE',
-    description: 'Billing mode configuration for the application.',
-    category: 'Billing',
     required: false,
     type: 'enum',
-    values: ['subscription', 'one-time'],
     deprecated: {
       reason:
-        'This configuration is no longer required and billing mode is now automatically determined',
       alternative: undefined,
     },
     validate: ({ value }) => {
-      return z.enum(['subscription', 'one-time']).optional().safeParse(value);
     },
   },
   {
-    name: 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
-    description: 'Your Stripe publishable key.',
     hint: `Ex. pk_test_123456789012345678901234`,
-    category: 'Billing',
     type: 'string',
     contextualValidation: {
       dependencies: [
         {
-          variable: 'NEXT_PUBLIC_BILLING_PROVIDER',
-          condition: (value) => value === 'stripe',
           message:
-            'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is required when NEXT_PUBLIC_BILLING_PROVIDER is set to "stripe"',
         },
       ],
       validate: ({ value }) => {
@@ -568,14 +547,12 @@ export const envVariables: EnvVariableModel[] = [
           .string()
           .min(
             1,
-            `The NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY variable must be at least 1 character`,
           )
           .refine(
             (value) => {
               return value.startsWith('pk_');
             },
             {
-              message: `The NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY variable must start with pk_`,
             },
           )
           .safeParse(value);
@@ -586,38 +563,29 @@ export const envVariables: EnvVariableModel[] = [
         .string()
         .min(
           1,
-          `The NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY variable must be at least 1 character`,
         )
         .optional()
         .safeParse(value);
     },
   },
   {
-    name: 'STRIPE_SECRET_KEY',
-    description: 'Your Stripe secret key.',
-    category: 'Billing',
     hint: `Ex. sk_test_123456789012345678901234`,
     secret: true,
     type: 'string',
     contextualValidation: {
       dependencies: [
         {
-          variable: 'NEXT_PUBLIC_BILLING_PROVIDER',
-          condition: (value) => value === 'stripe',
           message:
-            'STRIPE_SECRET_KEY is required when NEXT_PUBLIC_BILLING_PROVIDER is set to "stripe"',
         },
       ],
       validate: ({ value }) => {
         return z
           .string()
-          .min(1, `The STRIPE_SECRET_KEY variable must be at least 1 character`)
           .refine(
             (value) => {
               return value.startsWith('sk_') || value.startsWith('rk_');
             },
             {
-              message: `The STRIPE_SECRET_KEY variable must start with sk_ or rk_`,
             },
           )
           .safeParse(value);
@@ -626,25 +594,18 @@ export const envVariables: EnvVariableModel[] = [
     validate: ({ value }) => {
       return z
         .string()
-        .min(1, `The STRIPE_SECRET_KEY variable must be at least 1 character`)
         .optional()
         .safeParse(value);
     },
   },
   {
-    name: 'STRIPE_WEBHOOK_SECRET',
-    description: 'Your Stripe webhook secret.',
-    category: 'Billing',
     hint: `Ex. whsec_123456789012345678901234`,
     secret: true,
     type: 'string',
     contextualValidation: {
       dependencies: [
         {
-          variable: 'NEXT_PUBLIC_BILLING_PROVIDER',
-          condition: (value) => value === 'stripe',
           message:
-            'STRIPE_WEBHOOK_SECRET is required when NEXT_PUBLIC_BILLING_PROVIDER is set to "stripe"',
         },
       ],
       validate: ({ value }) => {
@@ -652,14 +613,12 @@ export const envVariables: EnvVariableModel[] = [
           .string()
           .min(
             1,
-            `The STRIPE_WEBHOOK_SECRET variable must be at least 1 character`,
           )
           .refine(
             (value) => {
               return value.startsWith('whsec_');
             },
             {
-              message: `The STRIPE_WEBHOOK_SECRET variable must start with whsec_`,
             },
           )
           .safeParse(value);
@@ -670,7 +629,6 @@ export const envVariables: EnvVariableModel[] = [
         .string()
         .min(
           1,
-          `The STRIPE_WEBHOOK_SECRET variable must be at least 1 character`,
         )
         .optional()
         .safeParse(value);
@@ -679,16 +637,12 @@ export const envVariables: EnvVariableModel[] = [
   {
     name: 'LEMON_SQUEEZY_SECRET_KEY',
     description: 'Your Lemon Squeezy secret key.',
-    category: 'Billing',
     secret: true,
     type: 'string',
     contextualValidation: {
       dependencies: [
         {
-          variable: 'NEXT_PUBLIC_BILLING_PROVIDER',
-          condition: (value) => value === 'lemon-squeezy',
           message:
-            'LEMON_SQUEEZY_SECRET_KEY is required when NEXT_PUBLIC_BILLING_PROVIDER is set to "lemon-squeezy"',
         },
       ],
       validate: ({ value }) => {
@@ -715,15 +669,11 @@ export const envVariables: EnvVariableModel[] = [
   {
     name: 'LEMON_SQUEEZY_STORE_ID',
     description: 'Your Lemon Squeezy store ID.',
-    category: 'Billing',
     type: 'string',
     contextualValidation: {
       dependencies: [
         {
-          variable: 'NEXT_PUBLIC_BILLING_PROVIDER',
-          condition: (value) => value === 'lemon-squeezy',
           message:
-            'LEMON_SQUEEZY_STORE_ID is required when NEXT_PUBLIC_BILLING_PROVIDER is set to "lemon-squeezy"',
         },
       ],
       validate: ({ value }) => {
@@ -750,16 +700,12 @@ export const envVariables: EnvVariableModel[] = [
   {
     name: 'LEMON_SQUEEZY_SIGNING_SECRET',
     description: 'Your Lemon Squeezy signing secret.',
-    category: 'Billing',
     secret: true,
     type: 'string',
     contextualValidation: {
       dependencies: [
         {
-          variable: 'NEXT_PUBLIC_BILLING_PROVIDER',
-          condition: (value) => value === 'lemon-squeezy',
           message:
-            'LEMON_SQUEEZY_SIGNING_SECRET is required when NEXT_PUBLIC_BILLING_PROVIDER is set to "lemon-squeezy"',
         },
       ],
       validate: ({ value }) => {
@@ -785,13 +731,13 @@ export const envVariables: EnvVariableModel[] = [
   },
   {
     name: 'MAILER_PROVIDER',
-    description: 'Your email service provider. Options: nodemailer or resend.',
+    description: 'Your email service provider. Use nodemailer for SMTP-based email.',
     category: 'Email',
     required: true,
     type: 'enum',
-    values: ['nodemailer', 'resend'],
+    values: ['nodemailer'],
     validate: ({ value }) => {
-      return z.enum(['nodemailer', 'resend']).safeParse(value);
+      return z.enum(['nodemailer']).safeParse(value);
     },
   },
   {
@@ -824,32 +770,6 @@ export const envVariables: EnvVariableModel[] = [
     },
   },
   {
-    name: 'RESEND_API_KEY',
-    description: 'Your Resend API key.',
-    category: 'Email',
-    secret: true,
-    type: 'string',
-    contextualValidation: {
-      dependencies: [
-        {
-          variable: 'MAILER_PROVIDER',
-          condition: (value) => value === 'resend',
-          message:
-            'RESEND_API_KEY is required when MAILER_PROVIDER is set to "resend"',
-        },
-      ],
-      validate: ({ value, variables }) => {
-        if (variables['MAILER_PROVIDER'] === 'resend') {
-          return z
-            .string()
-            .min(1, `The RESEND_API_KEY variable must be at least 1 character`)
-            .safeParse(value);
-        }
-
-        return z.string().optional().safeParse(value);
-      },
-    },
-  },
   {
     name: 'EMAIL_HOST',
     description: 'SMTP host for Nodemailer configuration.',
@@ -1277,9 +1197,7 @@ export const envVariables: EnvVariableModel[] = [
     },
   },
   {
-    name: 'STRIPE_ENABLE_TRIAL_WITHOUT_CC',
     description: 'Enables trial plans without credit card.',
-    category: 'Billing',
     type: 'boolean',
     validate: ({ value }) => {
       return z.coerce.boolean().optional().safeParse(value);

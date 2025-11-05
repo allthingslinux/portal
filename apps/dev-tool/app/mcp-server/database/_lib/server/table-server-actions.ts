@@ -2,7 +2,7 @@
 
 import { relative } from 'path';
 
-import { DatabaseTool } from '@kit/mcp-server/database';
+import { DatabaseTool } from '@portal/mcp-server/database';
 
 export async function getTableDetailsAction(
   tableName: string,

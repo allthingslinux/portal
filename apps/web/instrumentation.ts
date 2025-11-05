@@ -6,7 +6,7 @@ import { type Instrumentation } from 'next';
 
 export async function register() {
   const { registerMonitoringInstrumentation } = await import(
-    '@kit/monitoring/instrumentation'
+    '@portal/monitoring/instrumentation'
   );
 
   // Register monitoring instrumentation
@@ -24,7 +24,7 @@ export const onRequestError: Instrumentation.onRequestError = async (
   request,
   context,
 ) => {
-  const { getServerMonitoringService } = await import('@kit/monitoring/server');
+  const { getServerMonitoringService } = await import('@portal/monitoring/server');
 
   const service = await getServerMonitoringService();
 

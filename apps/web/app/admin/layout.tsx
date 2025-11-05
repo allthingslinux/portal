@@ -2,8 +2,8 @@ import { use } from 'react';
 
 import { cookies } from 'next/headers';
 
-import { Page, PageMobileNavigation, PageNavigation } from '@kit/ui/page';
-import { SidebarProvider } from '@kit/ui/shadcn-sidebar';
+import { Page, PageMobileNavigation, PageNavigation } from '@portal/ui/page';
+import { SidebarProvider } from '@portal/ui/shadcn-sidebar';
 
 import { AdminSidebar } from '~/admin/_components/admin-sidebar';
 import { AdminMobileNavigation } from '~/admin/_components/mobile-navigation';

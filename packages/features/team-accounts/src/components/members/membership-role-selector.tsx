@@ -4,8 +4,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/select';
+import { Trans } from '@portal/ui/trans';
 
 type Role = string;
 

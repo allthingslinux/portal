@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 const MAILER_PROVIDERS = [
   'nodemailer',
-  'resend',
   // add more providers here
 ] as const;
 

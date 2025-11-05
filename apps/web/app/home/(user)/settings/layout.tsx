@@ -1,5 +1,5 @@
-import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
-import { Trans } from '@kit/ui/trans';
+import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
+import { Trans } from '@portal/ui/trans';
 
 import { withI18n } from '~/lib/i18n/with-i18n';
 

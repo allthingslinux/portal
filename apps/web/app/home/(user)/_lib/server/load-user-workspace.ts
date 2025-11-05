@@ -1,7 +1,6 @@
 import { cache } from 'react';
 
-import { createAccountsApi } from '@kit/accounts/api';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { createAccountsApiDrizzle } from '@portal/accounts/api.drizzle';
 
 import featureFlagsConfig from '~/config/feature-flags.config';
 import { requireUserInServerComponent } from '~/lib/server/require-user-in-server-component';
@@ -19,8 +18,7 @@ export type UserWorkspace = Awaited<ReturnType<typeof loadUserWorkspace>>;
 export const loadUserWorkspace = cache(workspaceLoader);
 
 async function workspaceLoader() {
-  const client = getSupabaseServerClient();
-  const api = createAccountsApi(client);
+  const api = createAccountsApiDrizzle();
 
   const accountsPromise = shouldLoadAccounts
     ? () => api.loadUserAccounts()

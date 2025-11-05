@@ -6,10 +6,10 @@ import { usePathname } from 'next/navigation';
 
 import type { Provider, UserIdentity } from '@supabase/supabase-js';
 
-import { useLinkIdentityWithProvider } from '@kit/supabase/hooks/use-link-identity-with-provider';
-import { useUnlinkUserIdentity } from '@kit/supabase/hooks/use-unlink-user-identity';
-import { useUser } from '@kit/supabase/hooks/use-user';
-import { useUserIdentities } from '@kit/supabase/hooks/use-user-identities';
+import { useLinkIdentityWithProvider } from '@portal/supabase/hooks/use-link-identity-with-provider';
+import { useUnlinkUserIdentity } from '@portal/supabase/hooks/use-unlink-user-identity';
+import { useUser } from '@portal/supabase/hooks/use-user';
+import { useUserIdentities } from '@portal/supabase/hooks/use-user-identities';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,8 +20,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@kit/ui/alert-dialog';
-import { Button } from '@kit/ui/button';
+} from '@portal/ui/alert-dialog';
+import { Button } from '@portal/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -29,8 +29,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@kit/ui/dialog';
-import { If } from '@kit/ui/if';
+} from '@portal/ui/dialog';
+import { If } from '@portal/ui/if';
 import {
   Item,
   ItemActions,
@@ -39,12 +39,12 @@ import {
   ItemHeader,
   ItemMedia,
   ItemTitle,
-} from '@kit/ui/item';
-import { OauthProviderLogoImage } from '@kit/ui/oauth-provider-logo-image';
-import { Separator } from '@kit/ui/separator';
-import { toast } from '@kit/ui/sonner';
-import { Spinner } from '@kit/ui/spinner';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/item';
+import { OauthProviderLogoImage } from '@portal/ui/oauth-provider-logo-image';
+import { Separator } from '@portal/ui/separator';
+import { toast } from '@portal/ui/sonner';
+import { Spinner } from '@portal/ui/spinner';
+import { Trans } from '@portal/ui/trans';
 
 import { UpdateEmailForm } from '../email/update-email-form';
 import { UpdatePasswordForm } from '../password/update-password-form';

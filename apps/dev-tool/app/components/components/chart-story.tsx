@@ -19,24 +19,24 @@ import {
   YAxis,
 } from 'recharts';
 
-import { Badge } from '@kit/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
+import { Badge } from '@portal/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
 import {
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-} from '@kit/ui/chart';
-import { Label } from '@kit/ui/label';
+} from '@portal/ui/chart';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
 
 import {
   generateImportStatement,
@@ -160,7 +160,7 @@ export default function ChartStory() {
 
     const chartImport = generateImportStatement(
       chartComponents,
-      '@kit/ui/chart',
+      '@portal/ui/chart',
     );
     const rechartsImport = generateImportStatement(
       rechartsComponents,
@@ -604,7 +604,7 @@ export default function ChartStory() {
             </p>
             <div className="bg-muted/50 rounded-lg p-4">
               <pre className="overflow-x-auto text-sm">
-                {`import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@kit/ui/chart';
+                {`import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@portal/ui/chart';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 const data = [

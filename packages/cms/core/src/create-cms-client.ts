@@ -1,5 +1,5 @@
-import { CmsClient, CmsType } from '@kit/cms-types';
-import { createRegistry } from '@kit/shared/registry';
+import { CmsClient, CmsType } from '@portal/cms-types';
+import { createRegistry } from '@portal/shared/registry';
 
 /**
  * The type of CMS client to use.
@@ -11,13 +11,13 @@ const cmsRegistry = createRegistry<CmsClient, CmsType>();
 
 // Register the WordPress CMS client implementation
 cmsRegistry.register('wordpress', async () => {
-  const { createWordpressClient } = await import('@kit/wordpress');
+  const { createWordpressClient } = await import('@portal/wordpress');
   return createWordpressClient();
 });
 
 // Register the Keystatic CMS client implementation
 cmsRegistry.register('keystatic', async () => {
-  const { createKeystaticClient } = await import('@kit/keystatic');
+  const { createKeystaticClient } = await import('@portal/keystatic');
   return createKeystaticClient();
 });
 

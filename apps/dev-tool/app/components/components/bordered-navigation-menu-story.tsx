@@ -7,16 +7,16 @@ import { BarChart3, FileText, Home, Settings, Users } from 'lucide-react';
 import {
   BorderedNavigationMenu,
   BorderedNavigationMenuItem,
-} from '@kit/ui/bordered-navigation-menu';
+} from '@portal/ui/bordered-navigation-menu';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Label } from '@kit/ui/label';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/card';
+import { Label } from '@portal/ui/label';
+import { Switch } from '@portal/ui/switch';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
@@ -34,7 +34,7 @@ export function BorderedNavigationMenuStory() {
   const [activeTab, setActiveTab] = useState('#dashboard');
 
   const generateCode = () => {
-    return `import { BorderedNavigationMenu, BorderedNavigationMenuItem } from '@kit/ui/bordered-navigation-menu';
+    return `import { BorderedNavigationMenu, BorderedNavigationMenuItem } from '@portal/ui/bordered-navigation-menu';
 import { usePathname } from 'next/navigation';
 
 const pathname = usePathname();

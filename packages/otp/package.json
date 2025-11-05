@@ -1,5 +1,5 @@
 {
-  "name": "@kit/otp",
+  "name": "@portal/otp",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,22 +8,22 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     ".": "./src/api/index.ts",
     "./components": "./src/components/index.ts"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@kit/email-templates": "workspace:*",
-    "@kit/eslint-config": "workspace:*",
-    "@kit/mailers": "workspace:*",
-    "@kit/next": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/supabase": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
-    "@kit/ui": "workspace:*",
+    "@portal/email-templates": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/mailers": "workspace:*",
+    "@portal/next": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/shared": "workspace:*",
+    "@portal/supabase": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
+    "@portal/ui": "workspace:*",
     "@radix-ui/react-icons": "^1.3.2",
     "@supabase/supabase-js": "2.78.0",
     "@types/react": "catalog:",

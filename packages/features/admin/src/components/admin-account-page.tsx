@@ -1,16 +1,19 @@
 import { BadgeX, Ban, ShieldPlus, VenetianMask } from 'lucide-react';
 
-import { Tables } from '@kit/supabase/database';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
-import { Heading } from '@kit/ui/heading';
-import { If } from '@kit/ui/if';
-import { PageBody, PageHeader } from '@kit/ui/page';
-import { ProfileAvatar } from '@kit/ui/profile-avatar';
+import { Tables } from '@portal/supabase/database';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
+import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
+import { accounts, accountsMemberships, roles, usersInAuth } from '@portal/supabase/drizzle-schema';
+import { eq } from 'drizzle-orm';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
+import { Heading } from '@portal/ui/heading';
+import { If } from '@portal/ui/if';
+import { PageBody, PageHeader } from '@portal/ui/page';
+import { ProfileAvatar } from '@portal/ui/profile-avatar';
 import {
   Table,
   TableBody,
@@ -18,7 +21,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@kit/ui/table';
+} from '@portal/ui/table';
 
 import { AdminBanUserDialog } from './admin-ban-user-dialog';
 import { AdminDeleteAccountDialog } from './admin-delete-account-dialog';
@@ -287,11 +290,6 @@ async function SubscriptionsTable(props: { accountId: string }) {
                     </TableCell>
 
                     <TableCell>
-                      <span>{subscription.billing_provider}</span>
-                    </TableCell>
-
-                    <TableCell>
-                      <span>{subscription.billing_customer_id}</span>
                     </TableCell>
 
                     <TableCell>
@@ -392,15 +390,29 @@ async function getMemberships(userId: string) {
 }
 
 async function getMembers(accountSlug: string) {
-  const client = getSupabaseServerClient();
+  const drizzleClient = await getDrizzleSupabaseClient();
 
-  const members = await client.rpc('get_account_members', {
-    account_slug: accountSlug,
+  const data = await drizzleClient.runTransaction(async (tx) => {
+    return await tx
+      .select({
+        id: accountsMemberships.id,
+        userId: accountsMemberships.userId,
+        accountId: accountsMemberships.accountId,
+        role: accountsMemberships.accountRole,
+        roleHierarchyLevel: roles.hierarchyLevel,
+        primaryOwnerUserId: accounts.primaryOwnerUserId,
+        name: usersInAuth.email, // Using email as name since personal accounts don't have names
+        email: usersInAuth.email,
+        pictureUrl: accounts.pictureUrl,
+        createdAt: accountsMemberships.createdAt,
+        updatedAt: accountsMemberships.updatedAt,
+      })
+      .from(accountsMemberships)
+      .innerJoin(accounts, eq(accounts.id, accountsMemberships.accountId))
+      .innerJoin(usersInAuth, eq(usersInAuth.id, accountsMemberships.userId))
+      .leftJoin(roles, eq(roles.name, accountsMemberships.accountRole))
+      .where(eq(accounts.slug, accountSlug));
   });
 
-  if (members.error) {
-    throw members.error;
-  }
-
-  return members.data;
+  return data;
 }

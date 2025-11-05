@@ -9,10 +9,10 @@ import {
   XCircleIcon,
 } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Separator } from '@kit/ui/separator';
-import { cn } from '@kit/ui/utils';
+import { Badge } from '@portal/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Separator } from '@portal/ui/separator';
+import { cn } from '@portal/ui/utils';
 
 interface CustomPhase {
   id: string;

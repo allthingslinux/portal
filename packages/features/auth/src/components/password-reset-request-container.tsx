@@ -5,9 +5,9 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
-import { useRequestResetPassword } from '@kit/supabase/hooks/use-request-reset-password';
-import { Alert, AlertDescription } from '@kit/ui/alert';
-import { Button } from '@kit/ui/button';
+import { useRequestResetPassword } from '@portal/supabase/hooks/use-request-reset-password';
+import { Alert, AlertDescription } from '@portal/ui/alert';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
@@ -15,10 +15,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/form';
+import { If } from '@portal/ui/if';
+import { Input } from '@portal/ui/input';
+import { Trans } from '@portal/ui/trans';
 
 import { useCaptcha } from '../captcha/client';
 import { AuthErrorAlert } from './auth-error-alert';

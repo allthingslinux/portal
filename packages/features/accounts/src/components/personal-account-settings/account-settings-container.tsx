@@ -10,11 +10,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { If } from '@kit/ui/if';
-import { LanguageSelector } from '@kit/ui/language-selector';
-import { LoadingOverlay } from '@kit/ui/loading-overlay';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/card';
+import { If } from '@portal/ui/if';
+import { LanguageSelector } from '@portal/ui/language-selector';
+import { LoadingOverlay } from '@portal/ui/loading-overlay';
+import { Trans } from '@portal/ui/trans';
 
 import { usePersonalAccountData } from '../../hooks/use-personal-account-data';
 import { AccountDangerZone } from './account-danger-zone';

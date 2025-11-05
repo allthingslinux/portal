@@ -1,5 +1,5 @@
 {
-  "name": "@kit/monitoring",
+  "name": "@portal/monitoring",
   "private": true,
   "sideEffects": false,
   "version": "0.1.0",
@@ -9,7 +9,7 @@
     "lint": "eslint ..",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     "./server": "./src/server.ts",
     "./instrumentation": "./src/instrumentation.ts",
@@ -17,12 +17,12 @@
     "./components": "./src/components/index.ts"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/monitoring-core": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/sentry": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/monitoring-core": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/sentry": "workspace:*",
+    "@portal/shared": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "@types/react": "catalog:",
     "react": "19.2.0",
     "zod": "^3.25.74"

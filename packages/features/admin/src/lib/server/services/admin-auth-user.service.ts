@@ -4,7 +4,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 
 import { z } from 'zod';
 
-import { Database } from '@kit/supabase/database';
+import { Database } from '@portal/supabase/database';
 
 export function createAdminAuthUserService(
   client: SupabaseClient<Database>,

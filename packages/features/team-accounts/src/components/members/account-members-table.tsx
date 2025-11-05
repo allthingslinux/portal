@@ -6,20 +6,20 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Ellipsis } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Database } from '@kit/supabase/database';
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
-import { DataTable } from '@kit/ui/data-table';
+import { Database } from '@portal/supabase/database';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
+import { DataTable } from '@portal/ui/data-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
-import { ProfileAvatar } from '@kit/ui/profile-avatar';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/dropdown-menu';
+import { If } from '@portal/ui/if';
+import { Input } from '@portal/ui/input';
+import { ProfileAvatar } from '@portal/ui/profile-avatar';
+import { Trans } from '@portal/ui/trans';
 
 import { RemoveMemberDialog } from './remove-member-dialog';
 import { RoleBadge } from './role-badge';

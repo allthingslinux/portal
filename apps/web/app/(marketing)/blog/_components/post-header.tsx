@@ -1,6 +1,6 @@
-import { Cms } from '@kit/cms';
-import { If } from '@kit/ui/if';
-import { cn } from '@kit/ui/utils';
+import { Cms } from '@portal/cms';
+import { If } from '@portal/ui/if';
+import { cn } from '@portal/ui/utils';
 
 import { CoverImage } from './cover-image';
 import { DateFormatter } from './date-formatter';

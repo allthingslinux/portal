@@ -6,7 +6,7 @@ import {
   setUser,
 } from '@sentry/nextjs';
 
-import { MonitoringService } from '@kit/monitoring-core';
+import { MonitoringService } from '@portal/monitoring-core';
 
 /**
  * @class

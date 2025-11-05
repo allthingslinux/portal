@@ -1,5 +1,5 @@
 {
-  "name": "@kit/mailers",
+  "name": "@portal/mailers",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,18 +8,17 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     ".": "./src/index.ts"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/mailers-shared": "workspace:*",
-    "@kit/nodemailer": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/resend": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/mailers-shared": "workspace:*",
+    "@portal/nodemailer": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/shared": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "zod": "^3.25.74"
   },

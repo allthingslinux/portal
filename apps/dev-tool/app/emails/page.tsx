@@ -4,9 +4,9 @@ import {
   CardButton,
   CardButtonHeader,
   CardButtonTitle,
-} from '@kit/ui/card-button';
-import { Heading } from '@kit/ui/heading';
-import { Page, PageBody, PageHeader } from '@kit/ui/page';
+} from '@portal/ui/card-button';
+import { Heading } from '@portal/ui/heading';
+import { Page, PageBody, PageHeader } from '@portal/ui/page';
 
 export const metadata = {
   title: 'Emails',

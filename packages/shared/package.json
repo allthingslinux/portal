@@ -1,5 +1,5 @@
 {
-  "name": "@kit/shared",
+  "name": "@portal/shared",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     "./logger": "./src/logger/index.ts",
     "./utils": "./src/utils.ts",
@@ -17,9 +17,9 @@
     "./registry": "./src/registry/index.ts"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "@types/react": "catalog:"
   },
   "dependencies": {

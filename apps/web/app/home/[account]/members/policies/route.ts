@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server';
 
 import { z } from 'zod';
 
-import { enhanceRouteHandler } from '@kit/next/routes';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceRouteHandler } from '@portal/next/routes';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 import {
   createInvitationContextBuilder,
   createInvitationsPolicyEvaluator,
-} from '@kit/team-accounts/policies';
+} from '@portal/team-accounts/policies';
 
 export const GET = enhanceRouteHandler(
   async function ({ params, user }) {

@@ -14,7 +14,7 @@ values
 -- Function: get the storage filename as a UUID.
 -- Useful if you want to name files with UUIDs related to an account
 create
-or replace function kit.get_storage_filename_as_uuid (name text) returns uuid
+or replace function public.get_storage_filename_as_uuid (name text) returns uuid
 set
   search_path = '' as $$
 begin
@@ -26,24 +26,24 @@ end;
 $$ language plpgsql;
 
 grant
-execute on function kit.get_storage_filename_as_uuid (text) to authenticated,
+execute on function public.get_storage_filename_as_uuid (text) to authenticated,
 service_role;
 
 -- RLS policies for storage bucket account_image
 create policy account_image on storage.objects for all using (
   bucket_id = 'account_image'
   and (
-    kit.get_storage_filename_as_uuid(name) = auth.uid()
-    or public.has_role_on_account(kit.get_storage_filename_as_uuid(name))
+    public.get_storage_filename_as_uuid(name) = auth.uid()
+    or public.has_role_on_account(public.get_storage_filename_as_uuid(name))
   )
 )
 with check (
   bucket_id = 'account_image'
   and (
-    kit.get_storage_filename_as_uuid(name) = auth.uid()
+    public.get_storage_filename_as_uuid(name) = auth.uid()
     or public.has_permission(
       auth.uid(),
-      kit.get_storage_filename_as_uuid(name),
+      public.get_storage_filename_as_uuid(name),
       'settings.manage'
     )
   )

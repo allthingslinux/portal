@@ -177,10 +177,10 @@ grant
 execute on function public.is_account_owner (uuid) to authenticated,
 service_role;
 
--- Function "kit.protect_account_fields"
+-- Function "public.protect_account_fields"
 -- Function to protect account fields from being updated
 create
-or replace function kit.protect_account_fields () returns trigger as $$
+or replace function public.protect_account_fields () returns trigger as $$
 begin
     if current_user in('authenticated', 'anon') then
 	if new.id <> old.id or new.is_personal_account <>
@@ -202,7 +202,7 @@ set
 -- trigger to protect account fields
 create trigger protect_account_fields before
 update on public.accounts for each row
-execute function kit.protect_account_fields ();
+execute function public.protect_account_fields ();
 
 -- Function "public.get_upper_system_role"
 -- Function to get the highest system role for an account
@@ -223,10 +223,10 @@ $$ language plpgsql;
 grant
 execute on function public.get_upper_system_role () to service_role;
 
--- Function "kit.add_current_user_to_new_account"
+-- Function "public.add_current_user_to_new_account"
 -- Trigger to add the current user to a new account as the primary owner
 create
-or replace function kit.add_current_user_to_new_account () returns trigger language plpgsql security definer
+or replace function public.add_current_user_to_new_account () returns trigger language plpgsql security definer
 set
   search_path = '' as $$
 begin
@@ -252,11 +252,11 @@ $$;
 create trigger "add_current_user_to_new_account"
 after insert on public.accounts for each row
 when (new.is_personal_account = false)
-execute function kit.add_current_user_to_new_account ();
+execute function public.add_current_user_to_new_account ();
 
 -- create a trigger to update the account email when the primary owner email is updated
 create
-or replace function kit.handle_update_user_email () returns trigger language plpgsql security definer
+or replace function public.handle_update_user_email () returns trigger language plpgsql security definer
 set
   search_path = '' as $$
 begin
@@ -279,7 +279,7 @@ $$;
 create trigger "on_auth_user_updated"
 after
 update of email on auth.users for each row
-execute procedure kit.handle_update_user_email ();
+execute procedure public.handle_update_user_email ();
 
 
 /**
@@ -292,11 +292,11 @@ execute procedure kit.handle_update_user_email ();
 -- Create a function to slugify a string
 -- useful for turning an account name into a unique slug
 create
-or replace function kit.slugify ("value" text) returns text as $$
+or replace function public.slugify ("value" text) returns text as $$
     -- removes accents (diacritic signs) from a given string --
     with "unaccented" as(
         select
-            kit.unaccent("value") as "value"
+            public.unaccent("value") as "value"
 ),
 -- lowercases the string
 "lowercase" as(
@@ -337,14 +337,14 @@ set
   search_path to '';
 
 grant
-execute on function kit.slugify (text) to service_role,
+execute on function public.slugify (text) to service_role,
 authenticated;
 
 
--- Function "kit.set_slug_from_account_name"
+-- Function "public.set_slug_from_account_name"
 -- Set the slug from the account name and increment if the slug exists
 create
-or replace function kit.set_slug_from_account_name () returns trigger language plpgsql security definer
+or replace function public.set_slug_from_account_name () returns trigger language plpgsql security definer
 set
   search_path = '' as $$
 declare
@@ -360,10 +360,10 @@ begin
 
     while tmp_row_count > 0 loop
         if increment > 0 then
-            tmp_slug = kit.slugify(new.name || ' ' || increment::varchar);
+            tmp_slug = public.slugify(new.name || ' ' || increment::varchar);
 
         else
-            tmp_slug = kit.slugify(new.name);
+            tmp_slug = public.slugify(new.name);
 
         end if;
 
@@ -395,7 +395,7 @@ create trigger "set_slug_from_account_name" before insert on public.accounts for
   and NEW.slug is null
   and NEW.is_personal_account = false
 )
-execute procedure kit.set_slug_from_account_name ();
+execute procedure public.set_slug_from_account_name ();
 
 -- Create a trigger when a name is updated to update the slug
 create trigger "update_slug_from_account_name" before
@@ -404,12 +404,12 @@ update on public.accounts for each row when (
   and NEW.name <> OLD.name
   and NEW.is_personal_account = false
 )
-execute procedure kit.set_slug_from_account_name ();
+execute procedure public.set_slug_from_account_name ();
 
--- Function "kit.setup_new_user"
+-- Function "public.setup_new_user"
 -- Setup a new user account after user creation
 create
-or replace function kit.setup_new_user () returns trigger language plpgsql security definer
+or replace function public.setup_new_user () returns trigger language plpgsql security definer
 set
   search_path = '' as $$
 declare
@@ -461,7 +461,7 @@ $$;
 -- trigger the function every time a user is created
 create trigger on_auth_user_created
 after insert on auth.users for each row
-execute procedure kit.setup_new_user ();
+execute procedure public.setup_new_user ();
 
 /**
  * -------------------------------------------------------

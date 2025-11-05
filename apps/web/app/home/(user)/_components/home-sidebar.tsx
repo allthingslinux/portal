@@ -1,12 +1,12 @@
-import { If } from '@kit/ui/if';
+import { If } from '@portal/ui/if';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarNavigation,
-} from '@kit/ui/shadcn-sidebar';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/shadcn-sidebar';
+import { cn } from '@portal/ui/utils';
 
 import { AppLogo } from '~/components/app-logo';
 import { ProfileAccountDropdownContainer } from '~/components/personal-account-dropdown-container';

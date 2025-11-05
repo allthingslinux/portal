@@ -61,7 +61,7 @@ The typegen command must be run after applying migrations or resetting the datab
 
 - Encapsulate repeated blocks of code into reusable local components
 - Write small, composable, explicit, well-named components
-- Always use `react-hook-form` and `@kit/ui/form` for writing forms
+- Always use `react-hook-form` and `@portal/ui/form` for writing forms
 - Always use 'use client' directive for client components
 - Add `data-test` for E2E tests where appropriate
 - `useEffect` is a code smell and must be justified - avoid if possible
@@ -82,7 +82,7 @@ The typegen command must be run after applying migrations or resetting the datab
 
 ## Data Fetching Architecture
 
-Makerkit uses a clear separation between data fetching and mutations:
+Portal uses a clear separation between data fetching and mutations:
 
 ### Server Components with Loaders (Reading Data)
 
@@ -130,7 +130,7 @@ async function loadProjects(client: SupabaseClient<Database>, slug: string) {
 // server-actions.ts
 'use server';
 
-import { enhanceAction } from '@kit/next/actions';
+import { enhanceAction } from '@portal/next/actions';
 
 export const createProject = enhanceAction(
   async (data) => {

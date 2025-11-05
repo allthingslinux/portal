@@ -1,7 +1,7 @@
 import {
   BorderedNavigationMenu,
   BorderedNavigationMenuItem,
-} from '@kit/ui/bordered-navigation-menu';
+} from '@portal/ui/bordered-navigation-menu';
 
 import { AppLogo } from '~/components/app-logo';
 import { ProfileAccountDropdownContainer } from '~/components/personal-account-dropdown-container';

@@ -5,10 +5,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { z } from 'zod';
 
-import { verifyCaptchaToken } from '@kit/auth/captcha/server';
-import { requireUser } from '@kit/supabase/require-user';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { JWTUserData } from '@kit/supabase/types';
+import { verifyCaptchaToken } from '@portal/auth/captcha/server';
+import { requireUser } from '@portal/supabase/require-user';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
+import { JWTUserData } from '@portal/supabase/types';
 
 interface Config<Schema> {
   auth?: boolean;

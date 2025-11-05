@@ -1,4 +1,4 @@
-# @kit/analytics Package
+# @portal/analytics Package
 
 Analytics package providing a unified interface for tracking events, page views, and user identification across multiple analytics providers.
 
@@ -15,10 +15,10 @@ Analytics package providing a unified interface for tracking events, page views,
 
 ```typescript
 // Client-side
-import { analytics } from '@kit/analytics';
+import { analytics } from '@portal/analytics';
 
 // Server-side
-import { analytics } from '@kit/analytics/server';
+import { analytics } from '@portal/analytics/server';
 ```
 
 ### Core Methods
@@ -47,7 +47,7 @@ Page views and user identification are handled by the plugin by default.
 Implement the `AnalyticsService` interface:
 
 ```typescript
-import { AnalyticsService } from '@kit/analytics';
+import { AnalyticsService } from '@portal/analytics';
 
 class CustomAnalyticsService implements AnalyticsService {
   async initialize(): Promise<void> {
@@ -80,7 +80,7 @@ class CustomAnalyticsService implements AnalyticsService {
 When using PostHog, you can track events server-side for better reliability and privacy:
 
 ```typescript
-import { analytics } from '@kit/analytics/server';
+import { analytics } from '@portal/analytics/server';
 
 // Server-side event tracking (e.g., in API routes)
 export async function POST(request: Request) {

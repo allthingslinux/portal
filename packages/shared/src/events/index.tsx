@@ -9,7 +9,6 @@ export interface BaseAppEventTypes {
   'user.signedIn': { userId: string };
   'user.signedUp': { method: `magiclink` | `password` };
   'user.updated': EmptyPayload;
-  'checkout.started': { planId: string; account?: string };
 
   // Add more base event types here
 }

@@ -13,20 +13,20 @@ import {
   XCircleIcon,
 } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
+import { Button } from '@portal/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Toaster, toast } from '@kit/ui/sonner';
-import { Switch } from '@kit/ui/switch';
-import { Textarea } from '@kit/ui/textarea';
+} from '@portal/ui/select';
+import { Toaster, toast } from '@portal/ui/sonner';
+import { Switch } from '@portal/ui/switch';
+import { Textarea } from '@portal/ui/textarea';
 
 import {
   generateImportStatement,
@@ -93,7 +93,7 @@ export default function SonnerStory() {
 
     const imports = generateImportStatement(
       ['toast', 'Toaster'],
-      '@kit/ui/sonner',
+      '@portal/ui/sonner',
     );
 
     const toastCall =
@@ -955,7 +955,7 @@ export default function SonnerStory() {
               </p>
               <div className="bg-muted/50 rounded-lg p-4">
                 <pre className="overflow-x-auto text-sm">
-                  {`import { Toaster, toast } from '@kit/ui/sonner';
+                  {`import { Toaster, toast } from '@portal/ui/sonner';
 
 // Add to your app root (layout.tsx or _app.tsx)
 function App() {

@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 
 import { CsrfError, createCsrfProtect } from '@edge-csrf/nextjs';
 
-import { isSuperAdmin } from '@kit/admin';
-import { checkRequiresMultiFactorAuthentication } from '@kit/supabase/check-requires-mfa';
-import { createMiddlewareClient } from '@kit/supabase/middleware-client';
+import { isSuperAdmin } from '@portal/admin';
+import { checkRequiresMultiFactorAuthentication } from '@portal/supabase/check-requires-mfa';
+import { createMiddlewareClient } from '@portal/supabase/middleware-client';
 
 import appConfig from '~/config/app.config';
 import pathsConfig from '~/config/paths.config';

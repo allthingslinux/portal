@@ -9,21 +9,6 @@ dotenvConfig({ path: '.env.local' });
  */
 const CI_WORKERS = 2;
 
-const enableBillingTests = process.env.ENABLE_BILLING_TESTS === 'true';
-
-const enableTeamAccountTests =
-  (process.env.ENABLE_TEAM_ACCOUNT_TESTS ?? 'true') === 'true';
-
-const testIgnore: string[] = [];
-
-if (!enableBillingTests) {
-  console.log(
-    `Billing tests are disabled. To enable them, set the environment variable ENABLE_BILLING_TESTS=true.`,
-    `Current value: "${process.env.ENABLE_BILLING_TESTS}"`,
-  );
-
-  testIgnore.push('*-billing.spec.ts');
-}
 
 if (!enableTeamAccountTests) {
   console.log(
@@ -33,7 +18,6 @@ if (!enableTeamAccountTests) {
 
   testIgnore.push('*team-accounts.spec.ts');
   testIgnore.push('*invitations.spec.ts');
-  testIgnore.push('*team-billing.spec.ts');
 }
 
 /**
@@ -56,7 +40,6 @@ export default defineConfig({
   workers: process.env.CI ? CI_WORKERS : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
-  /* Ignore billing tests if the environment variable is not set. */
   testIgnore,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

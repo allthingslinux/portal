@@ -1,6 +1,6 @@
-import { getDatabaseWebhookHandlerService } from '@kit/database-webhooks';
-import { getServerMonitoringService } from '@kit/monitoring/server';
-import { enhanceRouteHandler } from '@kit/next/routes';
+import { getDatabaseWebhookHandlerService } from '@portal/database-webhooks';
+import { getServerMonitoringService } from '@portal/monitoring/server';
+import { enhanceRouteHandler } from '@portal/next/routes';
 
 /**
  * @name POST

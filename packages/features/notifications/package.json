@@ -1,5 +1,5 @@
 {
-  "name": "@kit/notifications",
+  "name": "@portal/notifications",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -14,11 +14,11 @@
     "./hooks": "./src/hooks/index.ts"
   },
   "devDependencies": {
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/supabase": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
-    "@kit/ui": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/supabase": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
+    "@portal/ui": "workspace:*",
     "@supabase/supabase-js": "2.78.0",
     "@tanstack/react-query": "5.90.5",
     "@types/react": "catalog:",
@@ -27,7 +27,7 @@
     "react-dom": "19.2.0",
     "react-i18next": "^16.2.3"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "typesVersions": {
     "*": {
       "*": [

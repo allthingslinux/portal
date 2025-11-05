@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 
-import { MultiFactorChallengeContainer } from '@kit/auth/mfa';
-import { checkRequiresMultiFactorAuthentication } from '@kit/supabase/check-requires-mfa';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { MultiFactorChallengeContainer } from '@portal/auth/mfa';
+import { checkRequiresMultiFactorAuthentication } from '@portal/supabase/check-requires-mfa';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 import pathsConfig from '~/config/paths.config';
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';

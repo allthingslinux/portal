@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 
-import { Badge } from '@kit/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Heading } from '@kit/ui/heading';
-import { Switch } from '@kit/ui/switch';
+import { Badge } from '@portal/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Heading } from '@portal/ui/heading';
+import { Switch } from '@portal/ui/switch';
 
 import {
   generateImportStatement,
@@ -27,7 +27,7 @@ export default function HeadingStory() {
   const generateCode = () => {
     const importStatement = generateImportStatement(
       ['Heading'],
-      '@kit/ui/heading',
+      '@portal/ui/heading',
     );
 
     const headings = [1, 2, 3, 4, 5, 6]
@@ -456,7 +456,7 @@ export default function HeadingStory() {
             </p>
             <div className="bg-muted/50 rounded-lg p-4">
               <pre className="overflow-x-auto text-sm">
-                {`import { Heading } from '@kit/ui/heading';
+                {`import { Heading } from '@portal/ui/heading';
 
 function Page() {
   return (

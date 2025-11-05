@@ -1,5 +1,5 @@
 {
-  "name": "@kit/next",
+  "name": "@portal/next",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,18 +8,18 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     "./actions": "./src/actions/index.ts",
     "./routes": "./src/routes/index.ts"
   },
   "devDependencies": {
-    "@kit/auth": "workspace:*",
-    "@kit/eslint-config": "workspace:*",
-    "@kit/monitoring": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/supabase": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
+    "@portal/auth": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/monitoring": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/supabase": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "@supabase/supabase-js": "2.78.0",
     "next": "catalog:",
     "zod": "^3.25.74"

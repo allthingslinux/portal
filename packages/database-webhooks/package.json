@@ -1,5 +1,5 @@
 {
-  "name": "@kit/database-webhooks",
+  "name": "@portal/database-webhooks",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,19 +8,16 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "exports": {
     ".": "./src/index.ts"
   },
   "devDependencies": {
-    "@kit/billing": "workspace:*",
-    "@kit/billing-gateway": "workspace:*",
-    "@kit/eslint-config": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/stripe": "workspace:*",
-    "@kit/supabase": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/shared": "workspace:*",
+    "@portal/supabase": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "@supabase/supabase-js": "2.78.0",
     "zod": "^3.25.74"
   },

@@ -1,5 +1,5 @@
 {
-  "extends": "@kit/tsconfig/base.json",
+  "extends": "@portal/tsconfig/base.json",
   "compilerOptions": {
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
     "paths": {

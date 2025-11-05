@@ -1,5 +1,5 @@
 {
-  "name": "@kit/admin",
+  "name": "@portal/admin",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,18 +8,18 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "devDependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@kit/eslint-config": "workspace:*",
-    "@kit/next": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/supabase": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
-    "@kit/ui": "workspace:*",
     "@makerkit/data-loader-supabase-core": "^0.0.10",
     "@makerkit/data-loader-supabase-nextjs": "^1.2.5",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/next": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/shared": "workspace:*",
+    "@portal/supabase": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
+    "@portal/ui": "workspace:*",
     "@supabase/supabase-js": "2.78.0",
     "@tanstack/react-query": "5.90.5",
     "@tanstack/react-table": "^8.21.3",

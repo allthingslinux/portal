@@ -3,10 +3,10 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { enhanceAction } from '@kit/next/actions';
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from '@portal/next/actions';
+import { getLogger } from '@portal/shared/logger';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 import {
   BanUserSchema,
@@ -17,7 +17,7 @@ import {
 } from './schema/admin-actions.schema';
 import { CreateUserSchema } from './schema/create-user.schema';
 import { ResetPasswordSchema } from './schema/reset-password.schema';
-import { createAdminAccountsService } from './services/admin-accounts.service';
+import { createAdminAccountsService } from './services/admin-accounts.service.drizzle';
 import { createAdminAuthUserService } from './services/admin-auth-user.service';
 import { adminAction } from './utils/admin-action';
 
@@ -240,5 +240,5 @@ function getAdminAuthService() {
 function getAdminAccountsService() {
   const adminClient = getSupabaseServerAdminClient();
 
-  return createAdminAccountsService(adminClient);
+  return createAdminAccountsService();
 }

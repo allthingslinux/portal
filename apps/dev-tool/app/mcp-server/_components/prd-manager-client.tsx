@@ -6,17 +6,17 @@ import Link from 'next/link';
 
 import { CalendarIcon, FileTextIcon, PlusIcon, SearchIcon } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
+import { Button } from '@portal/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@kit/ui/dialog';
-import { Input } from '@kit/ui/input';
-import { Progress } from '@kit/ui/progress';
+} from '@portal/ui/dialog';
+import { Input } from '@portal/ui/input';
+import { Progress } from '@portal/ui/progress';
 
 import type { CreatePRDData } from '../_lib/schemas/create-prd.schema';
 import { createPRDAction } from '../_lib/server/prd-server-actions';

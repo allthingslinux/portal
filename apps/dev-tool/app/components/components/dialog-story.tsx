@@ -17,15 +17,15 @@ import {
   User,
 } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Checkbox } from '@kit/ui/checkbox';
+} from '@portal/ui/card';
+import { Checkbox } from '@portal/ui/checkbox';
 import {
   Dialog,
   DialogClose,
@@ -35,13 +35,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@kit/ui/dialog';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { Textarea } from '@kit/ui/textarea';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/dialog';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { Textarea } from '@portal/ui/textarea';
+import { cn } from '@portal/ui/utils';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';

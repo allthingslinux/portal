@@ -3,7 +3,7 @@
   "extends": ["config:base"],
   "packageRules": [
     {
-      "matchPackagePatterns": ["^@kit/"],
+      "matchPackagePatterns": ["^@portal/"],
       "enabled": false
     }
   ],

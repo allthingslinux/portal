@@ -1,4 +1,4 @@
-import { Cms } from '@kit/cms';
+import { Cms } from '@portal/cms';
 
 import { DocsCard } from './docs-card';
 

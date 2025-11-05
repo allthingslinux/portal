@@ -5,20 +5,6 @@
 -- In production, you should manually create webhooks in the Supabase dashboard (or create a migration to do so).
 -- We don't do it because you'll need to manually add your webhook URL and secret key.
 
--- this webhook will be triggered after a delete on the subscriptions table
--- which should happen when a user deletes their account (and all their subscriptions)
-create trigger "subscriptions_delete"
-    after delete
-    on "public"."subscriptions"
-    for each row
-execute function "supabase_functions"."http_request"(
-        'http://host.docker.internal:3000/api/db/webhook',
-        'POST',
-        '{"Content-Type":"application/json", "X-Supabase-Event-Signature":"WEBHOOKSECRET"}',
-        '{}',
-        '5000'
-                 );
-
 -- DATA SEED
 -- This is a data dump for testing purposes. It should be used to seed the database with data for testing.
 
@@ -163,15 +149,21 @@ VALUES ('31a03e74-1639-45b6-bfa7-77447f1a4762', '31a03e74-1639-45b6-bfa7-77447f1
 
 INSERT INTO "public"."accounts" ("id", "primary_owner_user_id", "name", "slug", "email", "is_personal_account",
                                  "updated_at", "created_at", "created_by", "updated_by", "picture_url", "public_data")
-VALUES ('5deaa894-2094-4da3-b4fd-1fada0809d1c', '31a03e74-1639-45b6-bfa7-77447f1a4762', 'Makerkit', 'makerkit', NULL,
-        false, NULL, NULL, NULL, NULL, NULL, '{}');
+VALUES ('31a03e74-1639-45b6-bfa7-77447f1a4762', '31a03e74-1639-45b6-bfa7-77447f1a4762', 'Test User', NULL, 'test@makerkit.dev', true, NULL, NULL, NULL, NULL, NULL, '{}'),
+       ('5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', '5c064f1b-78ee-4e1c-ac3b-e99aa97c99bf', 'Owner User', NULL, 'owner@makerkit.dev', true, NULL, NULL, NULL, NULL, NULL, '{}'),
+       ('b73eb03e-fb7a-424d-84ff-18e2791ce0b4', 'b73eb03e-fb7a-424d-84ff-18e2791ce0b4', 'Custom User', NULL, 'custom@makerkit.dev', true, NULL, NULL, NULL, NULL, NULL, '{}'),
+       ('6b83d656-e4ab-48e3-a062-c0c54a427368', '6b83d656-e4ab-48e3-a062-c0c54a427368', 'Member User', NULL, 'member@makerkit.dev', true, NULL, NULL, NULL, NULL, NULL, '{}'),
+       ('c5b930c9-0a76-412e-a836-4bc4849a3270', 'c5b930c9-0a76-412e-a836-4bc4849a3270', 'Super Admin', NULL, 'super-admin@makerkit.dev', true, NULL, NULL, NULL, NULL, NULL, '{}'),
+       ('5deaa894-2094-4da3-b4fd-1fada0809d1c', '31a03e74-1639-45b6-bfa7-77447f1a4762', 'Makerkit', 'makerkit', NULL, false, NULL, NULL, NULL, NULL, NULL, '{}');
 
 --
 -- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 INSERT INTO "public"."roles" ("name", "hierarchy_level")
-VALUES ('custom-role', 4);
+VALUES ('owner', 1),
+       ('member', 2),
+       ('custom-role', 4);
 
 --
 -- Data for Name: accounts_memberships; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -196,7 +188,6 @@ VALUES ('659e3b57-1128-4d26-8757-f714fd073fc4', 'c5b930c9-0a76-412e-a836-4bc4849
         '2025-02-24 13:24:32.563314+00');
 
 --
--- Data for Name: billing_customers; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 
@@ -216,14 +207,8 @@ VALUES ('659e3b57-1128-4d26-8757-f714fd073fc4', 'c5b930c9-0a76-412e-a836-4bc4849
 
 
 --
--- Data for Name: subscriptions; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
 
 --
--- Data for Name: subscription_items; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
 
 --
 -- Data for Name: buckets; Type: TABLE DATA; Schema: storage; Owner: supabase_storage_admin
@@ -260,10 +245,8 @@ SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 5, true);
 
 
 --
--- Name: billing_customers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"public"."billing_customers_id_seq"', 1, false);
 
 
 --

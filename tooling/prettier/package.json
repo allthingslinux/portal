@@ -1,5 +1,5 @@
 {
-  "name": "@kit/prettier-config",
+  "name": "@portal/prettier-config",
   "private": true,
   "version": "0.1.0",
   "main": "index.mjs",
@@ -14,7 +14,7 @@
     "prettier-plugin-tailwindcss": "^0.7.1"
   },
   "devDependencies": {
-    "@kit/tsconfig": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
     "typescript": "^5.9.3"
   },
   "prettier": "./index.mjs"

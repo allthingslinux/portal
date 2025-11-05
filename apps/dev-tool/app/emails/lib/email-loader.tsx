@@ -2,7 +2,7 @@ import {
   renderAccountDeleteEmail,
   renderInviteEmail,
   renderOtpEmail,
-} from '@kit/email-templates';
+} from '@portal/email-templates';
 
 export async function loadEmailTemplate(id: string) {
   switch (id) {

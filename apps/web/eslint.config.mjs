@@ -1,4 +1,4 @@
-import eslintConfigApps from '@kit/eslint-config/apps.js';
-import eslintConfigBase from '@kit/eslint-config/base.js';
+import eslintConfigApps from '@portal/eslint-config/apps.js';
+import eslintConfigBase from '@portal/eslint-config/base.js';
 
 export default [...eslintConfigBase, ...eslintConfigApps];

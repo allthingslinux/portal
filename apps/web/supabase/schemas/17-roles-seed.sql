@@ -29,9 +29,6 @@ values (
            'roles.manage'),
        (
            'owner',
-           'billing.manage'),
-       (
-           'owner',
            'settings.manage'),
        (
            'owner',

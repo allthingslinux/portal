@@ -18,16 +18,16 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@kit/ui/breadcrumb';
-import { Card, CardContent } from '@kit/ui/card';
+} from '@portal/ui/breadcrumb';
+import { Card, CardContent } from '@portal/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
 
 import { generateImportStatement } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
@@ -436,7 +436,7 @@ export default function BreadcrumbStory() {
   BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@kit/ui/breadcrumb';
+} from '@portal/ui/breadcrumb';
 
 function Navigation() {
   return (
@@ -488,7 +488,7 @@ function Navigation() {
         <h3 className="mb-4 text-lg font-semibold">With Ellipsis</h3>
         <div className="bg-muted/50 rounded-lg p-4">
           <pre className="overflow-x-auto text-sm">
-            {`import { BreadcrumbEllipsis } from '@kit/ui/breadcrumb';
+            {`import { BreadcrumbEllipsis } from '@portal/ui/breadcrumb';
 
 <Breadcrumb>
   <BreadcrumbList>
@@ -561,7 +561,7 @@ function Navigation() {
 
     const importStatement = generateImportStatement(
       importComponents,
-      '@kit/ui/breadcrumb',
+      '@portal/ui/breadcrumb',
     );
 
     let separatorImport = '';

@@ -9,7 +9,7 @@ import { z } from 'zod';
 import {
   initializeServerI18n,
   parseAcceptLanguageHeader,
-} from '@kit/i18n/server';
+} from '@portal/i18n/server';
 
 import featuresFlagConfig from '~/config/feature-flags.config';
 import {

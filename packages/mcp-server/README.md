@@ -1,13 +1,13 @@
-# Makerkit MCP Server
+# Portal MCP Server
 
-The Makerkit MCP Server provides tools to AI Agents for working with the codebase.
+The Portal MCP Server provides tools to AI Agents for working with the codebase.
 
 ## Build MCP Server
 
 Run the command:
 
 ```bash
-pnpm --filter "@kit/mcp-server" build
+pnpm --filter "@portal/mcp-server" build
 ```
 
 The command will build the MCP Server at `packages/mcp-server/build/index.js`.

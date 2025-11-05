@@ -10,19 +10,19 @@ import {
   StarIcon,
 } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Label } from '@kit/ui/label';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
-import { Textarea } from '@kit/ui/textarea';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
+import { Textarea } from '@portal/ui/textarea';
 
 import {
   generateImportStatement,
@@ -73,8 +73,8 @@ export default function TextareaStory() {
       },
     );
 
-    const imports = generateImportStatement(['Textarea'], '@kit/ui/textarea');
-    const labelImport = `\nimport { Label } from '@kit/ui/label';`;
+    const imports = generateImportStatement(['Textarea'], '@portal/ui/textarea');
+    const labelImport = `\nimport { Label } from '@portal/ui/label';`;
 
     return `${imports}${labelImport}\n\nfunction MessageForm() {\n  const [message, setMessage] = useState('');\n\n  return (\n    <div className="space-y-2">\n      <Label htmlFor="message">Message</Label>\n      <Textarea\n        id="message"\n        value={message}\n        onChange={(e) => setMessage(e.target.value)}${propsString}\n      />\n      ${controls.showCharCount ? `<div className="text-xs text-muted-foreground text-right">\n        {message.length} / ${controls.maxLength}\n      </div>` : ''}\n    </div>\n  );\n}`;
   };
@@ -811,7 +811,7 @@ export default function TextareaStory() {
             </p>
             <div className="bg-muted/50 rounded-lg p-4">
               <pre className="overflow-x-auto text-sm">
-                {`import { Textarea } from '@kit/ui/textarea';
+                {`import { Textarea } from '@portal/ui/textarea';
 
 function CommentForm() {
   const [comment, setComment] = useState('');

@@ -4,7 +4,7 @@
  * Usage
  *
  * ```typescript
- * import { createNotificationsApi } from '@kit/notifications/api';
+ * import { createNotificationsApi } from '@portal/notifications/api';
  *
  * const api = createNotificationsApi(client);
  *
@@ -18,18 +18,17 @@
  */
 import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '@kit/supabase/database';
+import { Database } from '@portal/supabase/database';
 
-import { createNotificationsService } from './notifications.service';
+import { createNotificationsService } from './notifications.service.drizzle';
 
 type Notification = Database['public']['Tables']['notifications'];
 
 /**
  * @name createNotificationsApi
- * @param client
  */
-export function createNotificationsApi(client: SupabaseClient<Database>) {
-  return new NotificationsApi(client);
+export function createNotificationsApi() {
+  return new NotificationsApi();
 }
 
 /**
@@ -38,8 +37,8 @@ export function createNotificationsApi(client: SupabaseClient<Database>) {
 class NotificationsApi {
   private readonly service: ReturnType<typeof createNotificationsService>;
 
-  constructor(private readonly client: SupabaseClient<Database>) {
-    this.service = createNotificationsService(client);
+  constructor() {
+    this.service = createNotificationsService();
   }
 
   /**

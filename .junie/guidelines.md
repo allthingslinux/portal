@@ -484,11 +484,11 @@ apps/web/app/                          # Root directory (apps/web/app)
 
 # Creating Pages
 
-# Makerkit Page & Layout Guidelines
+# Portal Page & Layout Guidelines
 
 ## Page Structure Overview
 
-Makerkit uses Next.js App Router architecture with a clear separation of concerns for layouts and pages. The application's structure reflects the multi-tenant approach with specific routing patterns:
+Portal uses Next.js App Router architecture with a clear separation of concerns for layouts and pages. The application's structure reflects the multi-tenant approach with specific routing patterns:
 
 ```
 - app
@@ -503,7 +503,7 @@ Makerkit uses Next.js App Router architecture with a clear separation of concern
 
 ### Layouts
 
-Layouts in Makerkit provide the structure for various parts of the application:
+Layouts in Portal provide the structure for various parts of the application:
 
 1. **Root Layout**: The base structure for the entire application
 2. **Workspace Layouts**:
@@ -534,8 +534,8 @@ Create a new file within the appropriate route folder:
 
 ```tsx
 // app/home/(user)/my-feature/page.tsx
-import { PageBody } from '@kit/ui/page';
-import { Trans } from '@kit/ui/trans';
+import { PageBody } from '@portal/ui/page';
+import { Trans } from '@portal/ui/trans';
 
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
@@ -578,7 +578,7 @@ export default withI18n(MyFeaturePage);
 
 ```tsx
 // app/home/(user)/my-feature/loading.tsx
-import { GlobalLoader } from '@kit/ui/global-loader';
+import { GlobalLoader } from '@portal/ui/global-loader';
 
 export default GlobalLoader;
 ```
@@ -591,8 +591,8 @@ If the feature requires a specific layout, create a layout file:
 // app/home/(user)/my-feature/layout.tsx
 import { use } from 'react';
 
-import { UserWorkspaceContextProvider } from '@kit/accounts/components';
-import { Page, PageNavigation } from '@kit/ui/page';
+import { UserWorkspaceContextProvider } from '@portal/accounts/components';
+import { Page, PageNavigation } from '@portal/ui/page';
 
 import { withI18n } from '~/lib/i18n/with-i18n';
 import { loadUserWorkspace } from '../_lib/server/load-user-workspace';
@@ -628,8 +628,8 @@ For pages in the personal account context, use the user workspace layout pattern
 ```tsx
 import { use } from 'react';
 
-import { UserWorkspaceContextProvider } from '@kit/accounts/components';
-import { Page } from '@kit/ui/page';
+import { UserWorkspaceContextProvider } from '@portal/accounts/components';
+import { Page } from '@portal/ui/page';
 import { withI18n } from '~/lib/i18n/with-i18n';
 import { loadUserWorkspace } from './_lib/server/load-user-workspace';
 
@@ -656,8 +656,8 @@ For pages in the team account context, use the team workspace layout pattern:
 ```tsx
 import { use } from 'react';
 
-import { TeamAccountWorkspaceContextProvider } from '@kit/team-accounts/components';
-import { Page } from '@kit/ui/page';
+import { TeamAccountWorkspaceContextProvider } from '@portal/team-accounts/components';
+import { Page } from '@portal/ui/page';
 import { withI18n } from '~/lib/i18n/with-i18n';
 import { loadTeamWorkspace } from './_lib/server/load-team-workspace';
 
@@ -686,7 +686,7 @@ Break down pages into reusable components:
 1. **Page Headers**: Create header components for consistent titling:
    ```tsx
    // _components/my-feature-header.tsx
-   import { PageHeader } from '@kit/ui/page-header';
+   import { PageHeader } from '@portal/ui/page-header';
 
    export function MyFeatureHeader({
      title,
@@ -709,7 +709,7 @@ Break down pages into reusable components:
    // _components/my-feature-component.tsx
    'use client';
 
-   import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
+   import { useUserWorkspace } from '@portal/accounts/hooks/use-user-workspace';
 
    export function MyFeatureComponent() {
      const { user } = useUserWorkspace();
@@ -730,7 +730,7 @@ Create navigation components to handle sidebar or header navigation:
 // _components/my-feature-navigation.tsx
 'use client';
 
-import { NavigationMenu } from '@kit/ui/navigation-menu';
+import { NavigationMenu } from '@portal/ui/navigation-menu';
 
 export function MyFeatureNavigation({
   workspace
@@ -747,7 +747,7 @@ export function MyFeatureNavigation({
 
 ## Layout Styles
 
-Makerkit supports different layout styles that can be toggled by the user:
+Portal supports different layout styles that can be toggled by the user:
 
 1. **Sidebar Layout**: A vertical sidebar navigation
 2. **Header Layout**: A horizontal header navigation
@@ -802,85 +802,85 @@ async function getLayoutState() {
 
 # UI Components
 
-- Reusable UI components are defined in the "packages/ui" package named "@kit/ui".
-- By exporting the component from the "exports" field, we can import it using the "@kit/ui/{component-name}" format.
+- Reusable UI components are defined in the "packages/ui" package named "@portal/ui".
+- By exporting the component from the "exports" field, we can import it using the "@portal/ui/{component-name}" format.
 
 ## Styling
-- Styling is done using Tailwind CSS. We use the "cn" function from the "@kit/ui/utils" package to generate class names.
+- Styling is done using Tailwind CSS. We use the "cn" function from the "@portal/ui/utils" package to generate class names.
 - Avoid fixes classes such as "bg-gray-500". Instead, use Shadcn classes such as "bg-background", "text-secondary-foreground", "text-muted-foreground", etc.
 
-Makerkit leverages two sets of UI components:
+Portal leverages two sets of UI components:
 1. **Shadcn UI Components**: Base components from the Shadcn UI library
-2. **Makerkit-specific Components**: Custom components built on top of Shadcn UI
+2. **Portal-specific Components**: Custom components built on top of Shadcn UI
 
 ## Importing Components
 
 ```tsx
 // Import Shadcn UI components
-import { Button } from '@kit/ui/button';
-import { Card } from '@kit/ui/card';
-import { toast } from '@kit/ui/sonner';
+import { Button } from '@portal/ui/button';
+import { Card } from '@portal/ui/card';
+import { toast } from '@portal/ui/sonner';
 
-// Import Makerkit-specific components
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
-import { ProfileAvatar } from '@kit/ui/profile-avatar';
+// Import Portal-specific components
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
+import { ProfileAvatar } from '@portal/ui/profile-avatar';
 ```
 
 ## Core Shadcn UI Components
 
 | Component | Description | Import Path |
 |-----------|-------------|-------------|
-| `Accordion` | Expandable/collapsible content sections | `@kit/ui/accordion` [accordion.tsx](mdc:packages/ui/src/shadcn/accordion.tsx) |
-| `AlertDialog` | Modal dialog for important actions | `@kit/ui/alert-dialog` [alert-dialog.tsx](mdc:packages/ui/src/shadcn/alert-dialog.tsx) |
-| `Alert` | Status/notification messages | `@kit/ui/alert` [alert.tsx](mdc:packages/ui/src/shadcn/alert.tsx) |
-| `Avatar` | User profile images with fallback | `@kit/ui/avatar` [avatar.tsx](mdc:packages/ui/src/shadcn/avatar.tsx) |
-| `Badge` | Small status indicators | `@kit/ui/badge` [badge.tsx](mdc:packages/ui/src/shadcn/badge.tsx) |
-| `Breadcrumb` | Navigation path indicators | `@kit/ui/breadcrumb` [breadcrumb.tsx](mdc:packages/ui/src/shadcn/breadcrumb.tsx) |
-| `Button` | Clickable action elements | `@kit/ui/button` [button.tsx](mdc:packages/ui/src/shadcn/button.tsx) |
-| `Calendar` | Date picker and date display | `@kit/ui/calendar` [calendar.tsx](mdc:packages/ui/src/shadcn/calendar.tsx) |
-| `Card` | Container for grouped content | `@kit/ui/card` [card.tsx](mdc:packages/ui/src/shadcn/card.tsx) |
-| `Checkbox` | Selection input | `@kit/ui/checkbox` [checkbox.tsx](mdc:packages/ui/src/shadcn/checkbox.tsx) |
-| `Command` | Command palette interface | `@kit/ui/command` [command.tsx](mdc:packages/ui/src/shadcn/command.tsx) |
-| `DataTable` | Table | `@kit/ui/data-table` [data-table.tsx](mdc:packages/ui/src/shadcn/data-table.tsx) |
-| `Dialog` | Modal window for focused interactions | `@kit/ui/dialog` [dialog.tsx](mdc:packages/ui/src/shadcn/dialog.tsx) |
-| `DropdownMenu` | Menu triggered by a button | `@kit/ui/dropdown-menu` [dropdown-menu.tsx](mdc:packages/ui/src/shadcn/dropdown-menu.tsx) |
-| `Form` | Form components with validation | `@kit/ui/form` [form.tsx](mdc:packages/ui/src/shadcn/form.tsx) |
-| `Input` | Text input field | `@kit/ui/input` [input.tsx](mdc:packages/ui/src/shadcn/input.tsx) |
-| `Input OTP` | OTP Text input field | `@kit/ui/input-otp` [input-otp.tsx](mdc:packages/ui/src/shadcn/input-otp.tsx) |
-| `Label` | Text label for form elements | `@kit/ui/label` [label.tsx](mdc:packages/ui/src/shadcn/label.tsx) |
-| `NavigationMenu` | Hierarchical navigation component | `@kit/ui/navigation-menu` [navigation-menu.tsx](mdc:packages/ui/src/shadcn/navigation-menu.tsx) |
-| `Popover` | Floating content triggered by interaction | `@kit/ui/popover` [popover.tsx](mdc:packages/ui/src/shadcn/popover.tsx) |
-| `RadioGroup` | Radio button selection group | `@kit/ui/radio-group` [radio-group.tsx](mdc:packages/ui/src/shadcn/radio-group.tsx) |
-| `ScrollArea` | Customizable scrollable area | `@kit/ui/scroll-area` [scroll-area.tsx](mdc:packages/ui/src/shadcn/scroll-area.tsx) |
-| `Select` | Dropdown selection menu | `@kit/ui/select` [select.tsx](mdc:packages/ui/src/shadcn/select.tsx) |
-| `Separator` | Visual divider between content | `@kit/ui/separator` [separator.tsx](mdc:packages/ui/src/shadcn/separator.tsx) |
-| `Sheet` | Sliding panel from screen edge | `@kit/ui/sheet` [sheet.tsx](mdc:packages/ui/src/shadcn/sheet.tsx) |
-| `Sidebar` | Advanced sidebar navigation | `@kit/ui/shadcn-sidebar` [sidebar.tsx](mdc:packages/ui/src/shadcn/sidebar.tsx) |
-| `Skeleton` | Loading placeholder | `@kit/ui/skeleton` [skeleton.tsx](mdc:packages/ui/src/shadcn/skeleton.tsx) |
-| `Switch` | Toggle control | `@kit/ui/switch` [switch.tsx](mdc:packages/ui/src/shadcn/switch.tsx) |
-| `Toast` | Toaster | `@kit/ui/sonner` [sonner.tsx](mdc:packages/ui/src/shadcn/sonner.tsx) |
-| `Tabs` | Tab-based navigation | `@kit/ui/tabs` [tabs.tsx](mdc:packages/ui/src/shadcn/tabs.tsx) |
-| `Textarea` | Multi-line text input | `@kit/ui/textarea` [textarea.tsx](mdc:packages/ui/src/shadcn/textarea.tsx) |
-| `Tooltip` | Contextual information on hover | `@kit/ui/tooltip` [tooltip.tsx](mdc:packages/ui/src/shadcn/tooltip.tsx) |
+| `Accordion` | Expandable/collapsible content sections | `@portal/ui/accordion` [accordion.tsx](mdc:packages/ui/src/shadcn/accordion.tsx) |
+| `AlertDialog` | Modal dialog for important actions | `@portal/ui/alert-dialog` [alert-dialog.tsx](mdc:packages/ui/src/shadcn/alert-dialog.tsx) |
+| `Alert` | Status/notification messages | `@portal/ui/alert` [alert.tsx](mdc:packages/ui/src/shadcn/alert.tsx) |
+| `Avatar` | User profile images with fallback | `@portal/ui/avatar` [avatar.tsx](mdc:packages/ui/src/shadcn/avatar.tsx) |
+| `Badge` | Small status indicators | `@portal/ui/badge` [badge.tsx](mdc:packages/ui/src/shadcn/badge.tsx) |
+| `Breadcrumb` | Navigation path indicators | `@portal/ui/breadcrumb` [breadcrumb.tsx](mdc:packages/ui/src/shadcn/breadcrumb.tsx) |
+| `Button` | Clickable action elements | `@portal/ui/button` [button.tsx](mdc:packages/ui/src/shadcn/button.tsx) |
+| `Calendar` | Date picker and date display | `@portal/ui/calendar` [calendar.tsx](mdc:packages/ui/src/shadcn/calendar.tsx) |
+| `Card` | Container for grouped content | `@portal/ui/card` [card.tsx](mdc:packages/ui/src/shadcn/card.tsx) |
+| `Checkbox` | Selection input | `@portal/ui/checkbox` [checkbox.tsx](mdc:packages/ui/src/shadcn/checkbox.tsx) |
+| `Command` | Command palette interface | `@portal/ui/command` [command.tsx](mdc:packages/ui/src/shadcn/command.tsx) |
+| `DataTable` | Table | `@portal/ui/data-table` [data-table.tsx](mdc:packages/ui/src/shadcn/data-table.tsx) |
+| `Dialog` | Modal window for focused interactions | `@portal/ui/dialog` [dialog.tsx](mdc:packages/ui/src/shadcn/dialog.tsx) |
+| `DropdownMenu` | Menu triggered by a button | `@portal/ui/dropdown-menu` [dropdown-menu.tsx](mdc:packages/ui/src/shadcn/dropdown-menu.tsx) |
+| `Form` | Form components with validation | `@portal/ui/form` [form.tsx](mdc:packages/ui/src/shadcn/form.tsx) |
+| `Input` | Text input field | `@portal/ui/input` [input.tsx](mdc:packages/ui/src/shadcn/input.tsx) |
+| `Input OTP` | OTP Text input field | `@portal/ui/input-otp` [input-otp.tsx](mdc:packages/ui/src/shadcn/input-otp.tsx) |
+| `Label` | Text label for form elements | `@portal/ui/label` [label.tsx](mdc:packages/ui/src/shadcn/label.tsx) |
+| `NavigationMenu` | Hierarchical navigation component | `@portal/ui/navigation-menu` [navigation-menu.tsx](mdc:packages/ui/src/shadcn/navigation-menu.tsx) |
+| `Popover` | Floating content triggered by interaction | `@portal/ui/popover` [popover.tsx](mdc:packages/ui/src/shadcn/popover.tsx) |
+| `RadioGroup` | Radio button selection group | `@portal/ui/radio-group` [radio-group.tsx](mdc:packages/ui/src/shadcn/radio-group.tsx) |
+| `ScrollArea` | Customizable scrollable area | `@portal/ui/scroll-area` [scroll-area.tsx](mdc:packages/ui/src/shadcn/scroll-area.tsx) |
+| `Select` | Dropdown selection menu | `@portal/ui/select` [select.tsx](mdc:packages/ui/src/shadcn/select.tsx) |
+| `Separator` | Visual divider between content | `@portal/ui/separator` [separator.tsx](mdc:packages/ui/src/shadcn/separator.tsx) |
+| `Sheet` | Sliding panel from screen edge | `@portal/ui/sheet` [sheet.tsx](mdc:packages/ui/src/shadcn/sheet.tsx) |
+| `Sidebar` | Advanced sidebar navigation | `@portal/ui/shadcn-sidebar` [sidebar.tsx](mdc:packages/ui/src/shadcn/sidebar.tsx) |
+| `Skeleton` | Loading placeholder | `@portal/ui/skeleton` [skeleton.tsx](mdc:packages/ui/src/shadcn/skeleton.tsx) |
+| `Switch` | Toggle control | `@portal/ui/switch` [switch.tsx](mdc:packages/ui/src/shadcn/switch.tsx) |
+| `Toast` | Toaster | `@portal/ui/sonner` [sonner.tsx](mdc:packages/ui/src/shadcn/sonner.tsx) |
+| `Tabs` | Tab-based navigation | `@portal/ui/tabs` [tabs.tsx](mdc:packages/ui/src/shadcn/tabs.tsx) |
+| `Textarea` | Multi-line text input | `@portal/ui/textarea` [textarea.tsx](mdc:packages/ui/src/shadcn/textarea.tsx) |
+| `Tooltip` | Contextual information on hover | `@portal/ui/tooltip` [tooltip.tsx](mdc:packages/ui/src/shadcn/tooltip.tsx) |
 
-## Makerkit-specific Components
+## Portal-specific Components
 
 | Component | Description | Import Path |
 |-----------|-------------|-------------|
-| `If` | Conditional rendering component | `@kit/ui/if` [if.tsx](mdc:packages/ui/src/makerkit/if.tsx) |
-| `Trans` | Internationalization text component | `@kit/ui/trans` [trans.tsx](mdc:packages/ui/src/makerkit/trans.tsx) |
-| `Page` | Page layout with navigation | `@kit/ui/page` [page.tsx](mdc:packages/ui/src/makerkit/page.tsx) |
-| `GlobalLoader` | Full-page loading indicator | `@kit/ui/global-loader` [global-loader.tsx](mdc:packages/ui/src/makerkit/global-loader.tsx) |
-| `ImageUploader` | Image upload component | `@kit/ui/image-uploader` [image-uploader.tsx](mdc:packages/ui/src/makerkit/image-uploader.tsx) |
-| `ProfileAvatar` | User avatar with fallback | `@kit/ui/profile-avatar` [profile-avatar.tsx](mdc:packages/ui/src/makerkit/profile-avatar.tsx) |
-| `DataTable` (Enhanced) | Extended data table with pagination | `@kit/ui/enhanced-data-table` [data-table.tsx](mdc:packages/ui/src/makerkit/data-table.tsx) |
-| `Stepper` | Multi-step process indicator | `@kit/ui/stepper` [stepper.tsx](mdc:packages/ui/src/makerkit/stepper.tsx) |
-| `CookieBanner` | GDPR-compliant cookie notice | `@kit/ui/cookie-banner` [cookie-banner.tsx](mdc:packages/ui/src/makerkit/cookie-banner.tsx) |
-| `CardButton` | Card-styled button | `@kit/ui/card-button` [card-button.tsx](mdc:packages/ui/src/makerkit/card-button.tsx) |
-| `MultiStepForm` | Form with multiple steps | `@kit/ui/multi-step-form` [multi-step-form.tsx](mdc:packages/ui/src/makerkit/multi-step-form.tsx) |
-| `EmptyState` | Empty data placeholder | `@kit/ui/empty-state` [empty-state.tsx](mdc:packages/ui/src/makerkit/empty-state.tsx) |
-| `AppBreadcrumbs` | Application path breadcrumbs | `@kit/ui/app-breadcrumbs` [app-breadcrumbs.tsx](mdc:packages/ui/src/makerkit/app-breadcrumbs.tsx) |
+| `If` | Conditional rendering component | `@portal/ui/if` [if.tsx](mdc:packages/ui/src/makerkit/if.tsx) |
+| `Trans` | Internationalization text component | `@portal/ui/trans` [trans.tsx](mdc:packages/ui/src/makerkit/trans.tsx) |
+| `Page` | Page layout with navigation | `@portal/ui/page` [page.tsx](mdc:packages/ui/src/makerkit/page.tsx) |
+| `GlobalLoader` | Full-page loading indicator | `@portal/ui/global-loader` [global-loader.tsx](mdc:packages/ui/src/makerkit/global-loader.tsx) |
+| `ImageUploader` | Image upload component | `@portal/ui/image-uploader` [image-uploader.tsx](mdc:packages/ui/src/makerkit/image-uploader.tsx) |
+| `ProfileAvatar` | User avatar with fallback | `@portal/ui/profile-avatar` [profile-avatar.tsx](mdc:packages/ui/src/makerkit/profile-avatar.tsx) |
+| `DataTable` (Enhanced) | Extended data table with pagination | `@portal/ui/enhanced-data-table` [data-table.tsx](mdc:packages/ui/src/makerkit/data-table.tsx) |
+| `Stepper` | Multi-step process indicator | `@portal/ui/stepper` [stepper.tsx](mdc:packages/ui/src/makerkit/stepper.tsx) |
+| `CookieBanner` | GDPR-compliant cookie notice | `@portal/ui/cookie-banner` [cookie-banner.tsx](mdc:packages/ui/src/makerkit/cookie-banner.tsx) |
+| `CardButton` | Card-styled button | `@portal/ui/card-button` [card-button.tsx](mdc:packages/ui/src/makerkit/card-button.tsx) |
+| `MultiStepForm` | Form with multiple steps | `@portal/ui/multi-step-form` [multi-step-form.tsx](mdc:packages/ui/src/makerkit/multi-step-form.tsx) |
+| `EmptyState` | Empty data placeholder | `@portal/ui/empty-state` [empty-state.tsx](mdc:packages/ui/src/makerkit/empty-state.tsx) |
+| `AppBreadcrumbs` | Application path breadcrumbs | `@portal/ui/app-breadcrumbs` [app-breadcrumbs.tsx](mdc:packages/ui/src/makerkit/app-breadcrumbs.tsx) |
 
 ## Marketing Components
 
@@ -891,7 +891,7 @@ import {
   HeroTitle,
   GradientText,
   // etc.
-} from '@kit/ui/marketing';
+} from '@portal/ui/marketing';
 ```
 
 Key marketing components:
@@ -936,7 +936,7 @@ Server Actions [server-actions.mdc](mdc:.cursor/rules/server-actions.mdc) can he
 'use server';
 
 import { z } from 'zod';
-import { enhanceAction } from '@kit/next/actions';
+import { enhanceAction } from '@portal/next/actions';
 import { CreateNoteSchema } from '../schema/create-note.schema';
 
 export const createNoteAction = enhanceAction(
@@ -966,10 +966,10 @@ Then create a client component to handle the form submission:
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Textarea } from '@kit/ui/textarea';
-import { Input } from '@kit/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@kit/ui/form';
-import { toast } from '@kit/ui/sonner';
+import { Textarea } from '@portal/ui/textarea';
+import { Input } from '@portal/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@portal/ui/form';
+import { toast } from '@portal/ui/sonner';
 import { useTranslation } from 'react-i18next';
 
 import { CreateNoteSchema } from '../_lib/schema/create-note.schema';
@@ -1045,7 +1045,7 @@ export function CreateNoteForm() {
 }
 ```
 
-Always use `@kit/ui` for writing the UI of the form.
+Always use `@portal/ui` for writing the UI of the form.
 
 
 # Data Fetching
@@ -1060,7 +1060,7 @@ Data Flow works in the following way:
 2. Data is rendered in Server Components or passed down to Client Components when absolutely necessary to use a client component (e.g. when using React Hooks or any interaction with the DOM).
 
 ```tsx
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 async function ServerComponent() {
   const client = getSupabaseServerClient();
@@ -1073,7 +1073,7 @@ async function ServerComponent() {
 or pass down the data to a Client Component:
 
 ```tsx
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 export default function ServerComponent() {
   const supabase = getSupabaseServerClient();
@@ -1088,12 +1088,12 @@ export default function ServerComponent() {
 ```
 
 ## Supabase Clients
-- In a Server Component context, use the `getSupabaseServerClient` function from the "@kit/supabase/server-client" package [server-client.ts](mdc:packages/supabase/src/clients/server-client.ts)
-- In a Client Component context, use the `useSupabase` hook from the "@kit/supabase/hooks/use-supabase" package.
+- In a Server Component context, use the `getSupabaseServerClient` function from the "@portal/supabase/server-client" package [server-client.ts](mdc:packages/supabase/src/clients/server-client.ts)
+- In a Client Component context, use the `useSupabase` hook from the "@portal/supabase/hooks/use-supabase" package.
 
 ### Admin Actions
 
-Only in rare cases suggest using the Admin client `getSupabaseServerAdminClient` when needing to bypass RLS from the package `@kit/supabase/server-admin-client` [server-admin-client.ts](mdc:packages/supabase/src/clients/server-admin-client.ts)
+Only in rare cases suggest using the Admin client `getSupabaseServerAdminClient` when needing to bypass RLS from the package `@portal/supabase/server-admin-client` [server-admin-client.ts](mdc:packages/supabase/src/clients/server-admin-client.ts)
 
 ## React Query
 
@@ -1101,7 +1101,7 @@ When using `useQuery`, make sure to define the data fetching hook. Create two co
 
 ## Error Handling
 
-- Logging using the `@kit/shared/logger` package [logger.ts](mdc:packages/shared/src/logger/logger.ts)
+- Logging using the `@portal/shared/logger` package [logger.ts](mdc:packages/shared/src/logger/logger.ts)
 - Don't swallow errors, always handle them appropriately
 - Handle promises and async/await gracefully
 - Consider the unhappy path and handle errors appropriately
@@ -1110,7 +1110,7 @@ When using `useQuery`, make sure to define the data fetching hook. Create two co
 ```tsx
 'use server';
 
-import { getLogger } from '@kit/shared/logger';
+import { getLogger } from '@portal/shared/logger';
 
 export async function myServerAction() {
   const logger = await getLogger();
@@ -1164,7 +1164,7 @@ export async function myServerAction() {
 
 ## Schema Overview
 
-Makerkit uses a Supabase Postgres database with a well-defined schema focused on multi-tenancy through the concepts of accounts (both personal and team) and robust permission systems.
+Portal uses a Supabase Postgres database with a well-defined schema focused on multi-tenancy through the concepts of accounts (both personal and team) and robust permission systems.
 
 ### Database Schema
 
@@ -1189,10 +1189,10 @@ Makerkit uses a Supabase Postgres database with a well-defined schema focused on
 
 ### Inferring Database types
 
-Fetch auto-generated data types using the `@kit/supabase/database` import. Do not write types manually if the shape is the same as the one from the database row.
+Fetch auto-generated data types using the `@portal/supabase/database` import. Do not write types manually if the shape is the same as the one from the database row.
 
 ```tsx
-import { Tables } from '@kit/supabase/database';
+import { Tables } from '@portal/supabase/database';
 
 // public.accounts
 type Account = Tables<'accounts'>;
@@ -1429,7 +1429,7 @@ You always must use `(security_invoker = true)` for views.
 - For Data Mutations from Client Components, always use Server Actions
 - Always name the server actions file as "server-actions.ts"
 - Always name exported Server Actions suffixed as "Action", ex. "createPostAction"
-- Always use the `enhanceAction` function from the "@kit/supabase/actions" package [index.ts](mdc:packages/next/src/actions/index.ts)
+- Always use the `enhanceAction` function from the "@portal/supabase/actions" package [index.ts](mdc:packages/next/src/actions/index.ts)
 - Always use the 'use server' directive at the top of the file
 - Place the Zod schema in a separate file so it can be reused with `react-hook-form`
 
@@ -1437,7 +1437,7 @@ You always must use `(security_invoker = true)` for views.
 'use server';
 
 import { z } from 'zod';
-import { enhanceAction } from '@kit/next/actions';
+import { enhanceAction } from '@portal/next/actions';
 import { EntitySchema } from '../entity.schema.ts`;
 
 export const myServerAction = enhanceAction(
@@ -1460,11 +1460,11 @@ export const myServerAction = enhanceAction(
 # Route Handler / API Routes
 
 - Use Route Handlers when data fetching from Client Components
-- To create API routes (route.ts), always use the `enhanceRouteHandler` function from the "@kit/supabase/routes" package. [index.ts](mdc:packages/next/src/routes/index.ts)
+- To create API routes (route.ts), always use the `enhanceRouteHandler` function from the "@portal/supabase/routes" package. [index.ts](mdc:packages/next/src/routes/index.ts)
 
 ```tsx
 import { z } from 'zod';
-import { enhanceRouteHandler } from '@kit/next/routes';
+import { enhanceRouteHandler } from '@portal/next/routes';
 import { NextResponse } from 'next/server';
 
 const ZodSchema = z.object({
@@ -1617,7 +1617,7 @@ export function MyComponent() {
 For complex translations that include HTML or variables:
 
 ```tsx
-import { Trans } from '@kit/ui/trans';
+import { Trans } from '@portal/ui/trans';
 
 export function MyComponent() {
   return (
@@ -1636,7 +1636,7 @@ export function MyComponent() {
 Use the `LanguageSelector` component:
 
 ```tsx
-import { LanguageSelector } from '@kit/ui/language-selector';
+import { LanguageSelector } from '@portal/ui/language-selector';
 
 export function SettingsPage() {
   return (
@@ -1757,7 +1757,7 @@ Always perform extra checks when writing Super Admin code [super-admin.mdc](mdc:
 ```typescript
 'use server';
 
-import { enhanceAction } from '@kit/next/actions';
+import { enhanceAction } from '@portal/next/actions';
 import { MyActionSchema } from '../schema';
 
 export const secureAction = enhanceAction(
@@ -1782,7 +1782,7 @@ export const secureAction = enhanceAction(
 - Implement authentication and authorization checks:
 
 ```typescript
-import { enhanceRouteHandler } from '@kit/next/routes';
+import { enhanceRouteHandler } from '@portal/next/routes';
 import { RouteSchema } from '../schema';
 
 export const POST = enhanceRouteHandler(

@@ -1,5 +1,5 @@
-import type { Cms } from '@kit/cms';
-import { ContentRenderer } from '@kit/cms';
+import type { Cms } from '@portal/cms';
+import { ContentRenderer } from '@portal/cms';
 
 import { PostHeader } from './post-header';
 

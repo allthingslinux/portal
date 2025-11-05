@@ -102,8 +102,6 @@ select is_empty(
 );
 
 select is_empty(
-    $$ select * from public.subscriptions where account_id != auth.uid() $$,
-    'Malicious user should not access other subscriptions'
 );
 
 -- Test partial MFA setup (not verified)

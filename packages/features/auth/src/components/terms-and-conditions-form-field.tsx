@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-import { Checkbox } from '@kit/ui/checkbox';
-import { FormControl, FormField, FormItem, FormMessage } from '@kit/ui/form';
-import { Trans } from '@kit/ui/trans';
+import { Checkbox } from '@portal/ui/checkbox';
+import { FormControl, FormField, FormItem, FormMessage } from '@portal/ui/form';
+import { Trans } from '@portal/ui/trans';
 
 export function TermsAndConditionsFormField(
   props: {

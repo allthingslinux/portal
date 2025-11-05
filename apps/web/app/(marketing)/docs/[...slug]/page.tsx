@@ -2,10 +2,10 @@ import { cache } from 'react';
 
 import { notFound } from 'next/navigation';
 
-import { ContentRenderer, createCmsClient } from '@kit/cms';
-import { If } from '@kit/ui/if';
-import { Separator } from '@kit/ui/separator';
-import { cn } from '@kit/ui/utils';
+import { ContentRenderer, createCmsClient } from '@portal/cms';
+import { If } from '@portal/ui/if';
+import { Separator } from '@portal/ui/separator';
+import { cn } from '@portal/ui/utils';
 
 import { withI18n } from '~/lib/i18n/with-i18n';
 

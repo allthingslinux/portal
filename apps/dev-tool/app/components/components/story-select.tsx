@@ -5,8 +5,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from '@kit/ui/select';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/select';
+import { cn } from '@portal/ui/utils';
 
 import type { SelectOption } from '../lib/story-utils';
 

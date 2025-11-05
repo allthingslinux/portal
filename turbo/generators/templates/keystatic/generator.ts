@@ -35,7 +35,7 @@ export function createKeystaticAdminGenerator(plop: PlopTypes.NodePlopAPI) {
             .then((json) => json.latest);
 
           pkg.dependencies![dep] = `^${version}`;
-          pkg.dependencies!['@kit/keystatic'] = `workspace:*`;
+          pkg.dependencies!['@portal/keystatic'] = `workspace:*`;
 
           return JSON.stringify(pkg, null, 2);
         },

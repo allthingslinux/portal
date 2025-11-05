@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { Database } from '@kit/supabase/database';
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+import { Database } from '@portal/supabase/database';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
 
 type UpdateData = Database['public']['Tables']['accounts']['Update'];
 

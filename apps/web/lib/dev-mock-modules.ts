@@ -28,8 +28,5 @@ export const captureEvent = noop('Sentry.captureEvent');
 export const init = noop('Sentry.init');
 export const setUser = noop('Sentry.setUser');
 
-// Stripe
-export const loadStripe = noop('Stripe.loadStripe');
-
 // Nodemailer
 export const createTransport = noop('Nodemailer.createTransport');

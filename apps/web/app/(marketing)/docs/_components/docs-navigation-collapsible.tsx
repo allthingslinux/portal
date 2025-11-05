@@ -2,9 +2,9 @@
 
 import { usePathname } from 'next/navigation';
 
-import { Cms } from '@kit/cms';
-import { Collapsible } from '@kit/ui/collapsible';
-import { cn, isRouteActive } from '@kit/ui/utils';
+import { Cms } from '@portal/cms';
+import { Collapsible } from '@portal/ui/collapsible';
+import { cn, isRouteActive } from '@portal/ui/utils';
 
 export function DocsNavigationCollapsible(
   props: React.PropsWithChildren<{

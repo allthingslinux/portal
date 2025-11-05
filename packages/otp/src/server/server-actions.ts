@@ -2,9 +2,9 @@
 
 import { z } from 'zod';
 
-import { enhanceAction } from '@kit/next/actions';
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+import { enhanceAction } from '@portal/next/actions';
+import { getLogger } from '@portal/shared/logger';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
 
 import { createOtpApi } from '../api';
 

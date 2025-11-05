@@ -1,4 +1,4 @@
-import { MonitoringContext } from '@kit/monitoring-core';
+import { MonitoringContext } from '@portal/monitoring-core';
 
 import { SentryMonitoringService } from '../services/sentry-monitoring.service';
 

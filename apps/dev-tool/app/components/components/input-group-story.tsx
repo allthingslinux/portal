@@ -10,7 +10,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   InputGroup,
   InputGroupAddon,
@@ -18,18 +18,18 @@ import {
   InputGroupInput,
   InputGroupText,
   InputGroupTextarea,
-} from '@kit/ui/input-group';
-import { Kbd, KbdGroup } from '@kit/ui/kbd';
-import { Label } from '@kit/ui/label';
+} from '@portal/ui/input-group';
+import { Kbd, KbdGroup } from '@portal/ui/kbd';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/select';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
 
 import {
   formatCodeBlock,
@@ -149,9 +149,9 @@ export function InputGroupStory() {
   InputGroupInput, 
   InputGroupText, 
   InputGroupTextarea 
-} from '@kit/ui/input-group';`,
-      "import { Kbd, KbdGroup } from '@kit/ui/kbd';",
-      "import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@kit/ui/select';",
+} from '@portal/ui/input-group';`,
+      "import { Kbd, KbdGroup } from '@portal/ui/kbd';",
+      "import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@portal/ui/select';",
     ]);
   }, [controls, inputGroupPropsString]);
 

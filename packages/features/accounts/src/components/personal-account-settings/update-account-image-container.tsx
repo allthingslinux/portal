@@ -6,11 +6,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { useTranslation } from 'react-i18next';
 
-import { Database } from '@kit/supabase/database';
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
-import { ImageUploader } from '@kit/ui/image-uploader';
-import { toast } from '@kit/ui/sonner';
-import { Trans } from '@kit/ui/trans';
+import { Database } from '@portal/supabase/database';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
+import { ImageUploader } from '@portal/ui/image-uploader';
+import { toast } from '@portal/ui/sonner';
+import { Trans } from '@portal/ui/trans';
 
 import { useRevalidatePersonalAccountDataQuery } from '../../hooks/use-personal-account-data';
 

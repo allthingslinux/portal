@@ -1,8 +1,10 @@
 import { cache } from 'react';
 
-import { AdminAccountPage } from '@kit/admin/components/admin-account-page';
-import { AdminGuard } from '@kit/admin/components/admin-guard';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { AdminAccountPage } from '@portal/admin/components/admin-account-page';
+import { AdminGuard } from '@portal/admin/components/admin-guard';
+import { getDrizzleSupabaseAdminClient } from '@portal/supabase/drizzle-client';
+import { accounts, accountsMemberships } from '@portal/supabase/drizzle-schema';
+import { eq, leftJoin } from 'drizzle-orm';
 
 interface Params {
   params: Promise<{
@@ -31,17 +33,43 @@ export default AdminGuard(AccountPage);
 const loadAccount = cache(accountLoader);
 
 async function accountLoader(id: string) {
-  const client = getSupabaseServerClient();
+  const adminClient = getDrizzleSupabaseAdminClient();
 
-  const { data, error } = await client
-    .from('accounts')
-    .select('*, memberships: accounts_memberships (*)')
-    .eq('id', id)
-    .single();
+  const result = await adminClient
+    .select({
+      id: accounts.id,
+      name: accounts.name,
+      slug: accounts.slug,
+      email: accounts.email,
+      pictureUrl: accounts.pictureUrl,
+      isPersonalAccount: accounts.isPersonalAccount,
+      primaryOwnerUserId: accounts.primaryOwnerUserId,
+      customerId: accounts.customerId,
+      createdAt: accounts.createdAt,
+      updatedAt: accounts.updatedAt,
+      memberships: {
+        id: accountsMemberships.id,
+        userId: accountsMemberships.userId,
+        accountId: accountsMemberships.accountId,
+        accountRole: accountsMemberships.accountRole,
+        createdAt: accountsMemberships.createdAt,
+        updatedAt: accountsMemberships.updatedAt,
+      },
+    })
+    .from(accounts)
+    .leftJoin(accountsMemberships, eq(accounts.id, accountsMemberships.accountId))
+    .where(eq(accounts.id, id));
 
-  if (error) {
-    throw error;
+  if (result.length === 0) {
+    throw new Error('Account not found');
   }
 
-  return data;
+  // Transform the result to match the expected structure
+  const account = result[0];
+  const memberships = result.map(r => r.memberships).filter(Boolean);
+
+  return {
+    ...account,
+    memberships,
+  };
 }

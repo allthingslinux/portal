@@ -1,15 +1,15 @@
 import { useCallback } from 'react';
 
-import { Input } from '@kit/ui/input';
+import { Input } from '@portal/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
-import { Textarea } from '@kit/ui/textarea';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
+import { Textarea } from '@portal/ui/textarea';
 
 type ModelType =
   | 'string'

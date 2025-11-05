@@ -2,10 +2,10 @@
 
 import type { Provider } from '@supabase/supabase-js';
 
-import { isBrowser } from '@kit/shared/utils';
-import { If } from '@kit/ui/if';
-import { Separator } from '@kit/ui/separator';
-import { Trans } from '@kit/ui/trans';
+import { isBrowser } from '@portal/shared/utils';
+import { If } from '@portal/ui/if';
+import { Separator } from '@portal/ui/separator';
+import { Trans } from '@portal/ui/trans';
 
 import { ExistingAccountHint } from './existing-account-hint';
 import { MagicLinkAuthContainer } from './magic-link-auth-container';

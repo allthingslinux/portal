@@ -1,7 +1,7 @@
 import { ChevronDown } from 'lucide-react';
 
-import { Cms } from '@kit/cms';
-import { CollapsibleContent, CollapsibleTrigger } from '@kit/ui/collapsible';
+import { Cms } from '@portal/cms';
+import { CollapsibleContent, CollapsibleTrigger } from '@portal/ui/collapsible';
 import {
   Sidebar,
   SidebarGroup,
@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-} from '@kit/ui/shadcn-sidebar';
+} from '@portal/ui/shadcn-sidebar';
 
 import { DocsNavLink } from '~/(marketing)/docs/_components/docs-nav-link';
 import { DocsNavigationCollapsible } from '~/(marketing)/docs/_components/docs-navigation-collapsible';

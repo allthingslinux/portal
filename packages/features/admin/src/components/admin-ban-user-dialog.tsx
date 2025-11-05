@@ -5,7 +5,7 @@ import { useState, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -15,8 +15,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@kit/ui/alert-dialog';
-import { Button } from '@kit/ui/button';
+} from '@portal/ui/alert-dialog';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
@@ -25,9 +25,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
+} from '@portal/ui/form';
+import { If } from '@portal/ui/if';
+import { Input } from '@portal/ui/input';
 
 import { banUserAction } from '../lib/server/admin-server-actions';
 import { BanUserSchema } from '../lib/server/schema/admin-actions.schema';

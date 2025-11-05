@@ -1,9 +1,9 @@
 import Image from 'next/image';
 
-import { Heading } from '@kit/ui/heading';
-import { If } from '@kit/ui/if';
-import { Separator } from '@kit/ui/separator';
-import { Trans } from '@kit/ui/trans';
+import { Heading } from '@portal/ui/heading';
+import { If } from '@portal/ui/if';
+import { Separator } from '@portal/ui/separator';
+import { Trans } from '@portal/ui/trans';
 
 import { acceptInvitationAction } from '../../server/actions/team-invitations-server-actions';
 import { InvitationSubmitButton } from './invitation-submit-button';

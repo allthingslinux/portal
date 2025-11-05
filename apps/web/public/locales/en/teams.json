@@ -15,9 +15,6 @@
   "members": {
     "pageTitle": "Members"
   },
-  "billing": {
-    "pageTitle": "Billing"
-  },
   "yourTeams": "Your Teams ({{teamsCount}})",
   "createTeam": "Create a Team",
   "creatingTeam": "Creating Team...",

@@ -4,19 +4,19 @@ import { useState } from 'react';
 
 import { UserIcon } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Label } from '@kit/ui/label';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Skeleton } from '@kit/ui/skeleton';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/select';
+import { Skeleton } from '@portal/ui/skeleton';
+import { Switch } from '@portal/ui/switch';
 
 import {
   generateImportStatement,
@@ -50,7 +50,7 @@ export default function SkeletonStory() {
       {},
     );
 
-    const imports = generateImportStatement(['Skeleton'], '@kit/ui/skeleton');
+    const imports = generateImportStatement(['Skeleton'], '@portal/ui/skeleton');
 
     return `${imports}\n\nfunction LoadingComponent() {\n  return (\n    <div className="space-y-3">\n      <Skeleton${propsString} />\n      <Skeleton className="h-4 w-3/4" />\n      <Skeleton className="h-4 w-1/2" />\n    </div>\n  );\n}`;
   };
@@ -521,7 +521,7 @@ export default function SkeletonStory() {
             </p>
             <div className="bg-muted/50 rounded-lg p-4">
               <pre className="overflow-x-auto text-sm">
-                {`import { Skeleton } from '@kit/ui/skeleton';
+                {`import { Skeleton } from '@portal/ui/skeleton';
 
 function LoadingCard() {
   return (

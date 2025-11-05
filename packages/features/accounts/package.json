@@ -1,5 +1,5 @@
 {
-  "name": "@kit/accounts",
+  "name": "@portal/accounts",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -14,25 +14,26 @@
     "./personal-account-settings": "./src/components/personal-account-settings/index.ts",
     "./components": "./src/components/index.ts",
     "./hooks/*": "./src/hooks/*.ts",
-    "./api": "./src/server/api.ts"
+    "./api": "./src/server/api.ts",
+    "./api.drizzle": "./src/server/api.drizzle.ts"
   },
   "dependencies": {
+    "@portal/supabase": "workspace:*",
+    "drizzle-orm": "^0.44.7",
     "nanoid": "^5.1.6"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@kit/billing-gateway": "workspace:*",
-    "@kit/email-templates": "workspace:*",
-    "@kit/eslint-config": "workspace:*",
-    "@kit/mailers": "workspace:*",
-    "@kit/monitoring": "workspace:*",
-    "@kit/next": "workspace:*",
-    "@kit/otp": "workspace:*",
-    "@kit/prettier-config": "workspace:*",
-    "@kit/shared": "workspace:*",
-    "@kit/supabase": "workspace:*",
-    "@kit/tsconfig": "workspace:*",
-    "@kit/ui": "workspace:*",
+    "@portal/email-templates": "workspace:*",
+    "@portal/eslint-config": "workspace:*",
+    "@portal/mailers": "workspace:*",
+    "@portal/monitoring": "workspace:*",
+    "@portal/next": "workspace:*",
+    "@portal/otp": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
+    "@portal/shared": "workspace:*",
+    "@portal/tsconfig": "workspace:*",
+    "@portal/ui": "workspace:*",
     "@radix-ui/react-icons": "^1.3.2",
     "@supabase/supabase-js": "2.78.0",
     "@tanstack/react-query": "5.90.5",
@@ -47,7 +48,7 @@
     "react-i18next": "^16.2.3",
     "zod": "^3.25.74"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "typesVersions": {
     "*": {
       "*": [

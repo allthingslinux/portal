@@ -1,4 +1,4 @@
-import { CmsClient } from '@kit/cms-types';
+import { CmsClient } from '@portal/cms-types';
 
 /**
  * Creates a new Keystatic client instance.

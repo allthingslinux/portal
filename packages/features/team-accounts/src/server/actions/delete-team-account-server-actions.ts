@@ -2,16 +2,15 @@
 
 import { redirect } from 'next/navigation';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-
-import { enhanceAction } from '@kit/next/actions';
-import { createOtpApi } from '@kit/otp';
-import { getLogger } from '@kit/shared/logger';
-import type { Database } from '@kit/supabase/database';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from '@portal/next/actions';
+import { createOtpApi } from '@portal/otp';
+import { getLogger } from '@portal/shared/logger';
+import { getDrizzleSupabaseClient } from '@portal/supabase/drizzle-client';
+import { accounts } from '@portal/supabase/drizzle-schema';
+import { eq, and } from 'drizzle-orm';
 
 import { DeleteTeamAccountSchema } from '../../schema/delete-team-account.schema';
-import { createDeleteTeamAccountService } from '../services/delete-team-account.service';
+import { createDeleteTeamAccountService } from '../services/delete-team-account.service.drizzle';
 
 const enableTeamAccountDeletion =
   process.env.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION === 'true';
@@ -68,27 +67,37 @@ async function deleteTeamAccount(params: {
   accountId: string;
   userId: string;
 }) {
-  const client = getSupabaseServerClient();
   const service = createDeleteTeamAccountService();
 
   // verify that the user has the necessary permissions to delete the team account
-  await assertUserPermissionsToDeleteTeamAccount(client, params.accountId);
+  await assertUserPermissionsToDeleteTeamAccount(params.accountId, userId);
 
   // delete the team account
-  await service.deleteTeamAccount(client, params);
+  await service.deleteTeamAccount(params);
 }
 
 async function assertUserPermissionsToDeleteTeamAccount(
-  client: SupabaseClient<Database>,
   accountId: string,
+  userId: string,
 ) {
-  const { data: isOwner, error } = await client
-    .rpc('is_account_owner', {
-      account_id: accountId,
-    })
-    .single();
+  const drizzleClient = await getDrizzleSupabaseClient();
 
-  if (error || !isOwner) {
+  const result = await drizzleClient.runTransaction(async (tx) => {
+    return await tx
+      .select({ count: accounts.id })
+      .from(accounts)
+      .where(
+        and(
+          eq(accounts.id, accountId),
+          eq(accounts.primaryOwnerUserId, userId)
+        )
+      )
+      .limit(1);
+  });
+
+  const isOwner = result.length > 0;
+
+  if (!isOwner) {
     throw new Error('You do not have permission to delete this account');
   }
 

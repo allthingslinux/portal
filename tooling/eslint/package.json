@@ -1,5 +1,5 @@
 {
-  "name": "@kit/eslint-config",
+  "name": "@portal/eslint-config",
   "version": "0.2.0",
   "private": true,
   "type": "module",
@@ -19,8 +19,8 @@
     "eslint-config-turbo": "^2.6.0"
   },
   "devDependencies": {
-    "@kit/prettier-config": "workspace:*",
+    "@portal/prettier-config": "workspace:*",
     "eslint": "^9.39.0"
   },
-  "prettier": "@kit/prettier-config"
+  "prettier": "@portal/prettier-config"
 }

@@ -1,8 +1,7 @@
-import { CreditCard, LayoutDashboard, Settings, Users } from 'lucide-react';
+import { LayoutDashboard, Settings, Users } from 'lucide-react';
 
-import { NavigationConfigSchema } from '@kit/ui/navigation-schema';
+import { NavigationConfigSchema } from '@portal/ui/navigation-schema';
 
-import featureFlagsConfig from '~/config/feature-flags.config';
 import pathsConfig from '~/config/paths.config';
 
 const iconClasses = 'w-4';
@@ -33,14 +32,7 @@ const getRoutes = (account: string) => [
         path: createPath(pathsConfig.app.accountMembers, account),
         Icon: <Users className={iconClasses} />,
       },
-      featureFlagsConfig.enableTeamAccountBilling
-        ? {
-            label: 'common:routes.billing',
-            path: createPath(pathsConfig.app.accountBilling, account),
-            Icon: <CreditCard className={iconClasses} />,
-          }
-        : undefined,
-    ].filter(Boolean),
+    ],
   },
 ];
 

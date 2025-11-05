@@ -1,12 +1,12 @@
 # Email Service Instructions
 
-This file contains guidance for working with the email service supporting Resend and Nodemailer.
+This file contains guidance for working with the email service supporting Nodemailer.
 
 ## Basic Usage
 
 ```typescript
-import { getMailer } from '@kit/mailers';
-import { renderAccountDeleteEmail } from '@kit/email-templates';
+import { getMailer } from '@portal/mailers';
+import { renderAccountDeleteEmail } from '@portal/email-templates';
 
 async function sendSimpleEmail() {
     // Get mailer instance
@@ -39,14 +39,14 @@ async function sendComplexEmail() {
 
 ## Email Templates
 
-Email templates are located in `@kit/email-templates` and return `{ html, subject }`:
+Email templates are located in `@portal/email-templates` and return `{ html, subject }`:
 
 ```typescript
 import { 
   renderAccountDeleteEmail,
   renderWelcomeEmail,
   renderPasswordResetEmail 
-} from '@kit/email-templates';
+} from '@portal/email-templates';
 
 // Render template
 const { html, subject } = await renderWelcomeEmail({

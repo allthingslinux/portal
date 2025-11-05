@@ -6,8 +6,8 @@ import dynamic from 'next/dynamic';
 
 import { Lightbulb } from 'lucide-react';
 
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 import { useLastAuthMethod } from '../hooks/use-last-auth-method';
 

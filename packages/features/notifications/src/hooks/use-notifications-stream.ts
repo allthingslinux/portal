@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
 
 import { Notification } from '../types';
 

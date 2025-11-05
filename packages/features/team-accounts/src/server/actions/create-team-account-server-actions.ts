@@ -2,18 +2,16 @@
 
 import { redirect } from 'next/navigation';
 
-import { enhanceAction } from '@kit/next/actions';
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from '@portal/next/actions';
+import { getLogger } from '@portal/shared/logger';
 
 import { CreateTeamSchema } from '../../schema/create-team.schema';
-import { createCreateTeamAccountService } from '../services/create-team-account.service';
+import { createCreateTeamAccountService } from '../services/create-team-account.service.drizzle';
 
 export const createTeamAccountAction = enhanceAction(
   async ({ name }, user) => {
     const logger = await getLogger();
-    const client = getSupabaseServerClient();
-    const service = createCreateTeamAccountService(client);
+    const service = createCreateTeamAccountService();
 
     const ctx = {
       name: 'team-accounts.create',

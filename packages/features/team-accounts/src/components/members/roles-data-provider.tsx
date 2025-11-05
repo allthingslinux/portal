@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
-import { LoadingOverlay } from '@kit/ui/loading-overlay';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
+import { LoadingOverlay } from '@portal/ui/loading-overlay';
 
 export function RolesDataProvider(props: {
   maxRoleHierarchy: number;

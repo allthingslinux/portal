@@ -1,8 +1,4 @@
-import { PricingTable } from '@kit/billing-gateway/marketing';
-
 import { SitePageHeader } from '~/(marketing)/_components/site-page-header';
-import billingConfig from '~/config/billing.config';
-import pathsConfig from '~/config/paths.config';
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
 
@@ -12,11 +8,6 @@ export const generateMetadata = async () => {
   return {
     title: t('marketing:pricing'),
   };
-};
-
-const paths = {
-  signUp: pathsConfig.auth.signUp,
-  return: pathsConfig.app.home,
 };
 
 async function PricingPage() {
@@ -30,7 +21,9 @@ async function PricingPage() {
       />
 
       <div className={'container mx-auto pb-8 xl:pb-16'}>
-        <PricingTable paths={paths} config={billingConfig} />
+        <p className="text-muted-foreground text-center">
+          Pricing information coming soon.
+        </p>
       </div>
     </div>
   );

@@ -2,8 +2,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { z } from 'zod';
 
-import type { Database } from '@kit/supabase/database';
-import { JWTUserData } from '@kit/supabase/types';
+import type { Database } from '@portal/supabase/database';
+import { JWTUserData } from '@portal/supabase/types';
 
 import { InviteMembersSchema } from '../../schema/invite-members.schema';
 import type { FeaturePolicyInvitationContext } from './feature-policy-invitation-context';
@@ -97,7 +97,6 @@ class InvitationContextBuilder {
         active,
         trial_starts_at,
         trial_ends_at,
-        billing_provider,
         subscription_items(
           id,
           type,
@@ -115,7 +114,6 @@ class InvitationContextBuilder {
       ? {
           id: subscription.id,
           status: subscription.status,
-          provider: subscription.billing_provider,
           active: subscription.active,
           trial_starts_at: subscription.trial_starts_at || undefined,
           trial_ends_at: subscription.trial_ends_at || undefined,

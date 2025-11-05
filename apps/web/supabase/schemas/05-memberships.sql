@@ -58,10 +58,10 @@ for each row execute function public.trigger_set_user_tracking();
 -- Enable RLS on the accounts_memberships table
 alter table public.accounts_memberships enable row level security;
 
--- Function "kit.prevent_account_owner_membership_delete"
+-- Function "public.prevent_account_owner_membership_delete"
 -- Trigger to prevent a primary owner from being removed from an account
 create
-or replace function kit.prevent_account_owner_membership_delete () returns trigger
+or replace function public.prevent_account_owner_membership_delete () returns trigger
 set
   search_path = '' as $$
 begin
@@ -85,12 +85,12 @@ $$ language plpgsql;
 
 create
 or replace trigger prevent_account_owner_membership_delete_check before delete on public.accounts_memberships for each row
-execute function kit.prevent_account_owner_membership_delete ();
+execute function public.prevent_account_owner_membership_delete ();
 
--- Function "kit.prevent_memberships_update"
+-- Function "public.prevent_memberships_update"
 -- Trigger to prevent updates to account memberships with the exception of the account_role
 create
-or replace function kit.prevent_memberships_update () returns trigger
+or replace function public.prevent_memberships_update () returns trigger
 set
   search_path = '' as $$
 begin
@@ -105,7 +105,7 @@ end; $$ language plpgsql;
 create
 or replace trigger prevent_memberships_update_check before
 update on public.accounts_memberships for each row
-execute function kit.prevent_memberships_update ();
+execute function public.prevent_memberships_update ();
 
 -- Function "public.has_role_on_account"
 -- Function to check if a user has a role on an account

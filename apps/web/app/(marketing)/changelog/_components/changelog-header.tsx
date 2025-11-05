@@ -2,10 +2,10 @@ import Link from 'next/link';
 
 import { ChevronLeft } from 'lucide-react';
 
-import { Cms } from '@kit/cms';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
-import { cn } from '@kit/ui/utils';
+import { Cms } from '@portal/cms';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
+import { cn } from '@portal/ui/utils';
 
 import { CoverImage } from '../../blog/_components/cover-image';
 import { DateFormatter } from '../../blog/_components/date-formatter';

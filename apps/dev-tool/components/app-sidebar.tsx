@@ -25,8 +25,8 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from '@kit/ui/shadcn-sidebar';
-import { isRouteActive } from '@kit/ui/utils';
+} from '@portal/ui/shadcn-sidebar';
+import { isRouteActive } from '@portal/ui/utils';
 
 const routes = [
   {

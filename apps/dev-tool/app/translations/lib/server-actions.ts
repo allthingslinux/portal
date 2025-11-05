@@ -8,7 +8,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:url';
 import { z } from 'zod';
 
-import { getLogger } from '@kit/shared/logger';
+import { getLogger } from '@portal/shared/logger';
 
 const Schema = z.object({
   locale: z.string().min(1),

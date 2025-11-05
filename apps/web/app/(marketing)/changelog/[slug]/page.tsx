@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 
 import { notFound } from 'next/navigation';
 
-import { createCmsClient } from '@kit/cms';
+import { createCmsClient } from '@portal/cms';
 
 import { withI18n } from '~/lib/i18n/with-i18n';
 

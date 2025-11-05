@@ -166,12 +166,6 @@ export class ScriptsTool {
         usage: 'Lighter cleanup that preserves node_modules.',
         importance: 'medium',
       },
-      'stripe:listen': {
-        category: 'development',
-        description: 'Start Stripe webhook listener for local development',
-        usage: 'Required when testing payment workflows locally.',
-        importance: 'medium',
-      },
       'env:generate': {
         category: 'environment',
         description: 'Generate environment variable templates',

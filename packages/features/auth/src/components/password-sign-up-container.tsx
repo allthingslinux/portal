@@ -2,9 +2,9 @@
 
 import { CheckCircledIcon } from '@radix-ui/react-icons';
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 import { useCaptcha } from '../captcha/client';
 import { usePasswordSignUpFlow } from '../hooks/use-sign-up-flow';

@@ -7,7 +7,7 @@ export default [
         {
           paths: [
             {
-              name: '@kit/supabase/database',
+              name: '@portal/supabase/database',
               importNames: ['Database'],
               message:
                 'Please use the application types from your app "~/lib/database.types" instead',

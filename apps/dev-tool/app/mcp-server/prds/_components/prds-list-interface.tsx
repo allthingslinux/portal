@@ -6,9 +6,9 @@ import Link from 'next/link';
 
 import { CalendarIcon, FileTextIcon, SearchIcon } from 'lucide-react';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Input } from '@kit/ui/input';
-import { Progress } from '@kit/ui/progress';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Input } from '@portal/ui/input';
+import { Progress } from '@portal/ui/progress';
 
 interface PRDSummary {
   filename: string;

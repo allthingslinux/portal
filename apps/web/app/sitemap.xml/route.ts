@@ -1,6 +1,6 @@
 import { getServerSideSitemap } from 'next-sitemap';
 
-import { createCmsClient } from '@kit/cms';
+import { createCmsClient } from '@portal/cms';
 
 import appConfig from '~/config/app.config';
 

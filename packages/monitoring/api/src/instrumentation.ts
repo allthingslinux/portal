@@ -1,4 +1,4 @@
-import { createRegistry } from '@kit/shared/registry';
+import { createRegistry } from '@portal/shared/registry';
 
 import {
   MonitoringProvider,

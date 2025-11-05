@@ -4,25 +4,25 @@ import { useMemo } from 'react';
 
 import { Command, Search } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Input } from '@kit/ui/input';
-import { Kbd, KbdGroup } from '@kit/ui/kbd';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/card';
+import { Input } from '@portal/ui/input';
+import { Kbd, KbdGroup } from '@portal/ui/kbd';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@kit/ui/tooltip';
+} from '@portal/ui/tooltip';
 
 import { formatCodeBlock, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
@@ -103,9 +103,9 @@ export function KbdStory() {
     }
 
     return formatCodeBlock(snippet, [
-      "import { Button } from '@kit/ui/button';",
-      "import { Kbd, KbdGroup } from '@kit/ui/kbd';",
-      "import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@kit/ui/tooltip';",
+      "import { Button } from '@portal/ui/button';",
+      "import { Kbd, KbdGroup } from '@portal/ui/kbd';",
+      "import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@portal/ui/tooltip';",
     ]);
   }, [controls.showTooltip, keys]);
 

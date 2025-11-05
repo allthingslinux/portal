@@ -1,9 +1,21 @@
-# Makerkit - Supabase SaaS Starter Kit - Turbo Edition
+# Portal - Supabase SaaS Starter Kit
 
-This is a Starter Kit for building SaaS applications using Supabase, Next.js, and Tailwind CSS.
+A production-ready SaaS starter kit built with Next.js, Supabase, and TypeScript.
 
-A demo version of this project can be found at [makerkit/next-supabase-saas-kit-turbo-demo](https://github.com/makerkit/next-supabase-saas-kit-turbo-demo). This version contains a tasks functionality that is not present in the original version, multiple languages, and other various modifications.
+## Features
 
-[Please follow the documentation to get started](https://makerkit.dev/docs/next-supabase-turbo/introduction).
+- **Authentication** - Complete auth system with Supabase
+- **Multi-tenancy** - Team accounts with roles and permissions
+- **Database** - PostgreSQL with Row Level Security
+- **UI Components** - Beautiful, accessible components
+- **Type Safety** - Full TypeScript support
+- **Monorepo** - Turborepo for efficient builds
 
-**Please remember to update the repository daily**.
+## Getting Started
+
+```bash
+pnpm install
+pnpm dev
+```
+
+For detailed documentation, see the docs folder.

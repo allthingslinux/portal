@@ -130,18 +130,14 @@ class ConnectivityService {
     }
   }
 
-  async checkStripeWebhookEndpoints() {
-    const secretKey = await getVariable('STRIPE_SECRET_KEY', this.mode);
 
     if (!secretKey) {
       return {
         status: 'error' as const,
-        message: 'No Stripe Secret Key found in environment variables',
       };
     }
 
     const webhooksSecret = await getVariable(
-      'STRIPE_WEBHOOK_SECRET',
       this.mode,
     );
 
@@ -152,7 +148,6 @@ class ConnectivityService {
       };
     }
 
-    const url = `https://api.stripe.com`;
 
     const request = await fetch(`${url}/v1/webhook_endpoints`, {
       headers: {
@@ -164,7 +159,6 @@ class ConnectivityService {
       return {
         status: 'error' as const,
         message:
-          'Failed to connect to Stripe. The Stripe Webhook Secret is not valid.',
       };
     }
 
@@ -174,7 +168,6 @@ class ConnectivityService {
     if (webhooks.length === 0) {
       return {
         status: 'error' as const,
-        message: 'No webhooks found in Stripe',
       };
     }
 
@@ -195,17 +188,13 @@ class ConnectivityService {
     };
   }
 
-  async checkStripeConnected() {
-    const secretKey = await getVariable('STRIPE_SECRET_KEY', this.mode);
 
     if (!secretKey) {
       return {
         status: 'error' as const,
-        message: 'No Stripe Secret Key found in environment variables',
       };
     }
 
-    const url = `https://api.stripe.com`;
 
     const request = await fetch(`${url}/v1/prices`, {
       headers: {
@@ -217,13 +206,11 @@ class ConnectivityService {
       return {
         status: 'error' as const,
         message:
-          'Failed to connect to Stripe. The Stripe Secret Key is not valid.',
       };
     }
 
     return {
       status: 'success' as const,
-      message: 'Connected to Stripe',
     };
   }
 }

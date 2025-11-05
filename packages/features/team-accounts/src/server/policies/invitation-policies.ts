@@ -1,4 +1,4 @@
-import { createPoliciesEvaluator } from '@kit/policies';
+import { createPoliciesEvaluator } from '@portal/policies';
 
 import type { FeaturePolicyInvitationContext } from './feature-policy-invitation-context';
 import { invitationPolicyRegistry } from './policies';

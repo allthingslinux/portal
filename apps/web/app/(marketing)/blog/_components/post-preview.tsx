@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
-import { Cms } from '@kit/cms';
-import { If } from '@kit/ui/if';
+import { Cms } from '@portal/cms';
+import { If } from '@portal/ui/if';
 
 import { CoverImage } from '~/(marketing)/blog/_components/cover-image';
 import { DateFormatter } from '~/(marketing)/blog/_components/date-formatter';

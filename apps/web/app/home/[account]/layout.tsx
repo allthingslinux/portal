@@ -4,9 +4,9 @@ import { cookies } from 'next/headers';
 
 import { z } from 'zod';
 
-import { TeamAccountWorkspaceContextProvider } from '@kit/team-accounts/components';
-import { Page, PageMobileNavigation, PageNavigation } from '@kit/ui/page';
-import { SidebarProvider } from '@kit/ui/shadcn-sidebar';
+import { TeamAccountWorkspaceContextProvider } from '@portal/team-accounts/components';
+import { Page, PageMobileNavigation, PageNavigation } from '@portal/ui/page';
+import { SidebarProvider } from '@portal/ui/shadcn-sidebar';
 
 import { AppLogo } from '~/components/app-logo';
 import { getTeamAccountSidebarConfig } from '~/config/team-account-navigation.config';

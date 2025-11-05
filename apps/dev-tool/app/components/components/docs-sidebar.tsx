@@ -6,17 +6,17 @@ import { useRouter } from 'next/navigation';
 
 import { Code2, FileText, Search } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Input } from '@kit/ui/input';
-import { ScrollArea } from '@kit/ui/scroll-area';
+import { Badge } from '@portal/ui/badge';
+import { Input } from '@portal/ui/input';
+import { ScrollArea } from '@portal/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/select';
+import { cn } from '@portal/ui/utils';
 
 import type { ComponentInfo } from '../lib/components-data';
 import {

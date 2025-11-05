@@ -66,7 +66,7 @@ Finally, we use Server Actions for exposing POST handlers:
 ```typescript
 'use server';
 
-import { enhanceAction } from '@kit/next/actions';
+import { enhanceAction } from '@portal/next/actions';
 import { createNotesService } from '../notes.service.ts';
 
 export const createNoteAction = enhanceAction(
@@ -109,7 +109,6 @@ export const createNoteAction = enhanceAction(
 
 ### Server Action Examples
 
-- Team billing: `@apps/web/app/home/[account]/billing/_lib/server/server-actions.ts`
 - Personal settings: `@apps/web/app/home/(user)/settings/_lib/server/server-actions.ts`
 
 ### Server Action Options
@@ -143,7 +142,7 @@ Use `enhanceRouteHandler` from `@packages/next/src/routes/index.ts`.
 ### Usage
 
 ```typescript
-import { enhanceRouteHandler } from '@kit/next/routes';
+import { enhanceRouteHandler } from '@portal/next/routes';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -353,8 +352,8 @@ export const POST = enhanceRouteHandler(
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from '@kit/ui/sonner';
-import { Button } from '@kit/ui/button';
+import { toast } from '@portal/ui/sonner';
+import { Button } from '@portal/ui/button';
 
 import { createNoteAction } from './actions';
 import { CreateNoteSchema } from './schemas';

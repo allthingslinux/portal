@@ -20,26 +20,26 @@ import {
 } from 'lucide-react';
 import { Subject, debounceTime } from 'rxjs';
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { Heading } from '@kit/ui/heading';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
-import { toast } from '@kit/ui/sonner';
+} from '@portal/ui/dropdown-menu';
+import { Heading } from '@portal/ui/heading';
+import { If } from '@portal/ui/if';
+import { Input } from '@portal/ui/input';
+import { toast } from '@portal/ui/sonner';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@kit/ui/tooltip';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/tooltip';
+import { cn } from '@portal/ui/utils';
 
 import { AppEnvState, EnvVariableState } from '../lib/types';
 import { DynamicFormInput } from './dynamic-form-input';

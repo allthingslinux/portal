@@ -70,7 +70,7 @@ function Page({ params }: Props) {
 ### Server Components (Preferred) ✅
 
 ```typescript
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 async function NotesPage() {
   const client = getSupabaseServerClient();
@@ -87,7 +87,7 @@ async function NotesPage() {
 
 ```typescript
 'use client';
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
 import { useQuery } from '@tanstack/react-query';
 
 function InteractiveNotes() {
@@ -180,10 +180,10 @@ async function adminGetUserNotes(userId: string) {
 
 ## Internationalization
 
-Always use `Trans` component from `@kit/ui/trans`:
+Always use `Trans` component from `@portal/ui/trans`:
 
 ```tsx
-import { Trans } from '@kit/ui/trans';
+import { Trans } from '@portal/ui/trans';
 
 <Trans
   i18nKey="user:welcomeMessage"
@@ -215,7 +215,7 @@ import { Trans } from '@kit/ui/trans';
 ### Personal Account Context (`app/home/(user)`)
 
 ```tsx
-import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
+import { useUserWorkspace } from '@portal/accounts/hooks/use-user-workspace';
 
 function PersonalComponent() {
   const { user, account } = useUserWorkspace();
@@ -228,7 +228,7 @@ Context provider: `@packages/features/accounts/src/components/user-workspace-con
 ### Team Account Context (`app/home/[account]`)
 
 ```tsx
-import { useTeamAccountWorkspace } from '@kit/team-accounts/hooks/use-team-account-workspace';
+import { useTeamAccountWorkspace } from '@portal/team-accounts/hooks/use-team-account-workspace';
 
 function TeamComponent() {
   const { account, user, accounts } = useTeamAccountWorkspace();
@@ -250,7 +250,7 @@ Context provider: `@packages/features/team-accounts/src/components/team-account-
 Use `enhanceRouteHandler` from `@packages/next/src/routes/index.ts`:
 
 ```typescript
-import { enhanceRouteHandler } from '@kit/next/routes';
+import { enhanceRouteHandler } from '@portal/next/routes';
 
 export const POST = enhanceRouteHandler(
   async function ({ body, user, request }) {

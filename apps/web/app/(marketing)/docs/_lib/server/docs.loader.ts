@@ -1,7 +1,7 @@
 import { cache } from 'react';
 
-import { createCmsClient } from '@kit/cms';
-import { getLogger } from '@kit/shared/logger';
+import { createCmsClient } from '@portal/cms';
+import { getLogger } from '@portal/shared/logger';
 
 /**
  * @name getDocs

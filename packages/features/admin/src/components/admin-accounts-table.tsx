@@ -9,8 +9,8 @@ import { EllipsisVertical } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Tables } from '@kit/supabase/database';
-import { Button } from '@kit/ui/button';
+import { Tables } from '@portal/supabase/database';
+import { Button } from '@portal/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,11 +18,11 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { DataTable } from '@kit/ui/enhanced-data-table';
-import { Form, FormControl, FormField, FormItem } from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
+} from '@portal/ui/dropdown-menu';
+import { DataTable } from '@portal/ui/enhanced-data-table';
+import { Form, FormControl, FormField, FormItem } from '@portal/ui/form';
+import { If } from '@portal/ui/if';
+import { Input } from '@portal/ui/input';
 import {
   Select,
   SelectContent,
@@ -31,7 +31,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
+} from '@portal/ui/select';
 
 import { AdminDeleteAccountDialog } from './admin-delete-account-dialog';
 import { AdminDeleteUserDialog } from './admin-delete-user-dialog';

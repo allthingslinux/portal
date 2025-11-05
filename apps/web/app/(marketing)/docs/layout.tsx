@@ -1,4 +1,4 @@
-import { SidebarProvider } from '@kit/ui/shadcn-sidebar';
+import { SidebarProvider } from '@portal/ui/shadcn-sidebar';
 
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 

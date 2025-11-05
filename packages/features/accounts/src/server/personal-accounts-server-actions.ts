@@ -3,14 +3,14 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { enhanceAction } from '@kit/next/actions';
-import { createOtpApi } from '@kit/otp';
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { enhanceAction } from '@portal/next/actions';
+import { createOtpApi } from '@portal/otp';
+import { getLogger } from '@portal/shared/logger';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 import { DeletePersonalAccountSchema } from '../schema/delete-personal-account.schema';
-import { createDeletePersonalAccountService } from './services/delete-personal-account.service';
+import { createDeletePersonalAccountService } from './services/delete-personal-account.service.drizzle';
 
 const enableAccountDeletion =
   process.env.NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_DELETION === 'true';
@@ -84,7 +84,6 @@ export const deletePersonalAccountAction = enhanceAction(
 
     // delete the user's account and cancel all subscriptions
     await service.deletePersonalAccount({
-      adminClient: getSupabaseServerAdminClient(),
       account: {
         id: user.id,
         email: user.email ?? null,

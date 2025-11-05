@@ -6,8 +6,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/card';
+import { Trans } from '@portal/ui/trans';
 
 import { TeamAccountDangerZone } from './team-account-danger-zone';
 import { UpdateTeamAccountImage } from './update-team-account-image-container';

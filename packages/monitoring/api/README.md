@@ -1,4 +1,4 @@
-# Monitoring / @kit/monitoring
+# Monitoring / @portal/monitoring
 
 Please set the following environment variable to your preferred monitoring provider:
 

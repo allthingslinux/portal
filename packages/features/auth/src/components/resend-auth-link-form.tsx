@@ -5,17 +5,17 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useSupabase } from '@kit/supabase/hooks/use-supabase';
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Button } from '@kit/ui/button';
+import { useSupabase } from '@portal/supabase/hooks/use-supabase';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@kit/ui/form';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/form';
+import { Trans } from '@portal/ui/trans';
 
 import { useCaptcha } from '../captcha/client';
 import { EmailInput } from './email-input';

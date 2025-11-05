@@ -4,15 +4,15 @@ import { useState } from 'react';
 
 import { DatabaseIcon, KeyIcon, LinkIcon, TableIcon } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
+import { Badge } from '@portal/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@kit/ui/dialog';
-import { Separator } from '@kit/ui/separator';
+} from '@portal/ui/dialog';
+import { Separator } from '@portal/ui/separator';
 
 import { getTableDetailsAction } from '../_lib/server/table-server-actions';
 

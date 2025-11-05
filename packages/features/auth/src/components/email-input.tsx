@@ -7,7 +7,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from '@kit/ui/input-group';
+} from '@portal/ui/input-group';
 
 export function EmailInput(props: React.ComponentProps<'input'>) {
   const { t } = useTranslation('auth');

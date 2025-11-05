@@ -4,8 +4,8 @@ import { useContext } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { AccountSelector } from '@kit/accounts/account-selector';
-import { SidebarContext } from '@kit/ui/shadcn-sidebar';
+import { AccountSelector } from '@portal/accounts/account-selector';
+import { SidebarContext } from '@portal/ui/shadcn-sidebar';
 
 import featureFlagsConfig from '~/config/feature-flags.config';
 import pathsConfig from '~/config/paths.config';

@@ -8,7 +8,6 @@ import { z } from 'zod';
  */
 const RESERVED_NAMES_ARRAY = [
   'settings',
-  'billing',
   // please add more reserved names here
 ];
 

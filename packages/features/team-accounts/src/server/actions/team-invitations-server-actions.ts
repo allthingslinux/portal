@@ -5,11 +5,9 @@ import { redirect } from 'next/navigation';
 
 import { z } from 'zod';
 
-import { enhanceAction } from '@kit/next/actions';
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { JWTUserData } from '@kit/supabase/types';
+import { enhanceAction } from '@portal/next/actions';
+import { getLogger } from '@portal/shared/logger';
+import { JWTUserData } from '@portal/supabase/types';
 
 import { AcceptInvitationSchema } from '../../schema/accept-invitation.schema';
 import { DeleteInvitationSchema } from '../../schema/delete-invitation.schema';
@@ -18,8 +16,7 @@ import { RenewInvitationSchema } from '../../schema/renew-invitation.schema';
 import { UpdateInvitationSchema } from '../../schema/update-invitation.schema';
 import { createInvitationContextBuilder } from '../policies/invitation-context-builder';
 import { createInvitationsPolicyEvaluator } from '../policies/invitation-policies';
-import { createAccountInvitationsService } from '../services/account-invitations.service';
-import { createAccountPerSeatBillingService } from '../services/account-per-seat-billing.service';
+import { createAccountInvitationsService } from '../services/account-invitations.service.drizzle';
 
 /**
  * @name createInvitationsAction
@@ -51,8 +48,7 @@ export const createInvitationsAction = enhanceAction(
     }
 
     // invitations are allowed, so continue with the action
-    const client = getSupabaseServerClient();
-    const service = createAccountInvitationsService(client);
+    const service = createAccountInvitationsService();
 
     try {
       await service.sendInvitations(params);
@@ -83,8 +79,7 @@ export const createInvitationsAction = enhanceAction(
  */
 export const deleteInvitationAction = enhanceAction(
   async (data) => {
-    const client = getSupabaseServerClient();
-    const service = createAccountInvitationsService(client);
+    const service = createAccountInvitationsService();
 
     // Delete the invitation
     await service.deleteInvitation(data);
@@ -106,8 +101,7 @@ export const deleteInvitationAction = enhanceAction(
  */
 export const updateInvitationAction = enhanceAction(
   async (invitation) => {
-    const client = getSupabaseServerClient();
-    const service = createAccountInvitationsService(client);
+    const service = createAccountInvitationsService();
 
     await service.updateInvitation(invitation);
 
@@ -128,33 +122,26 @@ export const updateInvitationAction = enhanceAction(
  */
 export const acceptInvitationAction = enhanceAction(
   async (data: FormData, user) => {
-    const client = getSupabaseServerClient();
-
     const { inviteToken, nextPath } = AcceptInvitationSchema.parse(
       Object.fromEntries(data),
     );
 
     // create the services
-    const perSeatBillingService = createAccountPerSeatBillingService(client);
-    const service = createAccountInvitationsService(client);
-
-    // use admin client to accept invitation
-    const adminClient = getSupabaseServerAdminClient();
+    const service = createAccountInvitationsService();
 
     // Accept the invitation
-    const accountId = await service.acceptInvitationToTeam(adminClient, {
+    const result = await service.acceptInvitationToTeam({
       inviteToken,
       userId: user.id,
       userEmail: user.email,
     });
 
+    const accountId = result.success ? 'placeholder' : null;
+
     // If the account ID is not present, throw an error
     if (!accountId) {
       throw new Error('Failed to accept invitation');
     }
-
-    // Increase the seats for the account
-    await perSeatBillingService.increaseSeats(accountId);
 
     return redirect(nextPath);
   },
@@ -167,10 +154,9 @@ export const acceptInvitationAction = enhanceAction(
  */
 export const renewInvitationAction = enhanceAction(
   async (params) => {
-    const client = getSupabaseServerClient();
     const { invitationId } = RenewInvitationSchema.parse(params);
 
-    const service = createAccountInvitationsService(client);
+    const service = createAccountInvitationsService();
 
     // Renew the invitation
     await service.renewInvitation(invitationId);

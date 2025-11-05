@@ -2,8 +2,8 @@ import { SupabaseClient } from '@supabase/supabase-js';
 
 import { z } from 'zod';
 
-import { getLogger } from '@kit/shared/logger';
-import { Database, Tables } from '@kit/supabase/database';
+import { getLogger } from '@portal/shared/logger';
+import { Database, Tables } from '@portal/supabase/database';
 
 type Invitation = Tables<'invitations'>;
 
@@ -178,8 +178,8 @@ class AccountInvitationsDispatchService {
       name: this.namespace,
     };
 
-    const { renderInviteEmail } = await import('@kit/email-templates');
-    const { getMailer } = await import('@kit/mailers');
+    const { renderInviteEmail } = await import('@portal/email-templates');
+    const { getMailer } = await import('@portal/mailers');
 
     const mailer = await getMailer();
 

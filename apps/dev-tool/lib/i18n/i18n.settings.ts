@@ -1,4 +1,4 @@
-import { createI18nSettings } from '@kit/i18n';
+import { createI18nSettings } from '@portal/i18n';
 
 /**
  * The default language of the application.

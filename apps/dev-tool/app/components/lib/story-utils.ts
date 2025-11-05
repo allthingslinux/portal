@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { toast } from '@kit/ui/sonner';
+import { toast } from '@portal/ui/sonner';
 
 /**
  * Generic hook for managing component story controls

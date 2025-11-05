@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 import { ColumnDef } from '@tanstack/react-table';
 
-import { Database } from '@kit/supabase/database';
-import { DataTable } from '@kit/ui/enhanced-data-table';
-import { ProfileAvatar } from '@kit/ui/profile-avatar';
+import { Database } from '@portal/supabase/database';
+import { DataTable } from '@portal/ui/enhanced-data-table';
+import { ProfileAvatar } from '@portal/ui/profile-avatar';
 
 type Memberships =
   Database['public']['Functions']['get_account_members']['Returns'][number];

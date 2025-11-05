@@ -2,10 +2,10 @@ import { cache } from 'react';
 
 import type { Metadata } from 'next';
 
-import { createCmsClient } from '@kit/cms';
-import { getLogger } from '@kit/shared/logger';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+import { createCmsClient } from '@portal/cms';
+import { getLogger } from '@portal/shared/logger';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';

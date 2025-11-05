@@ -1,14 +1,13 @@
 {
-  "name": "next-supabase-saas-kit-turbo",
-  "version": "2.20.2",
+  "name": "portal",
+  "version": "1.0.0",
   "private": true,
   "sideEffects": false,
   "engines": {
     "node": ">=20.10.0"
   },
   "author": {
-    "url": "https://makerkit.dev",
-    "name": "MakerKit"
+    "name": "All Things Linux"
   },
   "scripts": {
     "turbo": "turbo",
@@ -32,11 +31,10 @@
     "supabase:web:typegen": "pnpm --filter web supabase:typegen",
     "supabase:web:reset": "pnpm --filter web supabase:reset",
     "supabase:web:test": "pnpm --filter web supabase:test",
-    "stripe:listen": "pnpm --filter '@kit/stripe' start",
     "env:generate": "turbo gen env",
     "env:validate": "turbo gen validate-env"
   },
-  "prettier": "@kit/prettier-config",
+  "prettier": "@portal/prettier-config",
   "packageManager": "pnpm@10.19.0",
   "devDependencies": {
     "@manypkg/cli": "^0.25.1",

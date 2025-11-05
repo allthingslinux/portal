@@ -1,6 +1,6 @@
-import { AdminDashboard } from '@kit/admin/components/admin-dashboard';
-import { AdminGuard } from '@kit/admin/components/admin-guard';
-import { PageBody, PageHeader } from '@kit/ui/page';
+import { AdminDashboard } from '@portal/admin/components/admin-dashboard';
+import { AdminGuard } from '@portal/admin/components/admin-guard';
+import { PageBody, PageHeader } from '@portal/ui/page';
 
 function AdminPage() {
   return (

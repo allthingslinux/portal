@@ -5,23 +5,23 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronDownIcon, Loader2Icon } from 'lucide-react';
 import { Subject, debounceTime } from 'rxjs';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { If } from '@kit/ui/if';
-import { Input } from '@kit/ui/input';
+} from '@portal/ui/dropdown-menu';
+import { If } from '@portal/ui/if';
+import { Input } from '@portal/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { toast } from '@kit/ui/sonner';
+} from '@portal/ui/select';
+import { toast } from '@portal/ui/sonner';
 import {
   Table,
   TableBody,
@@ -29,8 +29,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@kit/ui/table';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/table';
+import { cn } from '@portal/ui/utils';
 
 import {
   translateWithAIAction,

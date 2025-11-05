@@ -1,4 +1,4 @@
-import { PageHeader } from '@kit/ui/page';
+import { PageHeader } from '@portal/ui/page';
 
 export function HomeLayoutPageHeader(
   props: React.PropsWithChildren<{

@@ -1,9 +1,9 @@
 'use client';
 
-import { PersonalAccountDropdown } from '@kit/accounts/personal-account-dropdown';
-import { useSignOut } from '@kit/supabase/hooks/use-sign-out';
-import { useUser } from '@kit/supabase/hooks/use-user';
-import { JWTUserData } from '@kit/supabase/types';
+import { PersonalAccountDropdown } from '@portal/accounts/personal-account-dropdown';
+import { useSignOut } from '@portal/supabase/hooks/use-sign-out';
+import { useUser } from '@portal/supabase/hooks/use-user';
+import { JWTUserData } from '@portal/supabase/types';
 
 import featuresFlagConfig from '~/config/feature-flags.config';
 import pathsConfig from '~/config/paths.config';

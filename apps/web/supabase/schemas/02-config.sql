@@ -1,27 +1,18 @@
 /*
  * -------------------------------------------------------
  * Section: App Configuration
- * We create the configuration for the Supabase MakerKit to enable or disable features
+ * We create the configuration for the Supabase Portal to enable or disable features
  * -------------------------------------------------------
  */
 
 create table if not exists
   public.config (
-    enable_team_accounts boolean default true not null,
-    enable_account_billing boolean default true not null,
-    enable_team_account_billing boolean default true not null,
-    billing_provider public.billing_provider default 'stripe' not null
+    enable_team_accounts boolean default true not null
   );
 
-comment on table public.config is 'Configuration for the Supabase MakerKit.';
+comment on table public.config is 'Configuration for the Supabase Portal.';
 
 comment on column public.config.enable_team_accounts is 'Enable team accounts';
-
-comment on column public.config.enable_account_billing is 'Enable billing for individual accounts';
-
-comment on column public.config.enable_team_account_billing is 'Enable billing for team accounts';
-
-comment on column public.config.billing_provider is 'The billing provider to use';
 
 -- RLS(config)
 alter table public.config enable row level security;
@@ -29,12 +20,10 @@ alter table public.config enable row level security;
 -- create config row
 insert into
   public.config (
-    enable_team_accounts,
-    enable_account_billing,
-    enable_team_account_billing
+    enable_team_accounts
   )
 values
-  (true, true, true);
+  (true);
 
 -- Revoke all on accounts table from authenticated and service_role
 revoke all on public.config

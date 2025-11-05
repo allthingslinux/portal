@@ -2,7 +2,7 @@
 
 import { DatabaseIcon, FileTextIcon } from 'lucide-react';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@kit/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@portal/ui/tabs';
 
 interface McpServerTabsProps {
   prdManagerContent: React.ReactNode;

@@ -7,10 +7,10 @@ import type {
   SignInWithOAuthCredentials,
 } from '@supabase/supabase-js';
 
-import { useSignInWithProvider } from '@kit/supabase/hooks/use-sign-in-with-provider';
-import { If } from '@kit/ui/if';
-import { LoadingOverlay } from '@kit/ui/loading-overlay';
-import { Trans } from '@kit/ui/trans';
+import { useSignInWithProvider } from '@portal/supabase/hooks/use-sign-in-with-provider';
+import { If } from '@portal/ui/if';
+import { LoadingOverlay } from '@portal/ui/loading-overlay';
+import { Trans } from '@portal/ui/trans';
 
 import { useLastAuthMethod } from '../hooks/use-last-auth-method';
 import { AuthErrorAlert } from './auth-error-alert';

@@ -1,5 +1,5 @@
-import { Footer } from '@kit/ui/marketing';
-import { Trans } from '@kit/ui/trans';
+import { Footer } from '@portal/ui/marketing';
+import { Trans } from '@portal/ui/trans';
 
 import { AppLogo } from '~/components/app-logo';
 import appConfig from '~/config/app.config';

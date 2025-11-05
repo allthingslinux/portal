@@ -1,4 +1,4 @@
-import { createRegistry } from '@kit/shared/registry';
+import { createRegistry } from '@portal/shared/registry';
 
 import type { FeaturePolicyDefinition } from './declarative';
 import type { PolicyContext } from './types';

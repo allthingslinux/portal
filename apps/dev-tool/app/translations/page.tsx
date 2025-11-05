@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
-import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
-import { Page, PageBody, PageHeader } from '@kit/ui/page';
+import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
+import { Page, PageBody, PageHeader } from '@portal/ui/page';
 
 import { TranslationsComparison } from './components/translations-comparison';
 import { loadTranslations } from './lib/translations-loader';

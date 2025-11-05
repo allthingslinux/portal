@@ -5,9 +5,9 @@ import { useState, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 
-import { VerifyOtpForm } from '@kit/otp/components';
-import { useUser } from '@kit/supabase/hooks/use-user';
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
+import { VerifyOtpForm } from '@portal/otp/components';
+import { useUser } from '@portal/supabase/hooks/use-user';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -17,11 +17,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@kit/ui/alert-dialog';
-import { Button } from '@kit/ui/button';
-import { Form } from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/alert-dialog';
+import { Button } from '@portal/ui/button';
+import { Form } from '@portal/ui/form';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 import { TransferOwnershipConfirmationSchema } from '../../schema/transfer-ownership-confirmation.schema';
 import { transferOwnershipAction } from '../../server/actions/team-members-server-actions';

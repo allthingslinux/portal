@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation';
 
-import { UpdatePasswordForm } from '@kit/auth/password-reset';
-import { AuthLayoutShell } from '@kit/auth/shared';
-import { requireUser } from '@kit/supabase/require-user';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { UpdatePasswordForm } from '@portal/auth/password-reset';
+import { AuthLayoutShell } from '@portal/auth/shared';
+import { requireUser } from '@portal/supabase/require-user';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 import { AppLogo } from '~/components/app-logo';
 import pathsConfig from '~/config/paths.config';

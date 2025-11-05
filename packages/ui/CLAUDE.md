@@ -8,23 +8,23 @@ Import from `packages/ui/src/`:
 
 ```tsx
 // Shadcn components
-import { Button } from '@kit/ui/button';
-import { Card } from '@kit/ui/card';
-// Makerkit components
-import { If } from '@kit/ui/if';
-import { ProfileAvatar } from '@kit/ui/profile-avatar';
-import { toast } from '@kit/ui/sonner';
-import { Trans } from '@kit/ui/trans';
+import { Button } from '@portal/ui/button';
+import { Card } from '@portal/ui/card';
+// Portal components
+import { If } from '@portal/ui/if';
+import { ProfileAvatar } from '@portal/ui/profile-avatar';
+import { toast } from '@portal/ui/sonner';
+import { Trans } from '@portal/ui/trans';
 ```
 
 ## Styling Guidelines
 
 - Use **Tailwind CSS v4** with semantic classes
 - Prefer Shadcn-ui classes like `bg-background`, `text-muted-foreground`
-- Use `cn()` utility from `@kit/ui/cn` for class merging
+- Use `cn()` utility from `@portal/ui/cn` for class merging
 
 ```tsx
-import { cn } from '@kit/ui/cn';
+import { cn } from '@portal/ui/cn';
 
 function MyComponent({ className }) {
   return (
@@ -40,7 +40,7 @@ function MyComponent({ className }) {
 Use the `If` component from `packages/ui/src/makerkit/if.tsx`:
 
 ```tsx
-import { If } from '@kit/ui/if';
+import { If } from '@portal/ui/if';
 
 <If condition={isLoading} fallback={<Content />}>
   <Spinner />
@@ -102,7 +102,7 @@ const onSubmit = (data) => {
 Always use `Trans` component from `packages/ui/src/makerkit/trans.tsx`:
 
 ```tsx
-import { Trans } from '@kit/ui/trans';
+import { Trans } from '@portal/ui/trans';
 
 <Trans
   i18nKey="user:welcomeMessage"
@@ -120,10 +120,10 @@ import { Trans } from '@kit/ui/trans';
 
 ## Toast Notifications
 
-Use the `toast` utility from `@kit/ui/sonner`:
+Use the `toast` utility from `@portal/ui/sonner`:
 
 ```tsx
-import { toast } from '@kit/ui/sonner';
+import { toast } from '@portal/ui/sonner';
 
 // Simple toast
 toast.success('Success message');
@@ -142,7 +142,7 @@ await toast.promise(asyncFunction(), {
 ### Loading States
 
 ```tsx
-import { Spinner } from '@kit/ui/spinner';
+import { Spinner } from '@portal/ui/spinner';
 
 <If condition={isLoading} fallback={<Content />}>
   <Spinner className="h-4 w-4" />
@@ -152,7 +152,7 @@ import { Spinner } from '@kit/ui/spinner';
 ### Error Handling
 
 ```tsx
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
 <If condition={Boolean(error)}>
@@ -167,7 +167,7 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 ### Button Patterns
 
 ```tsx
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 
 // Loading button
 <Button disabled={isPending}>
@@ -191,7 +191,7 @@ import { Button } from '@kit/ui/button';
 ### Card Layouts
 
 ```tsx
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@kit/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@portal/ui/card';
 
 <Card>
   <CardHeader>
@@ -209,9 +209,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@kit/
 ### Input Fields
 
 ```tsx
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@kit/ui/form';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@portal/ui/form';
 
 <FormField
   name="title"
@@ -231,7 +231,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@kit/u
 ### Select Components
 
 ```tsx
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@kit/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@portal/ui/select';
 
 <FormField
   name="category"

@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   Field,
   FieldContent,
@@ -22,13 +22,13 @@ import {
   FieldSeparator,
   FieldSet,
   FieldTitle,
-} from '@kit/ui/field';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
-import { RadioGroup, RadioGroupItem } from '@kit/ui/radio-group';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { Textarea } from '@kit/ui/textarea';
+} from '@portal/ui/field';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
+import { RadioGroup, RadioGroupItem } from '@portal/ui/radio-group';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { Textarea } from '@portal/ui/textarea';
 
 import {
   formatCodeBlock,
@@ -157,7 +157,7 @@ export function FieldStory() {
 </FieldSet>`;
 
     return formatCodeBlock(code, [
-      "import { Button } from '@kit/ui/button';",
+      "import { Button } from '@portal/ui/button';",
       `import { 
   Field, 
   FieldContent, 
@@ -169,12 +169,12 @@ export function FieldStory() {
   FieldSeparator, 
   FieldSet, 
   FieldTitle 
-} from '@kit/ui/field';`,
-      "import { Input } from '@kit/ui/input';",
-      "import { Label } from '@kit/ui/label';",
-      "import { RadioGroup, RadioGroupItem } from '@kit/ui/radio-group';",
-      "import { Switch } from '@kit/ui/switch';",
-      "import { Textarea } from '@kit/ui/textarea';",
+} from '@portal/ui/field';`,
+      "import { Input } from '@portal/ui/input';",
+      "import { Label } from '@portal/ui/label';",
+      "import { RadioGroup, RadioGroupItem } from '@portal/ui/radio-group';",
+      "import { Switch } from '@portal/ui/switch';",
+      "import { Textarea } from '@portal/ui/textarea';",
     ]);
   }, [
     controls.includeSeparator,

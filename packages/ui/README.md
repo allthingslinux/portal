@@ -1,12 +1,13 @@
-# UI - @kit/ui
+# UI Components
 
-This package is responsible for managing the UI components and styles across the app.
+This package contains all the UI components used in the Portal application.
 
-This package define two sets of components:
+## Component Categories
 
-- `Shadcn UI`: A set of UI components that can be used across the app using shadcn UI
-- `Makerkit-specific`: Components specific to MakerKit
+- `shadcn`: Base components from shadcn/ui
+- `makerkit`: Portal-specific custom components
+- `marketing`: Marketing page components
 
-## Installing a Shadcn UI component
+## Usage
 
- Please refer to the [documentation](https://makerkit.dev/docs/next-supabase-turbo/components/shadcn).
+Import components from their respective paths as defined in package.json exports.

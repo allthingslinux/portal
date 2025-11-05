@@ -1,5 +1,5 @@
-import { requireUser } from '@kit/supabase/require-user';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { requireUser } from '@portal/supabase/require-user';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
 
 import { SiteFooter } from '~/(marketing)/_components/site-footer';
 import { SiteHeader } from '~/(marketing)/_components/site-header';

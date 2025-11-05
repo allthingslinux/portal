@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 
-import { Toaster } from '@kit/ui/sonner';
-import { cn } from '@kit/ui/utils';
+import { Toaster } from '@portal/ui/sonner';
+import { cn } from '@portal/ui/utils';
 
 import { RootProviders } from '~/components/root-providers';
 import { getFontsClassName } from '~/lib/fonts';

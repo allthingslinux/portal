@@ -2,7 +2,7 @@ import 'server-only';
 
 import { SupabaseClient } from '@supabase/supabase-js';
 
-import { Database } from '@kit/supabase/database';
+import { Database } from '@portal/supabase/database';
 
 export function createAdminAccountsService(client: SupabaseClient<Database>) {
   return new AdminAccountsService(client);

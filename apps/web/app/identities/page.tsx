@@ -5,13 +5,13 @@ import { redirect } from 'next/navigation';
 
 import type { Provider } from '@supabase/supabase-js';
 
-import { LinkAccountsList } from '@kit/accounts/personal-account-settings';
-import { AuthLayoutShell } from '@kit/auth/shared';
-import { requireUser } from '@kit/supabase/require-user';
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { Button } from '@kit/ui/button';
-import { Heading } from '@kit/ui/heading';
-import { Trans } from '@kit/ui/trans';
+import { LinkAccountsList } from '@portal/accounts/personal-account-settings';
+import { AuthLayoutShell } from '@portal/auth/shared';
+import { requireUser } from '@portal/supabase/require-user';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
+import { Button } from '@portal/ui/button';
+import { Heading } from '@portal/ui/heading';
+import { Trans } from '@portal/ui/trans';
 
 import { AppLogo } from '~/components/app-logo';
 import authConfig from '~/config/auth.config';

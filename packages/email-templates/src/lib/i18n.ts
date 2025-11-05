@@ -1,4 +1,4 @@
-import { initializeServerI18n } from '@kit/i18n/server';
+import { initializeServerI18n } from '@portal/i18n/server';
 
 export function initializeEmailI18n(params: {
   language: string | undefined;

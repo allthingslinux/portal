@@ -2,14 +2,14 @@
 
 import { Check, Copy } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 
 import { useCopyCode } from '../lib/story-utils';
 

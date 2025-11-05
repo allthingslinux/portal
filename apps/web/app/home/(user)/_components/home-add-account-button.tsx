@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import { CreateTeamAccountDialog } from '@kit/team-accounts/components';
-import { Button } from '@kit/ui/button';
-import { Trans } from '@kit/ui/trans';
+import { CreateTeamAccountDialog } from '@portal/team-accounts/components';
+import { Button } from '@portal/ui/button';
+import { Trans } from '@portal/ui/trans';
 
 export function HomeAddAccountButton(props: { className?: string }) {
   const [isAddingAccount, setIsAddingAccount] = useState(false);

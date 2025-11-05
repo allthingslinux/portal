@@ -3,7 +3,6 @@ import Link from 'next/link';
 
 import { ArrowRightIcon, LayoutDashboard } from 'lucide-react';
 
-import { PricingTable } from '@kit/billing-gateway/marketing';
 import {
   CtaButton,
   EcosystemShowcase,
@@ -14,12 +13,9 @@ import {
   Hero,
   Pill,
   PillActionButton,
-  SecondaryHero,
-} from '@kit/ui/marketing';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/marketing';
+import { Trans } from '@portal/ui/trans';
 
-import billingConfig from '~/config/billing.config';
-import pathsConfig from '~/config/paths.config';
 import { withI18n } from '~/lib/i18n/with-i18n';
 
 function Home() {
@@ -44,9 +40,8 @@ function Home() {
           }
           subtitle={
             <span>
-              Makerkit gives you a production-ready boilerplate to build your
-              SaaS faster than ever before with the next-gen SaaS Starter Kit.
-              Get started in minutes.
+              Portal gives you a production-ready boilerplate to build your SaaS
+              faster than ever before. Get started in minutes.
             </span>
           }
           cta={<MainCallToActionButton />}
@@ -76,7 +71,7 @@ function Home() {
                 .{' '}
                 <span className="text-secondary-foreground/70 block font-normal tracking-tight">
                   Unleash your creativity and build your SaaS faster than ever
-                  with Makerkit.
+                  with Portal.
                 </span>
               </>
             }
@@ -91,25 +86,19 @@ function Home() {
               <FeatureCard
                 className={'relative col-span-1 overflow-hidden'}
                 label={'Beautiful Dashboard'}
-                description={`Makerkit provides a beautiful dashboard to manage your SaaS business.`}
+                description={`A beautiful dashboard to manage your SaaS business.`}
               ></FeatureCard>
 
               <FeatureCard
                 className={'relative col-span-1 w-full overflow-hidden'}
                 label={'Authentication'}
-                description={`Makerkit provides a variety of providers to allow your users to sign in.`}
+                description={`Multiple authentication providers to allow your users to sign in.`}
               ></FeatureCard>
 
               <FeatureCard
                 className={'relative col-span-1 overflow-hidden'}
                 label={'Multi Tenancy'}
                 description={`Multi tenant memberships for your SaaS business.`}
-              />
-
-              <FeatureCard
-                className={'relative col-span-1 overflow-hidden'}
-                label={'Billing'}
-                description={`Makerkit supports multiple payment gateways to charge your customers.`}
               />
 
               <FeatureCard
@@ -121,7 +110,7 @@ function Home() {
               <FeatureCard
                 className={'relative col-span-1 overflow-hidden'}
                 label={'Documentation'}
-                description={`Makerkit provides a comprehensive documentation to help you get started.`}
+                description={`Comprehensive documentation to help you get started.`}
               />
             </FeatureGrid>
           </FeatureShowcase>
@@ -131,7 +120,7 @@ function Home() {
       <div className={'container mx-auto'}>
         <EcosystemShowcase
           heading="The ultimate SaaS Starter Kit for founders."
-          description="Unleash your creativity and build your SaaS faster than ever with Makerkit. Get started in minutes and ship your SaaS in no time."
+          description="Unleash your creativity and build your SaaS faster than ever with Portal. Get started in minutes and ship your SaaS in no time."
         >
           <Image
             className="rounded-md"
@@ -141,30 +130,6 @@ function Home() {
             height={1000}
           />
         </EcosystemShowcase>
-      </div>
-
-      <div className={'container mx-auto'}>
-        <div
-          className={
-            'flex flex-col items-center justify-center space-y-12 py-4 xl:py-8'
-          }
-        >
-          <SecondaryHero
-            pill={<Pill label="Start for free">No credit card required.</Pill>}
-            heading="Fair pricing for all types of businesses"
-            subheading="Get started on our free plan and upgrade when you are ready."
-          />
-
-          <div className={'w-full'}>
-            <PricingTable
-              config={billingConfig}
-              paths={{
-                signUp: pathsConfig.auth.signUp,
-                return: pathsConfig.app.home,
-              }}
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

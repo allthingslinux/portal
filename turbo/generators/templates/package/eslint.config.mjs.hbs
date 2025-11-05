@@ -1,3 +1,3 @@
-import eslintConfigBase from '@kit/eslint-config/base.js';
+import eslintConfigBase from '@portal/eslint-config/base.js';
 
 export default eslintConfigBase;

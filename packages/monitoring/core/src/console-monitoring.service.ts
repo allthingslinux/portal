@@ -1,4 +1,4 @@
-import { MonitoringService } from '@kit/monitoring-core';
+import { MonitoringService } from '@portal/monitoring-core';
 
 export class ConsoleMonitoringService implements MonitoringService {
   identifyUser(data: { id: string }) {

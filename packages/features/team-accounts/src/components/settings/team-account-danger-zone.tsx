@@ -6,10 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
-import { ErrorBoundary } from '@kit/monitoring/components';
-import { VerifyOtpForm } from '@kit/otp/components';
-import { useUser } from '@kit/supabase/hooks/use-user';
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
+import { ErrorBoundary } from '@portal/monitoring/components';
+import { VerifyOtpForm } from '@portal/otp/components';
+import { useUser } from '@portal/supabase/hooks/use-user';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -19,15 +19,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@kit/ui/alert-dialog';
-import { Button } from '@kit/ui/button';
+} from '@portal/ui/alert-dialog';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   Form,
   FormControl,
@@ -36,10 +36,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@kit/ui/form';
-import { Input } from '@kit/ui/input';
-import { LoadingOverlay } from '@kit/ui/loading-overlay';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/form';
+import { Input } from '@portal/ui/input';
+import { LoadingOverlay } from '@portal/ui/loading-overlay';
+import { Trans } from '@portal/ui/trans';
 
 import { deleteTeamAccountAction } from '../../server/actions/delete-team-account-server-actions';
 import { leaveTeamAccountAction } from '../../server/actions/leave-team-account-server-actions';

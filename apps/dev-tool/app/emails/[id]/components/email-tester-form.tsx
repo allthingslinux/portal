@@ -7,17 +7,17 @@ import { sendEmailAction } from '@/app/emails/lib/server-actions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from '@kit/ui/form';
-import { Input } from '@kit/ui/input';
-import { toast } from '@kit/ui/sonner';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/form';
+import { Input } from '@portal/ui/input';
+import { toast } from '@portal/ui/sonner';
+import { Switch } from '@portal/ui/switch';
 
 export function EmailTesterForm(props: {
   template: string;

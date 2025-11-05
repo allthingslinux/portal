@@ -18,7 +18,7 @@
 /* content sources - update the below if you add a new path */
 @source '../../../packages/*/src/**/*.{ts,tsx}';
 @source '../../../packages/features/*/src/**/*.{ts,tsx}';
-@source '../../../packages/billing/*/src/**/*.{ts,tsx}';
+
 @source '../../../packages/plugins/*/src/**/*.{ts,tsx}';
 @source '../../../packages/cms/*/src/**/*.{ts,tsx}';
 @source '../{app,components,config,lib}/**/*.{ts,tsx}';

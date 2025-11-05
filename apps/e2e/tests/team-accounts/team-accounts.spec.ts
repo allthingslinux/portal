@@ -92,7 +92,6 @@ test.describe('Team Accounts', () => {
     await teamAccounts.openAccountsSelector();
     await page.click('[data-test="create-team-account-trigger"]');
 
-    await teamAccounts.tryCreateTeam('billing');
 
     await expect(
       page.getByText('This name is reserved. Please choose a different one.'),

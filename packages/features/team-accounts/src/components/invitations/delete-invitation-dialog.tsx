@@ -1,6 +1,6 @@
 import { useState, useTransition } from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -9,10 +9,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@kit/ui/alert-dialog';
-import { Button } from '@kit/ui/button';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/alert-dialog';
+import { Button } from '@portal/ui/button';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 import { deleteInvitationAction } from '../../server/actions/team-invitations-server-actions';
 

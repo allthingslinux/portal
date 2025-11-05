@@ -1,9 +1,9 @@
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { createTeamAccountsApi } from '@kit/team-accounts/api';
-import { TeamAccountSettingsContainer } from '@kit/team-accounts/components';
-import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
-import { PageBody } from '@kit/ui/page';
-import { Trans } from '@kit/ui/trans';
+import { getSupabaseServerClient } from '@portal/supabase/server-client';
+import { createTeamAccountsApiDrizzle } from '@portal/team-accounts/api.drizzle';
+import { TeamAccountSettingsContainer } from '@portal/team-accounts/components';
+import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
+import { PageBody } from '@portal/ui/page';
+import { Trans } from '@portal/ui/trans';
 
 import featuresFlagConfig from '~/config/feature-flags.config';
 import pathsConfig from '~/config/paths.config';
@@ -30,7 +30,7 @@ const paths = {
 };
 
 async function TeamAccountSettingsPage(props: TeamAccountSettingsPageProps) {
-  const api = createTeamAccountsApi(getSupabaseServerClient());
+  const api = createTeamAccountsApiDrizzle();
   const slug = (await props.params).account;
   const data = await api.getTeamAccount(slug);
 

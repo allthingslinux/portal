@@ -5,23 +5,23 @@ import { useRouter } from 'next/navigation';
 
 import { Home, LogOut, Menu } from 'lucide-react';
 
-import { AccountSelector } from '@kit/accounts/account-selector';
-import { useSignOut } from '@kit/supabase/hooks/use-sign-out';
+import { AccountSelector } from '@portal/accounts/account-selector';
+import { useSignOut } from '@portal/supabase/hooks/use-sign-out';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@kit/ui/dialog';
+} from '@portal/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/dropdown-menu';
+import { Trans } from '@portal/ui/trans';
 
 import featureFlagsConfig from '~/config/feature-flags.config';
 import pathsConfig from '~/config/paths.config';

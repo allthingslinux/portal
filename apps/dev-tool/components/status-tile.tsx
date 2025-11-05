@@ -2,8 +2,8 @@
 
 import { AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Card, CardContent } from '@kit/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { Card, CardContent } from '@portal/ui/card';
 
 export const ServiceStatus = {
   CHECKING: 'checking',

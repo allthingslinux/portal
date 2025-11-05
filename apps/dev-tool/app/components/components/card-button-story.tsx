@@ -11,25 +11,25 @@ import {
   Users,
 } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
+import { Badge } from '@portal/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   CardButton,
   CardButtonContent,
   CardButtonFooter,
   CardButtonHeader,
   CardButtonTitle,
-} from '@kit/ui/card-button';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { toast } from '@kit/ui/sonner';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/card-button';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { toast } from '@portal/ui/sonner';
+import { Switch } from '@portal/ui/switch';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
@@ -205,7 +205,7 @@ export function CardButtonStory() {
               </CardButtonHeader>
               <CardButtonContent>
                 <p className="text-muted-foreground text-sm">
-                  Configure payment methods, invoicing, and subscription plans.
+                  Configure account settings and preferences.
                 </p>
               </CardButtonContent>
             </CardButton>

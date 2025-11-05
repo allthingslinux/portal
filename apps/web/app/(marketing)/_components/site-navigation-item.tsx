@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { NavigationMenuItem } from '@kit/ui/navigation-menu';
-import { cn, isRouteActive } from '@kit/ui/utils';
+import { NavigationMenuItem } from '@portal/ui/navigation-menu';
+import { cn, isRouteActive } from '@portal/ui/utils';
 
 const getClassName = (path: string, currentPathName: string) => {
   const isActive = isRouteActive(path, currentPathName);

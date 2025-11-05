@@ -5,25 +5,25 @@ import { useMemo } from 'react';
 import { faker } from '@faker-js/faker';
 import { MoreHorizontal } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { toast } from '@kit/ui/sonner';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/dropdown-menu';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { toast } from '@portal/ui/sonner';
+import { Switch } from '@portal/ui/switch';
 import {
   Table,
   TableBody,
@@ -31,7 +31,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@kit/ui/table';
+} from '@portal/ui/table';
 
 import { useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
@@ -173,7 +173,7 @@ export function SimpleDataTableStory() {
   TableHead,
   TableHeader,
   TableRow,
-} from '@kit/ui/table';
+} from '@portal/ui/table';
 
 interface User {
   id: string;

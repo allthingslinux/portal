@@ -6,9 +6,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useSignInWithOtp } from '@kit/supabase/hooks/use-sign-in-with-otp';
-import { useVerifyOtp } from '@kit/supabase/hooks/use-verify-otp';
-import { Button } from '@kit/ui/button';
+import { useSignInWithOtp } from '@portal/supabase/hooks/use-sign-in-with-otp';
+import { useVerifyOtp } from '@portal/supabase/hooks/use-verify-otp';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
@@ -16,15 +16,15 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from '@kit/ui/form';
+} from '@portal/ui/form';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@kit/ui/input-otp';
-import { Spinner } from '@kit/ui/spinner';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/input-otp';
+import { Spinner } from '@portal/ui/spinner';
+import { Trans } from '@portal/ui/trans';
 
 import { useCaptcha } from '../captcha/client';
 import { useLastAuthMethod } from '../hooks/use-last-auth-method';

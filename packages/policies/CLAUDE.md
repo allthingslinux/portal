@@ -1,6 +1,6 @@
 # FeaturePolicy API - Registry-Based Policy System
 
-A unified, registry-based foundation for implementing business rules across all Makerkit features.
+A unified, registry-based foundation for implementing business rules across all Portal features.
 
 ## Overview
 
@@ -19,7 +19,7 @@ The FeaturePolicy API provides:
 ```typescript
 import { z } from 'zod';
 
-import { allow, createPolicyRegistry, definePolicy, deny } from '@kit/policies';
+import { allow, createPolicyRegistry, definePolicy, deny } from '@portal/policies';
 
 const registry = createPolicyRegistry();
 
@@ -69,7 +69,7 @@ import {
   createPoliciesFromRegistry,
   createPolicyEvaluator,
   createPolicyRegistry,
-} from '@kit/policies';
+} from '@portal/policies';
 
 const registry = createPolicyRegistry();
 
@@ -114,7 +114,7 @@ const result = await evaluator.evaluateGroups(
 ### Real-World Multi-Stage Team Invitation Flow
 
 ```typescript
-import { createPolicy, createPolicyEvaluator } from '@kit/policies';
+import { createPolicy, createPolicyEvaluator } from '@portal/policies';
 
 // Complex business logic: (Authentication AND Email Validation) AND (Subscription OR Trial) AND Billing Limits
 async function validateTeamInvitation(context: InvitationContext) {
@@ -602,7 +602,7 @@ if (!result.allowed) {
 ### 1. Register Complex Policy with Configuration
 
 ```typescript
-import { createPolicyRegistry, definePolicy } from '@kit/policies';
+import { createPolicyRegistry, definePolicy } from '@portal/policies';
 
 const registry = createPolicyRegistry();
 

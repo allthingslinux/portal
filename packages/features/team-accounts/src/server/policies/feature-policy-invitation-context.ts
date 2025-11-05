@@ -1,9 +1,9 @@
-import type { PolicyContext, PolicyResult } from '@kit/policies';
-import { Database } from '@kit/supabase/database';
+import type { PolicyContext, PolicyResult } from '@portal/policies';
+import { Database } from '@portal/supabase/database';
 
 /**
  * Invitation policy context that extends the base PolicyContext
- * from @kit/policies for invitation-specific data.
+ * from @portal/policies for invitation-specific data.
  */
 export interface FeaturePolicyInvitationContext extends PolicyContext {
   /** The account slug being invited to */
@@ -16,7 +16,6 @@ export interface FeaturePolicyInvitationContext extends PolicyContext {
   subscription?: {
     id: string;
     status: Database['public']['Enums']['subscription_status'];
-    provider: Database['public']['Enums']['billing_provider'];
     active: boolean;
     trial_starts_at?: string;
     trial_ends_at?: string;
@@ -47,7 +46,7 @@ export interface FeaturePolicyInvitationContext extends PolicyContext {
 
 /**
  * Invitation policy result that extends the base PolicyResult
- * from @kit/policies while maintaining backward compatibility.
+ * from @portal/policies while maintaining backward compatibility.
  */
 export interface FeaturePolicyInvitationResult extends PolicyResult {
   /** Whether the invitations are allowed */

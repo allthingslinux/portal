@@ -12,19 +12,19 @@ import {
   Shield,
 } from 'lucide-react';
 
-import { JWTUserData } from '@kit/supabase/types';
+import { JWTUserData } from '@portal/supabase/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { If } from '@kit/ui/if';
-import { SubMenuModeToggle } from '@kit/ui/mode-toggle';
-import { ProfileAvatar } from '@kit/ui/profile-avatar';
-import { Trans } from '@kit/ui/trans';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/dropdown-menu';
+import { If } from '@portal/ui/if';
+import { SubMenuModeToggle } from '@portal/ui/mode-toggle';
+import { ProfileAvatar } from '@portal/ui/profile-avatar';
+import { Trans } from '@portal/ui/trans';
+import { cn } from '@portal/ui/utils';
 
 import { usePersonalAccountData } from '../hooks/use-personal-account-data';
 

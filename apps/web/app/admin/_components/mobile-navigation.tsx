@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
+} from '@portal/ui/dropdown-menu';
 
 export function AdminMobileNavigation() {
   return (

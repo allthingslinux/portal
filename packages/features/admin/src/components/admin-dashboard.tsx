@@ -4,7 +4,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
+} from '@portal/ui/card';
 
 import { loadAdminDashboard } from '../lib/server/loaders/admin-dashboard.loader';
 

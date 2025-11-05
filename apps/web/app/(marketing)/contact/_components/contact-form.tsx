@@ -5,8 +5,8 @@ import { useState, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { Alert, AlertDescription, AlertTitle } from '@kit/ui/alert';
-import { Button } from '@kit/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@portal/ui/alert';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
@@ -14,10 +14,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@kit/ui/form';
-import { Input } from '@kit/ui/input';
-import { Textarea } from '@kit/ui/textarea';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/form';
+import { Input } from '@portal/ui/input';
+import { Textarea } from '@portal/ui/textarea';
+import { Trans } from '@portal/ui/trans';
 
 import { ContactEmailSchema } from '~/(marketing)/contact/_lib/contact-email.schema';
 import { sendContactEmail } from '~/(marketing)/contact/_lib/server/server-actions';

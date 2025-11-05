@@ -4,18 +4,18 @@ import { useState } from 'react';
 
 import { CalendarIcon } from 'lucide-react';
 
-import { Button } from '@kit/ui/button';
-import { Calendar } from '@kit/ui/calendar';
-import { Card, CardContent } from '@kit/ui/card';
-import { Popover, PopoverContent, PopoverTrigger } from '@kit/ui/popover';
+import { Button } from '@portal/ui/button';
+import { Calendar } from '@portal/ui/calendar';
+import { Card, CardContent } from '@portal/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@portal/ui/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
 
 import {
   generateImportStatement,
@@ -402,7 +402,7 @@ export default function CalendarStory() {
             <h4 className="mb-2 text-base font-medium">Basic Single Date</h4>
             <div className="bg-muted/50 rounded-lg p-4">
               <pre className="overflow-x-auto text-sm">
-                <code>{`import { Calendar } from '@kit/ui/calendar';
+                <code>{`import { Calendar } from '@portal/ui/calendar';
 
 function DatePicker() {
   const [date, setDate] = useState<Date>();
@@ -424,7 +424,7 @@ function DatePicker() {
             <h4 className="mb-2 text-base font-medium">Date Range Selection</h4>
             <div className="bg-muted/50 rounded-lg p-4">
               <pre className="overflow-x-auto text-sm">
-                <code>{`import { Calendar } from '@kit/ui/calendar';
+                <code>{`import { Calendar } from '@portal/ui/calendar';
 
 function DateRangePicker() {
   const [range, setRange] = useState<{from?: Date, to?: Date}>({});
@@ -449,7 +449,7 @@ function DateRangePicker() {
             </h4>
             <div className="bg-muted/50 rounded-lg p-4">
               <pre className="overflow-x-auto text-sm">
-                <code>{`import { Calendar } from '@kit/ui/calendar';
+                <code>{`import { Calendar } from '@portal/ui/calendar';
 
 function MultiDatePicker() {
   const [dates, setDates] = useState<Date[]>([]);
@@ -596,7 +596,7 @@ function MultiDatePicker() {
 
     const importStatement = generateImportStatement(
       ['Calendar'],
-      '@kit/ui/calendar',
+      '@portal/ui/calendar',
     );
 
     let stateDeclaration = '';

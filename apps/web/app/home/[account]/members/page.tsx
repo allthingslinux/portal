@@ -1,23 +1,22 @@
 import { PlusCircle } from 'lucide-react';
 
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
 import {
   AccountInvitationsTable,
   AccountMembersTable,
   InviteMembersDialogContainer,
-} from '@kit/team-accounts/components';
-import { AppBreadcrumbs } from '@kit/ui/app-breadcrumbs';
-import { Button } from '@kit/ui/button';
+} from '@portal/team-accounts/components';
+import { AppBreadcrumbs } from '@portal/ui/app-breadcrumbs';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { If } from '@kit/ui/if';
-import { PageBody } from '@kit/ui/page';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/card';
+import { If } from '@portal/ui/if';
+import { PageBody } from '@portal/ui/page';
+import { Trans } from '@portal/ui/trans';
 
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
 import { withI18n } from '~/lib/i18n/with-i18n';
@@ -40,11 +39,10 @@ export const generateMetadata = async () => {
 };
 
 async function TeamAccountMembersPage({ params }: TeamAccountMembersPageProps) {
-  const client = getSupabaseServerClient();
   const slug = (await params).account;
 
   const [members, invitations, canAddMember, { user, account }] =
-    await loadMembersPageData(client, slug);
+    await loadMembersPageData(slug);
 
   const canManageRoles = account.permissions.includes('roles.manage');
   const canManageInvitations = account.permissions.includes('invites.manage');

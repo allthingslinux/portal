@@ -15,28 +15,28 @@ import {
   Zap,
 } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Checkbox } from '@kit/ui/checkbox';
-import { Input } from '@kit/ui/input';
-import { Label } from '@kit/ui/label';
+} from '@portal/ui/card';
+import { Checkbox } from '@portal/ui/checkbox';
+import { Input } from '@portal/ui/input';
+import { Label } from '@portal/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/select';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { cn } from '@portal/ui/utils';
 
 import {
   generateImportStatement,
@@ -964,7 +964,7 @@ const apiReference = {
   examples: [
     {
       title: 'Basic Usage',
-      code: `import { Checkbox } from '@kit/ui/checkbox';
+      code: `import { Checkbox } from '@portal/ui/checkbox';
 
 <div className="flex items-center space-x-2">
   <Checkbox id="terms" />
@@ -994,7 +994,7 @@ const apiReference = {
     },
     {
       title: 'With Label Component',
-      code: `import { Label } from '@kit/ui/label';
+      code: `import { Label } from '@portal/ui/label';
 
 <div className="items-top flex space-x-2">
   <Checkbox id="terms1" />
@@ -1123,9 +1123,9 @@ export default function CheckboxStory() {
 
     const importStatement = generateImportStatement(
       ['Checkbox'],
-      '@kit/ui/checkbox',
+      '@portal/ui/checkbox',
     );
-    const labelImport = generateImportStatement(['Label'], '@kit/ui/label');
+    const labelImport = generateImportStatement(['Label'], '@portal/ui/label');
     const stateImport = 'const [checked, setChecked] = useState(false);';
 
     const checkboxComponent = `<div className="flex items-center space-x-2">

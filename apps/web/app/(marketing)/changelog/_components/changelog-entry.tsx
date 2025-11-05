@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-import { type Cms } from '@kit/cms';
-import { If } from '@kit/ui/if';
-import { cn } from '@kit/ui/utils';
+import { type Cms } from '@portal/cms';
+import { If } from '@portal/ui/if';
+import { cn } from '@portal/ui/utils';
 
 import { DateBadge } from './date-badge';
 

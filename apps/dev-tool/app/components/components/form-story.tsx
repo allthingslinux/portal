@@ -6,10 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Checkbox } from '@kit/ui/checkbox';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Checkbox } from '@portal/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -18,18 +18,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@kit/ui/form';
-import { Input } from '@kit/ui/input';
-import { RadioGroup, RadioGroupItem } from '@kit/ui/radio-group';
+} from '@portal/ui/form';
+import { Input } from '@portal/ui/input';
+import { RadioGroup, RadioGroupItem } from '@portal/ui/radio-group';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@kit/ui/select';
-import { Switch } from '@kit/ui/switch';
-import { Textarea } from '@kit/ui/textarea';
+} from '@portal/ui/select';
+import { Switch } from '@portal/ui/switch';
+import { Textarea } from '@portal/ui/textarea';
 
 import { generateImportStatement } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
@@ -116,9 +116,9 @@ export default function FormStory() {
       formComponents.push('FormDescription');
     }
 
-    const formImport = generateImportStatement(formComponents, '@kit/ui/form');
-    const inputImport = generateImportStatement(['Input'], '@kit/ui/input');
-    const buttonImport = generateImportStatement(['Button'], '@kit/ui/button');
+    const formImport = generateImportStatement(formComponents, '@portal/ui/form');
+    const inputImport = generateImportStatement(['Input'], '@portal/ui/input');
+    const buttonImport = generateImportStatement(['Button'], '@portal/ui/button');
     const hookFormImports = `import { useForm } from 'react-hook-form';\nimport { zodResolver } from '@hookform/resolvers/zod';\nimport { z } from 'zod';`;
 
     let schemaCode = '';
@@ -1057,7 +1057,7 @@ export default function FormStory() {
                 {`import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@kit/ui/form';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@portal/ui/form';
 
 const formSchema = z.object({
   username: z.string().min(2, 'Username must be at least 2 characters.'),

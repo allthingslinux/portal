@@ -4,16 +4,16 @@ import { useMemo, useState } from 'react';
 
 import { faker } from '@faker-js/faker';
 
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { Checkbox } from '@kit/ui/checkbox';
+} from '@portal/ui/card';
+import { Checkbox } from '@portal/ui/checkbox';
 import {
   ColumnDef,
   ColumnPinningState,
@@ -21,12 +21,12 @@ import {
   VisibilityState,
   flexRender,
   useColumnManagement,
-} from '@kit/ui/enhanced-data-table';
-import { Label } from '@kit/ui/label';
-import { Separator } from '@kit/ui/separator';
-import { Switch } from '@kit/ui/switch';
-import { TableCell } from '@kit/ui/table';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/enhanced-data-table';
+import { Label } from '@portal/ui/label';
+import { Separator } from '@portal/ui/separator';
+import { Switch } from '@portal/ui/switch';
+import { TableCell } from '@portal/ui/table';
+import { cn } from '@portal/ui/utils';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
@@ -1676,9 +1676,9 @@ export function DataTableStory() {
     );
 
     return `import { useState } from 'react';
-import { DataTable, ColumnDef${controls.enableSelection || controls.enableColumnVisibility || controls.enableColumnPinning ? ', useColumnManagement' : ''} } from '@kit/ui/enhanced-data-table';${controls.enableSelection ? "\nimport { Checkbox } from '@kit/ui/checkbox';" : ''}
-import { Badge } from '@kit/ui/badge';
-import { Button } from '@kit/ui/button';
+import { DataTable, ColumnDef${controls.enableSelection || controls.enableColumnVisibility || controls.enableColumnPinning ? ', useColumnManagement' : ''} } from '@portal/ui/enhanced-data-table';${controls.enableSelection ? "\nimport { Checkbox } from '@portal/ui/checkbox';" : ''}
+import { Badge } from '@portal/ui/badge';
+import { Button } from '@portal/ui/button';
 
 interface User {
   id: string;

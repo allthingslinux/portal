@@ -6,8 +6,8 @@ import { CaretSortIcon, PersonIcon } from '@radix-ui/react-icons';
 import { CheckCircle, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@kit/ui/avatar';
-import { Button } from '@kit/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@portal/ui/avatar';
+import { Button } from '@portal/ui/button';
 import {
   Command,
   CommandGroup,
@@ -15,12 +15,12 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@kit/ui/command';
-import { If } from '@kit/ui/if';
-import { Popover, PopoverContent, PopoverTrigger } from '@kit/ui/popover';
-import { Separator } from '@kit/ui/separator';
-import { Trans } from '@kit/ui/trans';
-import { cn } from '@kit/ui/utils';
+} from '@portal/ui/command';
+import { If } from '@portal/ui/if';
+import { Popover, PopoverContent, PopoverTrigger } from '@portal/ui/popover';
+import { Separator } from '@portal/ui/separator';
+import { Trans } from '@portal/ui/trans';
+import { cn } from '@portal/ui/utils';
 
 import { CreateTeamAccountDialog } from '../../../team-accounts/src/components/create-team-account-dialog';
 import { usePersonalAccountData } from '../hooks/use-personal-account-data';

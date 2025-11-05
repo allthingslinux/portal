@@ -9,7 +9,7 @@ export function createPackageGenerator(plop: PlopTypes.NodePlopAPI) {
         type: 'input',
         name: 'name',
         message:
-          'What is the name of the package? (You can skip the `@kit/` prefix)',
+          'What is the name of the package? (You can skip the `@portal/` prefix)',
       },
       {
         type: 'input',
@@ -21,8 +21,8 @@ export function createPackageGenerator(plop: PlopTypes.NodePlopAPI) {
     actions: [
       (answers) => {
         if ('name' in answers && typeof answers.name === 'string') {
-          if (answers.name.startsWith('@kit/')) {
-            answers.name = answers.name.replace('@kit/', '');
+          if (answers.name.startsWith('@portal/')) {
+            answers.name = answers.name.replace('@portal/', '');
           }
         }
         return 'Config sanitized';

@@ -1,3 +1,3 @@
-# CMS - @kit/cms
+# CMS - @portal/cms
 
-CMS abstraction layer for the Makerkit framework.
+CMS abstraction layer for the Portal framework.

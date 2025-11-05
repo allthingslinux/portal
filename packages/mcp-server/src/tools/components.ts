@@ -347,7 +347,7 @@ export function registerComponentsTools(server: McpServer) {
 function createGetComponentsTool(server: McpServer) {
   return server.tool(
     'get_components',
-    'Get all available UI components from the @kit/ui package with descriptions',
+    'Get all available UI components from the @portal/ui package with descriptions',
     async () => {
       const components = await ComponentsTool.getComponents();
 

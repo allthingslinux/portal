@@ -410,7 +410,6 @@ BEGIN
       ('owner', 'members.manage'),
       ('owner', 'invites.manage'),
       ('owner', 'roles.manage'),
-      ('owner', 'billing.manage'),
       ('owner', 'settings.manage');
   
   -- Only insert admin permissions if the role exists

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
 
 /**
  * Healthcheck endpoint for the web app. If this endpoint returns a 200, the web app will be considered healthy.
@@ -26,12 +26,12 @@ async function getSupabaseHealthCheck() {
   try {
     const client = getSupabaseServerAdminClient();
 
-    const { data, error } = await client
+    const { error } = await client
       .from('config')
-      .select('billing_provider')
+      .select('enable_team_accounts')
       .single();
 
-    return !error && Boolean(data?.billing_provider);
+    return !error;
   } catch {
     return false;
   }

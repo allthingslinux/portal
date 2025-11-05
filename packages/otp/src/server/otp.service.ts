@@ -2,8 +2,8 @@ import 'server-only';
 
 import { SupabaseClient } from '@supabase/supabase-js';
 
-import { getLogger } from '@kit/shared/logger';
-import { Database, Json } from '@kit/supabase/database';
+import { getLogger } from '@portal/shared/logger';
+import { Database, Json } from '@portal/supabase/database';
 
 import {
   CreateNonceParams,

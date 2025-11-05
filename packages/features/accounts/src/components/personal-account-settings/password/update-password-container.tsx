@@ -1,7 +1,7 @@
 'use client';
 
-import { useUser } from '@kit/supabase/hooks/use-user';
-import { LoadingOverlay } from '@kit/ui/loading-overlay';
+import { useUser } from '@portal/supabase/hooks/use-user';
+import { LoadingOverlay } from '@portal/ui/loading-overlay';
 
 import { UpdatePasswordForm } from './update-password-form';
 

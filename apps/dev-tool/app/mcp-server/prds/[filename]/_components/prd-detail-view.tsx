@@ -2,11 +2,11 @@
 
 import { CalendarIcon, FileTextIcon, UsersIcon } from 'lucide-react';
 
-import { Badge } from '@kit/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@kit/ui/card';
-import { Progress } from '@kit/ui/progress';
-import { Separator } from '@kit/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@kit/ui/tabs';
+import { Badge } from '@portal/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@portal/ui/card';
+import { Progress } from '@portal/ui/progress';
+import { Separator } from '@portal/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@portal/ui/tabs';
 
 import { UserStoryDisplay } from '../../../_components/user-story-display';
 import type { PRDData } from '../../../_lib/server/prd-page.loader';

@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { renderOtpEmail } from '@kit/email-templates';
-import { getMailer } from '@kit/mailers';
-import { getLogger } from '@kit/shared/logger';
+import { renderOtpEmail } from '@portal/email-templates';
+import { getMailer } from '@portal/mailers';
+import { getLogger } from '@portal/shared/logger';
 
 const EMAIL_SENDER = z
   .string({

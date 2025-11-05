@@ -4,9 +4,9 @@ import { useCallback } from 'react';
 
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
-import { useMonitoring } from '@kit/monitoring/hooks';
-import { useAppEvents } from '@kit/shared/events';
-import { useAuthChangeListener } from '@kit/supabase/hooks/use-auth-change-listener';
+import { useMonitoring } from '@portal/monitoring/hooks';
+import { useAppEvents } from '@portal/shared/events';
+import { useAuthChangeListener } from '@portal/supabase/hooks/use-auth-change-listener';
 
 export function AuthProvider(props: React.PropsWithChildren) {
   const dispatchEvent = useDispatchAppEventFromAuthEvent();

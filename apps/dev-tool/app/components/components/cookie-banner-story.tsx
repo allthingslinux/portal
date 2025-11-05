@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@kit/ui/card';
-import { CookieBanner, useCookieConsent } from '@kit/ui/cookie-banner';
-import { Label } from '@kit/ui/label';
-import { Switch } from '@kit/ui/switch';
+} from '@portal/ui/card';
+import { CookieBanner, useCookieConsent } from '@portal/ui/cookie-banner';
+import { Label } from '@portal/ui/label';
+import { Switch } from '@portal/ui/switch';
 
 import { generatePropsString, useStoryControls } from '../lib/story-utils';
 import { ComponentStoryLayout } from './story-layout';
@@ -34,7 +34,7 @@ export function CookieBannerStory() {
   const cookieConsent = useCookieConsent();
 
   const generateCode = () => {
-    return `import { CookieBanner, useCookieConsent } from '@kit/ui/cookie-banner';
+    return `import { CookieBanner, useCookieConsent } from '@portal/ui/cookie-banner';
 
 function App() {
   const { status, accept, reject, clear } = useCookieConsent();

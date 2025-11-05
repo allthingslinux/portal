@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '@portal/ui/button';
 import {
   Form,
   FormControl,
@@ -12,9 +12,9 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from '@kit/ui/form';
-import { If } from '@kit/ui/if';
-import { Trans } from '@kit/ui/trans';
+} from '@portal/ui/form';
+import { If } from '@portal/ui/if';
+import { Trans } from '@portal/ui/trans';
 
 import { PasswordSignUpSchema } from '../schemas/password-sign-up.schema';
 import { EmailInput } from './email-input';

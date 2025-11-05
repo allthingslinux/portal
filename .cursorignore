@@ -6,7 +6,6 @@ pnpm-lock.yaml
 .env.local
 .env.production.local
 .idea
-.vscode
 .zed
 tsconfig.tsbuildinfo
 .windsurfrules

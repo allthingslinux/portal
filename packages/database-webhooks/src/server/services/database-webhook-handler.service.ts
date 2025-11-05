@@ -1,7 +1,7 @@
 import 'server-only';
 
-import { getLogger } from '@kit/shared/logger';
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+import { getLogger } from '@portal/shared/logger';
+import { getSupabaseServerAdminClient } from '@portal/supabase/server-admin-client';
 
 import { RecordChange, Tables } from '../record-change.type';
 import { createDatabaseWebhookRouterService } from './database-webhook-router.service';
@@ -68,8 +68,9 @@ class DatabaseWebhookHandlerService {
 
       // if a custom handler is provided, call it
       if (params?.handleEvent) {
-        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-        await params.handleEvent(params.body as any);
+        // The handleEvent is generic and we can't infer the specific table type here
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+        await (params.handleEvent as any)(params.body);
       }
 
       logger.info(ctx, 'Webhook processed successfully');

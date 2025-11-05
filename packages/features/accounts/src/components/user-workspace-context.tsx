@@ -2,8 +2,8 @@
 
 import { createContext } from 'react';
 
-import { Tables } from '@kit/supabase/database';
-import { JWTUserData } from '@kit/supabase/types';
+import { Tables } from '@portal/supabase/database';
+import { JWTUserData } from '@portal/supabase/types';
 
 interface UserWorkspace {
   accounts: Array<{

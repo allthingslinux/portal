@@ -1,4 +1,4 @@
-import { Cms, CmsClient } from '@kit/cms-types';
+import { Cms, CmsClient } from '@portal/cms-types';
 
 import { createKeystaticReader } from './create-reader';
 import { DocumentationEntryProps, PostEntryProps } from './keystatic.config';
