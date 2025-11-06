@@ -1,11 +1,11 @@
 ---
 description: Permissions
-globs: apps/**,packages/**
+globs: src/**,supabase/**
 alwaysApply: false
 ---
 # Access Control & Permissions Guidelines
 
-This rule provides guidance for implementing access control, permissions, and subscription-related functionality in the application.
+This rule provides guidance for implementing access control and permissions in the application.
 
 ## Role-Based Access Control
 

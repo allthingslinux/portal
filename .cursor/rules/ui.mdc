@@ -6,12 +6,12 @@ alwaysApply: false
 
 # UI Components
 
-- Reusable UI components are defined in the "packages/ui" package named "@kit/ui".
-- By exporting the component from the "exports" field, we can import it using the "@kit/ui/{component-name}" format.
+- Reusable UI components are defined in the "src/components/ui" directory.
+- Components can be imported directly from their paths or using the "~/components/ui/{component-name}" format.
 
 ## Styling
 
-- Styling is done using Tailwind CSS. We use the "cn" function from the "@kit/ui/utils" package to generate class names.
+- Styling is done using Tailwind CSS. We use the "cn" function from the "src/components/lib/utils" to generate class names.
 - Avoid fixes classes such as "bg-gray-500". Instead, use Shadcn classes such as "bg-background", "text-secondary-foreground", "text-muted-foreground", etc.
 
 Makerkit leverages two sets of UI components:

@@ -1,6 +1,6 @@
 ---
 description: Writing Forms with Shadcn UI, Server Actions, Zod
-globs: apps/**/*.tsx,packages/**/*.tsx
+globs: src/**/*.tsx
 alwaysApply: false
 ---
 

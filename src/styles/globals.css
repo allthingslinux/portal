@@ -1,0 +1,51 @@
+/* Tailwind CSS */
+@import 'tailwindcss';
+
+/* local styles - update the below if you add a new style */
+@import './theme.css';
+@import './theme.utilities.css';
+@import './shadcn-ui.css';
+@import './markdoc.css';
+@import './makerkit.css';
+@import 'tw-animate-css';
+
+/* content sources - update the below if you add a new path */
+@source '../app/**/*.{ts,tsx}';
+@source '../core/**/*.{ts,tsx}';
+@source '../features/**/*.{ts,tsx}';
+@source '../shared/**/*.{ts,tsx}';
+@source '../tools/**/*.{ts,tsx}';
+
+/* variants - update the below if you add a new variant */
+/* @variant dark (&:where(.dark, .dark *)); */
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+
+  html,
+  body {
+    scroll-padding-top: 56px;
+  }
+
+  [id] {
+    scroll-margin-top: 56px;
+  }
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--border, currentColor);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: theme(--color-muted-foreground);
+  }
+}

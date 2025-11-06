@@ -1,6 +1,6 @@
 ---
 description: Writing Server Actions for mutating data
-globs: apps/**","packages/**
+globs: src/**
 alwaysApply: false
 ---
 # Server Actions
@@ -8,7 +8,7 @@ alwaysApply: false
 - For Data Mutations from Client Components, always use Server Actions
 - Always name the server actions file as "server-actions.ts"
 - Always name exported Server Actions suffixed as "Action", ex. "createPostAction"
-- Always use the `enhanceAction` function from the "@kit/supabase/actions" package [index.ts](mdc:packages/next/src/actions/index.ts)
+- Always use the `enhanceAction` function from the actions package [index.ts](mdc:src/shared/lib/actions/index.ts)
 - Always use the 'use server' directive at the top of the file
 - Place the Zod schema in a separate file so it can be reused with `react-hook-form`
 

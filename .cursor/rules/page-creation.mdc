@@ -1,6 +1,6 @@
 ---
 description: Creating new Pages in the app
-globs: apps/**
+globs: src/app/**
 alwaysApply: false
 ---
 # Creating Pages

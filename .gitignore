@@ -49,3 +49,9 @@ yarn-error.log*
 node-compile-cache/
 
 .amazonq/
+
+.env.local
+.env.production
+.env.development
+.env.test
+.env

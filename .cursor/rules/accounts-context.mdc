@@ -7,9 +7,9 @@ alwaysApply: false
 
 This rule provides guidance for working with personal account related components in the application.
 
-The user/personal account context in the application lives under the path `app/home/(user)`. Under this context, we identify the user using Supabase Auth.
+The user/personal account context in the application lives under the path `src/app/home/(user)`. Under this context, we identify the user using Supabase Auth.
 
-We can use the `requireUserInServerComponent` to retrieve the relative Supabase User object and identify the user. [require-user-in-server-component.ts](mdc:apps/web/lib/server/require-user-in-server-component.ts)
+We can use the `requireUserInServerComponent` to retrieve the relative Supabase User object and identify the user. [require-user-in-server-component.ts](mdc:src/core/auth/require-user-in-server-component.ts)
 
 ### Client Components
 
@@ -18,17 +18,17 @@ In a Client Component, we can access the `UserWorkspaceContext` and use the `use
 We can use it like this:
 
 ```tsx
-import { useUserWorkspace } from '@kit/accounts/hooks/use-user-workspace';
+import { useUserWorkspace } from '~/features/accounts/hooks/use-user-workspace';
 ```
 
-This utility only works in paths under `apps/*/app/home/(user)`.
+This utility only works in paths under `src/app/home/(user)`.
 
 ## Guidelines
 
 ### Components and Structure
 - Personal account components are used in the `/home/(user)` route
-- Reusable components should be in `packages/features/accounts/src/components`
-- Settings-related components should be in `packages/features/accounts/src/components/personal-account-settings`
+- Reusable components should be in `src/features/accounts/components`
+- Settings-related components should be in `src/features/accounts/components/personal-account-settings`
 
 ### State Management
 - Use the `UserWorkspaceContext` to access user workspace data
@@ -41,16 +41,15 @@ This utility only works in paths under `apps/*/app/home/(user)`.
 - Password updates may require reauthentication
 
 ### Feature Flags
-- Personal account features are controlled via `featureFlagsConfig` [feature-flags.config.ts](mdc:apps/web/config/feature-flags.config.ts)
-- Key flags: 
+- Personal account features are controlled via `featureFlagsConfig` [feature-flags.config.ts](mdc:src/core/config/feature-flags.config.ts)
+- Key flags:
   - `enableAccountDeletion`
   - `enablePasswordUpdate`
-  - `enablePersonalAccountBilling`
   - `enableNotifications`
 
 ## Personal Account API
 
-The API for the personal account is [api.ts](mdc:packages/features/accounts/src/server/api.ts)
+The API for the personal account is [api.ts](mdc:src/features/accounts/server/api.ts)
 
 A class that provides methods for interacting with account-related data in the database. Initializes a new instance of the `AccountsApi` class with a Supabase client.
 

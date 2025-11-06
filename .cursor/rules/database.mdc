@@ -12,14 +12,14 @@ alwaysApply: true
 - Generally speaking, other tables will be used to store data related to the account. For example, a table `notes` would have a foreign key `account_id` to link it to an account.
 
 ## Schemas
-- The DB schemas are available at `apps/web/supabase/schemas`
+- The DB schemas are available at `supabase/schemas`
 - To edit the DB schema, we can either change the schema files, or created new ones
-- To create a new schema, create a file at `apps/web/supabase/schemas/<number>-<name>.sql`
+- To create a new schema, create a file at `supabase/schemas/<number>-<name>.sql`
 
 ## Migrations
 - After creating a schema, we can create a migration
-- Use the command `pnpm --filter web supabase:db:diff` for creating migrations from schemas
-- After generating a migration, reset the database for applying the changes using the command `pnpm run supabase:web:reset`
+- Use the command `pnpm run supabase:db:diff` for creating migrations from schemas
+- After generating a migration, reset the database for applying the changes using the command `pnpm run supabase:reset`
 
 ## Security & RLS
 - Using RLS, we must ensure that only the account owner can access the data. Always write safe RLS policies and ensure that the policies are enforced.
@@ -37,22 +37,20 @@ Makerkit uses a Supabase Postgres database with a well-defined schema focused on
 
 ### Database Schema
 
-1. Enums [01-enums.sql](mdc:apps/web/supabase/schemas/01-enums.sql)
-2. Config [02-config.sql](mdc:apps/web/supabase/schemas/02-config.sql)
-3. Accounts [03-accounts.sql](mdc:apps/web/supabase/schemas/03-accounts.sql)
-4. Roles [04-roles.sql](mdc:apps/web/supabase/schemas/04-roles.sql)
-5. Memberships [05-memberships.sql](mdc:apps/web/supabase/schemas/05-memberships.sql)
-6. Roles Permissions [06-roles-permissions.sql](mdc:apps/web/supabase/schemas/06-roles-permissions.sql)
-7. Invitations [07-invitations.sql](mdc:apps/web/supabase/schemas/07-invitations.sql)
-8. Billing Customers [08-billing-customers.sql](mdc:apps/web/supabase/schemas/08-billing-customers.sql)
-9. Subscriptions [09-subscriptions.sql](mdc:apps/web/supabase/schemas/09-subscriptions.sql)
-10. Orders [10-orders.sql](mdc:apps/web/supabase/schemas/10-orders.sql)
-11. Notifications [11-notifications.sql](mdc:apps/web/supabase/schemas/11-notifications.sql)
-12. One Time Tokens [12-one-time-tokens.sql](mdc:apps/web/supabase/schemas/12-one-time-tokens.sql)
-13. Multi Factor Auth [13-mfa.sql](mdc:apps/web/supabase/schemas/13-mfa.sql)
-14. Super Admin [14-super-admin.sql](mdc:apps/web/supabase/schemas/14-super-admin.sql)
-15. Account Views [15-account-views.sql](mdc:apps/web/supabase/schemas/15-account-views.sql)
-16. Storage [16-storage.sql](mdc:apps/web/supabase/schemas/16-storage.sql)
+1. Enums [01-enums.sql](mdc:supabase/schemas/01-enums.sql)
+2. Config [02-config.sql](mdc:supabase/schemas/02-config.sql)
+3. Accounts [03-accounts.sql](mdc:supabase/schemas/03-accounts.sql)
+4. Roles [04-roles.sql](mdc:supabase/schemas/04-roles.sql)
+5. Memberships [05-memberships.sql](mdc:supabase/schemas/05-memberships.sql)
+6. Roles Permissions [06-roles-permissions.sql](mdc:supabase/schemas/06-roles-permissions.sql)
+7. Invitations [07-invitations.sql](mdc:supabase/schemas/07-invitations.sql)
+8. Notifications [11-notifications.sql](mdc:supabase/schemas/11-notifications.sql)
+9. One Time Tokens [12-one-time-tokens.sql](mdc:supabase/schemas/12-one-time-tokens.sql)
+10. Multi Factor Auth [13-mfa.sql](mdc:supabase/schemas/13-mfa.sql)
+11. Super Admin [14-super-admin.sql](mdc:supabase/schemas/14-super-admin.sql)
+12. Account Views [15-account-views.sql](mdc:supabase/schemas/15-account-views.sql)
+13. Storage [16-storage.sql](mdc:supabase/schemas/16-storage.sql)
+14. Roles Seed [17-roles-seed.sql](mdc:supabase/schemas/17-roles-seed.sql)
 
 ## Database Best Practices
 
@@ -61,13 +59,10 @@ Makerkit uses a Supabase Postgres database with a well-defined schema focused on
 Fetch auto-generated data types using the `@kit/supabase/database` import. Do not write types manually if the shape is the same as the one from the database row.
 
 ```tsx
-import { Tables } from '@kit/supabase/database';
+import { Tables } from '~/core/database/supabase/database.types';
 
 // public.accounts
 type Account = Tables<'accounts'>;
-
-// public.subscriptions
-type Subscription = Tables<'subscriptions'>;
 
 // public.notifications
 type Notification = Tables<'notifications'>;
@@ -269,18 +264,15 @@ You always must use `(security_invoker = true)` for views.
 3. **Team Management**
    - `public.create_team_account(account_name)`
 
-4. **Billing & Subscriptions**
-   - `public.has_active_subscription(target_account_id)`
-
-5. **One-Time Tokens**
+4. **One-Time Tokens**
    - `public.create_nonce(...)`
    - `public.verify_nonce(...)`
    - `public.revoke_nonce(...)`
 
-6. **Super Admins**
+5. **Super Admins**
     - `public.is_super_admin()`
 
-7. **MFA**:
+6. **MFA**:
     - `public.is_aal2()`
     - `public.is_mfa_compliant()`
 
