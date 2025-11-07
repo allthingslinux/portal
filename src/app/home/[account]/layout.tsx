@@ -42,11 +42,7 @@ function SidebarLayout({
   const data = use(loadTeamWorkspace(account));
   const state = use(getLayoutState(account));
 
-  const accounts = data.accounts.map(({ name, slug, picture_url }: { name: string; slug: string; picture_url: string | null }) => ({
-    label: name,
-    value: slug,
-    image: picture_url,
-  }));
+  const accounts = data.accounts;
 
   return (
     <TeamAccountWorkspaceContextProvider value={data}>
@@ -88,11 +84,7 @@ function HeaderLayout({
 }>) {
   const data = use(loadTeamWorkspace(account));
 
-  const accounts = data.accounts.map(({ name, slug, picture_url }: { name: string; slug: string; picture_url: string | null }) => ({
-    label: name,
-    value: slug,
-    image: picture_url,
-  }));
+  const accounts = data.accounts;
 
   return (
     <TeamAccountWorkspaceContextProvider value={data}>

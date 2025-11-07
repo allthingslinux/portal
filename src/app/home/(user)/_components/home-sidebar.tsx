@@ -30,18 +30,11 @@ export function HomeSidebar(props: HomeSidebarProps) {
     <Sidebar collapsible={collapsible}>
       <SidebarHeader className={'h-16 justify-center'}>
         <div className={'flex items-center justify-between gap-x-3'}>
-          <If
-            condition={featuresFlagConfig.enableTeamAccounts}
-            fallback={
-              <AppLogo
-                className={cn(
-                  'p-2 group-data-[minimized=true]/sidebar:max-w-full group-data-[minimized=true]/sidebar:py-0',
-                )}
-              />
-            }
-          >
-            <HomeAccountSelector userId={user.id} accounts={accounts} />
-          </If>
+          <AppLogo
+            className={cn(
+              'p-2 group-data-[minimized=true]/sidebar:max-w-full group-data-[minimized=true]/sidebar:py-0',
+            )}
+          />
 
           <div className={'group-data-[minimized=true]/sidebar:hidden'}>
             <UserNotifications userId={user.id} />
@@ -53,7 +46,11 @@ export function HomeSidebar(props: HomeSidebarProps) {
         <SidebarNavigation config={personalAccountNavigationConfig} />
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className={'flex flex-col gap-2'}>
+        <If condition={featuresFlagConfig.enableTeamAccounts}>
+          <HomeAccountSelector userId={user.id} accounts={accounts} />
+        </If>
+
         <ProfileAccountDropdownContainer user={user} account={workspace} />
       </SidebarFooter>
     </Sidebar>

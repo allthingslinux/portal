@@ -152,7 +152,7 @@ export function AccountSelector({
           className="w-full p-0"
           collisionPadding={collisionPadding}
         >
-          <Command>
+          <Command shouldFilter={false}>
             <CommandInput placeholder={t('searchAccount')} className="h-9" />
 
             <CommandList>
@@ -183,8 +183,9 @@ export function AccountSelector({
                     />
                   }
                 >
-                  {(accounts ?? []).map((account) => (
+                  {(accounts ?? []).map((account, index) => (
                     <CommandItem
+                      key={account.value ?? `account-${index}`}
                       data-test={'account-selector-team'}
                       data-name={account.label}
                       data-slug={account.value}
@@ -194,7 +195,6 @@ export function AccountSelector({
                           ['bg-muted']: value === account.value,
                         },
                       )}
-                      key={account.value}
                       value={account.value ?? ''}
                       onSelect={(currentValue) => {
                         setOpen(false);
@@ -209,7 +209,7 @@ export function AccountSelector({
                           <AvatarImage src={account.image ?? undefined} />
 
                           <AvatarFallback
-                            className={cn('rounded-xs', {
+                            className={cn('rounded-xs text-foreground', {
                               ['bg-background']: value === account.value,
                               ['group-hover:bg-background']:
                                 value !== account.value,

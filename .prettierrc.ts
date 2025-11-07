@@ -1,7 +1,6 @@
-/** @typedef  {import("prettier").Config} PrettierConfig */
+import { type Config } from "prettier";
 
-/** @type { PrettierConfig } */
-const config = {
+const config: Config = {
   tabWidth: 2,
   useTabs: false,
   semi: true,
