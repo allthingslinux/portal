@@ -156,12 +156,6 @@ function MainCallToActionButton() {
           </span>
         </Link>
       </CtaButton>
-
-      <CtaButton variant={'link'} className="h-10 text-sm">
-        <Link href={'/pricing'}>
-          <Trans i18nKey={'common:pricing'} />
-        </Link>
-      </CtaButton>
     </div>
   );
 }

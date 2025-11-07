@@ -31,7 +31,7 @@ export function ModeToggle(props: { className?: string }) {
       return (
         <DropdownMenuItem
           className={cn('space-x-2', {
-            'bg-muted': isSelected,
+            'bg-secondary': isSelected,
           })}
           key={mode}
           onClick={() => {
@@ -75,7 +75,7 @@ export function SubMenuModeToggle() {
         return (
           <DropdownMenuItem
             className={cn('flex cursor-pointer items-center space-x-2', {
-              'bg-muted': isSelected,
+              'bg-secondary': isSelected,
             })}
             key={mode}
             onClick={() => {

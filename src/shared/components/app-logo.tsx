@@ -1,5 +1,5 @@
 import Link from 'next/link';
-
+import Image from 'next/image';
 import { cn } from '~/components/lib/utils';
 
 function LogoImage({
@@ -8,10 +8,12 @@ function LogoImage({
   className?: string;
 }) {
   return (
-    <img
+    <Image
       src="/images/logo.png"
       alt="Logo"
-      className={cn('w-[80px] lg:w-[95px] object-contain', className)}
+      width={100}
+      height={100}
+      className={cn('w-[100px] object-contain', className)}
     />
   );
 }

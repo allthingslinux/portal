@@ -26,10 +26,6 @@ const links = {
     label: 'marketing:documentation',
     path: '/docs',
   },
-  Pricing: {
-    label: 'marketing:pricing',
-    path: '/pricing',
-  },
   FAQ: {
     label: 'marketing:faq',
     path: '/faq',

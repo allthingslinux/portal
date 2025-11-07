@@ -135,7 +135,7 @@ export function PersonalAccountDropdown({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className={'xl:min-w-[15rem]!'}>
-        <DropdownMenuItem className={'h-10! rounded-none'}>
+        <DropdownMenuItem className={'h-10! rounded-none pointer-events-none focus:bg-transparent focus:text-inherit'}>
           <div
             className={'flex flex-col justify-start truncate text-left text-xs'}
           >
