@@ -7,7 +7,6 @@ import { z } from 'zod';
 
 import { verifyCaptchaToken } from '~/features/auth/captcha/server';
 import { requireUser } from '~/core/database/supabase/require-user';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
 import { JWTUserData } from '~/core/database/supabase/types';
 
 interface Config<Schema> {
@@ -91,14 +90,12 @@ export const enhanceRouteHandler = <
       }
     }
 
-    const client = getSupabaseServerClient();
-
     const shouldVerifyAuth = params?.auth ?? true;
 
     // Check if the user should be authenticated
     if (shouldVerifyAuth) {
       // Get the authenticated user
-      const auth = await requireUser(client);
+      const auth = await requireUser();
 
       // If the user is not authenticated, redirect to the specified URL.
       if (auth.error) {

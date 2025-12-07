@@ -6,7 +6,6 @@ import { ZodType, z } from 'zod';
 
 import { verifyCaptchaToken } from '~/features/auth/captcha/server';
 import { requireUser } from '~/core/database/supabase/require-user';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
 import { JWTUserData } from '~/core/database/supabase/types';
 
 /**
@@ -70,7 +69,7 @@ export function enhanceAction<
     // verify the user is authenticated if required
     if (requireAuth) {
       // verify the user is authenticated if required
-      const auth = await requireUser(getSupabaseServerClient());
+      const auth = await requireUser();
 
       // If the user is not authenticated, redirect to the specified URL.
       if (!auth.data) {
