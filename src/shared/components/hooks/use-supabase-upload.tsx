@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import {
   type FileError,
   type FileRejection,
   useDropzone,
 } from 'react-dropzone';
+
+import { uploadFileToStorage } from '~/core/storage/supabase-storage';
 
 interface FileWithPreview extends File {
   preview?: string;
@@ -53,10 +53,6 @@ type UseSupabaseUploadOptions = {
    */
   upsert?: boolean;
   /**
-   * Supabase client to use for the upload.
-   */
-  client: SupabaseClient;
-  /**
    * Callback to call when the upload is successful.
    */
   onUploadSuccess?: (files: string[]) => void;
@@ -79,7 +75,6 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     maxFiles = 1,
     cacheControl = 3600,
     upsert = false,
-    client,
     onUploadSuccess,
   } = options;
 
@@ -156,12 +151,11 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
       filesToUpload.map(async (file) => {
         const filePath = path ? `${path}/${file.name}` : file.name;
 
-        const { error } = await client.storage
-          .from(bucketName)
-          .upload(filePath, file, {
-            cacheControl: cacheControl.toString(),
-            upsert,
-          });
+        const { error } = await uploadFileToStorage(bucketName, filePath, file, {
+          cacheControl: `max-age=${cacheControl}`,
+          upsert,
+          contentType: file.type,
+        });
 
         const fullFilePath = [bucketName, filePath].join('/');
 
@@ -198,7 +192,6 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
   }, [
     bucketName,
     cacheControl,
-    client.storage,
     errors,
     files,
     onUploadSuccess,
