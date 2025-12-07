@@ -33,31 +33,13 @@ export function useFetchNotifications({
   }, [initialNotifications, onNotifications]);
 }
 
-function useFetchInitialNotifications(props: { accountIds: string[] }) {
-  const client = useSupabase();
-  const now = new Date().toISOString();
+import { fetchNotificationsAction } from '~/features/accounts/server/notifications-server-actions';
 
+function useFetchInitialNotifications(props: { accountIds: string[] }) {
   return useQuery({
     queryKey: ['notifications', ...props.accountIds],
     queryFn: async () => {
-      const { data } = await client
-        .from('notifications')
-        .select(
-          `id, 
-           body, 
-           dismissed, 
-           type, 
-           created_at, 
-           link
-           `,
-        )
-        .in('account_id', props.accountIds)
-        .eq('dismissed', false)
-        .gt('expires_at', now)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      return data;
+      return await fetchNotificationsAction(props.accountIds);
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,

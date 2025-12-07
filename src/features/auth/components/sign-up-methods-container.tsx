@@ -1,6 +1,6 @@
 'use client';
 
-import type { Provider } from '@supabase/supabase-js';
+import type { Provider } from '~/core/database/supabase/supabase-types';
 
 import { isBrowser } from '~/shared/utils';
 import { If } from '~/components/makerkit/if';
@@ -10,7 +10,6 @@ import { Trans } from '~/components/makerkit/trans';
 import { ExistingAccountHint } from './existing-account-hint';
 import { MagicLinkAuthContainer } from './magic-link-auth-container';
 import { OauthProviders } from './oauth-providers';
-import { OtpSignInContainer } from './otp-sign-in-container';
 import { EmailPasswordSignUpContainer } from './password-sign-up-container';
 
 export function SignUpMethodsContainer(props: {
@@ -22,7 +21,6 @@ export function SignUpMethodsContainer(props: {
   providers: {
     password: boolean;
     magicLink: boolean;
-    otp: boolean;
     oAuth: Provider[];
   };
 
@@ -42,13 +40,6 @@ export function SignUpMethodsContainer(props: {
           emailRedirectTo={redirectUrl}
           defaultValues={defaultValues}
           displayTermsCheckbox={props.displayTermsCheckbox}
-          captchaSiteKey={props.captchaSiteKey}
-        />
-      </If>
-
-      <If condition={props.providers.otp}>
-        <OtpSignInContainer
-          shouldCreateUser={true}
           captchaSiteKey={props.captchaSiteKey}
         />
       </If>

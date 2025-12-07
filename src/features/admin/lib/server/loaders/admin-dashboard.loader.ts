@@ -2,8 +2,6 @@ import 'server-only';
 
 import { cache } from 'react';
 
-// import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
-
 import { createAdminDashboardService } from '../services/admin-dashboard.service';
 
 /**

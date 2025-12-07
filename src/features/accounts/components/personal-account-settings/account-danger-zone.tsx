@@ -7,8 +7,7 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { ErrorBoundary } from '~/core/monitoring/api/components/error-boundary';
-import { VerifyOtpForm } from '~/core/auth/otp/components';
-import { useUser } from '~/core/database/supabase/hooks/use-user';
+import { useSession } from '~/core/auth/nextauth/hooks';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import {
   AlertDialog,
@@ -47,7 +46,7 @@ export function AccountDangerZone() {
 }
 
 function DeleteAccountModal() {
-  const { data: user } = useUser();
+  const { data: user } = useSession();
 
   if (!user?.email) {
     return null;
@@ -79,27 +78,8 @@ function DeleteAccountModal() {
 function DeleteAccountForm(props: { email: string }) {
   const form = useForm({
     resolver: zodResolver(DeletePersonalAccountSchema),
-    defaultValues: {
-      otp: '',
-    },
+    defaultValues: {},
   });
-
-  const { otp } = useWatch({ control: form.control });
-
-  if (!otp) {
-    return (
-      <VerifyOtpForm
-        purpose={'delete-personal-account'}
-        email={props.email}
-        onSuccess={(otp) => form.setValue('otp', otp, { shouldValidate: true })}
-        CancelButton={
-          <AlertDialogCancel>
-            <Trans i18nKey={'common:cancel'} />
-          </AlertDialogCancel>
-        }
-      />
-    );
-  }
 
   return (
     <Form {...form}>
@@ -108,7 +88,7 @@ function DeleteAccountForm(props: { email: string }) {
         action={deletePersonalAccountAction}
         className={'flex flex-col space-y-4'}
       >
-        <input type="hidden" name="otp" value={otp} />
+        <input type="hidden" name="otp" value="" />
 
         <div className={'flex flex-col space-y-6'}>
           <div

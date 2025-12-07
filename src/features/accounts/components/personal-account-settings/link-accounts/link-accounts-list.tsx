@@ -8,7 +8,7 @@ import type { Provider, UserIdentity } from '@supabase/supabase-js';
 
 import { useLinkIdentityWithProvider } from '~/core/database/supabase/hooks/use-link-identity-with-provider';
 import { useUnlinkUserIdentity } from '~/core/database/supabase/hooks/use-unlink-user-identity';
-import { useUser } from '~/core/database/supabase/hooks/use-user';
+import { useSession } from '~/core/auth/nextauth/hooks';
 import { useUserIdentities } from '~/core/database/supabase/hooks/use-user-identities';
 import {
   AlertDialog,
@@ -81,8 +81,8 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
     ? props.providers.filter((provider) => !isProviderConnected(provider))
     : [];
 
-  const user = useUser();
-  const amr = user.data ? user.data.amr : [];
+  const { data: user } = useSession();
+  const amr = user ? user.amr : [];
 
   const isConnectedWithPassword = amr.some(
     (item: { method: string }) => item.method === 'password',

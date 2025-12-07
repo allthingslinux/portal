@@ -1,15 +1,13 @@
 import 'server-only';
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gte, sql } from 'drizzle-orm';
 
 import { getLogger } from '~/shared/logger';
-import type { Database } from '~/core/database/supabase/database.types';
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
+import { getDrizzleSupabaseClient, getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
 import {
   accounts,
   accountsMemberships,
+  invitations,
   rolePermissions,
   roles,
   userAccounts,
@@ -247,33 +245,51 @@ class _TeamAccountsApi {
   /**
    * @name getInvitation
    * @description Get an invitation by its token.
-   * @param adminClient
    * @param token
    */
-  async getInvitation(adminClient: SupabaseClient<Database>, token: string) {
+  async getInvitation(token: string) {
     // Use admin client since the user is not yet part of the account
-    const { data: invitation, error } = await adminClient
-      .from('invitations')
-      .select(
-        `id,
-        expires_at,
-        email,
-        account: account_id !inner (id, name, slug, picture_url)`,
-      )
-      .eq('invite_token', token)
-      .gte('expires_at', new Date().toISOString())
-      .single();
+    const db = getDrizzleSupabaseAdminClient();
 
-    if (error) {
+    const result = await db
+      .select({
+        id: invitations.id,
+        expiresAt: invitations.expiresAt,
+        email: invitations.email,
+        account: {
+          id: accounts.id,
+          name: accounts.name,
+          slug: accounts.slug,
+          pictureUrl: accounts.pictureUrl,
+        },
+      })
+      .from(invitations)
+      .innerJoin(accounts, eq(invitations.accountId, accounts.id))
+      .where(
+        and(
+          eq(invitations.inviteToken, token),
+          gte(invitations.expiresAt, new Date().toISOString()),
+        ),
+      )
+      .limit(1);
+
+    if (result.length === 0) {
       return {
-        error,
+        error: { message: 'Invitation not found or expired' },
         data: null,
       };
     }
 
+    const invitation = result[0];
+
     return {
       error: null,
-      data: invitation,
+      data: {
+        id: invitation.id,
+        expires_at: invitation.expiresAt,
+        email: invitation.email,
+        account: invitation.account,
+      },
     };
   }
 

@@ -2,12 +2,9 @@
 
 import { useCallback } from 'react';
 
-import type {
-  Provider,
-  SignInWithOAuthCredentials,
-} from '@supabase/supabase-js';
+import type { Provider } from '~/core/database/supabase/supabase-types';
 
-import { useSignInWithProvider } from '~/core/database/supabase/hooks/use-sign-in-with-provider';
+import { useSignInWithProvider } from '~/core/auth/nextauth/hooks/use-sign-in-with-provider';
 import { If } from '~/components/makerkit/if';
 import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
 import { Trans } from '~/components/makerkit/trans';
@@ -78,6 +75,7 @@ export const OauthProviders: React.FC<{
                 key={provider}
                 providerId={provider}
                 onClick={() => {
+                  // Build callback URL with return path
                   const origin = window.location.origin;
                   const queryParams = new URLSearchParams();
 
@@ -85,31 +83,30 @@ export const OauthProviders: React.FC<{
                     queryParams.set('next', props.paths.returnPath);
                   }
 
-                  const redirectPath = [
-                    props.paths.callback,
-                    queryParams.toString(),
-                  ].join('?');
+                  // NextAuth handles OAuth callbacks automatically at /api/auth/callback/[provider]
+                  // So we just need to set the callbackUrl to where we want to redirect after auth
+                  const callbackUrl = props.paths.returnPath || '/home';
 
-                  const redirectTo = [origin, redirectPath].join('');
-                  const scopes = OAUTH_SCOPES[provider] ?? undefined;
+                  // Map Supabase provider names to NextAuth provider names
+                  const providerMap: Record<string, string> = {
+                    google: 'google',
+                    github: 'github',
+                    apple: 'apple',
+                    microsoft: 'microsoft',
+                    facebook: 'facebook',
+                    keycloak: 'keycloak',
+                  };
 
-                  const credentials = {
-                    provider,
-                    options: {
-                      redirectTo,
-                      queryParams: props.queryParams,
-                      scopes,
-                    },
-                  } satisfies SignInWithOAuthCredentials;
+                  const nextAuthProvider = providerMap[provider] || provider;
 
                   return onSignInWithProvider(async () => {
-                    const result =
-                      await signInWithProviderMutation.mutateAsync(credentials);
+                    await signInWithProviderMutation.mutateAsync({
+                      provider: nextAuthProvider as 'google' | 'github' | 'apple' | 'microsoft' | 'facebook' | 'keycloak',
+                      redirectTo: callbackUrl,
+                    });
 
                     // Record successful OAuth sign-in
                     recordAuthMethod('oauth', { provider });
-
-                    return result;
                   });
                 }}
               >

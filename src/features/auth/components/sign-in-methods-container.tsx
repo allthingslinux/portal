@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import type { Provider } from '@supabase/supabase-js';
+import type { Provider } from '~/core/database/supabase/supabase-types';
 
 import { isBrowser } from '~/shared/utils';
 import { If } from '~/components/makerkit/if';
@@ -14,7 +14,6 @@ import { Trans } from '~/components/makerkit/trans';
 import { LastAuthMethodHint } from './last-auth-method-hint';
 import { MagicLinkAuthContainer } from './magic-link-auth-container';
 import { OauthProviders } from './oauth-providers';
-import { OtpSignInContainer } from './otp-sign-in-container';
 import { PasswordSignInContainer } from './password-sign-in-container';
 
 export function SignInMethodsContainer(props: {
@@ -27,7 +26,6 @@ export function SignInMethodsContainer(props: {
   providers: {
     password: boolean;
     magicLink: boolean;
-    otp: boolean;
     oAuth: Provider[];
   };
 
@@ -59,13 +57,6 @@ export function SignInMethodsContainer(props: {
       <If condition={props.providers.magicLink}>
         <MagicLinkAuthContainer
           redirectUrl={redirectUrl}
-          shouldCreateUser={false}
-          captchaSiteKey={props.captchaSiteKey}
-        />
-      </If>
-
-      <If condition={props.providers.otp}>
-        <OtpSignInContainer
           shouldCreateUser={false}
           captchaSiteKey={props.captchaSiteKey}
         />

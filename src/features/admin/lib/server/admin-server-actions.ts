@@ -5,8 +5,6 @@ import { redirect } from 'next/navigation';
 
 import { enhanceAction } from '~/shared/next/actions';
 import { getLogger } from '~/shared/logger';
-import { getSupabaseServerAdminClient } from '~/core/database/supabase/clients/server-admin-client';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
 
 import {
   BanUserSchema,
@@ -165,32 +163,26 @@ export const deleteAccountAction = adminAction(
 export const createUserAction = adminAction(
   enhanceAction(
     async ({ email, password, emailConfirm }) => {
-      const adminClient = getSupabaseServerAdminClient();
+      // TODO: Implement user creation using Drizzle and NextAuth
+      // This should create a user in auth.users table and send confirmation email if needed
       const logger = await getLogger();
 
       logger.info({ email }, `Super Admin is creating a new user...`);
 
-      const { data, error } = await adminClient.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: emailConfirm,
-      });
+      // For now, throw an error indicating this needs to be implemented
+      throw new Error('User creation via admin is not yet implemented with NextAuth. Please use the sign-up flow.');
 
-      if (error) {
-        logger.error({ error }, `Error creating user`);
-        throw new Error(`Error creating user: ${error.message}`);
-      }
-
-      logger.info(
-        { userId: data.user.id },
-        `Super Admin has successfully created a new user`,
-      );
+      // Future implementation:
+      // 1. Create user in auth.users using Drizzle
+      // 2. Hash password using bcrypt
+      // 3. Send confirmation email if emailConfirm is true
+      // 4. Return created user data
 
       revalidatePath(`/admin/accounts`);
 
       return {
         success: true,
-        user: data.user,
+        user: null as any,
       };
     },
     {
@@ -231,10 +223,7 @@ function revalidateAdmin() {
 }
 
 function getAdminAuthService() {
-  const client = getSupabaseServerClient();
-  const adminClient = getSupabaseServerAdminClient();
-
-  return createAdminAuthUserService(client, adminClient);
+  return createAdminAuthUserService();
 }
 
 function getAdminAccountsService() {

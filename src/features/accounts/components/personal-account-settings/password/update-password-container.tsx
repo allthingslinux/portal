@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser } from '~/core/database/supabase/hooks/use-user';
+import { useSession } from '~/core/auth/nextauth/hooks';
 import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
 
 import { UpdatePasswordForm } from './update-password-form';
@@ -10,7 +10,7 @@ export function UpdatePasswordFormContainer(
     callbackPath: string;
   }>,
 ) {
-  const { data: user, isPending } = useUser();
+  const { data: user, isLoading: isPending } = useSession();
 
   if (isPending) {
     return <LoadingOverlay fullPage={false} />;

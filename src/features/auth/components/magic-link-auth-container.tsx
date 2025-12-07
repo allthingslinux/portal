@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { useAppEvents } from '~/shared/events';
-import { useSignInWithOtp } from '~/core/database/supabase/hooks/use-sign-in-with-otp';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import {
@@ -45,7 +44,6 @@ export function MagicLinkAuthContainer({
 }) {
   const captcha = useCaptcha({ siteKey: captchaSiteKey });
   const { t } = useTranslation();
-  const signInWithOtpMutation = useSignInWithOtp();
   const appEvents = useAppEvents();
   const { recordAuthMethod } = useLastAuthMethod();
 
@@ -61,52 +59,27 @@ export function MagicLinkAuthContainer({
   });
 
   const onSubmit = ({ email }: { email: string }) => {
-    const url = new URL(redirectUrl);
-
-    const emailRedirectTo = url.href;
-
-    const promise = async () => {
-      await signInWithOtpMutation.mutateAsync({
-        email,
-        options: {
-          emailRedirectTo,
-          captchaToken: captcha.token,
-          shouldCreateUser,
-        },
-      });
-
-      recordAuthMethod('magic_link', { email });
-
-      if (shouldCreateUser) {
-        appEvents.emit({
-          type: 'user.signedUp',
-          payload: {
-            method: 'magiclink',
-          },
-        });
-      }
-    };
-
-    toast.promise(promise, {
-      loading: t('auth:sendingEmailLink'),
-      success: t(`auth:sendLinkSuccessToast`),
-      error: t(`auth:errors.linkTitle`),
-    });
-
-    captcha.reset();
+    // Magic link authentication is not currently implemented
+    // This would require implementing email link generation and verification
+    toast.error(t('auth:magicLinkNotAvailable') || 'Magic link authentication is not available');
   };
 
-  if (signInWithOtpMutation.data) {
-    return <SuccessAlert />;
-  }
+  // Always show the form since we're not sending links
+  const showSuccess = false;
 
   return (
     <Form {...form}>
       <form className={'w-full'} onSubmit={form.handleSubmit(onSubmit)}>
         <div className={'flex flex-col space-y-4'}>
-          <If condition={signInWithOtpMutation.error}>
-            <ErrorAlert />
-          </If>
+          <Alert variant={'destructive'}>
+            <ExclamationTriangleIcon className={'h-4'} />
+            <AlertTitle>
+              <Trans i18nKey={'auth:magicLinkNotAvailable'} />
+            </AlertTitle>
+            <AlertDescription>
+              <Trans i18nKey={'auth:magicLinkNotAvailableDescription'} />
+            </AlertDescription>
+          </Alert>
 
           {captcha.field}
 
@@ -131,13 +104,8 @@ export function MagicLinkAuthContainer({
             <TermsAndConditionsFormField />
           </If>
 
-          <Button disabled={signInWithOtpMutation.isPending}>
-            <If
-              condition={signInWithOtpMutation.isPending}
-              fallback={<Trans i18nKey={'auth:sendEmailLink'} />}
-            >
-              <Trans i18nKey={'auth:sendingEmailLink'} />
-            </If>
+          <Button disabled>
+            <Trans i18nKey={'auth:sendEmailLink'} />
           </Button>
         </div>
       </form>

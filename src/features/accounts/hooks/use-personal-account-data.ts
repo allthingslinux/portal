@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Json } from '~/core/database/supabase/database.types';
-import { useSupabase } from '~/core/database/supabase/hooks/use-supabase';
+import { getPersonalAccountDataAction } from '../server/personal-accounts-server-actions';
 
 export function usePersonalAccountData(
   userId: string,
@@ -14,7 +14,6 @@ export function usePersonalAccountData(
     public_data?: Json;
   },
 ) {
-  const client = useSupabase();
   const queryKey = ['account:data', userId];
 
   const queryFn = async () => {
@@ -22,25 +21,7 @@ export function usePersonalAccountData(
       return null;
     }
 
-    const response = await client
-      .from('accounts')
-      .select(
-        `
-        id,
-        name,
-        picture_url,
-        public_data
-    `,
-      )
-      .eq('primary_owner_user_id', userId)
-      .eq('is_personal_account', true)
-      .single();
-
-    if (response.error) {
-      throw response.error;
-    }
-
-    return response.data;
+    return await getPersonalAccountDataAction(userId);
   };
 
   return useQuery({

@@ -7,8 +7,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 import { ErrorBoundary } from '~/core/monitoring/api/components/error-boundary';
-import { VerifyOtpForm } from '~/core/auth/otp/components';
-import { useUser } from '~/core/database/supabase/hooks/use-user';
+import { useSession } from '~/core/auth/nextauth/hooks';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import {
   AlertDialog,
@@ -41,8 +40,10 @@ import { Input } from '~/components/ui/input';
 import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
 import { Trans } from '~/components/makerkit/trans';
 
-import { deleteTeamAccountAction } from '../../server/actions/delete-team-account-server-actions';
-import { leaveTeamAccountAction } from '../../server/actions/leave-team-account-server-actions';
+import {
+  deleteTeamAccountAction,
+  leaveTeamAccountAction,
+} from '../../server/actions/team-account-server-actions';
 
 export function TeamAccountDangerZone({
   account,
@@ -60,7 +61,7 @@ export function TeamAccountDangerZone({
 
   primaryOwnerUserId: string;
 }>) {
-  const { data: user } = useUser();
+  const { data: user } = useSession();
 
   if (!user) {
     return <LoadingOverlay fullPage={false} />;
@@ -159,40 +160,21 @@ function DeleteTeamConfirmationForm({
   name: string;
   id: string;
 }) {
-  const { data: user } = useUser();
+  const { data: user } = useSession();
 
   const form = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     resolver: zodResolver(
       z.object({
-        otp: z.string().min(6).max(6),
+        // OTP requirement removed
       }),
     ),
-    defaultValues: {
-      otp: '',
-    },
+    defaultValues: {},
   });
-
-  const { otp } = useWatch({ control: form.control });
 
   if (!user?.email) {
     return <LoadingOverlay fullPage={false} />;
-  }
-
-  if (!otp) {
-    return (
-      <VerifyOtpForm
-        purpose={`delete-team-account-${id}`}
-        email={user.email}
-        onSuccess={(otp) => form.setValue('otp', otp, { shouldValidate: true })}
-        CancelButton={
-          <AlertDialogCancel className={'m-0'}>
-            <Trans i18nKey={'common:cancel'} />
-          </AlertDialogCancel>
-        }
-      />
-    );
   }
 
   return (
@@ -224,7 +206,7 @@ function DeleteTeamConfirmationForm({
             </div>
 
             <input type="hidden" value={id} name={'accountId'} />
-            <input type="hidden" value={otp} name={'otp'} />
+            <input type="hidden" value="" name={'otp'} />
           </div>
 
           <AlertDialogFooter>

@@ -20,7 +20,6 @@ import { usePersonalAccountData } from '../../hooks/use-personal-account-data';
 import { AccountDangerZone } from './account-danger-zone';
 import { UpdateEmailFormContainer } from './email/update-email-form-container';
 import { LinkAccountsList } from './link-accounts';
-import { MultiFactorAuthFactorsList } from './mfa/multi-factor-auth-list';
 import { UpdatePasswordFormContainer } from './password/update-password-container';
 import { UpdateAccountDetailsFormContainer } from './update-account-details-form-container';
 import { UpdateAccountImageContainer } from './update-account-image-container';
@@ -139,22 +138,6 @@ export function PersonalAccountSettingsContainer(
           </CardContent>
         </Card>
       </If>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <Trans i18nKey={'account:multiFactorAuth'} />
-          </CardTitle>
-
-          <CardDescription>
-            <Trans i18nKey={'account:multiFactorAuthDescription'} />
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <MultiFactorAuthFactorsList userId={props.userId} />
-        </CardContent>
-      </Card>
 
       <Card>
         <CardHeader>

@@ -26,7 +26,7 @@ import { toast } from '~/components/ui/sonner';
 import { Trans } from '~/components/makerkit/trans';
 
 import { TeamNameFormSchema } from '../../schema/update-team-name.schema';
-import { updateTeamAccountName } from '../../server/actions/team-details-server-actions';
+import { updateTeamAccountName } from '../../server/actions/team-account-server-actions';
 
 export const UpdateTeamAccountNameForm = (props: {
   account: {

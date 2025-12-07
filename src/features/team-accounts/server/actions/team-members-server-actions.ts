@@ -1,11 +1,9 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-
 import { eq } from 'drizzle-orm';
 
 import { enhanceAction } from '~/shared/next/actions';
-import { createOtpApi } from '~/core/auth/otp/api';
+import { revalidateAccountLayout } from '~/shared/next/actions/revalidate-account-paths';
 import { getLogger } from '~/shared/logger';
 import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
 import { accounts } from '~/core/database/supabase/drizzle/schema';
@@ -29,7 +27,7 @@ export const removeMemberFromAccountAction = enhanceAction(
     });
 
     // revalidate all pages that depend on the account
-    revalidatePath('/home/[account]', 'layout');
+    revalidateAccountLayout();
 
     return { success: true };
   },
@@ -50,7 +48,7 @@ export const updateMemberRoleAction = enhanceAction(
     await service.updateMemberRole(data);
 
     // revalidate all pages that depend on the account
-    revalidatePath('/home/[account]', 'layout');
+    revalidateAccountLayout();
 
     return { success: true };
   },
@@ -66,7 +64,6 @@ export const updateMemberRoleAction = enhanceAction(
  */
 export const transferOwnershipAction = enhanceAction(
   async (data, user) => {
-    const client = getSupabaseServerClient();
     const logger = await getLogger();
 
     const ctx = {
@@ -97,33 +94,10 @@ export const transferOwnershipAction = enhanceAction(
       );
     }
 
-    // Verify the OTP
-    const otpApi = createOtpApi(client);
-
-    const otpResult = await otpApi.verifyToken({
-      token: data.otp,
-      userId: user.id,
-      purpose: `transfer-team-ownership-${data.accountId}`,
-    });
-
-    if (!otpResult.valid) {
-      logger.error(ctx, 'Invalid OTP provided');
-      throw new Error('Invalid OTP');
-    }
-
-    // validate the user ID matches the nonce's user ID
-    if (otpResult.user_id !== user.id) {
-      logger.error(
-        ctx,
-        `This token was meant to be used by a different user. Exiting.`,
-      );
-
-      throw new Error('Nonce mismatch');
-    }
-
+    // OTP verification removed - ownership transfer now requires only owner authentication
     logger.info(
       ctx,
-      'OTP verification successful. Proceeding with ownership transfer...',
+      'Proceeding with ownership transfer (OTP verification removed)...',
     );
 
     const service = createAccountMembersService();
@@ -135,7 +109,7 @@ export const transferOwnershipAction = enhanceAction(
     await service.transferOwnership(data);
 
     // revalidate all pages that depend on the account
-    revalidatePath('/home/[account]', 'layout');
+    revalidateAccountLayout();
 
     logger.info(ctx, 'Team ownership transferred successfully');
 

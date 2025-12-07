@@ -1,11 +1,11 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { z } from 'zod';
 
 import { enhanceAction } from '~/shared/next/actions';
+import { revalidateAccountMembers } from '~/shared/next/actions/revalidate-account-paths';
 import { getLogger } from '~/shared/logger';
 import { JWTUserData } from '~/core/database/supabase/types';
 
@@ -173,7 +173,7 @@ export const renewInvitationAction = enhanceAction(
 );
 
 function revalidateMemberPage() {
-  revalidatePath('/home/[account]/members', 'page');
+  revalidateAccountMembers();
 }
 
 /**
@@ -196,8 +196,7 @@ async function evaluateInvitationsPolicies(
     };
   }
 
-  const client = getSupabaseServerClient();
-  const builder = createInvitationContextBuilder(client);
+  const builder = createInvitationContextBuilder();
   const context = await builder.buildContext(params, user);
 
   return evaluator.canInvite(context, 'submission');

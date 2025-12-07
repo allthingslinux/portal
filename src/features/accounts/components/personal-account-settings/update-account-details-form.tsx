@@ -17,8 +17,8 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '~/components/ui/input-group';
-import { toast } from '~/components/ui/sonner';
 import { Trans } from '~/components/makerkit/trans';
+import { useToastAction } from '~/shared/hooks/use-toast-action';
 
 import { useUpdateAccountData } from '../../hooks/use-update-account';
 import { AccountDetailsSchema } from '../../schema/account-details.schema';
@@ -36,6 +36,11 @@ export function UpdateAccountDetailsForm({
 }) {
   const updateAccountMutation = useUpdateAccountData(userId);
   const { t } = useTranslation('account');
+  const { execute } = useToastAction({
+    success: t(`updateProfileSuccess`),
+    error: t(`updateProfileError`),
+    loading: t(`updateProfileLoading`),
+  });
 
   const form = useForm({
     resolver: zodResolver(AccountDetailsSchema),
@@ -47,14 +52,9 @@ export function UpdateAccountDetailsForm({
   const onSubmit = ({ displayName }: { displayName: string }) => {
     const data = { name: displayName };
 
-    const promise = updateAccountMutation.mutateAsync(data).then(() => {
+    execute(async () => {
+      await updateAccountMutation.mutateAsync(data);
       onUpdate(data);
-    });
-
-    return toast.promise(() => promise, {
-      success: t(`updateProfileSuccess`),
-      error: t(`updateProfileError`),
-      loading: t(`updateProfileLoading`),
     });
   };
 

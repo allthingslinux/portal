@@ -5,8 +5,7 @@ import { useState, useTransition } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 
-import { VerifyOtpForm } from '~/core/auth/otp/components';
-import { useUser } from '~/core/database/supabase/hooks/use-user';
+import { useSession } from '~/core/auth/nextauth/hooks';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import {
   AlertDialog,
@@ -73,43 +72,20 @@ function TransferOrganizationOwnershipForm({
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<boolean>();
-  const { data: user } = useUser();
+  const { data: user } = useSession();
 
   const form = useForm<{
     accountId: string;
     userId: string;
-    otp: string;
+    otp?: string;
   }>({
     resolver: zodResolver(TransferOwnershipConfirmationSchema),
     defaultValues: {
       accountId,
       userId,
-      otp: '',
+      otp: '', // OTP is now optional
     },
   });
-
-  const { otp } = useWatch({ control: form.control });
-
-  // If no OTP has been entered yet, show the OTP verification form
-  if (!otp) {
-    return (
-      <div className="flex flex-col space-y-6">
-        <VerifyOtpForm
-          purpose={`transfer-team-ownership-${accountId}`}
-          email={user?.email || ''}
-          onSuccess={(otpValue) => {
-            form.setValue('otp', otpValue, { shouldValidate: true });
-          }}
-          CancelButton={
-            <AlertDialogCancel>
-              <Trans i18nKey={'common:cancel'} />
-            </AlertDialogCancel>
-          }
-          data-test="verify-otp-form"
-        />
-      </div>
-    );
-  }
 
   return (
     <Form {...form}>
@@ -141,7 +117,15 @@ function TransferOrganizationOwnershipForm({
           </p>
         </div>
 
-        <input type="hidden" name="otp" value={otp} />
+        <input type="hidden" name="otp" value="" />
+        <Alert variant={'warning'}>
+          <AlertTitle>
+            <Trans i18nKey={'teams:transferOwnershipWarning'} />
+          </AlertTitle>
+          <AlertDescription>
+            <Trans i18nKey={'teams:transferOwnershipWarningDescription'} />
+          </AlertDescription>
+        </Alert>
 
         <div>
           <p className={'text-muted-foreground'}>

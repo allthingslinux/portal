@@ -1,7 +1,5 @@
 import { notFound } from 'next/navigation';
 
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
-
 import { isSuperAdmin } from '../lib/server/utils/is-super-admin';
 
 type LayoutOrPageComponent<Params> = React.ComponentType<Params>;
@@ -15,8 +13,7 @@ export function AdminGuard<Params extends object>(
   Component: LayoutOrPageComponent<Params>,
 ) {
   return async function AdminGuardServerComponentWrapper(params: Params) {
-    const client = getSupabaseServerClient();
-    const isUserSuperAdmin = await isSuperAdmin(client);
+    const isUserSuperAdmin = await isSuperAdmin();
 
     // if the user is not a super-admin, we redirect to a 404
     if (!isUserSuperAdmin) {

@@ -1,8 +1,8 @@
-import { useState, useTransition } from 'react';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+
+import { useActionWithError } from '~/shared/hooks/use-action-with-error';
 
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
@@ -85,21 +85,16 @@ function UpdateMemberForm({
   teamAccountId: string;
   roles: Role[];
 }>) {
-  const [pending, startTransition] = useTransition();
-  const [error, setError] = useState<boolean>();
+  const { pending, error, execute } = useActionWithError();
   const { t } = useTranslation('teams');
 
   const onSubmit = ({ role }: { role: Role }) => {
-    startTransition(async () => {
-      try {
-        await updateMemberRoleAction({
-          accountId: teamAccountId,
-          userId,
-          role,
-        });
-      } catch {
-        setError(true);
-      }
+    execute(async () => {
+      await updateMemberRoleAction({
+        accountId: teamAccountId,
+        userId,
+        role,
+      });
     });
   };
 

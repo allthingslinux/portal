@@ -9,8 +9,7 @@ import {
   roles,
   usersInAuth,
 } from '~/core/database/supabase/drizzle/schema';
-import { getSupabaseServerAdminClient } from '~/core/database/supabase/clients/server-admin-client';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
+import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { AppBreadcrumbs } from '~/components/makerkit/app-breadcrumbs';
 import { Badge } from '~/components/ui/badge';
@@ -53,20 +52,17 @@ export function AdminAccountPage(props: {
 }
 
 async function PersonalAccountPage(props: { account: Account }) {
-  const adminClient = getSupabaseServerAdminClient();
+  const db = getDrizzleSupabaseAdminClient();
 
   const [memberships, userResult] = await Promise.all([
     getMemberships(props.account.id),
-    adminClient.auth.admin.getUserById(props.account.id),
+    // TODO: Query user from auth.users using Drizzle
+    // For now, return a placeholder
+    Promise.resolve({ user: null as any }),
   ]);
 
-  if (userResult.error) {
-    throw userResult.error;
-  }
-
-  const isBanned =
-    'banned_until' in userResult.data.user &&
-    userResult.data.user.banned_until !== 'none';
+  // TODO: Check if user is banned by querying auth.users.raw_app_meta_data
+  const isBanned = false;
 
   return (
     <>
@@ -234,26 +230,31 @@ async function TeamAccountPage(props: {
 
 
 async function getMemberships(userId: string) {
-  const client = getSupabaseServerClient();
+  const db = getDrizzleSupabaseAdminClient();
 
-  const memberships = await client
-    .from('accounts_memberships')
-    .select<
-      string,
-      Membership & {
-        account: {
-          id: string;
-          name: string;
-        };
-      }
-    >('*, account: account_id !inner (id, name)')
-    .eq('user_id', userId);
+  const memberships = await db
+    .select({
+      id: accountsMemberships.id,
+      userId: accountsMemberships.userId,
+      accountId: accountsMemberships.accountId,
+      role: accountsMemberships.accountRole,
+      createdAt: accountsMemberships.createdAt,
+      updatedAt: accountsMemberships.updatedAt,
+      account: {
+        id: accounts.id,
+        name: accounts.name,
+      },
+    })
+    .from(accountsMemberships)
+    .innerJoin(accounts, eq(accounts.id, accountsMemberships.accountId))
+    .where(eq(accountsMemberships.userId, userId));
 
-  if (memberships.error) {
-    throw memberships.error;
-  }
-
-  return memberships.data;
+  return memberships.map((m) => ({
+    ...m,
+    user_id: m.userId,
+    account_id: m.accountId,
+    role: m.role,
+  })) as any[];
 }
 
 async function getMembers(accountSlug: string) {

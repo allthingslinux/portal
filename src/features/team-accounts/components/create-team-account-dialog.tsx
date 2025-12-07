@@ -28,7 +28,7 @@ import { DialogErrorAlert } from '~/shared/components/ui/dialog-error-alert';
 import { useDialogForm } from '~/shared/hooks/use-dialog-form';
 
 import { CreateTeamSchema } from '../schema/create-team.schema';
-import { createTeamAccountAction } from '../server/actions/create-team-account-server-actions';
+import { createTeamAccountAction } from '../server/actions/team-account-server-actions';
 
 export function CreateTeamAccountDialog(
   props: React.PropsWithChildren<{

@@ -1,9 +1,6 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-import type { Database } from '~/core/database/supabase/database.types';
 import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
 import { accounts, accountsMemberships } from '~/core/database/supabase/drizzle/schema';
 import { JWTUserData } from '~/core/database/supabase/types';
@@ -13,20 +10,16 @@ import type { FeaturePolicyInvitationContext } from './feature-policy-invitation
 
 /**
  * Creates an invitation context builder
- * @param client - The Supabase client
  * @returns
  */
-export function createInvitationContextBuilder(
-  client: SupabaseClient<Database>,
-) {
-  return new InvitationContextBuilder(client);
+export function createInvitationContextBuilder() {
+  return new InvitationContextBuilder();
 }
 
 /**
  * Invitation context builder
  */
 class InvitationContextBuilder {
-  constructor(private readonly client: SupabaseClient<Database>) {}
 
   /**
    * Build policy context for invitation evaluation with optimized parallel loading
