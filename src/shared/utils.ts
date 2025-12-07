@@ -1,4 +1,9 @@
 /**
+ * General utility functions for the application.
+ * These are non-UI specific utilities that can be used across the codebase.
+ */
+
+/**
  * Check if the code is running in a browser environment.
  */
 export function isBrowser() {
