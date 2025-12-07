@@ -1,5 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-
 import { useSupabaseUpload } from '../hooks/use-supabase-upload';
 import { cn } from '../lib/utils';
 import { Dropzone, DropzoneContent, DropzoneEmptyState } from './dropzone';
@@ -12,7 +10,6 @@ export const FileUploader = (props: {
   allowedMimeTypes: string[];
   maxFileSize: number | undefined;
   cacheControl?: number;
-  client: SupabaseClient;
   onUploadSuccess?: (files: string[]) => void;
 }) => {
   const uploader = useSupabaseUpload(props);

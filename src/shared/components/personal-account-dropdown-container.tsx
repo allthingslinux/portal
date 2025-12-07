@@ -2,7 +2,7 @@
 
 import { PersonalAccountDropdown } from '~/features/accounts/components/personal-account-dropdown';
 import { useSignOut } from '~/core/database/supabase/hooks/use-sign-out';
-import { useUser } from '~/core/database/supabase/hooks/use-user';
+import { useSession } from '~/core/auth/nextauth/hooks';
 import { JWTUserData } from '~/core/database/supabase/types';
 
 import featuresFlagConfig from '~/config/feature-flags.config';
@@ -27,8 +27,8 @@ export function ProfileAccountDropdownContainer(props: {
   };
 }) {
   const signOut = useSignOut();
-  const user = useUser(props.user);
-  const userData = user.data;
+  const { data: sessionData } = useSession();
+  const userData = sessionData || props.user || undefined;
 
   if (!userData) {
     return null;
