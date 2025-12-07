@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { getLogger } from '~/shared/logger';
-import { getSupabaseServerAdminClient } from '~/core/database/supabase/clients/server-admin-client';
+import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
 
 import { RecordChange, Tables } from '../record-change.type';
 import { createDatabaseWebhookRouterService } from './database-webhook-router.service';
@@ -58,7 +58,7 @@ class DatabaseWebhookHandlerService {
     // all good, we can now the webhook
 
     // create a client with admin access since we are handling webhooks and no user is authenticated
-    const adminClient = getSupabaseServerAdminClient();
+    const adminClient = getDrizzleSupabaseAdminClient();
 
     const service = createDatabaseWebhookRouterService(adminClient);
 

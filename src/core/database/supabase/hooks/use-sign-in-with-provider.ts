@@ -1,25 +1,38 @@
-import type { SignInWithOAuthCredentials } from '@supabase/supabase-js';
+import type { SignInWithOAuthCredentials } from '../supabase-types';
 
-import { useMutation } from '@tanstack/react-query';
+import { useSignInWithProvider as useNextAuthSignInWithProvider } from '~/core/auth/nextauth/hooks';
 
-import { useSupabase } from './use-supabase';
-
+/**
+ * @deprecated Use useSignInWithProvider from ~/core/auth/nextauth/hooks instead
+ * This is kept for backward compatibility
+ */
 export function useSignInWithProvider() {
-  const client = useSupabase();
-  const mutationKey = ['auth', 'sign-in-with-provider'];
+  const mutation = useNextAuthSignInWithProvider();
 
-  const mutationFn = async (credentials: SignInWithOAuthCredentials) => {
-    const response = await client.auth.signInWithOAuth(credentials);
+  return {
+    ...mutation,
+    mutateAsync: async (credentials: SignInWithOAuthCredentials) => {
+      // Map Supabase provider names to NextAuth provider names
+      const providerMap: Record<string, string> = {
+        google: 'google',
+        github: 'github',
+        apple: 'apple',
+        microsoft: 'microsoft',
+        facebook: 'facebook',
+        keycloak: 'keycloak',
+      };
 
-    if (response.error) {
-      throw response.error.message;
-    }
+      const provider = providerMap[credentials.provider] || credentials.provider;
 
-    return response.data;
+      await mutation.mutateAsync({
+        provider: provider as 'google' | 'github' | 'apple' | 'microsoft' | 'facebook' | 'keycloak',
+        redirectTo: credentials.options?.redirectTo,
+      });
+
+      // Return in Supabase-compatible format
+      return {
+        url: credentials.options?.redirectTo || '/home',
+      };
+    },
   };
-
-  return useMutation({
-    mutationFn,
-    mutationKey,
-  });
 }

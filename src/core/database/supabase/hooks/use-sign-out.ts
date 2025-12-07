@@ -1,13 +1,9 @@
-import { useMutation } from '@tanstack/react-query';
+import { useSignOut as useNextAuthSignOut } from '~/core/auth/nextauth/hooks';
 
-import { useSupabase } from './use-supabase';
-
+/**
+ * @deprecated Use useSignOut from ~/core/auth/nextauth/hooks instead
+ * This is kept for backward compatibility
+ */
 export function useSignOut() {
-  const client = useSupabase();
-
-  return useMutation({
-    mutationFn: () => {
-      return client.auth.signOut();
-    },
-  });
+  return useNextAuthSignOut();
 }

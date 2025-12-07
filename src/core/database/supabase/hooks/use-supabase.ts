@@ -1,8 +1,50 @@
+'use client';
+
 import { useMemo } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-import { getSupabaseBrowserClient } from '../clients/browser-client';
-import { Database } from '../database.types';
+import { getSupabaseClientKeys } from '../get-supabase-client-keys';
 
-export function useSupabase<Db = Database>() {
-  return useMemo(() => getSupabaseBrowserClient<Db>(), []);
+/**
+ * @deprecated This hook should only be used for realtime subscriptions and legacy database queries.
+ * 
+ * For authentication, use useSession from ~/core/auth/nextauth/hooks
+ * For storage, use the storage utilities from ~/core/storage/supabase-storage
+ * For database queries, use server actions with Drizzle
+ * 
+ * This returns a minimal Supabase client (no auth) for:
+ * - Realtime subscriptions (notifications)
+ * - Legacy database queries (should be migrated to server actions)
+ */
+export function useSupabase() {
+  return useMemo(() => {
+    const keys = getSupabaseClientKeys();
+    
+    // Create a minimal Supabase client for realtime and database queries only
+    // No authentication - NextAuth handles that
+    const client = createClient(keys.url, keys.publicKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10,
+        },
+      },
+    });
+
+    // Return a client that has the methods needed for realtime and database
+    return {
+      channel: client.channel.bind(client),
+      from: client.from.bind(client),
+      // For identity linking - throws error indicating it's not implemented
+      auth: {
+        getUserIdentities: () => {
+          throw new Error('Identity linking is not yet implemented with NextAuth. Please configure NextAuth account linking.');
+        },
+      },
+    } as any;
+  }, []);
 }

@@ -1,4 +1,11 @@
-import type { AMREntry } from '@supabase/supabase-js';
+/**
+ * @name AMREntry
+ * @description Authentication Method Reference entry
+ */
+export type AMREntry = {
+  method: string;
+  timestamp: number;
+};
 
 /**
  * @name JWTUserData

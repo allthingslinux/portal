@@ -1,30 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
-
-import { requireUser } from '../require-user';
+import { useSession } from '~/core/auth/nextauth/hooks';
 import { JWTUserData } from '../types';
-import { useSupabase } from './use-supabase';
 
-const queryKey = ['supabase:user'];
-
+/**
+ * @deprecated Use useSession from ~/core/auth/nextauth/hooks instead
+ * This is kept for backward compatibility
+ */
 export function useUser(initialData?: JWTUserData | null) {
-  const client = useSupabase();
+  const { data, isLoading } = useSession();
 
-  const queryFn = async () => {
-    const response = await requireUser(client);
-
-    if (response.error) {
-      return undefined;
-    }
-
-    return response.data;
+  return {
+    data: data || initialData || undefined,
+    isLoading,
+    refetch: async () => {
+      // NextAuth handles session refresh automatically
+      return { data };
+    },
   };
-
-  return useQuery({
-    queryFn,
-    queryKey,
-    initialData,
-    refetchInterval: false,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
 }

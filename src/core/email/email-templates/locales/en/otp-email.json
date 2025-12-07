@@ -1,7 +1,0 @@
-{
-  "subject": "One-time password for {{productName}}",
-  "heading": "One-time password for {{productName}}",
-  "otpText": "Your one-time password is: {{otp}}",
-  "footerText": "Please enter the one-time password in the app to continue.",
-  "mainText": "You're receiving this email because you need to verify your identity using a one-time password."
-}

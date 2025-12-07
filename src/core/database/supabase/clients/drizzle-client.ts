@@ -2,12 +2,11 @@ import 'server-only';
 
 import { DrizzleConfig, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { JwtPayload, jwtDecode } from 'jwt-decode';
 import postgres from 'postgres';
 import { z } from 'zod';
 
 import * as schema from '../drizzle/schema';
-import { getSupabaseServerClient } from './server-client';
+import { getServerSession } from '~/core/auth/nextauth/session';
 
 const SUPABASE_DATABASE_URL = z
   .string({
@@ -60,10 +59,22 @@ function getRlsClient() {
 }
 
 export async function getDrizzleSupabaseClient() {
-  const client = getSupabaseServerClient();
-  const { data } = await client.auth.getSession();
-  const accessToken = data.session?.access_token ?? '';
-  const token = decode(accessToken);
+  const session = await getServerSession();
+
+  // Build JWT claims from NextAuth session
+  const userId = session?.user?.id ?? '';
+  const email = session?.user?.email ?? '';
+  const role = session?.user ? 'authenticated' : 'anon';
+
+  // Create a token-like object for RLS context
+  const token = {
+    sub: userId,
+    email,
+    role,
+    aud: 'authenticated',
+    exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiry
+    iat: Math.floor(Date.now() / 1000),
+  };
 
   const runTransaction = (
     transaction: (tx: ReturnType<typeof drizzle>) => Promise<unknown>,
@@ -72,7 +83,7 @@ export async function getDrizzleSupabaseClient() {
     const client = getRlsClient();
     return client.transaction(async (tx: any) => {
       try {
-        // Set up Supabase auth context
+        // Set up auth context for RLS
         await tx.execute(sql`
           select set_config('request.jwt.claims', '${sql.raw(
             JSON.stringify(token),
@@ -103,12 +114,4 @@ export async function getDrizzleSupabaseClient() {
   return {
     runTransaction,
   };
-}
-
-function decode(accessToken: string) {
-  try {
-    return jwtDecode<JwtPayload & { role: string }>(accessToken);
-  } catch {
-    return { role: 'anon' } as JwtPayload & { role: string };
-  }
 }

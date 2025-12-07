@@ -1,30 +1,34 @@
-import type { SignInWithPasswordCredentials } from '@supabase/supabase-js';
+import type { SignInWithPasswordCredentials } from '../supabase-types';
 
-import { useMutation } from '@tanstack/react-query';
+import { useSignInWithEmailPassword as useNextAuthSignIn } from '~/core/auth/nextauth/hooks';
 
-import { useSupabase } from './use-supabase';
-
+/**
+ * @deprecated Use useSignInWithEmailPassword from ~/core/auth/nextauth/hooks instead
+ * This is kept for backward compatibility
+ */
 export function useSignInWithEmailPassword() {
-  const client = useSupabase();
-  const mutationKey = ['auth', 'sign-in-with-email-password'];
+  const mutation = useNextAuthSignIn();
 
-  const mutationFn = async (credentials: SignInWithPasswordCredentials) => {
-    const response = await client.auth.signInWithPassword(credentials);
+  return {
+    ...mutation,
+    mutateAsync: async (credentials: SignInWithPasswordCredentials) => {
+      const result = await mutation.mutateAsync({
+        email: credentials.email,
+        password: credentials.password,
+      });
 
-    if (response.error) {
-      throw response.error.message;
-    }
-
-    const user = response.data?.user;
-    const identities = user?.identities ?? [];
-
-    // if the user has no identities, it means that the email is taken
-    if (identities.length === 0) {
-      throw new Error('User already registered');
-    }
-
-    return response.data;
+      // Return in Supabase-compatible format
+      return {
+        data: {
+          user: {
+            id: result?.user?.id,
+            email: result?.user?.email,
+            identities: [],
+          },
+          session: null,
+        },
+        error: null,
+      };
+    },
   };
-
-  return useMutation({ mutationKey, mutationFn });
 }

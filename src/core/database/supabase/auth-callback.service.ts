@@ -1,10 +1,20 @@
 import 'server-only';
 
-import {
-  AuthError,
-  type EmailOtpType,
-  SupabaseClient,
-} from '@supabase/supabase-js';
+import type { EmailOtpType } from '../supabase-types';
+
+/**
+ * @deprecated This service is no longer used with NextAuth.
+ * NextAuth handles auth callbacks automatically.
+ */
+type SupabaseClient = any;
+
+class AuthError extends Error {
+  code?: string;
+  constructor(message: string, code?: string) {
+    super(message);
+    this.code = code;
+  }
+}
 
 /**
  * @name createAuthCallbackService

@@ -1,8 +1,6 @@
-import type { Provider } from '@supabase/supabase-js';
-
 import { z } from 'zod';
 
-const providers: z.ZodType<Provider> = getProviders();
+const providers = getProviders();
 
 const AuthConfigSchema = z.object({
   captchaTokenSiteKey: z
@@ -28,9 +26,6 @@ const AuthConfigSchema = z.object({
     magicLink: z.boolean({
       description: 'Enable magic link authentication.',
     }),
-    otp: z.boolean({
-      description: 'Enable one-time password authentication.',
-    }),
     oAuth: providers.array(),
   }),
 });
@@ -54,12 +49,34 @@ const authConfig = AuthConfigSchema.parse({
   providers: {
     password: process.env.NEXT_PUBLIC_AUTH_PASSWORD === 'true',
     magicLink: process.env.NEXT_PUBLIC_AUTH_MAGIC_LINK === 'true',
-    otp: process.env.NEXT_PUBLIC_AUTH_OTP === 'true',
     oAuth: ['google'],
   },
 } satisfies z.infer<typeof AuthConfigSchema>);
 
 export default authConfig;
+
+type Provider =
+  | 'apple'
+  | 'azure'
+  | 'bitbucket'
+  | 'discord'
+  | 'facebook'
+  | 'figma'
+  | 'github'
+  | 'gitlab'
+  | 'google'
+  | 'kakao'
+  | 'keycloak'
+  | 'linkedin'
+  | 'linkedin_oidc'
+  | 'notion'
+  | 'slack'
+  | 'spotify'
+  | 'twitch'
+  | 'twitter'
+  | 'workos'
+  | 'zoom'
+  | 'fly';
 
 function getProviders() {
   return z.enum([
@@ -84,5 +101,5 @@ function getProviders() {
     'workos',
     'zoom',
     'fly',
-  ]);
+  ]) as z.ZodType<Provider>;
 }
