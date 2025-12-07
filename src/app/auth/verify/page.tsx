@@ -1,8 +1,6 @@
 import { redirect } from 'next/navigation';
 
-import { MultiFactorChallengeContainer } from '~/features/auth/mfa';
-import { checkRequiresMultiFactorAuthentication } from '~/core/database/supabase/check-requires-mfa';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
+import { getServerSession } from '~/core/auth/nextauth/session';
 
 import pathsConfig from '~/config/paths.config';
 import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
@@ -23,31 +21,17 @@ export const generateMetadata = async () => {
 };
 
 async function VerifyPage(props: Props) {
-  const client = getSupabaseServerClient();
+  const session = await getServerSession();
 
-  const { data } = await client.auth.getClaims();
-
-  if (!data?.claims) {
+  if (!session?.user) {
     redirect(pathsConfig.auth.signIn);
   }
 
-  const needsMfa = await checkRequiresMultiFactorAuthentication(client);
-
-  if (!needsMfa) {
-    redirect(pathsConfig.auth.signIn);
-  }
-
+  // MFA is not implemented - redirect to home
   const nextPath = (await props.searchParams).next;
   const redirectPath = nextPath ?? pathsConfig.app.home;
 
-  return (
-    <MultiFactorChallengeContainer
-      userId={data.claims.sub}
-      paths={{
-        redirectPath,
-      }}
-    />
-  );
+  redirect(redirectPath);
 }
 
 export default withI18n(VerifyPage);

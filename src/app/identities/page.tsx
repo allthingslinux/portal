@@ -3,12 +3,11 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import type { Provider } from '@supabase/supabase-js';
+import type { Provider } from '~/core/database/supabase/supabase-types';
 
 import { LinkAccountsList } from '~/features/accounts/components/personal-account-settings';
 import { AuthLayoutShell } from '~/features/auth/shared';
 import { requireUser } from '~/core/database/supabase/require-user';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
 import { Button } from '~/components/ui/button';
 import { Heading } from '~/components/ui/heading';
 import { Trans } from '~/components/makerkit/trans';
@@ -119,8 +118,7 @@ function IdentitiesStep(props: {
 
 async function fetchData(props: IdentitiesPageProps) {
   const searchParams = await props.searchParams;
-  const client = getSupabaseServerClient();
-  const auth = await requireUser(client);
+  const auth = await requireUser();
 
   // If not authenticated, redirect to sign in
   if (!auth.data) {
@@ -133,11 +131,10 @@ async function fetchData(props: IdentitiesPageProps) {
   // Available auth methods to add
   const showPasswordOption = authConfig.providers.password;
 
-  // Show email option if password, magic link, or OTP is enabled
+  // Show email option if password or magic link is enabled
   const showEmailOption =
     authConfig.providers.password ||
-    authConfig.providers.magicLink ||
-    authConfig.providers.otp;
+    authConfig.providers.magicLink;
 
   const oAuthProviders = authConfig.providers.oAuth;
   const enableIdentityLinking = authConfig.enableIdentityLinking;

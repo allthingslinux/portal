@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, MessageCircle } from 'lucide-react';
 
 import { useCaptureException } from '~/core/monitoring/api/hooks';
-import { useUser } from '~/core/database/supabase/hooks/use-user';
+import { useSession } from '~/core/auth/nextauth/hooks';
 import { Button } from '~/components/ui/button';
 import { Heading } from '~/components/ui/heading';
 import { Trans } from '~/components/makerkit/trans';
@@ -34,11 +34,11 @@ const GlobalErrorPage = ({
 };
 
 function GlobalErrorContent({ reset }: { reset: () => void }) {
-  const user = useUser();
+  const { data: user } = useSession();
 
   return (
     <div className={'flex h-screen flex-1 flex-col'}>
-      <SiteHeader user={user.data} />
+      <SiteHeader user={user} />
 
       <div
         className={

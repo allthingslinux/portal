@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { getSupabaseServerAdminClient } from '~/core/database/supabase/clients/server-admin-client';
+import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
+import { config } from '~/core/database/supabase/drizzle/schema';
 
 /**
  * Healthcheck endpoint for the web app. If this endpoint returns a 200, the web app will be considered healthy.
@@ -24,14 +25,11 @@ export async function GET() {
  */
 async function getSupabaseHealthCheck() {
   try {
-    const client = getSupabaseServerAdminClient();
+    const db = getDrizzleSupabaseAdminClient();
 
-    const { error } = await client
-      .from('config')
-      .select('enable_team_accounts')
-      .single();
+    await db.select().from(config).limit(1);
 
-    return !error;
+    return true;
   } catch {
     return false;
   }

@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { enhanceRouteHandler } from '~/shared/next/routes';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
 import {
   createInvitationContextBuilder,
   createInvitationsPolicyEvaluator,
@@ -11,7 +10,6 @@ import {
 
 export const GET = enhanceRouteHandler(
   async function ({ params, user }) {
-    const client = getSupabaseServerClient();
     const { account } = z.object({ account: z.string() }).parse(params);
 
     try {
@@ -32,7 +30,7 @@ export const GET = enhanceRouteHandler(
       }
 
       // Build context for policy evaluation (empty invitations for testing)
-      const contextBuilder = createInvitationContextBuilder(client);
+      const contextBuilder = createInvitationContextBuilder();
 
       const context = await contextBuilder.buildContext(
         {

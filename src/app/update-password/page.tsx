@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { UpdatePasswordForm } from '~/features/auth/password-reset';
 import { AuthLayoutShell } from '~/features/auth/shared';
 import { requireUser } from '~/core/database/supabase/require-user';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
 
 import { AppLogo } from '~/components/app-logo';
 import pathsConfig from '~/config/paths.config';
@@ -27,9 +26,7 @@ interface UpdatePasswordPageProps {
 }
 
 async function UpdatePasswordPage(props: UpdatePasswordPageProps) {
-  const client = getSupabaseServerClient();
-
-  const result = await requireUser(client, {
+  const result = await requireUser({
     next: pathsConfig.auth.passwordUpdate,
   });
 

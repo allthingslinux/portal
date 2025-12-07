@@ -4,6 +4,7 @@ import { createAccountsApi } from '~/features/accounts/server/api';
 
 import featureFlagsConfig from '~/config/feature-flags.config';
 import { requireUserInServerComponent } from '~/shared/lib/server/require-user-in-server-component';
+import { createWorkspaceLoader } from '~/shared/next/loaders/create-workspace-loader';
 
 const shouldLoadAccounts = featureFlagsConfig.enableTeamAccounts;
 
@@ -17,9 +18,7 @@ export type UserWorkspace = Awaited<ReturnType<typeof loadUserWorkspace>>;
  * Load the user workspace data. It's a cached per-request function that fetches the user workspace data.
  * It can be used across the server components to load the user workspace data.
  */
-export const loadUserWorkspace = cache(workspaceLoader);
-
-async function workspaceLoader() {
+export const loadUserWorkspace = createWorkspaceLoader(async () => {
   const api = createAccountsApi();
 
   const accountsPromise = shouldLoadAccounts
@@ -39,4 +38,4 @@ async function workspaceLoader() {
     workspace,
     user,
   };
-}
+});

@@ -1,9 +1,7 @@
-import { ServerDataLoader } from '@makerkit/data-loader-supabase-nextjs';
-
 import { AdminAccountsTable } from '~/features/admin/components/admin-accounts-table';
 import { AdminCreateUserDialog } from '~/features/admin/components/admin-create-user-dialog';
 import { AdminGuard } from '~/features/admin/components/admin-guard';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
+import { loadAdminAccounts } from '~/features/admin/lib/server/loaders/admin-accounts.loader';
 import { AppBreadcrumbs } from '~/components/makerkit/app-breadcrumbs';
 import { Button } from '~/components/ui/button';
 import { PageBody, PageHeader } from '~/components/makerkit/page';
@@ -23,9 +21,16 @@ export const metadata = {
 };
 
 async function AccountsPage(props: AdminAccountsPageProps) {
-  const client = getSupabaseServerClient();
   const searchParams = await props.searchParams;
   const page = searchParams.page ? parseInt(searchParams.page) : 1;
+  const pageSize = 10;
+
+  const { data, pageCount } = await loadAdminAccounts({
+    page,
+    pageSize,
+    type: searchParams.account_type ?? 'all',
+    query: searchParams.query,
+  });
 
   return (
     <>
@@ -38,39 +43,16 @@ async function AccountsPage(props: AdminAccountsPageProps) {
       </PageHeader>
 
       <PageBody>
-        <ServerDataLoader
-          table={'accounts'}
-          client={client}
+        <AdminAccountsTable
           page={page}
-          where={(queryBuilder) => {
-            const { account_type: type, query } = searchParams;
-
-            if (type && type !== 'all') {
-              queryBuilder.eq('is_personal_account', type === 'personal');
-            }
-
-            if (query) {
-              queryBuilder.or(`name.ilike.%${query}%,email.ilike.%${query}%`);
-            }
-
-            return queryBuilder;
+          pageSize={pageSize}
+          pageCount={pageCount}
+          data={data}
+          filters={{
+            type: searchParams.account_type ?? 'all',
+            query: searchParams.query ?? '',
           }}
-        >
-          {({ data, page, pageSize, pageCount }) => {
-            return (
-              <AdminAccountsTable
-                page={page}
-                pageSize={pageSize}
-                pageCount={pageCount}
-                data={data}
-                filters={{
-                  type: searchParams.account_type ?? 'all',
-                  query: searchParams.query ?? '',
-                }}
-              />
-            );
-          }}
-        </ServerDataLoader>
+        />
       </PageBody>
     </>
   );

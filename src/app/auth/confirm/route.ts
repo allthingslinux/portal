@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { createAuthCallbackService } from '~/core/database/supabase/auth';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
-
 import pathsConfig from '~/config/paths.config';
 
+/**
+ * Auth confirm route
+ * NextAuth handles email verification automatically.
+ * This route is kept for backward compatibility.
+ */
 export async function GET(request: NextRequest) {
-  const service = createAuthCallbackService(getSupabaseServerClient());
+  const url = new URL(request.url);
+  const searchParams = url.searchParams;
+  const next = searchParams.get('next') || pathsConfig.app.home;
 
-  const url = await service.verifyTokenHash(request, {
-    joinTeamPath: pathsConfig.app.joinTeam,
-    redirectPath: pathsConfig.app.home,
-  });
+  url.pathname = next;
+  url.search = '';
 
   return NextResponse.redirect(url);
 }

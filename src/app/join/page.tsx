@@ -7,12 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { AuthLayoutShell } from '~/features/auth/shared';
 import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
 import { accountsMemberships } from '~/core/database/supabase/drizzle/schema';
-import {
-  MultiFactorAuthError,
-  requireUser,
-} from '~/core/database/supabase/require-user';
-import { getSupabaseServerAdminClient } from '~/core/database/supabase/clients/server-admin-client';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
+import { requireUser } from '~/core/database/supabase/require-user';
 import { createTeamAccountsApi } from '~/features/team-accounts/server/api';
 import { AcceptInvitationContainer } from '~/features/team-accounts/components';
 import { Button } from '~/components/ui/button';
@@ -50,41 +45,27 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
     notFound();
   }
 
-  const client = getSupabaseServerClient();
-  const auth = await requireUser(client);
+  const auth = await requireUser();
 
   // if the user is not logged in or there is an error
   // redirect to the sign up page with the invite token
   // so that they will get back to this page after signing up
   if (auth.error ?? !auth.data) {
-    if (auth.error instanceof MultiFactorAuthError) {
-      const urlParams = new URLSearchParams({
-        next: `${pathsConfig.app.joinTeam}?invite_token=${token}&email=${searchParams.email ?? ''}`,
-      });
+    const urlParams = new URLSearchParams({
+      invite_token: token,
+    });
 
-      const verifyMfaUrl = `${pathsConfig.auth.verifyMfa}?${urlParams.toString()}`;
+    const nextUrl = `${pathsConfig.auth.signUp}?${urlParams.toString()}`;
 
-      // if the user needs to verify MFA
-      // redirect them to the MFA verification page
-      redirect(verifyMfaUrl);
-    } else {
-      const urlParams = new URLSearchParams({
-        invite_token: token,
-      });
-
-      const nextUrl = `${pathsConfig.auth.signUp}?${urlParams.toString()}`;
-
-      // redirect to the sign up page with the invite token
-      redirect(nextUrl);
-    }
+    // redirect to the sign up page with the invite token
+    redirect(nextUrl);
   }
 
   // get api to interact with team accounts
-  const adminClient = getSupabaseServerAdminClient();
   const api = createTeamAccountsApi();
 
   // the user is logged in, we can now check if the token is valid
-  const invitationResult = await api.getInvitation(adminClient, token);
+  const invitationResult = await api.getInvitation(token);
 
   // the invitation is not found or expired or the email is not the same as the user's email
   const isInvitationValid = invitationResult.data?.email === auth.data.email;
