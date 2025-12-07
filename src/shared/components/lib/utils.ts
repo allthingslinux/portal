@@ -1,7 +1,16 @@
+/**
+ * UI and component-specific utility functions.
+ * These utilities are primarily used for styling, routing, and component-related operations.
+ */
+
 import { clsx } from 'clsx';
 import type { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+/**
+ * Utility function to merge Tailwind CSS classes.
+ * Combines clsx and tailwind-merge for optimal class handling.
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
