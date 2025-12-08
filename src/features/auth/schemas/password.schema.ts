@@ -1,12 +1,17 @@
 import { z } from 'zod';
 
+import {
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from '~/shared/constants';
+
 /**
  * Password requirements
  * These are the requirements for the password when signing up or changing the password
  */
 const requirements = {
-  minLength: 8,
-  maxLength: 99,
+  minLength: PASSWORD_MIN_LENGTH,
+  maxLength: PASSWORD_MAX_LENGTH,
   specialChars:
     process.env.NEXT_PUBLIC_PASSWORD_REQUIRE_SPECIAL_CHARS === 'true',
   numbers: process.env.NEXT_PUBLIC_PASSWORD_REQUIRE_NUMBERS === 'true',

@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import type { InferSelectModel } from 'drizzle-orm';
 
 import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
 import {
@@ -6,6 +7,11 @@ import {
   userAccountWorkspace,
   userAccounts,
 } from '~/core/database/supabase/drizzle/schema';
+import { API_ERRORS } from '~/shared/constants/errors';
+
+type Account = InferSelectModel<typeof accounts>;
+type UserAccountWorkspace = InferSelectModel<typeof userAccountWorkspace>;
+type UserAccount = InferSelectModel<typeof userAccounts>;
 
 /**
  * Class representing an API for interacting with user accounts using Drizzle.
@@ -16,19 +22,19 @@ class _AccountsApi {
    * @description Get the account data for the given ID.
    * @param id
    */
-  async getAccount(id: string) {
+  async getAccount(id: string): Promise<Account> {
     const drizzleClient = await getDrizzleSupabaseClient();
 
-  const result = await drizzleClient.runTransaction(async (tx) => {
-    return await tx
-      .select()
-      .from(accounts)
-      .where(eq(accounts.id, id))
-      .limit(1);
-  }) as any[];
+    const result = await drizzleClient.runTransaction(async (tx) => {
+      return await tx
+        .select()
+        .from(accounts)
+        .where(eq(accounts.id, id))
+        .limit(1);
+    });
 
-  if (result.length === 0) {
-      throw new Error('Account not found');
+    if (result.length === 0) {
+      throw new Error(API_ERRORS.ACCOUNT_NOT_FOUND);
     }
 
     return result[0];
@@ -38,15 +44,15 @@ class _AccountsApi {
    * @name getAccountWorkspace
    * @description Get the account workspace data.
    */
-  async getAccountWorkspace() {
+  async getAccountWorkspace(): Promise<UserAccountWorkspace> {
     const drizzleClient = await getDrizzleSupabaseClient();
 
-  const result = await drizzleClient.runTransaction(async (tx) => {
-    return await tx.select().from(userAccountWorkspace).limit(1);
-  }) as any[];
+    const result = await drizzleClient.runTransaction(async (tx) => {
+      return await tx.select().from(userAccountWorkspace).limit(1);
+    });
 
-  if (result.length === 0) {
-      throw new Error('Workspace not found');
+    if (result.length === 0) {
+      throw new Error(API_ERRORS.WORKSPACE_NOT_FOUND);
     }
 
     return result[0];
@@ -56,10 +62,12 @@ class _AccountsApi {
    * @name loadUserAccounts
    * Load the user accounts.
    */
-  async loadUserAccounts(): Promise<Array<{ label: string; value: string; image: string | null }>> {
+  async loadUserAccounts(): Promise<
+    Array<{ label: string; value: string; image: string | null }>
+  > {
     const drizzleClient = await getDrizzleSupabaseClient();
 
-    const accounts = await drizzleClient.runTransaction(async (tx) => {
+    const accountResults = await drizzleClient.runTransaction(async (tx) => {
       return await tx
         .select({
           name: userAccounts.name,
@@ -67,11 +75,11 @@ class _AccountsApi {
           pictureUrl: userAccounts.pictureUrl,
         })
         .from(userAccounts);
-    }) as any[];
+    });
 
-    return accounts.map(({ name, slug, pictureUrl }) => ({
-      label: name,
-      value: slug,
+    return accountResults.map(({ name, slug, pictureUrl }) => ({
+      label: name ?? '',
+      value: slug ?? '',
       image: pictureUrl,
     }));
   }

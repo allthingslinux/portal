@@ -1,4 +1,5 @@
 import { CmsClient } from '~/features/cms/types';
+import { getLogger } from '~/shared/logger';
 
 /**
  * Creates a new Keystatic client instance.
@@ -15,7 +16,8 @@ export async function createKeystaticClient() {
     return createClient();
   }
 
-  console.error(
+  const logger = await getLogger();
+  logger.error(
     `[CMS] Keystatic client using "Local" mode is only available in Node.js runtime. Please choose a different CMS client. Returning a mock client instead of throwing an error.`,
   );
 

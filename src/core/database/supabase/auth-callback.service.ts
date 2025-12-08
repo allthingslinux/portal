@@ -1,6 +1,7 @@
 import 'server-only';
 
 import type { EmailOtpType } from '../supabase-types';
+import { getLogger } from '~/shared/logger';
 
 /**
  * @deprecated This service is no longer used with NextAuth.
@@ -151,14 +152,15 @@ class AuthCallbackService {
 
         // if we have an error, we redirect to the error page
         if (error) {
-          return onError({
+          return await onError({
             code: error.code,
             error: error.message,
             path: errorPath,
           });
         }
       } catch (error) {
-        console.error(
+        const logger = await getLogger();
+        logger.error(
           {
             error,
             name: `auth.callback`,
@@ -168,7 +170,7 @@ class AuthCallbackService {
 
         const message = error instanceof Error ? error.message : error;
 
-        return onError({
+        return await onError({
           code: (error as AuthError)?.code,
           error: message as string,
           path: errorPath,
@@ -177,7 +179,7 @@ class AuthCallbackService {
     }
 
     if (error) {
-      return onError({
+      return await onError({
         error,
         path: errorPath,
       });
@@ -245,7 +247,7 @@ class AuthCallbackService {
   }
 }
 
-function onError({
+async function onError({
   error,
   path,
   code,
@@ -256,7 +258,8 @@ function onError({
 }) {
   const errorMessage = getAuthErrorMessage({ error, code });
 
-  console.error(
+  const logger = await getLogger();
+  logger.error(
     {
       error: JSON.stringify(error).replace(/["\\]/g, '\\$&'),
       name: `auth.callback`,

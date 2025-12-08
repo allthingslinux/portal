@@ -123,12 +123,10 @@ function safeClone<T>(obj: T): T {
       for (const [key, value] of Object.entries(obj)) {
         try {
           // Try to clone individual properties
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (cloned as any)[key] = structuredClone(value);
+          (cloned as Record<string, unknown>)[key] = structuredClone(value);
         } catch {
           // If individual property can't be cloned (like functions), keep as-is
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (cloned as any)[key] = value;
+          (cloned as Record<string, unknown>)[key] = value;
         }
       }
 

@@ -58,17 +58,14 @@ export function enhanceAction<
     // by default, the CAPTCHA token is not required
     const verifyCaptcha = config.captcha ?? false;
 
-    // verify the CAPTCHA token. It will throw an error if the token is invalid.
+    // verify the CAPTCHA token if required. It will throw an error if the token is invalid.
     if (verifyCaptcha) {
       const token = (data as Args & { captchaToken: string }).captchaToken;
-
-      // Verify the CAPTCHA token. It will throw an error if the token is invalid.
       await verifyCaptchaToken(token);
     }
 
     // verify the user is authenticated if required
     if (requireAuth) {
-      // verify the user is authenticated if required
       const auth = await requireUser();
 
       // If the user is not authenticated, redirect to the specified URL.

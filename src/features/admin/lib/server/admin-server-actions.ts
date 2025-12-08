@@ -182,7 +182,7 @@ export const createUserAction = adminAction(
 
       return {
         success: true,
-        user: null as any,
+        user: null,
       };
     },
     {

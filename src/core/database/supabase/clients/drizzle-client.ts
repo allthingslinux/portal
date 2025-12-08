@@ -71,7 +71,7 @@ export async function getDrizzleSupabaseClient() {
     sub: userId,
     email,
     role,
-    aud: 'authenticated',
+    aud: role, // aud should match role: 'authenticated' or 'anon'
     exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiry
     iat: Math.floor(Date.now() / 1000),
   };

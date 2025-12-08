@@ -19,6 +19,7 @@ import {
 } from '~/shared/lib/i18n/i18n.settings';
 
 import { i18nResolver } from './i18n.resolver';
+import { getLogger } from '~/shared/logger';
 
 /**
  * @name priority
@@ -42,7 +43,7 @@ async function createInstance() {
 
   // if the cookie is set, use the language from the cookie
   if (langCookieValue) {
-    selectedLanguage = getLanguageOrFallback(langCookieValue);
+    selectedLanguage = await getLanguageOrFallback(langCookieValue);
   }
 
   // if not, check if the language priority is set to user and
@@ -50,7 +51,7 @@ async function createInstance() {
   if (!selectedLanguage && priority === 'user') {
     const userPreferredLanguage = await getPreferredLanguageFromBrowser();
 
-    selectedLanguage = getLanguageOrFallback(userPreferredLanguage);
+    selectedLanguage = await getLanguageOrFallback(userPreferredLanguage);
   }
 
   const settings = getI18nSettings(selectedLanguage);
@@ -81,7 +82,7 @@ async function getPreferredLanguageFromBrowser() {
  * Get the language or fallback to the default language.
  * @param selectedLanguage
  */
-function getLanguageOrFallback(selectedLanguage: string | undefined) {
+async function getLanguageOrFallback(selectedLanguage: string | undefined) {
   const language = z
     .enum(languages as [string, ...string[]])
     .safeParse(selectedLanguage);
@@ -90,7 +91,12 @@ function getLanguageOrFallback(selectedLanguage: string | undefined) {
     return language.data;
   }
 
-  console.warn(
+  const logger = await getLogger();
+  logger.warn(
+    {
+      selectedLanguage,
+      defaultLanguage: languages[0],
+    },
     `The language passed is invalid. Defaulted back to "${languages[0]}"`,
   );
 

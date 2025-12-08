@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { getLogger } from '~/shared/logger';
+
 const verifyEndpoint =
   'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
@@ -26,7 +28,14 @@ export async function verifyCaptchaToken(token: string) {
   });
 
   if (!res.ok) {
-    console.error(`Captcha failed:`, res.statusText);
+    const logger = await getLogger();
+    logger.error(
+      {
+        statusText: res.statusText,
+        status: res.status,
+      },
+      'Captcha verification failed',
+    );
 
     throw new Error('Failed to verify CAPTCHA token');
   }

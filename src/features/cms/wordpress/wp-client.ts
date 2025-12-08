@@ -6,6 +6,7 @@ import type {
 } from 'wp-types';
 
 import { Cms, CmsClient } from '~/features/cms/types';
+import { getLogger } from '~/shared/logger';
 
 import GetTagsOptions = Cms.GetTagsOptions;
 
@@ -67,9 +68,12 @@ class WordpressClient implements CmsClient {
       if (ids.length) {
         queryParams.append('categories', ids.join(','));
       } else {
-        console.warn(
+        const logger = await getLogger();
+        logger.warn(
+          {
+            categories: options.categories,
+          },
           'No categories found for the provided slugs',
-          options.categories,
         );
       }
     }
@@ -84,7 +88,13 @@ class WordpressClient implements CmsClient {
       if (ids.length) {
         queryParams.append('tags', ids.join(','));
       } else {
-        console.warn('No tags found for the provided slugs', options.tags);
+        const logger = await getLogger();
+        logger.warn(
+          {
+            tags: options.tags,
+          },
+          'No tags found for the provided slugs',
+        );
       }
     }
 
@@ -284,7 +294,14 @@ class WordpressClient implements CmsClient {
     );
 
     if (!response.ok) {
-      console.error('Failed to fetch categories', await response.json());
+      const errorData = await response.json();
+      const logger = await getLogger();
+      logger.error(
+        {
+          error: errorData,
+        },
+        'Failed to fetch categories',
+      );
 
       throw new Error('Failed to fetch categories');
     }
@@ -319,7 +336,14 @@ class WordpressClient implements CmsClient {
     );
 
     if (!response.ok) {
-      console.error('Failed to fetch tags', await response.json());
+      const errorData = await response.json();
+      const logger = await getLogger();
+      logger.error(
+        {
+          error: errorData,
+        },
+        'Failed to fetch tags',
+      );
 
       throw new Error('Failed to fetch tags');
     }

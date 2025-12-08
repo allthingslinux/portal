@@ -4,10 +4,18 @@ import { z } from 'zod';
 
 import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
 import { sql } from 'drizzle-orm';
+import {
+  BCRYPT_ROUNDS,
+  HTTP_STATUS,
+  PASSWORD_MIN_LENGTH,
+} from '~/shared/constants';
+import { API_ERRORS } from '~/shared/constants/errors';
+import { createErrorResponse } from '~/shared/next/actions/error-handlers';
+import { verifyCaptchaToken } from '~/features/auth/captcha/server';
 
 const SignUpSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(PASSWORD_MIN_LENGTH),
   captchaToken: z.string().optional(),
 });
 
@@ -16,7 +24,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { email, password, captchaToken } = SignUpSchema.parse(body);
 
-    // TODO: Verify captcha token if provided
+    // Verify captcha token if provided
+    if (captchaToken) {
+      await verifyCaptchaToken(captchaToken);
+    }
 
     const db = getDrizzleSupabaseAdminClient();
 
@@ -29,13 +40,13 @@ export async function POST(request: Request) {
 
     if (existingUser.length > 0) {
       return NextResponse.json(
-        { error: 'User already registered' },
-        { status: 400 },
+        { error: API_ERRORS.USER_ALREADY_REGISTERED },
+        { status: HTTP_STATUS.BAD_REQUEST },
       );
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
     // Create user in auth.users table
     // Note: This is a simplified version. In production, you might want to
@@ -51,17 +62,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, userId });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 },
-      );
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to create user' },
-      { status: 500 },
-    );
+    return createErrorResponse(error, API_ERRORS.FAILED_TO_CREATE_USER);
   }
 }
 

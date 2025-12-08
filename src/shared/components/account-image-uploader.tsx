@@ -139,7 +139,7 @@ async function uploadUserProfilePhoto(photoFile: File, userId: string) {
   });
 
   if (!result.error) {
-    const url = getPublicUrl(AVATARS_BUCKET, userId);
+    const url = getPublicUrl(AVATARS_BUCKET, fileName);
     return `${url}?v=${cacheBuster}`;
   }
 

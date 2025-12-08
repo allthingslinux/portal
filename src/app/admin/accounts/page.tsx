@@ -5,6 +5,7 @@ import { loadAdminAccounts } from '~/features/admin/lib/server/loaders/admin-acc
 import { AppBreadcrumbs } from '~/components/makerkit/app-breadcrumbs';
 import { Button } from '~/components/ui/button';
 import { PageBody, PageHeader } from '~/components/makerkit/page';
+import { DEFAULT_PAGE_SIZE } from '~/shared/constants';
 
 interface SearchParams {
   page?: string;
@@ -23,7 +24,7 @@ export const metadata = {
 async function AccountsPage(props: AdminAccountsPageProps) {
   const searchParams = await props.searchParams;
   const page = searchParams.page ? parseInt(searchParams.page) : 1;
-  const pageSize = 10;
+  const pageSize = DEFAULT_PAGE_SIZE;
 
   const { data, pageCount } = await loadAdminAccounts({
     page,

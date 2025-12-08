@@ -8,6 +8,8 @@ import { z } from 'zod';
 import { verifyCaptchaToken } from '~/features/auth/captcha/server';
 import { requireUser } from '~/core/database/supabase/require-user';
 import { JWTUserData } from '~/core/database/supabase/types';
+import { HTTP_STATUS } from '~/shared/constants';
+import { API_ERRORS } from '~/shared/constants/errors';
 
 interface Config<Schema> {
   auth?: boolean;
@@ -86,7 +88,9 @@ export const enhanceRouteHandler = <
       if (token) {
         await verifyCaptchaToken(token);
       } else {
-        return new Response('Captcha token is required', { status: 400 });
+        return new Response(API_ERRORS.CAPTCHA_TOKEN_REQUIRED, {
+          status: HTTP_STATUS.BAD_REQUEST,
+        });
       }
     }
 
@@ -105,8 +109,9 @@ export const enhanceRouteHandler = <
       user = auth.data as UserParam;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let body: any;
+    let body: Params['schema'] extends z.ZodType
+      ? z.infer<Params['schema']>
+      : undefined;
 
     if (params?.schema) {
       // clone the request to read the body
@@ -115,11 +120,16 @@ export const enhanceRouteHandler = <
       const parsedBody = await params.schema.safeParseAsync(json);
 
       if (parsedBody.success) {
-        body = parsedBody.data;
+        body = parsedBody.data as Params['schema'] extends z.ZodType
+          ? z.infer<Params['schema']>
+          : undefined;
       } else {
         return NextResponse.json(
-          { error: parsedBody.error.message || 'Invalid request body' },
-          { status: 400 },
+          {
+            error:
+              parsedBody.error.message || API_ERRORS.INVALID_REQUEST_BODY,
+          },
+          { status: HTTP_STATUS.BAD_REQUEST },
         );
       }
     }
