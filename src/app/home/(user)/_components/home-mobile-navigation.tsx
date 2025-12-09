@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-
-import { LogOut, Menu } from 'lucide-react';
-
-import { useSignOut } from '~/core/database/supabase/hooks/use-sign-out';
+import { LogOut, Menu } from "lucide-react";
+import Link from "next/link";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,56 +12,60 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { If } from '~/components/makerkit/if';
-import { Trans } from '~/components/makerkit/trans';
-
-import featuresFlagConfig from '~/config/feature-flags.config';
-import { personalAccountNavigationConfig } from '~/config/personal-account-navigation.config';
+} from "~/components/ui/dropdown-menu";
+import featuresFlagConfig from "~/config/feature-flags.config";
+import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
+import { useSignOut } from "~/core/auth/better-auth/hooks";
 
 // home imports
-import { HomeAccountSelector } from '../_components/home-account-selector';
-import type { UserWorkspace } from '../_lib/server/load-user-workspace';
+import { HomeAccountSelector } from "../_components/home-account-selector";
+import type { UserWorkspace } from "../_lib/server/load-user-workspace";
 
 export function HomeMobileNavigation(props: { workspace: UserWorkspace }) {
   const signOut = useSignOut();
 
-  const Links = personalAccountNavigationConfig.routes.map((item, index) => {
-    if ('children' in item) {
-      return item.children.map((child) => {
-        return (
+  const Links = personalAccountNavigationConfig.routes.flatMap(
+    (item, index) => {
+      if ("children" in item) {
+        return item.children.map((child) => (
           <DropdownLink
-            key={child.path}
             Icon={child.Icon}
-            path={child.path}
+            key={child.path}
             label={child.label}
+            path={child.path}
+          />
+        ));
+      }
+
+      if ("divider" in item) {
+        return (
+          <DropdownMenuSeparator
+            key={`divider-${"label" in item ? item.label : index}`}
           />
         );
-      });
-    }
+      }
 
-    if ('divider' in item) {
-      return <DropdownMenuSeparator key={index} />;
+      return [];
     }
-  });
+  );
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Menu className={'h-9'} />
+        <Menu className={"h-9"} />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent sideOffset={10} className={'w-screen rounded-none'}>
+      <DropdownMenuContent className={"w-screen rounded-none"} sideOffset={10}>
         <If condition={featuresFlagConfig.enableTeamAccounts}>
           <DropdownMenuGroup>
             <DropdownMenuLabel>
-              <Trans i18nKey={'common:yourAccounts'} />
+              <Trans i18nKey={"common:yourAccounts"} />
             </DropdownMenuLabel>
 
             <HomeAccountSelector
-              userId={props.workspace.user.id}
               accounts={props.workspace.accounts}
               collisionPadding={0}
+              userId={props.workspace.user.id}
             />
           </DropdownMenuGroup>
 
@@ -84,18 +87,18 @@ function DropdownLink(
     path: string;
     label: string;
     Icon: React.ReactNode;
-  }>,
+  }>
 ) {
   return (
     <DropdownMenuItem asChild key={props.path}>
       <Link
+        className={"flex h-12 w-full items-center space-x-4"}
         href={props.path}
-        className={'flex h-12 w-full items-center space-x-4'}
       >
         {props.Icon}
 
         <span>
-          <Trans i18nKey={props.label} defaults={props.label} />
+          <Trans defaults={props.label} i18nKey={props.label} />
         </span>
       </Link>
     </DropdownMenuItem>
@@ -105,17 +108,17 @@ function DropdownLink(
 function SignOutDropdownItem(
   props: React.PropsWithChildren<{
     onSignOut: () => unknown;
-  }>,
+  }>
 ) {
   return (
     <DropdownMenuItem
-      className={'flex h-12 w-full items-center space-x-4'}
+      className={"flex h-12 w-full items-center space-x-4"}
       onClick={props.onSignOut}
     >
-      <LogOut className={'h-6'} />
+      <LogOut className={"h-6"} />
 
       <span>
-        <Trans i18nKey={'common:signOut'} defaults={'Sign out'} />
+        <Trans defaults={"Sign out"} i18nKey={"common:signOut"} />
       </span>
     </DropdownMenuItem>
   );

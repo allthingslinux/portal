@@ -1,18 +1,19 @@
-import { cache } from 'react';
+import { eq } from "drizzle-orm";
+import { cache } from "react";
+import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
+import type { Tables } from "~/core/database/supabase/database.types";
+import {
+  accounts,
+  accountsMemberships,
+} from "~/core/database/supabase/drizzle/schema";
+import { AdminAccountPage } from "~/features/admin/components/admin-account-page";
+import { AdminGuard } from "~/features/admin/components/admin-guard";
 
-import { eq } from 'drizzle-orm';
-
-import { AdminAccountPage } from '~/features/admin/components/admin-account-page';
-import { AdminGuard } from '~/features/admin/components/admin-guard';
-import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
-import { Tables } from '~/core/database/supabase/database.types';
-import { accounts, accountsMemberships } from '~/core/database/supabase/drizzle/schema';
-
-interface Params {
+type Params = {
   params: Promise<{
     id: string;
   }>;
-}
+};
 
 export const generateMetadata = async (props: Params) => {
   const params = await props.params;
@@ -45,7 +46,7 @@ async function accountLoader(id: string) {
     .limit(1);
 
   if (accountResult.length === 0) {
-    throw new Error('Account not found');
+    throw new Error("Account not found");
   }
 
   const account = accountResult[0];
@@ -59,5 +60,7 @@ async function accountLoader(id: string) {
   return {
     ...account,
     memberships,
-  } as unknown as Tables<'accounts'> & { memberships: Tables<'accounts_memberships'>[] };
+  } as unknown as Tables<"accounts"> & {
+    memberships: Tables<"accounts_memberships">[];
+  };
 }

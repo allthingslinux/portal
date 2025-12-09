@@ -1,12 +1,12 @@
-import { SitePageHeader } from '../../_components/site-page-header';
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
+import { SitePageHeader } from "../../_components/site-page-header";
 
 export async function generateMetadata() {
   const { t } = await createI18nServerInstance();
 
   return {
-    title: t('marketing:termsOfService'),
+    title: t("marketing:termsOfService"),
   };
 }
 
@@ -16,11 +16,11 @@ async function TermsOfServicePage() {
   return (
     <div>
       <SitePageHeader
-        title={t(`marketing:termsOfService`)}
-        subtitle={t(`marketing:termsOfServiceDescription`)}
+        subtitle={t("marketing:termsOfServiceDescription")}
+        title={t("marketing:termsOfService")}
       />
 
-      <div className={'container mx-auto py-8'}>
+      <div className={"container mx-auto py-8"}>
         <div>Your terms of service content here</div>
       </div>
     </div>

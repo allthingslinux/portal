@@ -1,25 +1,23 @@
-import { cache } from 'react';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { cache } from "react";
 
-import type { Metadata } from 'next';
+import { createCmsClient } from "~/features/cms/core";
 
-import { notFound } from 'next/navigation';
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
-import { createCmsClient } from '~/features/cms/core';
+import { Post } from "../../blog/_components/post";
 
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
-
-import { Post } from '../../blog/_components/post';
-
-interface BlogPageProps {
+type BlogPageProps = {
   params: Promise<{ slug: string }>;
-}
+};
 
 const getPostBySlug = cache(postLoader);
 
 async function postLoader(slug: string) {
   const client = await createCmsClient();
 
-  return client.getContentItemBySlug({ slug, collection: 'posts' });
+  return client.getContentItemBySlug({ slug, collection: "posts" });
 }
 
 export async function generateMetadata({
@@ -40,7 +38,7 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      type: 'article',
+      type: "article",
       publishedTime: publishedAt,
       url: post.url,
       images: image
@@ -52,7 +50,7 @@ export async function generateMetadata({
         : [],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
       images: image ? [image] : [],
@@ -69,8 +67,8 @@ async function BlogPost({ params }: BlogPageProps) {
   }
 
   return (
-    <div className={'container sm:max-w-none sm:p-0'}>
-      <Post post={post} content={post.content} />
+    <div className={"container sm:max-w-none sm:p-0"}>
+      <Post content={post.content} post={post} />
     </div>
   );
 }

@@ -1,16 +1,16 @@
-import 'server-only';
+import "server-only";
 
-import { eq } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
+import { eq } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
+import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
 import {
   accounts,
   accountsMemberships,
   invitations,
-} from '~/core/database/supabase/drizzle/schema';
+} from "~/core/database/supabase/drizzle/schema";
 
-import { loadTeamWorkspace } from '~/home/[account]/_lib/server/team-account-workspace.loader';
+import { loadTeamWorkspace } from "~/home/[account]/_lib/server/team-account-workspace.loader";
 
 /**
  * Load data for the members page using Drizzle
@@ -48,34 +48,35 @@ async function canAddMember() {
  */
 async function loadAccountMembers(
   drizzleClient: Awaited<ReturnType<typeof getDrizzleSupabaseClient>>,
-  accountSlug: string,
+  accountSlug: string
 ) {
-  const userAccount = alias(accounts, 'userAccount');
+  const userAccount = alias(accounts, "userAccount");
 
-  const data = await drizzleClient.runTransaction(async (tx) => {
-    return await tx
-      .select({
-        id: accountsMemberships.userId,
-        userId: accountsMemberships.userId,
-        accountId: accountsMemberships.accountId,
-        role: accountsMemberships.accountRole,
-        primaryOwnerUserId: accounts.primaryOwnerUserId,
-        name: userAccount.name,
-        email: userAccount.email,
-        pictureUrl: userAccount.pictureUrl,
-        createdAt: accountsMemberships.createdAt,
-        updatedAt: accountsMemberships.updatedAt,
-      })
-      .from(accountsMemberships)
-      .innerJoin(accounts, eq(accountsMemberships.accountId, accounts.id))
-      .innerJoin(
-        userAccount,
-        eq(accountsMemberships.userId, userAccount.primaryOwnerUserId),
-      )
-      .where(eq(accounts.slug, accountSlug));
-  });
+  const data = await drizzleClient.runTransaction(
+    async (tx) =>
+      await tx
+        .select({
+          id: accountsMemberships.userId,
+          userId: accountsMemberships.userId,
+          accountId: accountsMemberships.accountId,
+          role: accountsMemberships.accountRole,
+          primaryOwnerUserId: accounts.primaryOwnerUserId,
+          name: userAccount.name,
+          email: userAccount.email,
+          pictureUrl: userAccount.pictureUrl,
+          createdAt: accountsMemberships.createdAt,
+          updatedAt: accountsMemberships.updatedAt,
+        })
+        .from(accountsMemberships)
+        .innerJoin(accounts, eq(accountsMemberships.accountId, accounts.id))
+        .innerJoin(
+          userAccount,
+          eq(accountsMemberships.userId, userAccount.primaryOwnerUserId)
+        )
+        .where(eq(accounts.slug, accountSlug))
+  );
 
-  return (data ?? []) as any[];
+  return (data ?? []) as unknown[];
 }
 
 /**
@@ -85,25 +86,26 @@ async function loadAccountMembers(
  */
 async function loadInvitations(
   drizzleClient: Awaited<ReturnType<typeof getDrizzleSupabaseClient>>,
-  accountSlug: string,
+  accountSlug: string
 ) {
-  const data = await drizzleClient.runTransaction(async (tx) => {
-    return await tx
-      .select({
-        id: invitations.id,
-        email: invitations.email,
-        role: invitations.role,
-        createdAt: invitations.createdAt,
-        updatedAt: invitations.updatedAt,
-        expiresAt: invitations.expiresAt,
-        invitedBy: {
-          id: invitations.invitedBy,
-        },
-      })
-      .from(invitations)
-      .innerJoin(accounts, eq(invitations.accountId, accounts.id))
-      .where(eq(accounts.slug, accountSlug));
-  });
+  const data = await drizzleClient.runTransaction(
+    async (tx) =>
+      await tx
+        .select({
+          id: invitations.id,
+          email: invitations.email,
+          role: invitations.role,
+          createdAt: invitations.createdAt,
+          updatedAt: invitations.updatedAt,
+          expiresAt: invitations.expiresAt,
+          invitedBy: {
+            id: invitations.invitedBy,
+          },
+        })
+        .from(invitations)
+        .innerJoin(accounts, eq(invitations.accountId, accounts.id))
+        .where(eq(accounts.slug, accountSlug))
+  );
 
-  return (data ?? []) as any[];
+  return (data ?? []) as unknown[];
 }

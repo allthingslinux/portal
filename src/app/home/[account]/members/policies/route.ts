@@ -1,21 +1,20 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-import { z } from 'zod';
-
-import { enhanceRouteHandler } from '~/shared/next/routes';
+import { z } from "zod";
 import {
   createInvitationContextBuilder,
   createInvitationsPolicyEvaluator,
-} from '~/features/team-accounts/server/policies';
+} from "~/features/team-accounts/server/policies";
+import { enhanceRouteHandler } from "~/shared/next/routes";
 
 export const GET = enhanceRouteHandler(
-  async function ({ params, user }) {
+  async ({ params, user }) => {
     const { account } = z.object({ account: z.string() }).parse(params);
 
     try {
       // Evaluate with standard evaluator
       const evaluator = createInvitationsPolicyEvaluator();
-      const hasPolicies = await evaluator.hasPoliciesForStage('preliminary');
+      const hasPolicies = await evaluator.hasPoliciesForStage("preliminary");
 
       if (!hasPolicies) {
         return NextResponse.json({
@@ -37,11 +36,11 @@ export const GET = enhanceRouteHandler(
           invitations: [],
           accountSlug: account,
         },
-        user,
+        user
       );
 
       // validate against policies
-      const result = await evaluator.canInvite(context, 'preliminary');
+      const result = await evaluator.canInvite(context, "preliminary");
 
       return NextResponse.json(result);
     } catch (error) {
@@ -49,7 +48,7 @@ export const GET = enhanceRouteHandler(
         {
           allowed: false,
           reasons: [
-            error instanceof Error ? error.message : 'Unknown error occurred',
+            error instanceof Error ? error.message : "Unknown error occurred",
           ],
           metadata: {
             error: true,
@@ -57,11 +56,11 @@ export const GET = enhanceRouteHandler(
               error instanceof Error ? error.message : String(error),
           },
         },
-        { status: 500 },
+        { status: 500 }
       );
     }
   },
   {
     auth: true,
-  },
+  }
 );

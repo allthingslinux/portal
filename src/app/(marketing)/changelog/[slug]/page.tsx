@@ -1,18 +1,16 @@
-import { cache } from 'react';
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { cache } from "react";
 
-import type { Metadata } from 'next';
+import { createCmsClient } from "~/features/cms/core";
 
-import { notFound } from 'next/navigation';
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
-import { createCmsClient } from '~/features/cms/core';
+import { ChangelogDetail } from "../_components/changelog-detail";
 
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
-
-import { ChangelogDetail } from '../_components/changelog-detail';
-
-interface ChangelogEntryPageProps {
+type ChangelogEntryPageProps = {
   params: Promise<{ slug: string }>;
-}
+};
 
 const getChangelogData = cache(changelogEntryLoader);
 
@@ -20,11 +18,11 @@ async function changelogEntryLoader(slug: string) {
   const client = await createCmsClient();
 
   const [entry, allEntries] = await Promise.all([
-    client.getContentItemBySlug({ slug, collection: 'changelog' }),
+    client.getContentItemBySlug({ slug, collection: "changelog" }),
     client.getContentItems({
-      collection: 'changelog',
-      sortBy: 'publishedAt',
-      sortDirection: 'desc',
+      collection: "changelog",
+      sortBy: "publishedAt",
+      sortDirection: "desc",
       content: false,
     }),
   ]);
@@ -67,7 +65,7 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      type: 'article',
+      type: "article",
       publishedTime: publishedAt,
       url: data.entry.url,
       images: image
@@ -79,7 +77,7 @@ export async function generateMetadata({
         : [],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
       images: image ? [image] : [],
@@ -98,10 +96,10 @@ async function ChangelogEntryPage({ params }: ChangelogEntryPageProps) {
   return (
     <div className="container sm:max-w-none sm:p-0">
       <ChangelogDetail
-        entry={data.entry}
         content={data.entry.content}
-        previousEntry={data.previousEntry ?? null}
+        entry={data.entry}
         nextEntry={data.nextEntry ?? null}
+        previousEntry={data.previousEntry ?? null}
       />
     </div>
   );

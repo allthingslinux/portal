@@ -1,40 +1,37 @@
-import { cache } from 'react';
+import type { Metadata } from "next";
+import { cache } from "react";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { createCmsClient } from "~/features/cms/core";
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
+import { getLogger } from "~/shared/logger";
 
-import type { Metadata } from 'next';
+import { SitePageHeader } from "../_components/site-page-header";
+import { ChangelogEntry } from "./_components/changelog-entry";
+import { ChangelogPagination } from "./_components/changelog-pagination";
 
-import { createCmsClient } from '~/features/cms/core';
-import { getLogger } from '~/shared/logger';
-import { If } from '~/components/makerkit/if';
-import { Trans } from '~/components/makerkit/trans';
-
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
-
-import { SitePageHeader } from '../_components/site-page-header';
-import { ChangelogEntry } from './_components/changelog-entry';
-import { ChangelogPagination } from './_components/changelog-pagination';
-
-interface ChangelogPageProps {
+type ChangelogPageProps = {
   searchParams: Promise<{ page?: string }>;
-}
+};
 
 const CHANGELOG_ENTRIES_PER_PAGE = 50;
 
 export const generateMetadata = async (
-  props: ChangelogPageProps,
+  props: ChangelogPageProps
 ): Promise<Metadata> => {
   const { t, resolvedLanguage } = await createI18nServerInstance();
   const searchParams = await props.searchParams;
   const limit = CHANGELOG_ENTRIES_PER_PAGE;
 
-  const page = searchParams.page ? parseInt(searchParams.page) : 0;
+  const page = searchParams.page ? Number.parseInt(searchParams.page, 10) : 0;
   const offset = page * limit;
 
   const { total } = await getContentItems(resolvedLanguage, limit, offset);
 
   return {
-    title: t('marketing:changelog'),
-    description: t('marketing:changelogSubtitle'),
+    title: t("marketing:changelog"),
+    description: t("marketing:changelogSubtitle"),
     pagination: {
       previous: page > 0 ? `/changelog?page=${page - 1}` : undefined,
       next: offset + limit < total ? `/changelog?page=${page + 1}` : undefined,
@@ -49,20 +46,20 @@ const getContentItems = cache(
 
     try {
       return await client.getContentItems({
-        collection: 'changelog',
+        collection: "changelog",
         limit,
         offset,
         content: false,
         language,
-        sortBy: 'publishedAt',
-        sortDirection: 'desc',
+        sortBy: "publishedAt",
+        sortDirection: "desc",
       });
     } catch (error) {
-      logger.error({ error }, 'Failed to load changelog entries');
+      logger.error({ error }, "Failed to load changelog entries");
 
       return { total: 0, items: [] };
     }
-  },
+  }
 );
 
 async function ChangelogPage(props: ChangelogPageProps) {
@@ -70,20 +67,20 @@ async function ChangelogPage(props: ChangelogPageProps) {
   const searchParams = await props.searchParams;
 
   const limit = CHANGELOG_ENTRIES_PER_PAGE;
-  const page = searchParams.page ? parseInt(searchParams.page) : 0;
+  const page = searchParams.page ? Number.parseInt(searchParams.page, 10) : 0;
   const offset = page * limit;
 
   const { total, items: entries } = await getContentItems(
     language,
     limit,
-    offset,
+    offset
   );
 
   return (
     <>
       <SitePageHeader
-        title={t('marketing:changelog')}
-        subtitle={t('marketing:changelogSubtitle')}
+        subtitle={t("marketing:changelogSubtitle")}
+        title={t("marketing:changelog")}
       />
 
       <div className="container flex max-w-4xl flex-col space-y-12 py-12">
@@ -92,21 +89,19 @@ async function ChangelogPage(props: ChangelogPageProps) {
           fallback={<Trans i18nKey="marketing:noChangelogEntries" />}
         >
           <div className="space-y-0">
-            {entries.map((entry, index) => {
-              return (
-                <ChangelogEntry
-                  key={entry.id}
-                  entry={entry}
-                  highlight={index === 0}
-                />
-              );
-            })}
+            {entries.map((entry, index) => (
+              <ChangelogEntry
+                entry={entry}
+                highlight={index === 0}
+                key={entry.id}
+              />
+            ))}
           </div>
 
           <ChangelogPagination
-            currentPage={page}
             canGoToNextPage={offset + limit < total}
             canGoToPreviousPage={page > 0}
+            currentPage={page}
           />
         </If>
       </div>

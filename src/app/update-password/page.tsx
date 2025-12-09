@@ -1,29 +1,27 @@
-import { redirect } from 'next/navigation';
-
-import { UpdatePasswordForm } from '~/features/auth/password-reset';
-import { AuthLayoutShell } from '~/features/auth/shared';
-import { requireUser } from '~/core/database/supabase/require-user';
-
-import { AppLogo } from '~/components/app-logo';
-import pathsConfig from '~/config/paths.config';
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
+import { redirect } from "next/navigation";
+import { AppLogo } from "~/components/app-logo";
+import pathsConfig from "~/config/paths.config";
+import { requireUser } from "~/core/database/supabase/require-user";
+import { UpdatePasswordForm } from "~/features/auth/password-reset";
+import { AuthLayoutShell } from "~/features/auth/shared";
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
 export const generateMetadata = async () => {
   const { t } = await createI18nServerInstance();
 
   return {
-    title: t('auth:updatePassword'),
+    title: t("auth:updatePassword"),
   };
 };
 
-const Logo = () => <AppLogo href={''} />;
+const Logo = () => <AppLogo href={""} />;
 
-interface UpdatePasswordPageProps {
+type UpdatePasswordPageProps = {
   searchParams: Promise<{
     callback?: string;
   }>;
-}
+};
 
 async function UpdatePasswordPage(props: UpdatePasswordPageProps) {
   const result = await requireUser({

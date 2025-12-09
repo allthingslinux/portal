@@ -1,7 +1,7 @@
-import { cache } from 'react';
+import { cache } from "react";
 
-import { createCmsClient } from '~/features/cms/core';
-import { getLogger } from '~/shared/logger';
+import { createCmsClient } from "~/features/cms/core";
+import { getLogger } from "~/shared/logger";
 
 /**
  * @name getDocs
@@ -16,15 +16,15 @@ async function docsLoader(language: string | undefined) {
 
   try {
     const data = await cms.getContentItems({
-      collection: 'documentation',
+      collection: "documentation",
       language,
-      limit: Infinity,
+      limit: Number.POSITIVE_INFINITY,
       content: false,
     });
 
     return data.items;
   } catch (error) {
-    logger.error({ error }, 'Failed to load documentation pages');
+    logger.error({ error }, "Failed to load documentation pages");
 
     return [];
   }

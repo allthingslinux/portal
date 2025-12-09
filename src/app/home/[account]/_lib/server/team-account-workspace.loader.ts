@@ -1,12 +1,10 @@
-import 'server-only';
+import "server-only";
 
-import { redirect } from 'next/navigation';
-
-import { createTeamAccountsApi } from '~/features/team-accounts/server/api';
-
-import pathsConfig from '~/config/paths.config';
-import { requireUserInServerComponent } from '~/shared/lib/server/require-user-in-server-component';
-import { createWorkspaceLoader } from '~/shared/next/loaders/create-workspace-loader';
+import { redirect } from "next/navigation";
+import pathsConfig from "~/config/paths.config";
+import { createTeamAccountsApi } from "~/features/team-accounts/server/api";
+import { requireUserInServerComponent } from "~/shared/lib/server/require-user-in-server-component";
+import { createWorkspaceLoader } from "~/shared/next/loaders/create-workspace-loader";
 
 export type TeamAccountWorkspace = Awaited<
   ReturnType<typeof loadTeamWorkspace>
@@ -40,5 +38,5 @@ export const loadTeamWorkspace = createWorkspaceLoader(
       ...workspace.data,
       user,
     };
-  },
+  }
 );

@@ -1,14 +1,11 @@
-import { Footer } from '~/components/makerkit/marketing';
-import { Trans } from '~/components/makerkit/trans';
-
-import { AppLogo } from '~/components/app-logo';
-import appConfig from '~/config/app.config';
+import { AppLogo } from "~/components/app-logo";
+import { Footer } from "~/components/makerkit/marketing";
+import { Trans } from "~/components/makerkit/trans";
+import appConfig from "~/config/app.config";
 
 export function SiteFooter() {
   return (
     <Footer
-      logo={<AppLogo className="w-[85px] md:w-[95px]" />}
-      description={<Trans i18nKey="marketing:footerDescription" />}
       copyright={
         <Trans
           i18nKey="marketing:copyright"
@@ -18,19 +15,21 @@ export function SiteFooter() {
           }}
         />
       }
+      description={<Trans i18nKey="marketing:footerDescription" />}
+      logo={<AppLogo className="w-[85px] md:w-[95px]" />}
       sections={[
         {
           heading: <Trans i18nKey="marketing:about" />,
           links: [
-            { href: '/blog', label: <Trans i18nKey="marketing:blog" /> },
-            { href: '/contact', label: <Trans i18nKey="marketing:contact" /> },
+            { href: "/blog", label: <Trans i18nKey="marketing:blog" /> },
+            { href: "/contact", label: <Trans i18nKey="marketing:contact" /> },
           ],
         },
         {
           heading: <Trans i18nKey="marketing:product" />,
           links: [
             {
-              href: '/docs',
+              href: "/docs",
               label: <Trans i18nKey="marketing:documentation" />,
             },
           ],
@@ -39,15 +38,15 @@ export function SiteFooter() {
           heading: <Trans i18nKey="marketing:legal" />,
           links: [
             {
-              href: '/terms-of-service',
+              href: "/terms-of-service",
               label: <Trans i18nKey="marketing:termsOfService" />,
             },
             {
-              href: '/privacy-policy',
+              href: "/privacy-policy",
               label: <Trans i18nKey="marketing:privacyPolicy" />,
             },
             {
-              href: '/cookie-policy',
+              href: "/cookie-policy",
               label: <Trans i18nKey="marketing:cookiePolicy" />,
             },
           ],

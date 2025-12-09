@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
-import { config } from '~/core/database/supabase/drizzle/schema';
+import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
+import { config } from "~/core/database/supabase/drizzle/schema";
 
 /**
  * Healthcheck endpoint for the web app. If this endpoint returns a 200, the web app will be considered healthy.

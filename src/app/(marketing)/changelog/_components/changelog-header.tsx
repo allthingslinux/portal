@@ -1,14 +1,12 @@
-import Link from 'next/link';
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { cn } from "~/components/lib/utils";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import type { Cms } from "~/features/cms/core";
 
-import { ChevronLeft } from 'lucide-react';
-
-import { Cms } from '~/features/cms/core';
-import { If } from '~/components/makerkit/if';
-import { Trans } from '~/components/makerkit/trans';
-import { cn } from '~/components/lib/utils';
-
-import { CoverImage } from '../../blog/_components/cover-image';
-import { DateFormatter } from '../../blog/_components/date-formatter';
+import { CoverImage } from "../../blog/_components/cover-image";
+import { DateFormatter } from "../../blog/_components/date-formatter";
 
 export function ChangelogHeader({ entry }: { entry: Cms.ContentItem }) {
   const { title, publishedAt, description, image } = entry;
@@ -18,8 +16,8 @@ export function ChangelogHeader({ entry }: { entry: Cms.ContentItem }) {
       <div className="border-border/50 border-b py-4">
         <div className="mx-auto flex max-w-3xl items-center justify-between">
           <Link
+            className="flex items-center gap-1.5 font-medium text-muted-foreground text-sm transition-colors hover:text-primary"
             href="/changelog"
-            className="text-muted-foreground hover:text-primary flex items-center gap-1.5 text-sm font-medium transition-colors"
           >
             <ChevronLeft className="h-4 w-4" />
             <Trans i18nKey="marketing:changelog" />
@@ -27,7 +25,7 @@ export function ChangelogHeader({ entry }: { entry: Cms.ContentItem }) {
         </div>
       </div>
 
-      <div className={cn('border-border/50 border-b py-8')}>
+      <div className={cn("border-border/50 border-b py-8")}>
         <div className="mx-auto flex max-w-3xl flex-col gap-y-2.5">
           <div>
             <span className="text-muted-foreground text-xs">
@@ -35,13 +33,13 @@ export function ChangelogHeader({ entry }: { entry: Cms.ContentItem }) {
             </span>
           </div>
 
-          <h1 className="font-heading text-2xl font-medium tracking-tighter xl:text-4xl dark:text-white">
+          <h1 className="font-heading font-medium text-2xl tracking-tighter xl:text-4xl dark:text-white">
             {title}
           </h1>
 
           {description && (
             <h2
-              className="text-muted-foreground text-base"
+              className="text-base text-muted-foreground"
               dangerouslySetInnerHTML={{ __html: description }}
             />
           )}
@@ -52,10 +50,10 @@ export function ChangelogHeader({ entry }: { entry: Cms.ContentItem }) {
         {(imageUrl) => (
           <div className="relative mx-auto mt-8 flex h-[378px] w-full max-w-3xl justify-center">
             <CoverImage
-              preloadImage
               className="rounded-md"
-              title={title}
+              preloadImage
               src={imageUrl}
+              title={title}
             />
           </div>
         )}

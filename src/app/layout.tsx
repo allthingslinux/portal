@@ -1,19 +1,15 @@
-import { headers } from 'next/headers';
+import { headers } from "next/headers";
+import { cn } from "~/components/lib/utils";
+import { RootProviders } from "~/components/root-providers";
+import { Toaster } from "~/components/ui/sonner";
+import { getFontsClassName } from "~/shared/lib/fonts";
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
+import { generateRootMetadata } from "~/shared/lib/root-metadata";
+import { getRootTheme } from "~/shared/lib/root-theme";
 
-import { Toaster } from '~/components/ui/sonner';
-import { cn } from '~/components/lib/utils';
+import "../styles/globals.css";
 
-import { RootProviders } from '~/components/root-providers';
-import { getFontsClassName } from '~/shared/lib/fonts';
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
-import { generateRootMetadata } from '~/shared/lib/root-metadata';
-import { getRootTheme } from '~/shared/lib/root-theme';
-
-import '../styles/globals.css';
-
-export const generateMetadata = () => {
-  return generateRootMetadata();
-};
+export const generateMetadata = () => generateRootMetadata();
 
 export default async function RootLayout({
   children,
@@ -30,13 +26,13 @@ export default async function RootLayout({
   const language = i18n.language;
 
   return (
-    <html lang={language} className={className} suppressHydrationWarning>
+    <html className={className} lang={language} suppressHydrationWarning>
       <body>
-        <RootProviders theme={theme} lang={language} nonce={nonce}>
+        <RootProviders lang={language} nonce={nonce} theme={theme}>
           {children}
         </RootProviders>
 
-        <Toaster richColors={true} theme={theme} position="top-center" />
+        <Toaster position="top-center" richColors={true} theme={theme} />
       </body>
     </html>
   );
@@ -46,13 +42,13 @@ function getRootClassName() {
   const fontsClassName = getFontsClassName();
 
   return cn(
-    'bg-background min-h-screen overscroll-y-none antialiased',
-    fontsClassName,
+    "min-h-screen overscroll-y-none bg-background antialiased",
+    fontsClassName
   );
 }
 
 async function getCspNonce() {
   const headersStore = await headers();
 
-  return headersStore.get('x-nonce') ?? undefined;
+  return headersStore.get("x-nonce") ?? undefined;
 }

@@ -1,37 +1,36 @@
-import { PlusCircle } from 'lucide-react';
-
-import {
-  AccountInvitationsTable,
-  AccountMembersTable,
-  InviteMembersDialogContainer,
-} from '~/features/team-accounts/components';
-import { AppBreadcrumbs } from '~/components/makerkit/app-breadcrumbs';
-import { Button } from '~/components/ui/button';
+import { PlusCircle } from "lucide-react";
+import { AppBreadcrumbs } from "~/components/makerkit/app-breadcrumbs";
+import { If } from "~/components/makerkit/if";
+import { PageBody } from "~/components/makerkit/page";
+import { Trans } from "~/components/makerkit/trans";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '~/components/ui/card';
-import { If } from '~/components/makerkit/if';
-import { PageBody } from '~/components/makerkit/page';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/card";
+import {
+  AccountInvitationsTable,
+  AccountMembersTable,
+  InviteMembersDialogContainer,
+} from "~/features/team-accounts/components";
 
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
 // local imports
-import { TeamAccountLayoutPageHeader } from '../_components/team-account-layout-page-header';
-import { loadMembersPageData } from './_lib/server/members-page.loader';
+import { TeamAccountLayoutPageHeader } from "../_components/team-account-layout-page-header";
+import { loadMembersPageData } from "./_lib/server/members-page.loader";
 
-interface TeamAccountMembersPageProps {
+type TeamAccountMembersPageProps = {
   params: Promise<{ account: string }>;
-}
+};
 
 export const generateMetadata = async () => {
   const i18n = await createI18nServerInstance();
-  const title = i18n.t('teams:members.pageTitle');
+  const title = i18n.t("teams:members.pageTitle");
 
   return {
     title,
@@ -44,8 +43,8 @@ async function TeamAccountMembersPage({ params }: TeamAccountMembersPageProps) {
   const [members, invitations, canAddMember, { user, account }] =
     await loadMembersPageData(slug);
 
-  const canManageRoles = account.permissions.includes('roles.manage');
-  const canManageInvitations = account.permissions.includes('invites.manage');
+  const canManageRoles = account.permissions.includes("roles.manage");
+  const canManageInvitations = account.permissions.includes("invites.manage");
 
   const isPrimaryOwner = account.primary_owner_user_id === user.id;
   const currentUserRoleHierarchy = account.role_hierarchy_level;
@@ -53,35 +52,35 @@ async function TeamAccountMembersPage({ params }: TeamAccountMembersPageProps) {
   return (
     <>
       <TeamAccountLayoutPageHeader
-        title={<Trans i18nKey={'common:routes.members'} />}
-        description={<AppBreadcrumbs />}
         account={account.slug}
+        description={<AppBreadcrumbs />}
+        title={<Trans i18nKey={"common:routes.members"} />}
       />
 
       <PageBody>
-        <div className={'flex w-full max-w-4xl flex-col space-y-4 pb-32'}>
+        <div className={"flex w-full max-w-4xl flex-col space-y-4 pb-32"}>
           <Card>
-            <CardHeader className={'flex flex-row justify-between'}>
-              <div className={'flex flex-col space-y-1.5'}>
+            <CardHeader className={"flex flex-row justify-between"}>
+              <div className={"flex flex-col space-y-1.5"}>
                 <CardTitle>
-                  <Trans i18nKey={'common:accountMembers'} />
+                  <Trans i18nKey={"common:accountMembers"} />
                 </CardTitle>
 
                 <CardDescription>
-                  <Trans i18nKey={'common:membersTabDescription'} />
+                  <Trans i18nKey={"common:membersTabDescription"} />
                 </CardDescription>
               </div>
 
               <If condition={canManageInvitations && canAddMember}>
                 <InviteMembersDialogContainer
-                  userRoleHierarchy={currentUserRoleHierarchy}
                   accountSlug={account.slug}
+                  userRoleHierarchy={currentUserRoleHierarchy}
                 >
-                  <Button size={'sm'} data-test={'invite-members-form-trigger'}>
-                    <PlusCircle className={'mr-2 w-4'} />
+                  <Button data-test={"invite-members-form-trigger"} size={"sm"}>
+                    <PlusCircle className={"mr-2 w-4"} />
 
                     <span>
-                      <Trans i18nKey={'teams:inviteMembersButton'} />
+                      <Trans i18nKey={"teams:inviteMembersButton"} />
                     </span>
                   </Button>
                 </InviteMembersDialogContainer>
@@ -90,37 +89,37 @@ async function TeamAccountMembersPage({ params }: TeamAccountMembersPageProps) {
 
             <CardContent>
               <AccountMembersTable
-                userRoleHierarchy={currentUserRoleHierarchy}
-                currentUserId={user.id}
-                currentAccountId={account.id}
-                members={members}
-                isPrimaryOwner={isPrimaryOwner}
                 canManageRoles={canManageRoles}
+                currentAccountId={account.id}
+                currentUserId={user.id}
+                isPrimaryOwner={isPrimaryOwner}
+                members={members}
+                userRoleHierarchy={currentUserRoleHierarchy}
               />
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className={'flex flex-row justify-between'}>
-              <div className={'flex flex-col space-y-1.5'}>
+            <CardHeader className={"flex flex-row justify-between"}>
+              <div className={"flex flex-col space-y-1.5"}>
                 <CardTitle>
-                  <Trans i18nKey={'teams:pendingInvitesHeading'} />
+                  <Trans i18nKey={"teams:pendingInvitesHeading"} />
                 </CardTitle>
 
                 <CardDescription>
-                  <Trans i18nKey={'teams:pendingInvitesDescription'} />
+                  <Trans i18nKey={"teams:pendingInvitesDescription"} />
                 </CardDescription>
               </div>
             </CardHeader>
 
             <CardContent>
               <AccountInvitationsTable
+                invitations={invitations}
                 permissions={{
                   canUpdateInvitation: canManageRoles,
                   canRemoveInvitation: canManageRoles,
                   currentUserRoleHierarchy,
                 }}
-                invitations={invitations}
               />
             </CardContent>
           </Card>

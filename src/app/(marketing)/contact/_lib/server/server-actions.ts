@@ -1,25 +1,26 @@
-'use server';
+"use server";
 
-import { z } from 'zod';
+import { z } from "zod";
 
-import { getMailer } from '~/core/email/mailers/core';
-import { enhanceAction } from '~/shared/next/actions';
+import { getMailer } from "~/core/email/mailers/core";
+import { enhanceAction } from "~/shared/next/actions";
 
-import { ContactEmailSchema } from '../contact-email.schema';
+import { ContactEmailSchema } from "../contact-email.schema";
 
 const contactEmail = z
   .string({
-    description: `The email where you want to receive the contact form submissions.`,
+    description:
+      "The email where you want to receive the contact form submissions.",
     required_error:
-      'Contact email is required. Please use the environment variable CONTACT_EMAIL.',
+      "Contact email is required. Please use the environment variable CONTACT_EMAIL.",
   })
   .parse(process.env.CONTACT_EMAIL);
 
 const emailFrom = z
   .string({
-    description: `The email sending address.`,
+    description: "The email sending address.",
     required_error:
-      'Sender email is required. Please use the environment variable EMAIL_SENDER.',
+      "Sender email is required. Please use the environment variable EMAIL_SENDER.",
   })
   .parse(process.env.EMAIL_SENDER);
 
@@ -30,7 +31,7 @@ export const sendContactEmail = enhanceAction(
     await mailer.sendEmail({
       to: contactEmail,
       from: emailFrom,
-      subject: 'Contact Form Submission',
+      subject: "Contact Form Submission",
       html: `
         <p>
           You have received a new contact form submission.
@@ -47,5 +48,5 @@ export const sendContactEmail = enhanceAction(
   {
     schema: ContactEmailSchema,
     auth: false,
-  },
+  }
 );

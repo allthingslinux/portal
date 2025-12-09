@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
-import { usePathname, useRouter } from 'next/navigation';
-
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-
-import { Button } from '~/components/ui/button';
-import { If } from '~/components/makerkit/if';
-import { Trans } from '~/components/makerkit/trans';
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { Button } from "~/components/ui/button";
 
 export function BlogPagination(props: {
   currentPage: number;
@@ -16,28 +14,28 @@ export function BlogPagination(props: {
   const navigate = useGoToPage();
 
   return (
-    <div className={'flex items-center space-x-2'}>
+    <div className={"flex items-center space-x-2"}>
       <If condition={props.canGoToPreviousPage}>
         <Button
-          variant={'outline'}
           onClick={() => {
             navigate(props.currentPage - 1);
           }}
+          variant={"outline"}
         >
-          <ArrowLeft className={'mr-2 h-4'} />
-          <Trans i18nKey={'marketing:blogPaginationPrevious'} />
+          <ArrowLeft className={"mr-2 h-4"} />
+          <Trans i18nKey={"marketing:blogPaginationPrevious"} />
         </Button>
       </If>
 
       <If condition={props.canGoToNextPage}>
         <Button
-          variant={'outline'}
           onClick={() => {
             navigate(props.currentPage + 1);
           }}
+          variant={"outline"}
         >
-          <Trans i18nKey={'marketing:blogPaginationNext'} />
-          <ArrowRight className={'ml-2 h-4'} />
+          <Trans i18nKey={"marketing:blogPaginationNext"} />
+          <ArrowRight className={"ml-2 h-4"} />
         </Button>
       </If>
     </div>
@@ -53,6 +51,6 @@ function useGoToPage() {
       page: page.toString(),
     });
 
-    router.push(path + '?' + searchParams.toString());
+    router.push(`${path}?${searchParams.toString()}`);
   };
 }

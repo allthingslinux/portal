@@ -1,22 +1,20 @@
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
+import pathsConfig from "~/config/paths.config";
+import { getServerSession } from "~/core/auth/better-auth/session";
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
-import { getServerSession } from '~/core/auth/nextauth/session';
-
-import pathsConfig from '~/config/paths.config';
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
-
-interface Props {
+type Props = {
   searchParams: Promise<{
     next?: string;
   }>;
-}
+};
 
 export const generateMetadata = async () => {
   const i18n = await createI18nServerInstance();
 
   return {
-    title: i18n.t('auth:signIn'),
+    title: i18n.t("auth:signIn"),
   };
 };
 
@@ -25,6 +23,7 @@ async function VerifyPage(props: Props) {
 
   if (!session?.user) {
     redirect(pathsConfig.auth.signIn);
+    return null;
   }
 
   // MFA is not implemented - redirect to home
@@ -32,6 +31,7 @@ async function VerifyPage(props: Props) {
   const redirectPath = nextPath ?? pathsConfig.app.home;
 
   redirect(redirectPath);
+  return null;
 }
 
 export default withI18n(VerifyPage);

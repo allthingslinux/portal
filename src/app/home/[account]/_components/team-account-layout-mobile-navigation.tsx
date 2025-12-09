@@ -1,31 +1,28 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-
-import { Home, LogOut, Menu } from 'lucide-react';
-
-import { AccountSelector } from '~/features/accounts/components/account-selector';
-import { useSignOut } from '~/core/database/supabase/hooks/use-sign-out';
+import { Home, LogOut, Menu } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Trans } from "~/components/makerkit/trans";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '~/components/ui/dialog';
+} from "~/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { Trans } from '~/components/makerkit/trans';
-
-import featureFlagsConfig from '~/config/feature-flags.config';
-import pathsConfig from '~/config/paths.config';
-import { getTeamAccountSidebarConfig } from '~/config/team-account-navigation.config';
+} from "~/components/ui/dropdown-menu";
+import featureFlagsConfig from "~/config/feature-flags.config";
+import pathsConfig from "~/config/paths.config";
+import { getTeamAccountSidebarConfig } from "~/config/team-account-navigation.config";
+import { useSignOut } from "~/core/auth/better-auth/hooks";
+import { AccountSelector } from "~/features/accounts/components/account-selector";
 
 type Accounts = Array<{
   label: string | null;
@@ -43,42 +40,46 @@ export const TeamAccountLayoutMobileNavigation = (
     account: string;
     userId: string;
     accounts: Accounts;
-  }>,
+  }>
 ) => {
   const signOut = useSignOut();
 
-  const Links = getTeamAccountSidebarConfig(props.account).routes.map(
+  const Links = getTeamAccountSidebarConfig(props.account).routes.flatMap(
     (item, index) => {
-      if ('children' in item) {
-        return item.children.map((child) => {
-          return (
-            <DropdownLink
-              key={child.path}
-              Icon={child.Icon}
-              path={child.path}
-              label={child.label}
-            />
-          );
-        });
+      if ("children" in item) {
+        return item.children.map((child) => (
+          <DropdownLink
+            Icon={child.Icon}
+            key={child.path}
+            label={child.label}
+            path={child.path}
+          />
+        ));
       }
 
-      if ('divider' in item) {
-        return <DropdownMenuSeparator key={index} />;
+      if ("divider" in item) {
+        return (
+          <DropdownMenuSeparator
+            key={`divider-${"label" in item ? item.label : index}`}
+          />
+        );
       }
-    },
+
+      return [];
+    }
   );
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Menu className={'h-9'} />
+        <Menu className={"h-9"} />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent sideOffset={10} className={'w-screen rounded-none'}>
+      <DropdownMenuContent className={"w-screen rounded-none"} sideOffset={10}>
         <TeamAccountsModal
-          userId={props.userId}
-          accounts={props.accounts}
           account={props.account}
+          accounts={props.accounts}
+          userId={props.userId}
         />
 
         {Links}
@@ -96,18 +97,18 @@ function DropdownLink(
     path: string;
     label: string;
     Icon: React.ReactNode;
-  }>,
+  }>
 ) {
   return (
     <DropdownMenuItem asChild>
       <Link
+        className={"flex h-12 w-full items-center gap-x-3 px-3"}
         href={props.path}
-        className={'flex h-12 w-full items-center gap-x-3 px-3'}
       >
         {props.Icon}
 
         <span>
-          <Trans i18nKey={props.label} defaults={props.label} />
+          <Trans defaults={props.label} i18nKey={props.label} />
         </span>
       </Link>
     </DropdownMenuItem>
@@ -117,17 +118,17 @@ function DropdownLink(
 function SignOutDropdownItem(
   props: React.PropsWithChildren<{
     onSignOut: () => unknown;
-  }>,
+  }>
 ) {
   return (
     <DropdownMenuItem
-      className={'flex h-12 w-full items-center space-x-2'}
+      className={"flex h-12 w-full items-center space-x-2"}
       onClick={props.onSignOut}
     >
-      <LogOut className={'h-4'} />
+      <LogOut className={"h-4"} />
 
       <span>
-        <Trans i18nKey={'common:signOut'} />
+        <Trans i18nKey={"common:signOut"} />
       </span>
     </DropdownMenuItem>
   );
@@ -144,13 +145,13 @@ function TeamAccountsModal(props: {
     <Dialog>
       <DialogTrigger asChild>
         <DropdownMenuItem
-          className={'flex h-12 w-full items-center space-x-2'}
+          className={"flex h-12 w-full items-center space-x-2"}
           onSelect={(e) => e.preventDefault()}
         >
-          <Home className={'h-4'} />
+          <Home className={"h-4"} />
 
           <span>
-            <Trans i18nKey={'common:yourAccounts'} />
+            <Trans i18nKey={"common:yourAccounts"} />
           </span>
         </DropdownMenuItem>
       </DialogTrigger>
@@ -158,25 +159,25 @@ function TeamAccountsModal(props: {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans i18nKey={'common:yourAccounts'} />
+            <Trans i18nKey={"common:yourAccounts"} />
           </DialogTitle>
         </DialogHeader>
 
-        <div className={'py-6'}>
+        <div className={"py-6"}>
           <AccountSelector
-            className={'w-full max-w-full'}
-            collisionPadding={0}
-            userId={props.userId}
             accounts={props.accounts}
+            className={"w-full max-w-full"}
+            collisionPadding={0}
             features={features}
-            selectedAccount={props.account}
             onAccountChange={(value) => {
               const path = value
-                ? pathsConfig.app.accountHome.replace('[account]', value)
+                ? pathsConfig.app.accountHome.replace("[account]", value)
                 : pathsConfig.app.home;
 
               router.replace(path);
             }}
+            selectedAccount={props.account}
+            userId={props.userId}
           />
         </div>
       </DialogContent>

@@ -1,14 +1,11 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
-
-import { useRouter } from 'next/navigation';
-
-import { AccountSelector } from '~/features/accounts/components/account-selector';
-import { SidebarContext } from '~/components/ui/sidebar';
-
-import featureFlagsConfig from '~/config/feature-flags.config';
-import pathsConfig from '~/config/paths.config';
+import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { SidebarContext } from "~/components/ui/sidebar";
+import featureFlagsConfig from "~/config/feature-flags.config";
+import pathsConfig from "~/config/paths.config";
+import { AccountSelector } from "~/features/accounts/components/account-selector";
 
 const features = {
   enableTeamCreation: featureFlagsConfig.enableTeamCreation,
@@ -29,18 +26,18 @@ export function TeamAccountAccountsSelector(params: {
 
   return (
     <AccountSelector
-      selectedAccount={params.selectedAccount}
       accounts={params.accounts}
-      userId={params.userId}
       collapsed={!ctx?.open}
       features={features}
       onAccountChange={(value) => {
         const path = value
-          ? pathsConfig.app.accountHome.replace('[account]', value)
+          ? pathsConfig.app.accountHome.replace("[account]", value)
           : pathsConfig.app.home;
 
         router.replace(path);
       }}
+      selectedAccount={params.selectedAccount}
+      userId={params.userId}
     />
   );
 }

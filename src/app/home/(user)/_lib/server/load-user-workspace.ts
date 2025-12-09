@@ -1,10 +1,7 @@
-import { cache } from 'react';
-
-import { createAccountsApi } from '~/features/accounts/server/api';
-
-import featureFlagsConfig from '~/config/feature-flags.config';
-import { requireUserInServerComponent } from '~/shared/lib/server/require-user-in-server-component';
-import { createWorkspaceLoader } from '~/shared/next/loaders/create-workspace-loader';
+import featureFlagsConfig from "~/config/feature-flags.config";
+import { createAccountsApi } from "~/features/accounts/server/api";
+import { requireUserInServerComponent } from "~/shared/lib/server/require-user-in-server-component";
+import { createWorkspaceLoader } from "~/shared/next/loaders/create-workspace-loader";
 
 const shouldLoadAccounts = featureFlagsConfig.enableTeamAccounts;
 

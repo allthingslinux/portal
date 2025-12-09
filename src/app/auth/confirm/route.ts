@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from "next/server";
 
-import pathsConfig from '~/config/paths.config';
+import pathsConfig from "~/config/paths.config";
 
 /**
  * Auth confirm route
@@ -10,10 +10,10 @@ import pathsConfig from '~/config/paths.config';
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const searchParams = url.searchParams;
-  const next = searchParams.get('next') || pathsConfig.app.home;
+  const next = searchParams.get("next") || pathsConfig.app.home;
 
   url.pathname = next;
-  url.search = '';
+  url.search = "";
 
   return NextResponse.redirect(url);
 }

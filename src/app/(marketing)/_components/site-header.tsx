@@ -1,17 +1,16 @@
-import { JWTUserData } from '~/core/database/supabase/types';
-import { Header } from '~/components/makerkit/marketing';
+import { AppLogo } from "~/components/app-logo";
+import { Header } from "~/components/makerkit/marketing";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
 
-import { AppLogo } from '~/components/app-logo';
+import { SiteHeaderAccountSection } from "./site-header-account-section";
+import { SiteNavigation } from "./site-navigation";
 
-import { SiteHeaderAccountSection } from './site-header-account-section';
-import { SiteNavigation } from './site-navigation';
-
-export function SiteHeader(props: { user?: JWTUserData | null }) {
+export function SiteHeader(props: { user?: BetterAuthUser | null }) {
   return (
     <Header
+      actions={<SiteHeaderAccountSection user={props.user ?? null} />}
       logo={<AppLogo />}
       navigation={<SiteNavigation />}
-      actions={<SiteHeaderAccountSection user={props.user ?? null} />}
     />
   );
 }

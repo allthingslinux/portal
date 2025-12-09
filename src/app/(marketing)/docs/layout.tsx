@@ -1,11 +1,11 @@
-import { SidebarProvider } from '~/components/ui/sidebar';
+import { SidebarProvider } from "~/components/ui/sidebar";
 
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 
 // local imports
-import { DocsNavigation } from './_components/docs-navigation';
-import { getDocs } from './_lib/server/docs.loader';
-import { buildDocumentationTree } from './_lib/utils';
+import { DocsNavigation } from "./_components/docs-navigation";
+import { getDocs } from "./_lib/server/docs.loader";
+import { buildDocumentationTree } from "./_lib/utils";
 
 async function DocsLayout({ children }: React.PropsWithChildren) {
   const { resolvedLanguage } = await createI18nServerInstance();
@@ -13,10 +13,10 @@ async function DocsLayout({ children }: React.PropsWithChildren) {
   const tree = buildDocumentationTree(docs);
 
   return (
-    <div className={'container h-[calc(100vh-56px)] overflow-y-hidden'}>
+    <div className={"container h-[calc(100vh-56px)] overflow-y-hidden"}>
       <SidebarProvider
         className="lg:gap-x-6"
-        style={{ '--sidebar-width': '17em' } as React.CSSProperties}
+        style={{ "--sidebar-width": "17em" } as React.CSSProperties}
       >
         <HideFooterStyles />
 

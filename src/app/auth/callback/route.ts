@@ -1,7 +1,7 @@
-import { redirect } from 'next/navigation';
-import type { NextRequest } from 'next/server';
+import { redirect } from "next/navigation";
+import type { NextRequest } from "next/server";
 
-import pathsConfig from '~/config/paths.config';
+import pathsConfig from "~/config/paths.config";
 
 /**
  * Auth callback route
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   // If we need custom callback logic, we can add it here
   // For now, redirect to home
   const searchParams = request.nextUrl.searchParams;
-  const next = searchParams.get('next') || pathsConfig.app.home;
+  const next = searchParams.get("next") || pathsConfig.app.home;
 
-  return redirect(next);
+  redirect(next);
 }

@@ -1,15 +1,15 @@
-import type { Cms } from '~/features/cms/core';
-import { ContentRenderer } from '~/features/cms/core';
+import type { Cms } from "~/features/cms/core";
+import { ContentRenderer } from "~/features/cms/core";
 
-import { ChangelogHeader } from './changelog-header';
-import { ChangelogNavigation } from './changelog-navigation';
+import { ChangelogHeader } from "./changelog-header";
+import { ChangelogNavigation } from "./changelog-navigation";
 
-interface ChangelogDetailProps {
+type ChangelogDetailProps = {
   entry: Cms.ContentItem;
   content: unknown;
   previousEntry: Cms.ContentItem | null;
   nextEntry: Cms.ContentItem | null;
-}
+};
 
 export function ChangelogDetail({
   entry,
@@ -28,8 +28,8 @@ export function ChangelogDetail({
       </div>
 
       <ChangelogNavigation
-        previousEntry={previousEntry}
         nextEntry={nextEntry}
+        previousEntry={previousEntry}
       />
     </div>
   );

@@ -1,15 +1,13 @@
-import Link from 'next/link';
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Trans } from "~/components/makerkit/trans";
+import { Button } from "~/components/ui/button";
 
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-
-import { Button } from '~/components/ui/button';
-import { Trans } from '~/components/makerkit/trans';
-
-interface ChangelogPaginationProps {
+type ChangelogPaginationProps = {
   currentPage: number;
   canGoToNextPage: boolean;
   canGoToPreviousPage: boolean;
-}
+};
 
 export function ChangelogPagination({
   currentPage,
@@ -22,7 +20,7 @@ export function ChangelogPagination({
   return (
     <div className="flex justify-end gap-2">
       {canGoToPreviousPage && (
-        <Button asChild variant="outline" size="sm">
+        <Button asChild size="sm" variant="outline">
           <Link href={`/changelog?page=${previousPage}`}>
             <ArrowLeft className="mr-2 h-3 w-3" />
             <span>
@@ -33,7 +31,7 @@ export function ChangelogPagination({
       )}
 
       {canGoToNextPage && (
-        <Button asChild variant="outline" size="sm">
+        <Button asChild size="sm" variant="outline">
           <Link href={`/changelog?page=${nextPage}`}>
             <span>
               <Trans i18nKey="marketing:changelogPaginationNext" />
