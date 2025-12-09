@@ -1,20 +1,20 @@
 /* Tailwind CSS */
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /* local styles - update the below if you add a new style */
-@import './theme.css';
-@import './theme.utilities.css';
-@import './shadcn-ui.css';
-@import './markdoc.css';
-@import './makerkit.css';
-@import 'tw-animate-css';
+@import "./theme.css";
+@import "./theme.utilities.css";
+@import "./shadcn-ui.css";
+@import "./markdoc.css";
+@import "./makerkit.css";
+@import "tw-animate-css";
 
 /* content sources - update the below if you add a new path */
-@source '../app/**/*.{ts,tsx}';
-@source '../core/**/*.{ts,tsx}';
-@source '../features/**/*.{ts,tsx}';
-@source '../shared/**/*.{ts,tsx}';
-@source '../tools/**/*.{ts,tsx}';
+@source "../app/**/*.{ts,tsx}";
+@source "../core/**/*.{ts,tsx}";
+@source "../features/**/*.{ts,tsx}";
+@source "../shared/**/*.{ts,tsx}";
+@source "../tools/**/*.{ts,tsx}";
 
 /* variants - update the below if you add a new variant */
 /* @variant dark (&:where(.dark, .dark *)); */
@@ -23,8 +23,8 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings:
-      'rlig' 1,
-      'calt' 1;
+      "rlig" 1,
+      "calt" 1;
   }
 
   html,
@@ -46,6 +46,7 @@
 
   input::placeholder,
   textarea::placeholder {
+    /* biome-ignore lint/correctness/noUnknownFunction: Tailwind CSS theme() function */
     color: theme(--color-muted-foreground);
   }
 }

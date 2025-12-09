@@ -38,7 +38,7 @@
 }
 
 .markdoc ul > li:before {
-  content: '-';
+  content: "-";
 
   @apply mr-2;
 }
@@ -46,8 +46,8 @@
 .markdoc ol > li:before {
   @apply text-secondary-foreground inline-flex font-medium;
 
-  content: counters(counts, '.') '. ';
-  font-feature-settings: 'tnum';
+  content: counters(counts, ".") ". ";
+  font-feature-settings: "tnum";
 }
 
 .markdoc b,
@@ -72,8 +72,8 @@
 .markdoc ol > li:before {
   @apply mr-2 inline-flex font-semibold;
 
-  content: counters(counts, '.') '. ';
-  font-feature-settings: 'tnum';
+  content: counters(counts, ".") ". ";
+  font-feature-settings: "tnum";
 }
 
 .markdoc p > code,
@@ -101,16 +101,16 @@
   @apply border-border mt-8 mb-6;
 }
 
-.markdoc [role='alert'] {
+.markdoc [role="alert"] {
   @apply m-0 my-8 py-4;
 }
 
-.markdoc [role='alert'] * {
+.markdoc [role="alert"] * {
   color: inherit;
   @apply m-0 p-0 text-sm;
 }
 
-.markdoc [role='alert'] h5 {
+.markdoc [role="alert"] h5 {
   color: inherit;
 }
 
@@ -142,11 +142,11 @@
   @apply text-muted-foreground h-10 px-2 text-left align-middle font-medium;
 }
 
-.markdoc th:has([role=checkbox]) {
+.markdoc th:has([role="checkbox"]) {
   @apply pr-0;
 }
 
-.markdoc th [role=checkbox] {
+.markdoc th [role="checkbox"] {
   @apply translate-y-[2px];
 }
 
@@ -154,10 +154,10 @@
   @apply p-2 align-middle;
 }
 
-.markdoc td:has([role=checkbox]) {
+.markdoc td:has([role="checkbox"]) {
   @apply pr-0;
 }
 
-.markdoc td [role=checkbox] {
+.markdoc td [role="checkbox"] {
   @apply translate-y-[2px];
 }
