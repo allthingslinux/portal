@@ -3,7 +3,6 @@
   "short_name": "makerkit",
   "theme_color": "#fff",
   "background_color": "#fff",
-  "display": "fullscreen",
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
