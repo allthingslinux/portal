@@ -1,18 +1,14 @@
-import type { ErrorInfo, ReactNode } from 'react';
-import { Component } from 'react';
+import type { ErrorInfo, ReactNode } from "react";
+import { Component } from "react";
 
-interface Props {
+type Props = {
   onError?: (error: Error, info: ErrorInfo) => void;
   fallback: ReactNode;
   children: ReactNode;
-}
+};
 
 export class ErrorBoundary extends Component<Props> {
   readonly state = { hasError: false, error: null };
-
-  constructor(props: Props) {
-    super(props);
-  }
 
   static getDerivedStateFromError(error: unknown) {
     return {

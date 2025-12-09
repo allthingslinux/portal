@@ -8,22 +8,22 @@ import {
   Link,
   Preview,
   Row,
+  render,
   Section,
   Tailwind,
   Text,
-  render,
-} from '@react-email/components';
+} from "@react-email/components";
 
-import { BodyStyle } from '../components/body-style';
-import { EmailContent } from '../components/content';
-import { CtaButton } from '../components/cta-button';
-import { EmailFooter } from '../components/footer';
-import { EmailHeader } from '../components/header';
-import { EmailHeading } from '../components/heading';
-import { EmailWrapper } from '../components/wrapper';
-import { initializeEmailI18n } from '../lib/i18n';
+import { BodyStyle } from "../components/body-style";
+import { EmailContent } from "../components/content";
+import { CtaButton } from "../components/cta-button";
+import { EmailFooter } from "../components/footer";
+import { EmailHeader } from "../components/header";
+import { EmailHeading } from "../components/heading";
+import { EmailWrapper } from "../components/wrapper";
+import { initializeEmailI18n } from "../lib/i18n";
 
-interface Props {
+type Props = {
   teamName: string;
   teamLogo?: string;
   inviter: string | undefined;
@@ -31,10 +31,10 @@ interface Props {
   link: string;
   productName: string;
   language?: string;
-}
+};
 
 export async function renderInviteEmail(props: Props) {
-  const namespace = 'invite-email';
+  const namespace = "invite-email";
 
   const { t } = await initializeEmailI18n({
     language: props.language,
@@ -79,12 +79,12 @@ export async function renderInviteEmail(props: Props) {
             </EmailHeader>
 
             <EmailContent>
-              <Text className="text-[16px] leading-[24px] text-[#242424]">
+              <Text className="text-[#242424] text-[16px] leading-[24px]">
                 {hello}
               </Text>
 
               <Text
-                className="text-[16px] leading-[24px] text-[#242424]"
+                className="text-[#242424] text-[16px] leading-[24px]"
                 dangerouslySetInnerHTML={{ __html: mainText }}
               />
 
@@ -94,9 +94,9 @@ export async function renderInviteEmail(props: Props) {
                     <Column align="center">
                       <Img
                         className="rounded-full"
+                        height="64"
                         src={props.teamLogo}
                         width="64"
-                        height="64"
                       />
                     </Column>
                   </Row>
@@ -107,16 +107,16 @@ export async function renderInviteEmail(props: Props) {
                 <CtaButton href={props.link}>{joinTeam}</CtaButton>
               </Section>
 
-              <Text className="text-[16px] leading-[24px] text-[#242424]">
-                {t(`${namespace}:copyPasteLink`)}{' '}
-                <Link href={props.link} className="text-blue-600 no-underline">
+              <Text className="text-[#242424] text-[16px] leading-[24px]">
+                {t(`${namespace}:copyPasteLink`)}{" "}
+                <Link className="text-blue-600 no-underline" href={props.link}>
                   {props.link}
                 </Link>
               </Text>
 
-              <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
+              <Hr className="mx-0 my-[26px] w-full border border-[#eaeaea] border-solid" />
 
-              <Text className="text-[12px] leading-[24px] text-[#666666]">
+              <Text className="text-[#666666] text-[12px] leading-[24px]">
                 {t(`${namespace}:invitationIntendedFor`, {
                   invitedUserEmail: props.invitedUserEmail,
                 })}
@@ -127,7 +127,7 @@ export async function renderInviteEmail(props: Props) {
           </EmailWrapper>
         </Body>
       </Tailwind>
-    </Html>,
+    </Html>
   );
 
   return {

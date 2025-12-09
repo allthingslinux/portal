@@ -1,18 +1,18 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useSupabase } from './use-supabase';
-import { USER_IDENTITIES_QUERY_KEY } from './use-user-identities';
+import { useSupabase } from "./use-supabase";
+import { USER_IDENTITIES_QUERY_KEY } from "./use-user-identities";
 
-interface Credentials {
+type Credentials = {
   email: string;
   password: string;
   redirectTo: string;
-}
+};
 
 export function useLinkIdentityWithEmailPassword() {
   const client = useSupabase();
   const queryClient = useQueryClient();
-  const mutationKey = ['auth', 'link-email-password'];
+  const mutationKey = ["auth", "link-email-password"];
 
   const mutationFn = async (credentials: Credentials) => {
     const { email, password, redirectTo } = credentials;
@@ -28,7 +28,7 @@ export function useLinkIdentityWithEmailPassword() {
           hasPassword: true,
         },
       },
-      { emailRedirectTo: redirectTo },
+      { emailRedirectTo: redirectTo }
     );
 
     if (error) {
@@ -41,10 +41,9 @@ export function useLinkIdentityWithEmailPassword() {
   return useMutation({
     mutationKey,
     mutationFn,
-    onSuccess: () => {
-      return queryClient.invalidateQueries({
+    onSuccess: () =>
+      queryClient.invalidateQueries({
         queryKey: USER_IDENTITIES_QUERY_KEY,
-      });
-    },
+      }),
   });
 }

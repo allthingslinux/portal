@@ -32,35 +32,46 @@ export type SignInWithPasswordlessCredentials = {
 };
 
 export type Provider =
-  | 'apple'
-  | 'azure'
-  | 'bitbucket'
-  | 'discord'
-  | 'facebook'
-  | 'figma'
-  | 'github'
-  | 'gitlab'
-  | 'google'
-  | 'kakao'
-  | 'keycloak'
-  | 'linkedin'
-  | 'linkedin_oidc'
-  | 'notion'
-  | 'slack'
-  | 'spotify'
-  | 'twitch'
-  | 'twitter'
-  | 'workos'
-  | 'zoom'
-  | 'fly';
+  | "apple"
+  | "azure"
+  | "bitbucket"
+  | "discord"
+  | "facebook"
+  | "figma"
+  | "github"
+  | "gitlab"
+  | "google"
+  | "kakao"
+  | "keycloak"
+  | "linkedin"
+  | "linkedin_oidc"
+  | "notion"
+  | "slack"
+  | "spotify"
+  | "twitch"
+  | "twitter"
+  | "workos"
+  | "zoom"
+  | "fly";
 
 export type VerifyOtpParams = {
   token: string;
-  type: 'email' | 'phone' | 'sms' | 'magiclink' | 'recovery' | 'invite' | 'signup';
+  type:
+    | "email"
+    | "phone"
+    | "sms"
+    | "magiclink"
+    | "recovery"
+    | "invite"
+    | "signup";
   options?: {
     emailRedirectTo?: string;
   };
 };
 
-export type EmailOtpType = 'signup' | 'email' | 'email_change' | 'recovery' | 'invite';
-
+export type EmailOtpType =
+  | "signup"
+  | "email"
+  | "email_change"
+  | "recovery"
+  | "invite";

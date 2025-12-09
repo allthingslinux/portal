@@ -1,7 +1,7 @@
-import i18next, { type InitOptions, i18n } from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import resourcesToBackend from 'i18next-resources-to-backend';
-import { initReactI18next } from 'react-i18next';
+import i18next, { type InitOptions, type i18n } from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import resourcesToBackend from "i18next-resources-to-backend";
+import { initReactI18next } from "react-i18next";
 
 // Keep track of the number of iterations
 let iteration = 0;
@@ -16,7 +16,7 @@ const MAX_ITERATIONS = 20;
  */
 export async function initializeI18nClient(
   settings: InitOptions,
-  resolver: (lang: string, namespace: string) => Promise<object>,
+  resolver: (lang: string, namespace: string) => Promise<object>
 ): Promise<i18n> {
   const loadedLanguages: string[] = [];
   const loadedNamespaces: string[] = [];
@@ -35,7 +35,7 @@ export async function initializeI18nClient(
         }
 
         return callback(null, data);
-      }),
+      })
     )
     .use(LanguageDetector)
     .use(initReactI18next)
@@ -43,9 +43,9 @@ export async function initializeI18nClient(
       {
         ...settings,
         detection: {
-          order: ['htmlTag', 'cookie', 'navigator'],
-          caches: ['cookie'],
-          lookupCookie: 'lang',
+          order: ["htmlTag", "cookie", "navigator"],
+          caches: ["cookie"],
+          lookupCookie: "lang",
         },
         interpolation: {
           escapeValue: false,
@@ -53,9 +53,9 @@ export async function initializeI18nClient(
       },
       (err) => {
         if (err) {
-          console.error('Error initializing i18n client', err);
+          console.error("Error initializing i18n client", err);
         }
-      },
+      }
     );
 
   // to avoid infinite loops, we return the i18next instance after a certain number of iterations
@@ -68,13 +68,13 @@ export async function initializeI18nClient(
 
   // keep component from rendering if no languages or namespaces are loaded
   if (loadedLanguages.length === 0 || loadedNamespaces.length === 0) {
-    iteration++;
+    iteration += 1;
 
     console.debug(
-      `Keeping component from rendering if no languages or namespaces are loaded. Iteration: ${iteration}. Will stop after ${MAX_ITERATIONS} iterations.`,
+      `Keeping component from rendering if no languages or namespaces are loaded. Iteration: ${iteration}. Will stop after ${MAX_ITERATIONS} iterations.`
     );
 
-    throw new Error('No languages or namespaces loaded');
+    throw new Error("No languages or namespaces loaded");
   }
 
   return i18next;

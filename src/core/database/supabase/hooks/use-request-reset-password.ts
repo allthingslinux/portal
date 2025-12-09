@@ -1,12 +1,12 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 
-import { useSupabase } from './use-supabase';
+import { useSupabase } from "./use-supabase";
 
-interface RequestPasswordResetMutationParams {
+type RequestPasswordResetMutationParams = {
   email: string;
   redirectTo: string;
   captchaToken?: string;
-}
+};
 
 /**
  * @name useRequestResetPassword
@@ -17,7 +17,7 @@ interface RequestPasswordResetMutationParams {
  */
 export function useRequestResetPassword() {
   const client = useSupabase();
-  const mutationKey = ['auth', 'reset-password'];
+  const mutationKey = ["auth", "reset-password"];
 
   const mutationFn = async (params: RequestPasswordResetMutationParams) => {
     const { error, data } = await client.auth.resetPasswordForEmail(
@@ -25,7 +25,7 @@ export function useRequestResetPassword() {
       {
         redirectTo: params.redirectTo,
         captchaToken: params.captchaToken,
-      },
+      }
     );
 
     if (error) {

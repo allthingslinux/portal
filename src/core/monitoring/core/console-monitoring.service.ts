@@ -1,13 +1,13 @@
-import { MonitoringService } from '.';
+import type { MonitoringService } from ".";
 
 export class ConsoleMonitoringService implements MonitoringService {
   identifyUser(data: { id: string }) {
-    console.log(`[Console Monitoring] Identified user`, data);
+    console.log("[Console Monitoring] Identified user", data);
   }
 
   captureException(error: Error) {
     console.error(
-      `[Console Monitoring] Caught exception: ${JSON.stringify(error)}`,
+      `[Console Monitoring] Caught exception: ${JSON.stringify(error)}`
     );
   }
 

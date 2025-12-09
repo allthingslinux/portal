@@ -1,14 +1,13 @@
-import 'server-only';
+import "server-only";
 
-import type { EmailOtpType } from '../supabase-types';
-import { getLogger } from '~/shared/logger';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { getLogger } from "~/shared/logger";
+import type { EmailOtpType } from "../supabase-types";
 
 /**
  * @deprecated This service is no longer used with NextAuth.
  * NextAuth handles auth callbacks automatically.
  */
-type SupabaseClient = any;
-
 class AuthError extends Error {
   code?: string;
   constructor(message: string, code?: string) {
@@ -31,7 +30,11 @@ export function createAuthCallbackService(client: SupabaseClient) {
  * @description Service for handling auth callbacks in Supabase
  */
 class AuthCallbackService {
-  constructor(private readonly client: SupabaseClient) {}
+  private readonly client: SupabaseClient;
+
+  constructor(client: SupabaseClient) {
+    this.client = client;
+  }
 
   /**
    * @name verifyTokenHash
@@ -46,23 +49,23 @@ class AuthCallbackService {
       joinTeamPath: string;
       redirectPath: string;
       errorPath?: string;
-    },
+    }
   ): Promise<URL> {
     const url = new URL(request.url);
     const searchParams = url.searchParams;
 
-    const host = request.headers.get('host');
+    const host = request.headers.get("host");
 
     // set the host to the request host since outside of Vercel it gets set as "localhost" or "0.0.0.0"
     this.adjustUrlHostForLocalDevelopment(url, host);
 
     url.pathname = params.redirectPath;
 
-    const token_hash = searchParams.get('token_hash');
-    const type = searchParams.get('type') as EmailOtpType | null;
+    const token_hash = searchParams.get("token_hash");
+    const type = searchParams.get("type") as EmailOtpType | null;
 
     const redirectInfo = this.parseRedirectDestination(
-      searchParams.get('next') ?? searchParams.get('callback'),
+      searchParams.get("next") ?? searchParams.get("callback")
     );
 
     let nextPath: string | null = null;
@@ -74,17 +77,17 @@ class AuthCallbackService {
       // preserve any query params from the redirect URL (e.g., invite_token)
       // but exclude 'next' to avoid duplication
       redirectInfo.params.forEach((value, key) => {
-        if (key !== 'next') {
+        if (key !== "next") {
           url.searchParams.set(key, value);
         }
       });
     }
 
-    const errorPath = params.errorPath ?? '/auth/callback/error';
+    const errorPath = params.errorPath ?? "/auth/callback/error";
 
     // remove the query params from the url
-    searchParams.delete('token_hash');
-    searchParams.delete('next');
+    searchParams.delete("token_hash");
+    searchParams.delete("next");
 
     // if we have a next path, we redirect to that path
     if (nextPath) {
@@ -102,7 +105,7 @@ class AuthCallbackService {
       }
 
       if (error.code) {
-        url.searchParams.set('code', error.code);
+        url.searchParams.set("code", error.code);
       }
 
       const errorMessage = getAuthErrorMessage({
@@ -110,7 +113,7 @@ class AuthCallbackService {
         code: error.code,
       });
 
-      url.searchParams.set('error', errorMessage);
+      url.searchParams.set("error", errorMessage);
     }
 
     // return the user to an error page with some instructions
@@ -131,41 +134,41 @@ class AuthCallbackService {
       joinTeamPath: string;
       redirectPath: string;
       errorPath?: string;
-    },
+    }
   ): Promise<{
     nextPath: string;
   }> {
     const requestUrl = new URL(request.url);
     const searchParams = requestUrl.searchParams;
 
-    const authCode = searchParams.get('code');
-    const error = searchParams.get('error');
-    const nextUrlPathFromParams = searchParams.get('next');
-    const errorPath = params.errorPath ?? '/auth/callback/error';
+    const authCode = searchParams.get("code");
+    const error = searchParams.get("error");
+    const nextUrlPathFromParams = searchParams.get("next");
+    const errorPath = params.errorPath ?? "/auth/callback/error";
 
     const nextUrl = nextUrlPathFromParams ?? params.redirectPath;
 
     if (authCode) {
       try {
-        const { error } =
+        const { error: exchangeError } =
           await this.client.auth.exchangeCodeForSession(authCode);
 
         // if we have an error, we redirect to the error page
-        if (error) {
+        if (exchangeError) {
           return await onError({
-            code: error.code,
-            error: error.message,
+            code: exchangeError.code,
+            error: exchangeError.message,
             path: errorPath,
           });
         }
-      } catch (error) {
+      } catch (callbackError) {
         const logger = await getLogger();
         logger.error(
           {
-            error,
-            name: `auth.callback`,
+            error: callbackError,
+            name: "auth.callback",
           },
-          `An error occurred while exchanging code for session`,
+          "An error occurred while exchanging code for session"
         );
 
         const message = error instanceof Error ? error.message : error;
@@ -193,7 +196,7 @@ class AuthCallbackService {
   private adjustUrlHostForLocalDevelopment(url: URL, host: string | null) {
     if (host && this.isLocalhost(url.host) && !this.isLocalhost(host)) {
       url.host = host;
-      url.port = '';
+      url.port = "";
     }
   }
 
@@ -213,7 +216,7 @@ class AuthCallbackService {
       const redirectUrl = new URL(redirectParam);
 
       // check for nested 'next' parameter (chained redirect)
-      const nestedNext = redirectUrl.searchParams.get('next');
+      const nestedNext = redirectUrl.searchParams.get("next");
 
       if (nestedNext) {
         // use the nested path as the final destination
@@ -240,9 +243,9 @@ class AuthCallbackService {
     }
 
     return (
-      host.includes('localhost:') ||
-      host.includes('0.0.0.0:') ||
-      host.includes('127.0.0.1:')
+      host.includes("localhost:") ||
+      host.includes("0.0.0.0:") ||
+      host.includes("127.0.0.1:")
     );
   }
 }
@@ -261,15 +264,15 @@ async function onError({
   const logger = await getLogger();
   logger.error(
     {
-      error: JSON.stringify(error).replace(/["\\]/g, '\\$&'),
-      name: `auth.callback`,
+      error: JSON.stringify(error).replace(/["\\]/g, "\\$&"),
+      name: "auth.callback",
     },
-    `An error occurred while signing user in`,
+    "An error occurred while signing user in"
   );
 
   const searchParams = new URLSearchParams({
     error: errorMessage,
-    code: code ?? '',
+    code: code ?? "",
   });
 
   const nextPath = `${path}?${searchParams.toString()}`;
@@ -287,23 +290,21 @@ async function onError({
  * want to provide a helpful error message.
  */
 function isVerifierError(error: string) {
-  return error.includes('both auth code and code verifier should be non-empty');
+  return error.includes("both auth code and code verifier should be non-empty");
 }
 
 function getAuthErrorMessage(params: { error: string; code?: string }) {
   // this error arises when the user tries to sign in with an expired email link
-  if (params.code) {
-    if (params.code === 'otp_expired') {
-      return 'auth:errors.otp_expired';
-    }
+  if (params.code && params.code === "otp_expired") {
+    return "auth:errors.otp_expired";
   }
 
   // this error arises when the user is trying to sign in with a different
   // browser than the one they used to request the sign in link
   if (isVerifierError(params.error)) {
-    return 'auth:errors.codeVerifierMismatch';
+    return "auth:errors.codeVerifierMismatch";
   }
 
   // fallback to the default error message
-  return `auth:authenticationErrorAlertBody`;
+  return "auth:authenticationErrorAlertBody";
 }

@@ -1,8 +1,8 @@
-import 'server-only';
+import "server-only";
 
-import { eq } from 'drizzle-orm';
+import { eq } from "drizzle-orm";
 
-import { accounts, usersInAuth } from '../drizzle/schema';
+import { accounts, usersInAuth } from "../drizzle/schema";
 
 /**
  * Query builders for authentication and authorization operations
@@ -27,7 +27,7 @@ export function isAccountOwner(_accountId: string, userId: string) {
 export function canActionAccountMember(
   _targetAccountId: string,
   _targetUserId: string,
-  _currentUserId: string,
+  _currentUserId: string
 ) {
   // This is a complex permission check that would need to be implemented
   // based on your specific role hierarchy and permission logic

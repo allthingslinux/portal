@@ -1,4 +1,4 @@
-import { getSupabaseClientKeys } from '~/core/database/supabase/get-supabase-client-keys';
+import { getSupabaseClientKeys } from "~/core/database/supabase/get-supabase-client-keys";
 
 /**
  * Upload a file to Supabase Storage using REST API
@@ -11,7 +11,7 @@ export async function uploadFileToStorage(
     cacheControl?: string;
     upsert?: boolean;
     contentType?: string;
-  },
+  }
 ): Promise<{ error: Error | null }> {
   const keys = getSupabaseClientKeys();
   const url = `${keys.url}/storage/v1/object/${bucketName}/${filePath}`;
@@ -22,27 +22,29 @@ export async function uploadFileToStorage(
   };
 
   if (options?.cacheControl) {
-    headers['cache-control'] = options.cacheControl;
+    headers["cache-control"] = options.cacheControl;
   }
 
   if (options?.contentType) {
-    headers['content-type'] = options.contentType;
+    headers["content-type"] = options.contentType;
   }
 
   if (options?.upsert) {
-    headers['x-upsert'] = 'true';
+    headers["x-upsert"] = "true";
   }
 
-  const body =
-    file instanceof ArrayBuffer
-      ? file
-      : file instanceof Blob
-        ? file
-        : new Blob([file], { type: file.type });
+  let body: ArrayBuffer | Blob;
+  if (file instanceof ArrayBuffer) {
+    body = file;
+  } else if (file instanceof Blob) {
+    body = file;
+  } else {
+    body = new Blob([file], { type: file.type });
+  }
 
   try {
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers,
       body,
     });
@@ -50,14 +52,15 @@ export async function uploadFileToStorage(
     if (!response.ok) {
       const error = await response.json();
       return {
-        error: new Error(error.message || 'Failed to upload file'),
+        error: new Error(error.message || "Failed to upload file"),
       };
     }
 
     return { error: null };
   } catch (error) {
     return {
-      error: error instanceof Error ? error : new Error('Failed to upload file'),
+      error:
+        error instanceof Error ? error : new Error("Failed to upload file"),
     };
   }
 }
@@ -67,7 +70,7 @@ export async function uploadFileToStorage(
  */
 export async function deleteFileFromStorage(
   bucketName: string,
-  filePath: string,
+  filePath: string
 ): Promise<{ error: Error | null }> {
   const keys = getSupabaseClientKeys();
   const url = `${keys.url}/storage/v1/object/${bucketName}/${filePath}`;
@@ -79,21 +82,22 @@ export async function deleteFileFromStorage(
 
   try {
     const response = await fetch(url, {
-      method: 'DELETE',
+      method: "DELETE",
       headers,
     });
 
     if (!response.ok) {
       const error = await response.json();
       return {
-        error: new Error(error.message || 'Failed to delete file'),
+        error: new Error(error.message || "Failed to delete file"),
       };
     }
 
     return { error: null };
   } catch (error) {
     return {
-      error: error instanceof Error ? error : new Error('Failed to delete file'),
+      error:
+        error instanceof Error ? error : new Error("Failed to delete file"),
     };
   }
 }
@@ -105,4 +109,3 @@ export function getPublicUrl(bucketName: string, filePath: string): string {
   const keys = getSupabaseClientKeys();
   return `${keys.url}/storage/v1/object/public/${bucketName}/${filePath}`;
 }
-

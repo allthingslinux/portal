@@ -1,5 +1,5 @@
-import { MAILER_PROVIDER } from './provider-enum';
-import { mailerRegistry } from './registry';
+import { MAILER_PROVIDER } from "./provider-enum";
+import { mailerRegistry } from "./registry";
 
 /**
  * @name getMailer
@@ -9,4 +9,6 @@ export function getMailer() {
   return mailerRegistry.get(MAILER_PROVIDER);
 }
 
-export { MAILER_PROVIDER };
+export type { MailerProvider } from "./provider-enum";
+// Re-export for convenience - using direct re-export to avoid noExportedImports
+export { MAILER_PROVIDER } from "./provider-enum";

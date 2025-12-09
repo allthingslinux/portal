@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const MailerSchema = z
   .object({
@@ -16,5 +16,5 @@ export const MailerSchema = z
       z.object({
         html: z.string(),
       }),
-    ]),
+    ])
   );

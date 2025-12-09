@@ -1,12 +1,12 @@
 import {
-  Event as SentryEvent,
-  User as SentryUser,
   captureEvent,
   captureException,
+  type Event as SentryEvent,
+  type User as SentryUser,
   setUser,
-} from '@sentry/nextjs';
+} from "@sentry/nextjs";
 
-import { MonitoringService } from '~/core/monitoring/core';
+import type { MonitoringService } from "~/core/monitoring/core";
 
 /**
  * @class
@@ -15,14 +15,18 @@ import { MonitoringService } from '~/core/monitoring/core';
  */
 export class SentryMonitoringService implements MonitoringService {
   private readonly readyPromise: Promise<unknown>;
-  private readyResolver?: (value?: unknown) => void;
+  private readonly readyResolver?: (value?: unknown) => void;
 
   constructor() {
-    this.readyPromise = new Promise(
-      (resolve) => (this.readyResolver = resolve),
-    );
+    let resolver: (value?: unknown) => void;
+    this.readyPromise = new Promise((resolve) => {
+      resolver = resolve;
+    });
+    this.readyResolver = resolver;
 
-    void this.initialize();
+    this.initialize().catch(() => {
+      // Ignore initialization errors
+    });
   }
 
   async ready() {
@@ -48,9 +52,9 @@ export class SentryMonitoringService implements MonitoringService {
     const environment =
       process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ?? process.env.VERCEL_ENV;
 
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       const { initializeSentryBrowserClient } = await import(
-        '../sentry.client.config'
+        "../sentry.client.config"
       );
 
       initializeSentryBrowserClient({
@@ -58,7 +62,7 @@ export class SentryMonitoringService implements MonitoringService {
       });
     } else {
       const { initializeSentryServerClient } = await import(
-        '../sentry.server.config'
+        "../sentry.server.config"
       );
 
       initializeSentryServerClient({

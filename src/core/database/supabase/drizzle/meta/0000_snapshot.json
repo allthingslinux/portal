@@ -142,12 +142,8 @@
           "tableFrom": "accounts",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -156,12 +152,8 @@
           "tableFrom": "accounts",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "primary_owner_user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["primary_owner_user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -170,12 +162,8 @@
           "tableFrom": "accounts",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["updated_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -183,16 +171,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "accounts_slug_key": {
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "nullsNotDistinct": false,
           "name": "accounts_slug_key"
         },
         "accounts_email_key": {
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "nullsNotDistinct": false,
           "name": "accounts_email_key"
         }
@@ -208,50 +192,38 @@
           "name": "accounts_read",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "((( SELECT auth.uid() AS uid) = primary_owner_user_id) OR has_role_on_account(id) OR is_account_team_member(id))"
         },
         "accounts_self_update": {
           "name": "accounts_self_update",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "create_org_account": {
           "name": "create_org_account",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "delete_team_account": {
           "name": "delete_team_account",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "restrict_mfa_accounts": {
           "name": "restrict_mfa_accounts",
           "as": "RESTRICTIVE",
           "for": "ALL",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "super_admins_access_accounts": {
           "name": "super_admins_access_accounts",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         }
       },
       "isRLSEnabled": true
@@ -278,9 +250,7 @@
           "name": "public config can be read by authenticated users",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -372,12 +342,8 @@
           "tableFrom": "invitations",
           "tableTo": "accounts",
           "schemaTo": "public",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -386,12 +352,8 @@
           "tableFrom": "invitations",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -400,12 +362,8 @@
           "tableFrom": "invitations",
           "tableTo": "roles",
           "schemaTo": "public",
-          "columnsFrom": [
-            "role"
-          ],
-          "columnsTo": [
-            "name"
-          ],
+          "columnsFrom": ["role"],
+          "columnsTo": ["name"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -413,17 +371,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "invitations_email_account_id_key": {
-          "columns": [
-            "email",
-            "account_id"
-          ],
+          "columns": ["email", "account_id"],
           "nullsNotDistinct": false,
           "name": "invitations_email_account_id_key"
         },
         "invitations_invite_token_key": {
-          "columns": [
-            "invite_token"
-          ],
+          "columns": ["invite_token"],
           "nullsNotDistinct": false,
           "name": "invitations_invite_token_key"
         }
@@ -434,50 +387,38 @@
           "name": "super_admins_access_invitations",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "is_super_admin()"
         },
         "invitations_create_self": {
           "name": "invitations_create_self",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "invitations_delete": {
           "name": "invitations_delete",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "invitations_read_self": {
           "name": "invitations_read_self",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "invitations_update": {
           "name": "invitations_update",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "restrict_mfa_invitations": {
           "name": "restrict_mfa_invitations",
           "as": "RESTRICTIVE",
           "for": "ALL",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         }
       },
       "isRLSEnabled": true
@@ -666,12 +607,8 @@
           "tableFrom": "nonces",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -684,9 +621,7 @@
           "name": "Users can read their own nonces",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "public"
-          ],
+          "to": ["public"],
           "using": "(user_id = ( SELECT auth.uid() AS uid))"
         }
       },
@@ -807,12 +742,8 @@
           "tableFrom": "notifications",
           "tableTo": "accounts",
           "schemaTo": "public",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -825,26 +756,20 @@
           "name": "notifications_read_self",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "((account_id = ( SELECT auth.uid() AS uid)) OR has_role_on_account(account_id))"
         },
         "notifications_update_self": {
           "name": "notifications_update_self",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "restrict_mfa_notifications": {
           "name": "restrict_mfa_notifications",
           "as": "RESTRICTIVE",
           "for": "ALL",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         }
       },
       "isRLSEnabled": true
@@ -908,12 +833,8 @@
           "tableFrom": "role_permissions",
           "tableTo": "roles",
           "schemaTo": "public",
-          "columnsFrom": [
-            "role"
-          ],
-          "columnsTo": [
-            "name"
-          ],
+          "columnsFrom": ["role"],
+          "columnsTo": ["name"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -921,10 +842,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "role_permissions_role_permission_key": {
-          "columns": [
-            "role",
-            "permission"
-          ],
+          "columns": ["role", "permission"],
           "nullsNotDistinct": false,
           "name": "role_permissions_role_permission_key"
         }
@@ -935,26 +853,20 @@
           "name": "restrict_mfa_role_permissions",
           "as": "RESTRICTIVE",
           "for": "ALL",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "is_mfa_compliant()"
         },
         "role_permissions_read": {
           "name": "role_permissions_read",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "super_admins_access_role_permissions": {
           "name": "super_admins_access_role_permissions",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         }
       },
       "isRLSEnabled": true
@@ -981,9 +893,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "roles_hierarchy_level_key": {
-          "columns": [
-            "hierarchy_level"
-          ],
+          "columns": ["hierarchy_level"],
           "nullsNotDistinct": false,
           "name": "roles_hierarchy_level_key"
         }
@@ -999,9 +909,7 @@
           "name": "roles_read",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "true"
         }
       },
@@ -1112,12 +1020,8 @@
           "tableFrom": "accounts_memberships",
           "tableTo": "accounts",
           "schemaTo": "public",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1126,12 +1030,8 @@
           "tableFrom": "accounts_memberships",
           "tableTo": "roles",
           "schemaTo": "public",
-          "columnsFrom": [
-            "account_role"
-          ],
-          "columnsTo": [
-            "name"
-          ],
+          "columnsFrom": ["account_role"],
+          "columnsTo": ["name"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1140,12 +1040,8 @@
           "tableFrom": "accounts_memberships",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1154,12 +1050,8 @@
           "tableFrom": "accounts_memberships",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["updated_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1168,12 +1060,8 @@
           "tableFrom": "accounts_memberships",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1181,10 +1069,7 @@
       "compositePrimaryKeys": {
         "accounts_memberships_pkey": {
           "name": "accounts_memberships_pkey",
-          "columns": [
-            "user_id",
-            "account_id"
-          ]
+          "columns": ["user_id", "account_id"]
         }
       },
       "uniqueConstraints": {},
@@ -1194,34 +1079,26 @@
           "name": "accounts_memberships_delete",
           "as": "PERMISSIVE",
           "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
+          "to": ["authenticated"],
           "using": "((user_id = ( SELECT auth.uid() AS uid)) OR can_action_account_member(account_id, user_id))"
         },
         "accounts_memberships_read": {
           "name": "accounts_memberships_read",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "restrict_mfa_accounts_memberships": {
           "name": "restrict_mfa_accounts_memberships",
           "as": "RESTRICTIVE",
           "for": "ALL",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         },
         "super_admins_access_accounts_memberships": {
           "name": "super_admins_access_accounts_memberships",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "authenticated"
-          ]
+          "to": ["authenticated"]
         }
       },
       "isRLSEnabled": true
@@ -1240,19 +1117,12 @@
     },
     "public.notification_channel": {
       "name": "notification_channel",
-      "values": [
-        "in_app",
-        "email"
-      ],
+      "values": ["in_app", "email"],
       "schema": "public"
     },
     "public.notification_type": {
       "name": "notification_type",
-      "values": [
-        "info",
-        "warning",
-        "error"
-      ],
+      "values": ["info", "warning", "error"],
       "schema": "public"
     }
   },

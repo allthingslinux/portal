@@ -1,7 +1,7 @@
-import { getSessionUserData } from '~/core/auth/nextauth/session';
-import { JWTUserData } from './types';
+import { getSessionUserData } from "~/core/auth/better-auth/session";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
 
-const SIGN_IN_PATH = '/auth/sign-in';
+const SIGN_IN_PATH = "/auth/sign-in";
 
 /**
  * @name requireUser
@@ -9,14 +9,10 @@ const SIGN_IN_PATH = '/auth/sign-in';
  * @param options
  * @param options.next
  */
-export async function requireUser(
-  options?: {
-    next?: string;
-  },
-): Promise<
+export async function requireUser(options?: { next?: string }): Promise<
   | {
       error: null;
-      data: JWTUserData;
+      data: BetterAuthUser;
     }
   | {
       error: AuthenticationError;
@@ -42,10 +38,10 @@ export async function requireUser(
 
 class AuthenticationError extends Error {
   constructor() {
-    super(`Authentication required`);
+    super("Authentication required");
   }
 }
 
 function getRedirectTo(path: string, next?: string) {
-  return path + (next ? `?next=${next}` : '');
+  return path + (next ? `?next=${next}` : "");
 }

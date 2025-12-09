@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { createContext } from 'react';
+import { createContext } from "react";
 
-import { ConsoleMonitoringService } from './console-monitoring.service';
-import { MonitoringService } from './monitoring.service';
+import { ConsoleMonitoringService } from "./console-monitoring.service";
+import type { MonitoringService } from "./monitoring.service";
 
 export const MonitoringContext = createContext<MonitoringService>(
-  new ConsoleMonitoringService(),
+  new ConsoleMonitoringService()
 );

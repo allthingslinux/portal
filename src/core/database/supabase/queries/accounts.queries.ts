@@ -1,8 +1,8 @@
-import 'server-only';
+import "server-only";
 
-import { and, eq } from 'drizzle-orm';
+import { and, eq } from "drizzle-orm";
 
-import { accounts, accountsMemberships, usersInAuth } from '../drizzle/schema';
+import { accounts, accountsMemberships, usersInAuth } from "../drizzle/schema";
 
 /**
  * Query builders for account-related operations
@@ -53,17 +53,17 @@ export function getAccountMembers(accountId: string) {
 export function hasRoleOnAccount(
   userId: string,
   accountId: string,
-  role?: string,
+  role?: string
 ) {
   const whereCondition = role
     ? and(
         eq(accountsMemberships.userId, userId),
         eq(accountsMemberships.accountId, accountId),
-        eq(accountsMemberships.accountRole, role),
+        eq(accountsMemberships.accountRole, role)
       )
     : and(
         eq(accountsMemberships.userId, userId),
-        eq(accountsMemberships.accountId, accountId),
+        eq(accountsMemberships.accountId, accountId)
       );
 
   return {
@@ -89,7 +89,7 @@ export function getUserAccounts(userId: string) {
     leftJoin: accountsMemberships,
     on: and(
       eq(accounts.id, accountsMemberships.accountId),
-      eq(accountsMemberships.userId, userId),
+      eq(accountsMemberships.userId, userId)
     ),
     where: eq(accounts.primaryOwnerUserId, userId), // Either owner or member
   };

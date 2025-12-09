@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const PathsSchema = z.object({
   auth: z.object({
@@ -20,19 +20,19 @@ const PathsSchema = z.object({
 
 const pathsConfig = PathsSchema.parse({
   auth: {
-    signIn: '/auth/sign-in',
-    signUp: '/auth/sign-up',
-    callback: '/auth/callback',
-    passwordReset: '/auth/password-reset',
-    passwordUpdate: '/update-password',
+    signIn: "/auth/sign-in",
+    signUp: "/auth/sign-up",
+    callback: "/auth/callback",
+    passwordReset: "/auth/password-reset",
+    passwordUpdate: "/update-password",
   },
   app: {
-    home: '/home',
-    personalAccountSettings: '/home/settings',
-    accountHome: '/home/[account]',
-    accountSettings: `/home/[account]/settings`,
-    accountMembers: `/home/[account]/members`,
-    joinTeam: '/join',
+    home: "/home",
+    personalAccountSettings: "/home/settings",
+    accountHome: "/home/[account]",
+    accountSettings: "/home/[account]/settings",
+    accountMembers: "/home/[account]/members",
+    joinTeam: "/join",
   },
 } satisfies z.infer<typeof PathsSchema>);
 

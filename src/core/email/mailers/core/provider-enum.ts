@@ -1,13 +1,13 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const MAILER_PROVIDERS = [
-  'nodemailer',
+  "nodemailer",
   // add more providers here
 ] as const;
 
 const MAILER_PROVIDER = z
   .enum(MAILER_PROVIDERS)
-  .default('nodemailer')
+  .default("nodemailer")
   .parse(process.env.MAILER_PROVIDER);
 
 export { MAILER_PROVIDER };

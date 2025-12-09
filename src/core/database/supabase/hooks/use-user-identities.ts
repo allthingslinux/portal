@@ -1,12 +1,10 @@
-import { useMemo } from 'react';
+import type { Provider } from "@supabase/supabase-js";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-import type { Provider } from '@supabase/supabase-js';
+import { useSupabase } from "./use-supabase";
 
-import { useQuery } from '@tanstack/react-query';
-
-import { useSupabase } from './use-supabase';
-
-export const USER_IDENTITIES_QUERY_KEY = ['user-identities'];
+export const USER_IDENTITIES_QUERY_KEY = ["user-identities"];
 
 export function useUserIdentities() {
   const supabase = useSupabase();
@@ -19,29 +17,29 @@ export function useUserIdentities() {
   } = useQuery({
     queryKey: USER_IDENTITIES_QUERY_KEY,
     queryFn: async () => {
-      const { data, error } = await supabase.auth.getUserIdentities();
+      const { data, error: identitiesError } =
+        await supabase.auth.getUserIdentities();
 
-      if (error) {
-        throw error;
+      if (identitiesError) {
+        throw identitiesError;
       }
 
       return data.identities;
     },
   });
 
-  const connectedProviders = useMemo(() => {
-    return identities.map((identity) => identity.provider);
-  }, [identities]);
+  const connectedProviders = useMemo(
+    () => identities.map((identity) => identity.provider),
+    [identities]
+  );
 
   const hasMultipleIdentities = identities.length > 1;
 
-  const getIdentityByProvider = (provider: Provider) => {
-    return identities.find((identity) => identity.provider === provider);
-  };
+  const getIdentityByProvider = (provider: Provider) =>
+    identities.find((identity) => identity.provider === provider);
 
-  const isProviderConnected = (provider: Provider) => {
-    return connectedProviders.includes(provider);
-  };
+  const isProviderConnected = (provider: Provider) =>
+    connectedProviders.includes(provider);
 
   return {
     identities,

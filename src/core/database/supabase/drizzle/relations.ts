@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm/relations';
+import { relations } from "drizzle-orm/relations";
 
 import {
   accounts,
@@ -9,23 +9,23 @@ import {
   rolePermissions,
   roles,
   usersInAuth,
-} from './schema';
+} from "./schema";
 
 export const accountsRelations = relations(accounts, ({ one, many }) => ({
   usersInAuth_createdBy: one(usersInAuth, {
     fields: [accounts.createdBy],
     references: [usersInAuth.id],
-    relationName: 'accounts_createdBy_usersInAuth_id',
+    relationName: "accounts_createdBy_usersInAuth_id",
   }),
   usersInAuth_primaryOwnerUserId: one(usersInAuth, {
     fields: [accounts.primaryOwnerUserId],
     references: [usersInAuth.id],
-    relationName: 'accounts_primaryOwnerUserId_usersInAuth_id',
+    relationName: "accounts_primaryOwnerUserId_usersInAuth_id",
   }),
   usersInAuth_updatedBy: one(usersInAuth, {
     fields: [accounts.updatedBy],
     references: [usersInAuth.id],
-    relationName: 'accounts_updatedBy_usersInAuth_id',
+    relationName: "accounts_updatedBy_usersInAuth_id",
   }),
   invitations: many(invitations),
   notifications: many(notifications),
@@ -34,24 +34,24 @@ export const accountsRelations = relations(accounts, ({ one, many }) => ({
 
 export const usersInAuthRelations = relations(usersInAuth, ({ many }) => ({
   accounts_createdBy: many(accounts, {
-    relationName: 'accounts_createdBy_usersInAuth_id',
+    relationName: "accounts_createdBy_usersInAuth_id",
   }),
   accounts_primaryOwnerUserId: many(accounts, {
-    relationName: 'accounts_primaryOwnerUserId_usersInAuth_id',
+    relationName: "accounts_primaryOwnerUserId_usersInAuth_id",
   }),
   accounts_updatedBy: many(accounts, {
-    relationName: 'accounts_updatedBy_usersInAuth_id',
+    relationName: "accounts_updatedBy_usersInAuth_id",
   }),
   invitations: many(invitations),
   nonces: many(nonces),
   accountsMemberships_createdBy: many(accountsMemberships, {
-    relationName: 'accountsMemberships_createdBy_usersInAuth_id',
+    relationName: "accountsMemberships_createdBy_usersInAuth_id",
   }),
   accountsMemberships_updatedBy: many(accountsMemberships, {
-    relationName: 'accountsMemberships_updatedBy_usersInAuth_id',
+    relationName: "accountsMemberships_updatedBy_usersInAuth_id",
   }),
   accountsMemberships_userId: many(accountsMemberships, {
-    relationName: 'accountsMemberships_userId_usersInAuth_id',
+    relationName: "accountsMemberships_userId_usersInAuth_id",
   }),
 }));
 
@@ -97,7 +97,7 @@ export const rolePermissionsRelations = relations(
       fields: [rolePermissions.role],
       references: [roles.name],
     }),
-  }),
+  })
 );
 
 export const accountsMembershipsRelations = relations(
@@ -114,17 +114,17 @@ export const accountsMembershipsRelations = relations(
     usersInAuth_createdBy: one(usersInAuth, {
       fields: [accountsMemberships.createdBy],
       references: [usersInAuth.id],
-      relationName: 'accountsMemberships_createdBy_usersInAuth_id',
+      relationName: "accountsMemberships_createdBy_usersInAuth_id",
     }),
     usersInAuth_updatedBy: one(usersInAuth, {
       fields: [accountsMemberships.updatedBy],
       references: [usersInAuth.id],
-      relationName: 'accountsMemberships_updatedBy_usersInAuth_id',
+      relationName: "accountsMemberships_updatedBy_usersInAuth_id",
     }),
     usersInAuth_userId: one(usersInAuth, {
       fields: [accountsMemberships.userId],
       references: [usersInAuth.id],
-      relationName: 'accountsMemberships_userId_usersInAuth_id',
+      relationName: "accountsMemberships_userId_usersInAuth_id",
     }),
-  }),
+  })
 );

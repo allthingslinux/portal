@@ -1,10 +1,10 @@
-import 'server-only';
+import "server-only";
 
-import { z } from 'zod';
-import { getLogger } from '~/shared/logger';
+import { z } from "zod";
+import { getLogger } from "~/shared/logger";
 
 const message =
-  'Invalid Supabase Secret Key. Please add the environment variable SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY.';
+  "Invalid Supabase Secret Key. Please add the environment variable SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY.";
 
 /**
  * @name getSupabaseSecretKey
@@ -17,10 +17,10 @@ export function getSupabaseSecretKey() {
       required_error: message,
     })
     .min(1, {
-      message: message,
+      message,
     })
     .parse(
-      process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
+      process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 }
 
@@ -28,10 +28,10 @@ export function getSupabaseSecretKey() {
  * Displays a warning message if the Supabase Service Role is being used.
  */
 export async function warnServiceRoleKeyUsage() {
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== "production") {
     const logger = await getLogger();
     logger.warn(
-      `[Dev Only] This is a simple warning to let you know you are using the Supabase Secret Key. This key bypasses RLS and should only be used in server-side code. Please make sure it's the intended usage.`,
+      `[Dev Only] This is a simple warning to let you know you are using the Supabase Secret Key. This key bypasses RLS and should only be used in server-side code. Please make sure it's the intended usage.`
     );
   }
 }

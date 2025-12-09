@@ -1,11 +1,11 @@
-import 'server-only';
+import "server-only";
 
-import { getLogger } from '~/shared/logger';
-import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
+import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
+import { getLogger } from "~/shared/logger";
 
-import { RecordChange, Tables } from '../record-change.type';
-import { createDatabaseWebhookRouterService } from './database-webhook-router.service';
-import { getDatabaseWebhookVerifier } from './verifier';
+import type { RecordChange, Tables } from "../record-change.type";
+import { createDatabaseWebhookRouterService } from "./database-webhook-router.service";
+import { getDatabaseWebhookVerifier } from "./verifier";
 
 /**
  * @name DatabaseChangePayload
@@ -23,7 +23,7 @@ export function getDatabaseWebhookHandlerService() {
  * @description Get the database webhook handler service
  */
 class DatabaseWebhookHandlerService {
-  private readonly namespace = 'database-webhook-handler';
+  private readonly namespace = "database-webhook-handler";
 
   /**
    * @name handleWebhook
@@ -34,9 +34,7 @@ class DatabaseWebhookHandlerService {
     body: RecordChange<keyof Tables>;
     signature: string;
     handleEvent?<Table extends keyof Tables>(
-      payload: Table extends keyof Tables
-        ? DatabaseChangePayload<Table>
-        : never,
+      payload: Table extends keyof Tables ? DatabaseChangePayload<Table> : never
     ): unknown;
   }) {
     const logger = await getLogger();
@@ -48,7 +46,7 @@ class DatabaseWebhookHandlerService {
       type,
     };
 
-    logger.info(ctx, 'Received webhook from DB. Processing...');
+    logger.info(ctx, "Received webhook from DB. Processing...");
 
     // check if the signature is valid
     const verifier = await getDatabaseWebhookVerifier();
@@ -68,19 +66,19 @@ class DatabaseWebhookHandlerService {
 
       // if a custom handler is provided, call it
       if (params?.handleEvent) {
-        // The handleEvent is generic and we can't infer the specific table type here
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (params.handleEvent as any)(params.body);
+        await params.handleEvent(
+          params.body as DatabaseChangePayload<keyof Tables>
+        );
       }
 
-      logger.info(ctx, 'Webhook processed successfully');
+      logger.info(ctx, "Webhook processed successfully");
     } catch (error) {
       logger.error(
         {
           ...ctx,
           error,
         },
-        'Failed to process webhook',
+        "Failed to process webhook"
       );
 
       throw error;

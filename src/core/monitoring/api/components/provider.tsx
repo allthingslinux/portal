@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { lazy } from 'react';
+import { lazy } from "react";
 
-import { createRegistry } from '~/shared/registry';
+import { createRegistry } from "~/shared/registry";
 
 import {
-  MonitoringProvider as MonitoringProviderType,
   getMonitoringProvider,
-} from '../get-monitoring-provider';
+  type MonitoringProvider as MonitoringProviderType,
+} from "../get-monitoring-provider";
 
 // Define the type for our provider components
 type ProviderComponent = {
@@ -27,13 +27,13 @@ const monitoringProviderRegistry = createRegistry<
 >();
 
 // Register the Sentry provider
-monitoringProviderRegistry.register('sentry', async () => {
-  const { SentryProvider } = await import('~/core/monitoring/sentry/components/provider');
+monitoringProviderRegistry.register("sentry", async () => {
+  const { SentryProvider } = await import(
+    "~/core/monitoring/sentry/components/provider"
+  );
 
   return {
-    default: function SentryProviderWrapper({
-      children,
-    }: React.PropsWithChildren) {
+    default({ children }: React.PropsWithChildren) {
       return <SentryProvider>{children}</SentryProvider>;
     },
   };
