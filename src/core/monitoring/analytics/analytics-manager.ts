@@ -40,12 +40,28 @@ export function createAnalyticsManager<T extends string, Config extends object>(
       const service = factory();
       activeServices.set(provider as T, service);
 
-      service.initialize().catch((error) => {
+      initializeService(provider, service);
+    }
+  };
+
+  const initializeService = (
+    provider: string,
+    service: AnalyticsService
+  ): Promise<unknown> => {
+    try {
+      return Promise.resolve(service.initialize()).catch((error) => {
         console.error(
           `Failed to initialize analytics provider '${provider}':`,
           error
         );
       });
+    } catch (error) {
+      console.error(
+        `Failed to initialize analytics provider '${provider}':`,
+        error
+      );
+
+      return Promise.resolve();
     }
   };
 
@@ -66,7 +82,7 @@ export function createAnalyticsManager<T extends string, Config extends object>(
       const service = factory(config);
       activeServices.set(provider, service);
 
-      return service.initialize();
+      return initializeService(provider, service);
     },
 
     removeProvider: (provider: T) => {

@@ -6,10 +6,8 @@ import { If } from "~/components/makerkit/if";
 import { Trans } from "~/components/makerkit/trans";
 import { Separator } from "~/components/ui/separator";
 import type { Provider } from "~/core/database/supabase/supabase-types";
-import { isBrowser } from "~/shared/utils";
 
 import { LastAuthMethodHint } from "./last-auth-method-hint";
-import { MagicLinkAuthContainer } from "./magic-link-auth-container";
 import { OauthProviders } from "./oauth-providers";
 import { PasswordSignInContainer } from "./password-sign-in-container";
 
@@ -22,17 +20,12 @@ export function SignInMethodsContainer(props: {
 
   providers: {
     password: boolean;
-    magicLink: boolean;
     oAuth: Provider[];
   };
 
   captchaSiteKey?: string;
 }) {
   const router = useRouter();
-
-  const redirectUrl = isBrowser()
-    ? new URL(props.paths.callback, window?.location.origin).toString()
-    : "";
 
   const onSignIn = useCallback(() => {
     const returnPath = props.paths.returnPath || "/home";
@@ -48,14 +41,6 @@ export function SignInMethodsContainer(props: {
         <PasswordSignInContainer
           captchaSiteKey={props.captchaSiteKey}
           onSignIn={onSignIn}
-        />
-      </If>
-
-      <If condition={props.providers.magicLink}>
-        <MagicLinkAuthContainer
-          captchaSiteKey={props.captchaSiteKey}
-          redirectUrl={redirectUrl}
-          shouldCreateUser={false}
         />
       </If>
 

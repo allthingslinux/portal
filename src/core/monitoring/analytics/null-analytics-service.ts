@@ -3,7 +3,7 @@ import type { AnalyticsService } from "./types";
 const noop = (event: string) => {
   // do nothing - this is to prevent errors when the analytics service is not initialized
 
-  return (...args: unknown[]) => {
+  return async (...args: unknown[]) => {
     console.debug(
       `Noop analytics service called with event: ${event}`,
       ...args.filter(Boolean)

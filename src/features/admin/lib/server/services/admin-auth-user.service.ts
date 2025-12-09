@@ -45,12 +45,12 @@ class AdminAuthUserService {
   }
 
   /**
-   * Impersonate a user by generating a magic link and returning the access and refresh tokens.
+   * Impersonate a user (not implemented). Requires dedicated auth provider support.
    * @param userId
    * @deprecated Needs reimplementation
    */
   async impersonateUser(_userId: string) {
-    // TODO: Implement using Supabase Auth REST API or NextAuth
+    // TODO: Implement using Supabase Auth REST API
     throw new Error("impersonateUser needs to be reimplemented");
   }
 

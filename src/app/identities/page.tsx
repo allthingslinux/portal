@@ -128,9 +128,8 @@ async function fetchData(props: IdentitiesPageProps) {
   // Available auth methods to add
   const showPasswordOption = authConfig.providers.password;
 
-  // Show email option if password or magic link is enabled
-  const showEmailOption =
-    authConfig.providers.password || authConfig.providers.magicLink;
+  // Show email option if password sign-in is enabled
+  const showEmailOption = authConfig.providers.password;
 
   const oAuthProviders = authConfig.providers.oAuth;
   const enableIdentityLinking = authConfig.enableIdentityLinking;

@@ -7,7 +7,6 @@ import type { Provider } from "~/core/database/supabase/supabase-types";
 import { isBrowser } from "~/shared/utils";
 
 import { ExistingAccountHint } from "./existing-account-hint";
-import { MagicLinkAuthContainer } from "./magic-link-auth-container";
 import { OauthProviders } from "./oauth-providers";
 import { EmailPasswordSignUpContainer } from "./password-sign-up-container";
 
@@ -19,7 +18,6 @@ export function SignUpMethodsContainer(props: {
 
   providers: {
     password: boolean;
-    magicLink: boolean;
     oAuth: Provider[];
   };
 
@@ -40,16 +38,6 @@ export function SignUpMethodsContainer(props: {
           defaultValues={defaultValues}
           displayTermsCheckbox={props.displayTermsCheckbox}
           emailRedirectTo={redirectUrl}
-        />
-      </If>
-
-      <If condition={props.providers.magicLink}>
-        <MagicLinkAuthContainer
-          captchaSiteKey={props.captchaSiteKey}
-          defaultValues={defaultValues}
-          displayTermsCheckbox={props.displayTermsCheckbox}
-          redirectUrl={redirectUrl}
-          shouldCreateUser={true}
         />
       </If>
 

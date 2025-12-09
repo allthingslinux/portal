@@ -60,7 +60,6 @@ export type VerifyOtpParams = {
     | "email"
     | "phone"
     | "sms"
-    | "magiclink"
     | "recovery"
     | "invite"
     | "signup";

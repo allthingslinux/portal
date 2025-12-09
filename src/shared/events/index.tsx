@@ -7,7 +7,7 @@ type EmptyPayload = NonNullable<unknown>;
 // Base event types
 export type BaseAppEventTypes = {
   "user.signedIn": { userId: string };
-  "user.signedUp": { method: `magiclink` | `password` };
+  "user.signedUp": { method: "password" | "oauth" };
   "user.updated": EmptyPayload;
 
   // Add more base event types here
