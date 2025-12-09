@@ -1,7 +1,7 @@
-import { Slot } from 'radix-ui';
+import { Slot } from "radix-ui";
 
-import { cn } from '~/components/lib/utils';
-import { GradientSecondaryText } from './gradient-secondary-text';
+import { cn } from "~/components/lib/utils";
+import { GradientSecondaryText } from "./gradient-secondary-text";
 
 export const Pill: React.FC<
   React.HTMLAttributes<HTMLHeadingElement> & {
@@ -9,20 +9,20 @@ export const Pill: React.FC<
     asChild?: boolean;
   }
 > = function PillComponent({ className, asChild, ...props }) {
-  const Comp = asChild ? Slot.Root : 'h3';
+  const Comp = asChild ? Slot.Root : "h3";
 
   return (
     <Comp
       className={cn(
-        'bg-muted/50 flex min-h-10 items-center gap-x-1.5 rounded-full border px-2 py-1 text-center text-sm font-medium text-transparent',
-        className,
+        "flex min-h-10 items-center gap-x-1.5 rounded-full border bg-muted/50 px-2 py-1 text-center font-medium text-sm text-transparent",
+        className
       )}
       {...props}
     >
       {props.label && (
         <span
           className={
-            'text-primary-foreground bg-primary rounded-2xl border px-1.5 py-0.5 text-xs font-bold tracking-tight'
+            "rounded-2xl border bg-primary px-1.5 py-0.5 font-bold text-primary-foreground text-xs tracking-tight"
           }
         >
           {props.label}
@@ -30,7 +30,7 @@ export const Pill: React.FC<
       )}
       <Slot.Slottable>
         <GradientSecondaryText
-          className={'flex items-center gap-x-2 font-semibold tracking-tight'}
+          className={"flex items-center gap-x-2 font-semibold tracking-tight"}
         >
           {props.children}
         </GradientSecondaryText>
@@ -44,13 +44,13 @@ export const PillActionButton: React.FC<
     asChild?: boolean;
   }
 > = ({ asChild, ...props }) => {
-  const Comp = asChild ? Slot.Root : 'button';
+  const Comp = asChild ? Slot.Root : "button";
 
   return (
     <Comp
       {...props}
       className={
-        'text-secondary-foreground bg-input active:bg-primary active:text-primary-foreground hover:ring-muted-foreground/50 rounded-full px-1.5 py-1.5 text-center text-sm font-medium ring ring-transparent transition-colors'
+        "rounded-full bg-input px-1.5 py-1.5 text-center font-medium text-secondary-foreground text-sm ring ring-transparent transition-colors hover:ring-muted-foreground/50 active:bg-primary active:text-primary-foreground"
       }
     >
       {props.children}

@@ -1,5 +1,5 @@
-import { useState, useTransition } from 'react';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { useState, useTransition } from "react";
 
 /**
  * Hook for handling async actions with error and pending states.
@@ -25,9 +25,9 @@ export function useActionWithError<TResult = void>() {
     options?: {
       onSuccess?: (result: TResult) => void;
       onError?: (error: unknown) => void;
-    },
-  ): Promise<TResult | undefined> => {
-    return new Promise((resolve) => {
+    }
+  ): Promise<TResult | undefined> =>
+    new Promise((resolve) => {
       startTransition(async () => {
         try {
           setError(false);
@@ -43,7 +43,6 @@ export function useActionWithError<TResult = void>() {
         }
       });
     });
-  };
 
   const resetError = () => setError(false);
 
@@ -54,4 +53,3 @@ export function useActionWithError<TResult = void>() {
     resetError,
   };
 }
-

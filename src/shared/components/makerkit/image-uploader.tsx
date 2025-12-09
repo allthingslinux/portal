@@ -1,19 +1,18 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from 'react';
+import { Image as ImageIcon } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
 
-import { Image as ImageIcon } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-
-import { Button } from '~/components/ui/button';
-import { ImageUploadInput } from './image-upload-input';
-import { Trans } from './trans';
+import { Button } from "~/components/ui/button";
+import { ImageUploadInput } from "./image-upload-input";
+import { Trans } from "./trans";
 
 export function ImageUploader(
   props: React.PropsWithChildren<{
     value: string | null | undefined;
     onValueChange: (value: File | null) => unknown;
-  }>,
+  }>
 ) {
   const [image, setImage] = useState(props.value);
 
@@ -23,25 +22,26 @@ export function ImageUploader(
     defaultValues: {
       value: props.value,
     },
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
-  const control = register('value');
+  const control = register("value");
+  const inputId = "image-uploader-input";
 
   const onClear = useCallback(() => {
     props.onValueChange(null);
-    setValue('value', null);
-    setImage('');
+    setValue("value", null);
+    setImage("");
   }, [props, setValue]);
 
   const onValueChange = useCallback(
-    ({ image, file }: { image: string; file: File }) => {
+    ({ image: nextImage, file }: { image: string; file: File }) => {
       props.onValueChange(file);
 
-      setImage(image);
+      setImage(nextImage);
     },
-    [props],
+    [props]
   );
 
   if (props.value !== image) {
@@ -50,49 +50,54 @@ export function ImageUploader(
 
   if (!image) {
     return (
-      <FallbackImage descriptionSection={props.children}>
+      <FallbackImage descriptionSection={props.children} inputId={inputId}>
         <ImageUploadInput
           {...control}
-          accept={'image/*'}
-          className={'absolute h-full w-full'}
-          visible={false}
+          accept={"image/*"}
+          className={"absolute h-full w-full"}
+          id={inputId}
           multiple={false}
           onValueChange={onValueChange}
+          visible={false}
         />
       </FallbackImage>
     );
   }
 
   return (
-    <div className={'flex items-center space-x-4'}>
+    <div className={"flex items-center space-x-4"}>
       <label
         className={
-          'animate-in fade-in zoom-in-50 group/label relative h-20 w-20 cursor-pointer'
+          "fade-in zoom-in-50 group/label relative h-20 w-20 animate-in cursor-pointer"
         }
+        htmlFor={inputId}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* biome-ignore lint/performance/noImgElement: local blob preview */}
         <img
-          decoding="async"
+          alt={""}
           className={
-            'h-20 w-20 rounded-full object-cover transition-all duration-300 group-hover/label:opacity-80'
+            "h-20 w-20 rounded-full object-cover transition-all duration-300 group-hover/label:opacity-80"
           }
+          decoding="async"
+          height={80}
           src={image}
-          alt={''}
+          width={80}
         />
 
         <ImageUploadInput
           {...control}
-          accept={'image/*'}
-          className={'absolute h-full w-full'}
-          visible={false}
+          accept={"image/*"}
+          className={"absolute h-full w-full"}
+          id={inputId}
           multiple={false}
           onValueChange={onValueChange}
+          visible={false}
         />
       </label>
 
       <div>
-        <Button onClick={onClear} size={'sm'} variant={'ghost'}>
-          <Trans i18nKey={'common:clear'} />
+        <Button onClick={onClear} size={"sm"} variant={"ghost"}>
+          <Trans i18nKey={"common:clear"} />
         </Button>
       </div>
     </div>
@@ -102,16 +107,18 @@ export function ImageUploader(
 function FallbackImage(
   props: React.PropsWithChildren<{
     descriptionSection?: React.ReactNode;
-  }>,
+    inputId: string;
+  }>
 ) {
   return (
-    <div className={'flex items-center space-x-4'}>
+    <div className={"flex items-center space-x-4"}>
       <label
         className={
-          'border-border animate-in fade-in zoom-in-50 hover:border-primary relative flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-full border'
+          "fade-in zoom-in-50 relative flex h-20 w-20 animate-in cursor-pointer flex-col items-center justify-center rounded-full border border-border hover:border-primary"
         }
+        htmlFor={props.inputId}
       >
-        <ImageIcon className={'text-primary h-8'} />
+        <ImageIcon className={"h-8 text-primary"} />
 
         {props.children}
       </label>

@@ -1,7 +1,7 @@
-import React from 'react';
+import type React from "react";
 
-import { cn } from '~/components/lib/utils';
-import { CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import { cn } from "~/components/lib/utils";
+import { CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 
 interface FeatureCardProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
@@ -13,16 +13,14 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
   label,
   description,
   ...props
-}) => {
-  return (
-    <div className={cn('bg-muted/50 rounded', className)} {...props}>
-      <CardHeader className="p-4">
-        <CardTitle className="text-lg font-medium">{label}</CardTitle>
+}) => (
+  <div className={cn("rounded bg-muted/50", className)} {...props}>
+    <CardHeader className="p-4">
+      <CardTitle className="font-medium text-lg">{label}</CardTitle>
 
-        <CardDescription className="text-muted-foreground max-w-xs text-sm font-normal">
-          {description}
-        </CardDescription>
-      </CardHeader>
-    </div>
-  );
-};
+      <CardDescription className="max-w-xs font-normal text-muted-foreground text-sm">
+        {description}
+      </CardDescription>
+    </CardHeader>
+  </div>
+);

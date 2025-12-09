@@ -1,8 +1,7 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
-
-import type { Context } from 'react';
+import type { Context } from "react";
+import { useContext } from "react";
 
 /**
  * Generic hook to access workspace context data.
@@ -15,7 +14,7 @@ import type { Context } from 'react';
  */
 export function useWorkspaceContext<T>(
   context: Context<T | null>,
-  errorMessage: string,
+  errorMessage: string
 ): T {
   const ctx = useContext(context);
 
@@ -25,4 +24,3 @@ export function useWorkspaceContext<T>(
 
   return ctx;
 }
-

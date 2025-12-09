@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
-import { cn } from '~/components/lib/utils';
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
-import { Heading } from '~/components/ui/heading';
-import { Spinner } from '../spinner';
-import { NewsletterSignup } from './newsletter-signup';
+import { cn } from "~/components/lib/utils";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Heading } from "~/components/ui/heading";
+import { Spinner } from "../spinner";
+import { NewsletterSignup } from "./newsletter-signup";
 
 interface NewsletterSignupContainerProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -19,36 +19,36 @@ interface NewsletterSignupContainerProps
 
 export function NewsletterSignupContainer({
   onSignup,
-  heading = 'Subscribe to our newsletter',
-  description = 'Get the latest updates and offers directly to your inbox.',
-  successMessage = 'Thank you for subscribing!',
-  errorMessage = 'An error occurred. Please try again.',
+  heading = "Subscribe to our newsletter",
+  description = "Get the latest updates and offers directly to your inbox.",
+  successMessage = "Thank you for subscribing!",
+  errorMessage = "An error occurred. Please try again.",
   className,
   ...props
 }: NewsletterSignupContainerProps) {
   const [status, setStatus] = useState<
-    'idle' | 'loading' | 'success' | 'error'
-  >('idle');
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const handleSubmit = useCallback(
     async (data: { email: string }) => {
-      setStatus('loading');
+      setStatus("loading");
 
       try {
         await onSignup(data.email);
 
-        setStatus('success');
+        setStatus("success");
       } catch (error) {
-        console.error('Newsletter signup error:', error);
-        setStatus('error');
+        console.error("Newsletter signup error:", error);
+        setStatus("error");
       }
     },
-    [onSignup],
+    [onSignup]
   );
 
   return (
     <div
-      className={cn('flex flex-col items-center space-y-4', className)}
+      className={cn("flex flex-col items-center space-y-4", className)}
       {...props}
     >
       <div className="text-center">
@@ -56,15 +56,15 @@ export function NewsletterSignupContainer({
         <p className="text-muted-foreground">{description}</p>
       </div>
 
-      {status === 'idle' && <NewsletterSignup onSignup={handleSubmit} />}
+      {status === "idle" && <NewsletterSignup onSignup={handleSubmit} />}
 
-      {status === 'loading' && (
+      {status === "loading" && (
         <div className="flex justify-center">
           <Spinner className="h-8 w-8" />
         </div>
       )}
 
-      {status === 'success' && (
+      {status === "success" && (
         <div>
           <Alert variant="success">
             <AlertTitle>Success!</AlertTitle>
@@ -73,7 +73,7 @@ export function NewsletterSignupContainer({
         </div>
       )}
 
-      {status === 'error' && (
+      {status === "error" && (
         <div>
           <Alert variant="destructive">
             <AlertTitle>Error</AlertTitle>

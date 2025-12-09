@@ -1,6 +1,6 @@
-import { useSupabaseUpload } from '../hooks/use-supabase-upload';
-import { cn } from '../lib/utils';
-import { Dropzone, DropzoneContent, DropzoneEmptyState } from './dropzone';
+import { useSupabaseUpload } from "../hooks/use-supabase-upload";
+import { cn } from "../lib/utils";
+import { Dropzone, DropzoneContent, DropzoneEmptyState } from "./dropzone";
 
 export const FileUploader = (props: {
   className?: string;

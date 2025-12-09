@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-
-import { useQuery } from '@tanstack/react-query';
-import { RocketIcon } from 'lucide-react';
+import { useQuery } from "@tanstack/react-query";
+import { RocketIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import {
   AlertDialog,
@@ -12,9 +11,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '~/components/ui/alert-dialog';
-import { Button } from '~/components/ui/button';
-import { Trans } from './trans';
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
+import { Trans } from "./trans";
 
 /**
  * Current version of the app that is running
@@ -46,11 +45,11 @@ export function VersionUpdater(props: { intervalTimeInSecond?: number }) {
   }, [data?.didChange, dismissed]);
 
   return (
-    <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+    <AlertDialog onOpenChange={setShowDialog} open={showDialog}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className={'flex items-center gap-x-2'}>
-            <RocketIcon className={'h-4'} />
+          <AlertDialogTitle className={"flex items-center gap-x-2"}>
+            <RocketIcon className={"h-4"} />
             <span>
               <Trans i18nKey="common:newVersionAvailable" />
             </span>
@@ -63,11 +62,11 @@ export function VersionUpdater(props: { intervalTimeInSecond?: number }) {
 
         <AlertDialogFooter>
           <Button
-            variant={'outline'}
             onClick={() => {
               setShowDialog(false);
               setDismissed(true);
             }}
+            variant={"outline"}
           >
             <Trans i18nKey="common:back" />
           </Button>
@@ -92,14 +91,14 @@ function useVersionUpdater(props: { intervalTimeInSecond?: number } = {}) {
   const staleTime = refetchInterval / 2;
 
   return useQuery({
-    queryKey: ['version-updater'],
+    queryKey: ["version-updater"],
     staleTime,
     gcTime: refetchInterval,
     refetchIntervalInBackground: true,
     refetchInterval,
     initialData: null,
     queryFn: async () => {
-      const response = await fetch('/version');
+      const response = await fetch("/version");
       const currentVersion = await response.text();
       const oldVersion = version;
 

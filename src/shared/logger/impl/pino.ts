@@ -1,4 +1,4 @@
-import pino from 'pino';
+import pino from "pino";
 
 /**
  * @name Logger
@@ -8,11 +8,11 @@ const Logger = pino({
   browser: {
     asObject: true,
   },
-  level: 'debug',
+  level: "debug",
   base: {
     env: process.env.NODE_ENV,
   },
-  errorKey: 'error',
+  errorKey: "error",
 });
 
 export { Logger };

@@ -6,10 +6,10 @@ export type ImplementationFactory<T> = () => T | Promise<T>;
 /**
  * Public API types with improved get method
  */
-export interface Registry<T, Names extends string> {
+export type Registry<T, Names extends string> = {
   register: (
     name: Names,
-    factory: ImplementationFactory<T>,
+    factory: ImplementationFactory<T>
   ) => Registry<T, Names>;
 
   // Overloaded get method that infers return types based on input.
@@ -23,9 +23,9 @@ export interface Registry<T, Names extends string> {
   setup: (group?: string) => Promise<void>;
   addSetup: (
     group: string,
-    callback: () => Promise<void>,
+    callback: () => Promise<void>
   ) => Registry<T, Names>;
-}
+};
 
 /**
  * @name createRegistry
@@ -51,21 +51,19 @@ export function createRegistry<T, Names extends string = string>(): Registry<
       await registry.setup();
 
       if (names.length === 1) {
-        return await getImplementation(names[0]!);
+        const [singleName] = names;
+        return singleName ? await getImplementation(singleName) : undefined;
       }
 
       return await Promise.all(names.map((name) => getImplementation(name)));
-    }) as Registry<T, Names>['get'],
+    }) as Registry<T, Names>["get"],
 
     async setup(group?: string) {
       if (group) {
         if (!setupPromises.has(group)) {
           const callbacks = setupCallbacks.get(group) ?? [];
 
-          setupPromises.set(
-            group,
-            Promise.all(callbacks.map((cb) => cb())).then(() => void 0),
-          );
+          setupPromises.set(group, Promise.all(callbacks.map((cb) => cb())));
         }
 
         return setupPromises.get(group);
@@ -73,7 +71,7 @@ export function createRegistry<T, Names extends string = string>(): Registry<
 
       const groups = Array.from(setupCallbacks.keys());
 
-      await Promise.all(groups.map((group) => registry.setup(group)));
+      await Promise.all(groups.map((setupGroup) => registry.setup(setupGroup)));
     },
 
     addSetup(group, callback) {
@@ -81,7 +79,10 @@ export function createRegistry<T, Names extends string = string>(): Registry<
         setupCallbacks.set(group, []);
       }
 
-      setupCallbacks.get(group)!.push(callback);
+      const callbacks = setupCallbacks.get(group);
+      if (callbacks) {
+        callbacks.push(callback);
+      }
       return registry;
     },
   };

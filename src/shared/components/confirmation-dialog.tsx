@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { If } from "~/components/makerkit/if";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -18,8 +17,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '~/components/ui/alert-dialog';
-import { Button, type ButtonProps } from '~/components/ui/button';
+} from "~/components/ui/alert-dialog";
+import { Button, type ButtonProps } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -28,9 +27,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '~/components/ui/form';
-import { If } from '~/components/makerkit/if';
-import { Input } from '~/components/ui/input';
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
 
 /**
  * Schema for confirmation field - validates that user typed the confirmation text
@@ -41,7 +39,10 @@ function createConfirmationSchema(confirmationText: string) {
   });
 }
 
-interface ConfirmationDialogProps<TData extends Record<string, unknown>, TResult = void> {
+type ConfirmationDialogProps<
+  TData extends Record<string, unknown>,
+  TResult = void,
+> = {
   /** Trigger element (usually a button) */
   children: React.ReactNode;
   /** Dialog title */
@@ -65,7 +66,7 @@ interface ConfirmationDialogProps<TData extends Record<string, unknown>, TResult
   /** Button text when pending */
   pendingText?: string;
   /** Button variant */
-  buttonVariant?: ButtonProps['variant'];
+  buttonVariant?: ButtonProps["variant"];
   /** Error message to display */
   errorMessage?: string;
   /** Test ID for the form */
@@ -74,25 +75,28 @@ interface ConfirmationDialogProps<TData extends Record<string, unknown>, TResult
   onError?: (error: unknown) => void;
   /** Custom success handler with result */
   onSuccess?: (result: TResult) => void;
-}
+};
 
 /**
  * Shared confirmation dialog component for admin actions.
  * Handles confirmation input, error states, and form submission.
  */
-export function ConfirmationDialog<TData extends Record<string, unknown>, TResult = void>({
+export function ConfirmationDialog<
+  TData extends Record<string, unknown>,
+  TResult = void,
+>({
   children,
   title,
   description,
   onConfirm,
   schema,
   defaultValues,
-  confirmationText = 'CONFIRM',
+  confirmationText = "CONFIRM",
   confirmationLabel,
   confirmationDescription,
   buttonText,
   pendingText,
-  buttonVariant = 'destructive',
+  buttonVariant = "destructive",
   errorMessage,
   testId,
   onError,
@@ -109,7 +113,7 @@ export function ConfirmationDialog<TData extends Record<string, unknown>, TResul
   const form = useForm({
     resolver: zodResolver(finalSchema),
     defaultValues: {
-      confirmation: '',
+      confirmation: "",
       ...defaultValues,
     } as TData & { confirmation: string },
   });
@@ -135,7 +139,7 @@ export function ConfirmationDialog<TData extends Record<string, unknown>, TResul
     </>
   );
 
-  const defaultConfirmationDescription = 'Are you sure you want to do this?';
+  const defaultConfirmationDescription = "Are you sure you want to do this?";
 
   return (
     <AlertDialog>
@@ -149,22 +153,22 @@ export function ConfirmationDialog<TData extends Record<string, unknown>, TResul
 
         <Form {...form}>
           <form
+            className={"flex flex-col space-y-8"}
             data-test={testId}
-            className={'flex flex-col space-y-8'}
             onSubmit={form.handleSubmit(handleSubmit)}
           >
             <If condition={error}>
-              <Alert variant={'destructive'}>
+              <Alert variant={"destructive"}>
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>
                   {errorMessage ||
-                    'There was an error. Please check the server logs to see what went wrong.'}
+                    "There was an error. Please check the server logs to see what went wrong."}
                 </AlertDescription>
               </Alert>
             </If>
 
             <FormField
-              name={'confirmation'}
+              name={"confirmation"}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -173,9 +177,9 @@ export function ConfirmationDialog<TData extends Record<string, unknown>, TResul
 
                   <FormControl>
                     <Input
-                      required
                       pattern={confirmationText}
                       placeholder={`Type ${confirmationText} to confirm`}
+                      required
                       {...field}
                     />
                   </FormControl>
@@ -194,7 +198,7 @@ export function ConfirmationDialog<TData extends Record<string, unknown>, TResul
 
               <Button
                 disabled={pending}
-                type={'submit'}
+                type={"submit"}
                 variant={buttonVariant}
               >
                 {pending ? pendingText || `${buttonText}...` : buttonText}
@@ -206,4 +210,3 @@ export function ConfirmationDialog<TData extends Record<string, unknown>, TResul
     </AlertDialog>
   );
 }
-

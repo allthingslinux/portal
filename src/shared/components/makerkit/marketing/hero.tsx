@@ -1,9 +1,9 @@
-import React from 'react';
+import type React from "react";
 
-import { cn } from '~/components/lib/utils';
-import { HeroTitle } from './hero-title';
+import { cn } from "~/components/lib/utils";
+import { HeroTitle } from "./hero-title";
 
-interface HeroProps {
+type HeroProps = {
   pill?: React.ReactNode;
   title: React.ReactNode;
   subtitle?: React.ReactNode;
@@ -11,7 +11,7 @@ interface HeroProps {
   image?: React.ReactNode;
   className?: string;
   animate?: boolean;
-}
+};
 
 export function Hero({
   pill,
@@ -23,23 +23,23 @@ export function Hero({
   animate = true,
 }: HeroProps) {
   return (
-    <div className={cn('mx-auto flex flex-col space-y-14', className)}>
+    <div className={cn("mx-auto flex flex-col space-y-14", className)}>
       <div
-        style={{
-          MozAnimationDuration: '100ms',
-        }}
         className={cn(
-          'mx-auto flex flex-1 flex-col items-center justify-center duration-800 md:flex-row',
+          "mx-auto flex flex-1 flex-col items-center justify-center duration-800 md:flex-row",
           {
-            ['animate-in fade-in zoom-in-90 slide-in-from-top-24']: animate,
-          },
+            "fade-in zoom-in-90 slide-in-from-top-24 animate-in": animate,
+          }
         )}
+        style={{
+          MozAnimationDuration: "100ms",
+        }}
       >
         <div className="flex w-full flex-1 flex-col items-center gap-y-6 xl:gap-y-8">
           {pill && (
             <div
               className={cn({
-                ['animate-in fade-in fill-mode-both delay-300 duration-700']:
+                "fade-in animate-in fill-mode-both delay-300 duration-700":
                   animate,
               })}
             >
@@ -52,7 +52,7 @@ export function Hero({
 
             {subtitle && (
               <div className="flex max-w-3xl">
-                <h3 className="text-secondary-foreground/70 p-0 text-center font-sans text-xl font-medium tracking-tight">
+                <h3 className="p-0 text-center font-medium font-sans text-secondary-foreground/70 text-xl tracking-tight">
                   {subtitle}
                 </h3>
               </div>
@@ -62,7 +62,7 @@ export function Hero({
           {cta && (
             <div
               className={cn({
-                ['animate-in fade-in fill-mode-both delay-500 duration-1000']:
+                "fade-in animate-in fill-mode-both delay-500 duration-1000":
                   animate,
               })}
             >
@@ -74,13 +74,13 @@ export function Hero({
 
       {image && (
         <div
-          style={{
-            MozAnimationDuration: '100ms',
-          }}
-          className={cn('container mx-auto flex justify-center py-8', {
-            ['animate-in fade-in zoom-in-90 slide-in-from-top-32 fill-mode-both delay-600 duration-1000']:
+          className={cn("container mx-auto flex justify-center py-8", {
+            "fade-in zoom-in-90 slide-in-from-top-32 animate-in fill-mode-both delay-600 duration-1000":
               animate,
           })}
+          style={{
+            MozAnimationDuration: "100ms",
+          }}
         >
           {image}
         </div>

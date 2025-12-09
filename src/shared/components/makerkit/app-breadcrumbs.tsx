@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
-import { Fragment } from 'react';
-
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Fragment } from "react";
 
 import {
   Breadcrumb,
@@ -12,18 +11,18 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from '~/components/ui/breadcrumb';
-import { If } from './if';
-import { Trans } from './trans';
+} from "~/components/ui/breadcrumb";
+import { If } from "./if";
+import { Trans } from "./trans";
 
-const unslugify = (slug: string) => slug.replace(/-/g, ' ');
+const unslugify = (slug: string) => slug.replace(/-/g, " ");
 
 export function AppBreadcrumbs(props: {
   values?: Record<string, string>;
   maxDepth?: number;
 }) {
   const pathName = usePathname();
-  const splitPath = pathName.split('/').filter(Boolean);
+  const splitPath = pathName.split("/").filter(Boolean);
   const values = props.values ?? {};
   const maxDepth = props.maxDepth ?? 6;
 
@@ -48,14 +47,14 @@ export function AppBreadcrumbs(props: {
               values[path]
             ) : (
               <Trans
-                i18nKey={`common:routes.${unslugify(path)}`}
                 defaults={unslugify(path)}
+                i18nKey={`common:routes.${unslugify(path)}`}
               />
             );
 
           return (
-            <Fragment key={index}>
-              <BreadcrumbItem className={'capitalize lg:text-xs'}>
+            <Fragment key={path}>
+              <BreadcrumbItem className={"capitalize lg:text-xs"}>
                 <If
                   condition={index < visiblePaths.length - 1}
                   fallback={label}
@@ -63,10 +62,10 @@ export function AppBreadcrumbs(props: {
                   <BreadcrumbLink asChild>
                     <Link
                       href={
-                        '/' +
+                        "/" +
                         splitPath
                           .slice(0, splitPath.indexOf(path) + 1)
-                          .join('/')
+                          .join("/")
                       }
                     >
                       {label}

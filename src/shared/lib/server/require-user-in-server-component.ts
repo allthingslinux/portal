@@ -1,10 +1,9 @@
-import 'server-only';
+import "server-only";
 
-import { cache } from 'react';
+import { redirect } from "next/navigation";
+import { cache } from "react";
 
-import { redirect } from 'next/navigation';
-
-import { requireUser } from '~/core/database/supabase/require-user';
+import { requireUser } from "~/core/database/supabase/require-user";
 
 /**
  * @name requireUserInServerComponent

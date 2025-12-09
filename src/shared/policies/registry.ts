@@ -1,23 +1,21 @@
-import { createRegistry } from '~/shared/registry';
+import { createRegistry } from "~/shared/registry";
 
-import type { FeaturePolicyDefinition } from './declarative';
-import type { PolicyContext } from './types';
+import type { FeaturePolicyDefinition } from "./declarative";
+import type { PolicyContext } from "./types";
 
 /**
  * Simple policy registry interface
  */
-export interface PolicyRegistry {
+export type PolicyRegistry = {
   /** Register a single policy definition */
   registerPolicy<
     TContext extends PolicyContext = PolicyContext,
     TConfig = unknown,
-  >(
-    definition: FeaturePolicyDefinition<TContext, TConfig>,
-  ): PolicyRegistry;
+  >(definition: FeaturePolicyDefinition<TContext, TConfig>): PolicyRegistry;
 
   /** Get a policy definition by ID */
   getPolicy<TContext extends PolicyContext = PolicyContext, TConfig = unknown>(
-    id: string,
+    id: string
   ): Promise<FeaturePolicyDefinition<TContext, TConfig>>;
 
   /** Check if a policy exists */
@@ -25,7 +23,7 @@ export interface PolicyRegistry {
 
   /** List all registered policy IDs */
   listPolicies(): string[];
-}
+};
 
 /**
  * Creates a new policy registry instance
@@ -46,7 +44,7 @@ export function createPolicyRegistry(): PolicyRegistry {
       // Check for duplicates
       if (policyIds.has(definition.id)) {
         throw new Error(
-          `Policy with ID "${definition.id}" is already registered`,
+          `Policy with ID "${definition.id}" is already registered`
         );
       }
 

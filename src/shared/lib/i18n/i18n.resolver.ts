@@ -1,4 +1,4 @@
-import { getLogger } from '~/shared/logger';
+import { getLogger } from "~/shared/logger";
 
 /**
  * @name i18nResolver
@@ -16,7 +16,7 @@ export async function i18nResolver(language: string, namespace: string) {
     );
 
     logger.debug(
-      `Successfully loaded translation file: ${language}/${namespace}.json`,
+      `Successfully loaded translation file: ${language}/${namespace}.json`
     );
     return data as Record<string, string>;
   } catch (error) {
@@ -26,10 +26,10 @@ export async function i18nResolver(language: string, namespace: string) {
         language,
         namespace,
       },
-      `Failed to load translation file: ${language}/${namespace}`,
+      `Failed to load translation file: ${language}/${namespace}`
     );
     logger.warn(
-      `Please create a translation file for this language at "public/locales/${language}/${namespace}.json"`,
+      `Please create a translation file for this language at "public/locales/${language}/${namespace}.json"`
     );
 
     // return an empty object if the file could not be loaded to avoid loops

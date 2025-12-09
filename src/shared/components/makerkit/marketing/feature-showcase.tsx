@@ -1,6 +1,6 @@
-import React from 'react';
+import type React from "react";
 
-import { cn } from '~/components/lib/utils';
+import { cn } from "~/components/lib/utils";
 
 interface FeatureShowcaseProps extends React.HTMLAttributes<HTMLDivElement> {
   heading: React.ReactNode;
@@ -17,12 +17,12 @@ export const FeatureShowcase: React.FC<FeatureShowcaseProps> =
   }) {
     return (
       <div
-        className={cn('flex flex-col justify-between space-y-8', className)}
+        className={cn("flex flex-col justify-between space-y-8", className)}
         {...props}
       >
         <div className="flex w-full flex-col gap-y-4">
           {icon && <div className="flex">{icon}</div>}
-          <h3 className="text-3xl font-normal tracking-tight xl:text-5xl">
+          <h3 className="font-normal text-3xl tracking-tight xl:text-5xl">
             {heading}
           </h3>
         </div>
@@ -35,14 +35,14 @@ export const FeatureShowcase: React.FC<FeatureShowcaseProps> =
 export function FeatureShowcaseIconContainer(
   props: React.PropsWithChildren<{
     className?: string;
-  }>,
+  }>
 ) {
   return (
-    <div className={'flex'}>
+    <div className={"flex"}>
       <div
         className={cn(
-          'flex items-center justify-center space-x-2.5 font-medium',
-          props.className,
+          "flex items-center justify-center space-x-2.5 font-medium",
+          props.className
         )}
       >
         {props.children}

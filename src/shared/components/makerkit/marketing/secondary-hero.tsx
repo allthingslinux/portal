@@ -1,5 +1,5 @@
-import { cn } from '~/components/lib/utils';
-import { Heading } from '~/components/ui/heading';
+import { cn } from "~/components/lib/utils";
+import { Heading } from "~/components/ui/heading";
 
 interface SecondaryHeroProps extends React.HTMLAttributes<HTMLDivElement> {
   pill?: React.ReactNode;
@@ -19,19 +19,19 @@ export const SecondaryHero: React.FC<SecondaryHeroProps> =
     return (
       <div
         className={cn(
-          'flex flex-col items-center space-y-4 text-center',
-          className,
+          "flex flex-col items-center space-y-4 text-center",
+          className
         )}
         {...props}
       >
         {pill}
 
         <div className="flex flex-col">
-          <Heading level={2} className="tracking-tighter">
+          <Heading className="tracking-tighter" level={2}>
             {heading}
           </Heading>
 
-          <h3 className="text-secondary-foreground/70 text-center font-sans text-xl font-medium tracking-tight">
+          <h3 className="text-center font-medium font-sans text-secondary-foreground/70 text-xl tracking-tight">
             {subheading}
           </h3>
         </div>

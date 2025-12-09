@@ -1,16 +1,5 @@
-'use client';
+"use client";
 
-import { Fragment, useCallback, useMemo, useState } from 'react';
-
-import { useRouter } from 'next/navigation';
-
-import {
-  Cell,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -20,18 +9,25 @@ import type {
   Row,
   SortingState,
   VisibilityState,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
+import {
+  type Cell,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
   ChevronsLeft,
   ChevronsRight,
-} from 'lucide-react';
-
-import { cn } from '../lib/utils';
-import { Button } from '~/components/ui/button';
+  ChevronUp,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Fragment, useCallback, useMemo, useState } from "react";
+import { Button } from "~/components/ui/button";
 import {
   Table,
   TableBody,
@@ -39,24 +35,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '~/components/ui/table';
-import { If } from './if';
-import { Trans } from './trans';
+} from "~/components/ui/table";
+import { cn } from "../lib/utils";
+import { If } from "./if";
+import { Trans } from "./trans";
 
 type DataItem = Record<string, unknown> | object;
 
-export {
+// Re-export types for consumers; direct export avoids noExportedImports
+export type {
+  Cell,
   ColumnDef,
   ColumnFiltersState,
   ColumnPinningState,
   PaginationState,
+  ReactTable,
   Row,
   SortingState,
   VisibilityState,
-  flexRender,
-};
+} from "@tanstack/react-table";
+export { flexRender } from "@tanstack/react-table";
 
-interface ReactTableProps<T extends DataItem> {
+type ReactTableProps<T extends DataItem> = {
   data: T[];
   columns: ColumnDef<T>[];
   renderSubComponent?: (props: { row: Row<T> }) => React.ReactElement;
@@ -91,7 +91,7 @@ interface ReactTableProps<T extends DataItem> {
   noResultsMessage?: React.ReactNode;
   forcePagination?: boolean; // Force pagination to show even when pageCount <= 1
   manualSorting?: boolean; // Default true for server-side sorting, set false for client-side sorting
-}
+};
 
 export function DataTable<RecordData extends DataItem>({
   data,
@@ -122,7 +122,7 @@ export function DataTable<RecordData extends DataItem>({
   manualSorting = true,
 }: ReactTableProps<RecordData>) {
   // TODO: remove when https://github.com/TanStack/table/issues/5567 gets fixed
-  'use no memo';
+  "use no memo";
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: pageIndex ?? 0,
@@ -138,11 +138,11 @@ export function DataTable<RecordData extends DataItem>({
 
   const [internalColumnPinning, setInternalColumnPinning] =
     useState<ColumnPinningState>(
-      controlledColumnPinning ?? { left: [], right: [] },
+      controlledColumnPinning ?? { left: [], right: [] }
     );
 
   const [internalRowSelection, setInternalRowSelection] = useState(
-    controlledRowSelection ?? {},
+    controlledRowSelection ?? {}
   );
 
   // Computed values for table state - computed inline in callbacks for fresh values
@@ -161,30 +161,29 @@ export function DataTable<RecordData extends DataItem>({
     manualSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: (updater) => {
-      if (typeof updater === 'function') {
+      if (typeof updater === "function") {
         const currentVisibility =
           controlledColumnVisibility ?? internalColumnVisibility;
         const nextState = updater(currentVisibility);
 
-        // If controlled mode (callback provided), call it
         if (onColumnVisibilityChange) {
           onColumnVisibilityChange(nextState);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalColumnVisibility(nextState);
+          return;
         }
-      } else {
-        // If controlled mode (callback provided), call it
-        if (onColumnVisibilityChange) {
-          onColumnVisibilityChange(updater);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalColumnVisibility(updater);
-        }
+
+        setInternalColumnVisibility(nextState);
+        return;
       }
+
+      if (onColumnVisibilityChange) {
+        onColumnVisibilityChange(updater);
+        return;
+      }
+
+      setInternalColumnVisibility(updater);
     },
     onColumnPinningChange: (updater) => {
-      if (typeof updater === 'function') {
+      if (typeof updater === "function") {
         const currentPinning = controlledColumnPinning ?? internalColumnPinning;
         const nextState = updater(currentPinning);
 
@@ -195,18 +194,16 @@ export function DataTable<RecordData extends DataItem>({
           // Otherwise update internal state (uncontrolled mode)
           setInternalColumnPinning(nextState);
         }
-      } else {
+      } else if (onColumnPinningChange) {
         // If controlled mode (callback provided), call it
-        if (onColumnPinningChange) {
-          onColumnPinningChange(updater);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalColumnPinning(updater);
-        }
+        onColumnPinningChange(updater);
+      } else {
+        // Otherwise update internal state (uncontrolled mode)
+        setInternalColumnPinning(updater);
       }
     },
     onRowSelectionChange: (updater) => {
-      if (typeof updater === 'function') {
+      if (typeof updater === "function") {
         const currentSelection = controlledRowSelection ?? internalRowSelection;
         const nextState = updater(currentSelection);
 
@@ -217,14 +214,12 @@ export function DataTable<RecordData extends DataItem>({
           // Otherwise update internal state (uncontrolled mode)
           setInternalRowSelection(nextState);
         }
-      } else {
+      } else if (onRowSelectionChange) {
         // If controlled mode (callback provided), call it
-        if (onRowSelectionChange) {
-          onRowSelectionChange(updater);
-        } else {
-          // Otherwise update internal state (uncontrolled mode)
-          setInternalRowSelection(updater);
-        }
+        onRowSelectionChange(updater);
+      } else {
+        // Otherwise update internal state (uncontrolled mode)
+        setInternalRowSelection(updater);
       }
     },
     pageCount,
@@ -237,7 +232,7 @@ export function DataTable<RecordData extends DataItem>({
       rowSelection: controlledRowSelection ?? internalRowSelection,
     },
     onSortingChange: (updater) => {
-      if (typeof updater === 'function') {
+      if (typeof updater === "function") {
         const nextState = updater(sorting);
 
         setSorting(nextState);
@@ -256,7 +251,7 @@ export function DataTable<RecordData extends DataItem>({
     onPaginationChange: (updater) => {
       const navigate = (page: number) => setTimeout(() => navigateToPage(page));
 
-      if (typeof updater === 'function') {
+      if (typeof updater === "function") {
         setPagination((prevState) => {
           const nextState = updater(prevState);
 
@@ -298,16 +293,16 @@ export function DataTable<RecordData extends DataItem>({
         data-testid="data-table"
         {...tableProps}
         className={cn(
-          'bg-background border-collapse border-spacing-0',
+          "border-collapse border-spacing-0 bg-background",
           className,
           {
-            'h-full': data.length === 0,
-          },
+            "h-full": data.length === 0,
+          }
         )}
       >
         <TableHeader
           className={cn(headerClassName, {
-            ['bg-background/20 outline-border sticky top-[0px] z-10 outline backdrop-blur-sm']:
+            "sticky top-[0px] z-10 bg-background/20 outline outline-border backdrop-blur-sm":
               sticky,
           })}
         >
@@ -319,73 +314,73 @@ export function DataTable<RecordData extends DataItem>({
 
                 // Calculate proper left offset for left-pinned columns
                 const left =
-                  isPinned === 'left'
+                  isPinned === "left"
                     ? headerGroup.headers
                         .slice(0, index)
-                        .filter((h) => h.column.getIsPinned() === 'left')
+                        .filter((h) => h.column.getIsPinned() === "left")
                         .reduce((acc, h) => acc + h.column.getSize(), 0)
                     : undefined;
 
                 // Calculate right offset for right-pinned columns
                 const right =
-                  isPinned === 'right'
+                  isPinned === "right"
                     ? headerGroup.headers
                         .slice(index + 1)
-                        .filter((h) => h.column.getIsPinned() === 'right')
+                        .filter((h) => h.column.getIsPinned() === "right")
                         .reduce((acc, h) => acc + h.column.getSize(), 0)
                     : undefined;
 
                 return (
                   <TableHead
                     className={cn(
-                      'text-muted-foreground bg-background/80 border-transparent font-sans font-medium',
+                      "border-transparent bg-background/80 font-medium font-sans text-muted-foreground",
                       {
-                        ['border-r-background border-r']: isPinned === 'left',
-                        ['border-l-background border-l']: isPinned === 'right',
-                        ['sticky top-0 z-10 opacity-95 backdrop-blur-sm']:
+                        "border-r border-r-background": isPinned === "left",
+                        "border-l border-l-background": isPinned === "right",
+                        "sticky top-0 z-10 opacity-95 backdrop-blur-sm":
                           isPinned,
-                        ['relative z-0']: !isPinned,
-                      },
+                        "relative z-0": !isPinned,
+                      }
                     )}
                     colSpan={header.colSpan}
+                    key={header.id}
                     style={{
                       width: `${size}px`,
                       minWidth: `${size}px`,
                       left: left !== undefined ? `${left}px` : undefined,
                       right: right !== undefined ? `${right}px` : undefined,
                     }}
-                    key={header.id}
                   >
                     {header.isPlaceholder ? null : (
                       <div
                         className={cn(
-                          'flex items-center gap-2',
+                          "flex items-center gap-2",
                           header.column.getCanSort()
-                            ? 'hover:bg-accent/50 -mx-3 cursor-pointer rounded px-3 py-1 select-none'
-                            : '',
+                            ? "-mx-3 cursor-pointer select-none rounded px-3 py-1 hover:bg-accent/50"
+                            : ""
                         )}
                       >
                         {flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
 
                         {header.column.getCanSort() && (
                           <div className="flex flex-col">
                             <ChevronUp
                               className={cn(
-                                'h-3 w-3',
-                                header.column.getIsSorted() === 'asc'
-                                  ? 'text-foreground'
-                                  : 'text-muted-foreground/50',
+                                "h-3 w-3",
+                                header.column.getIsSorted() === "asc"
+                                  ? "text-foreground"
+                                  : "text-muted-foreground/50"
                               )}
                             />
                             <ChevronDown
                               className={cn(
-                                '-mt-1 h-3 w-3',
-                                header.column.getIsSorted() === 'desc'
-                                  ? 'text-foreground'
-                                  : 'text-muted-foreground/50',
+                                "-mt-1 h-3 w-3",
+                                header.column.getIsSorted() === "desc"
+                                  ? "text-foreground"
+                                  : "text-muted-foreground/50"
                               )}
                             />
                           </div>
@@ -409,36 +404,36 @@ export function DataTable<RecordData extends DataItem>({
 
               // Calculate proper left offset for left-pinned columns
               const left =
-                isPinned === 'left'
+                isPinned === "left"
                   ? row
                       .getVisibleCells()
                       .slice(0, index)
-                      .filter((c) => c.column.getIsPinned() === 'left')
+                      .filter((c) => c.column.getIsPinned() === "left")
                       .reduce((acc, c) => acc + c.column.getSize(), 0)
                   : undefined;
 
               // Calculate right offset for right-pinned columns
               const right =
-                isPinned === 'right'
+                isPinned === "right"
                   ? row
                       .getVisibleCells()
                       .slice(index + 1)
-                      .filter((c) => c.column.getIsPinned() === 'right')
+                      .filter((c) => c.column.getIsPinned() === "right")
                       .reduce((acc, c) => acc + c.column.getSize(), 0)
                   : undefined;
 
-              const className = cn(
+              const cellClassName = cn(
                 (cell.column.columnDef?.meta as { className?: string })
                   ?.className,
                 [],
-                'border-transparent',
+                "border-transparent",
                 {
-                  ['bg-background/90 border-r-border group-hover/row:bg-muted/50 sticky z-[1] border-r opacity-95 backdrop-blur-sm']:
-                    isPinned === 'left',
-                  ['bg-background/90 border-l-border group-hover/row:bg-muted/50 sticky z-[1] border-l opacity-95 backdrop-blur-sm']:
-                    isPinned === 'right',
-                  ['relative z-0']: !isPinned,
-                },
+                  "sticky z-[1] border-r border-r-border bg-background/90 opacity-95 backdrop-blur-sm group-hover/row:bg-muted/50":
+                    isPinned === "left",
+                  "sticky z-[1] border-l border-l-border bg-background/90 opacity-95 backdrop-blur-sm group-hover/row:bg-muted/50":
+                    isPinned === "right",
+                  "relative z-0": !isPinned,
+                }
               );
 
               const style = {
@@ -450,14 +445,14 @@ export function DataTable<RecordData extends DataItem>({
 
               return renderCell ? (
                 <Fragment key={cell.id}>
-                  {renderCell({ cell, style, className })({})}
+                  {renderCell({ cell, style, className: cellClassName })({})}
                 </Fragment>
               ) : (
                 <TableCell
+                  className={cellClassName}
                   key={cell.id}
-                  style={style}
-                  className={className}
                   onClick={onClick ? () => onClick({ row, cell }) : undefined}
+                  style={style}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
@@ -466,13 +461,13 @@ export function DataTable<RecordData extends DataItem>({
 
             return (
               <RowWrapper
-                key={row.id}
-                className={cn('bg-background/80', {
-                  'hover:bg-accent/60': !row.getIsSelected(),
-                  'active:bg-accent': !!onClick,
-                  'cursor-pointer': !!onClick && !row.getIsSelected(),
+                className={cn("bg-background/80", {
+                  "hover:bg-accent/60": !row.getIsSelected(),
+                  "active:bg-accent": !!onClick,
+                  "cursor-pointer": !!onClick && !row.getIsSelected(),
                 })}
-                data-state={row.getIsSelected() && 'selected'}
+                data-state={row.getIsSelected() && "selected"}
+                key={row.id}
               >
                 {children}
               </RowWrapper>
@@ -482,9 +477,9 @@ export function DataTable<RecordData extends DataItem>({
       </Table>
 
       <If condition={rows.length === 0}>
-        <div className={'flex flex-1 flex-col items-center p-8'}>
-          <span className="text-muted-foreground text-center text-sm">
-            {noResultsMessage || <Trans i18nKey={'common:noData'} />}
+        <div className={"flex flex-1 flex-col items-center p-8"}>
+          <span className="text-center text-muted-foreground text-sm">
+            {noResultsMessage || <Trans i18nKey={"common:noData"} />}
           </span>
         </div>
       </If>
@@ -492,15 +487,15 @@ export function DataTable<RecordData extends DataItem>({
       <If condition={displayPagination}>
         <div
           className={cn(
-            'bg-background/80 sticky bottom-0 z-10 border-t backdrop-blur-sm',
+            "sticky bottom-0 z-10 border-t bg-background/80 backdrop-blur-sm",
             {
-              ['sticky bottom-0 z-10 max-w-full rounded-none']: sticky,
+              "sticky bottom-0 z-10 max-w-full rounded-none": sticky,
             },
-            footerClassName,
+            footerClassName
           )}
         >
           <div>
-            <div className={'px-2.5 py-1.5'}>
+            <div className={"px-2.5 py-1.5"}>
               <Pagination
                 table={table}
                 totalCount={
@@ -533,9 +528,9 @@ function Pagination<T>({
 
   return (
     <div className="flex items-center space-x-4">
-      <span className="text-muted-foreground flex items-center text-xs">
+      <span className="flex items-center text-muted-foreground text-xs">
         <Trans
-          i18nKey={'common:pageOfPages'}
+          i18nKey={"common:pageOfPages"}
           values={{
             page: currentPageIndex + 1,
             total: table.getPageCount(),
@@ -545,52 +540,52 @@ function Pagination<T>({
 
       <div className="flex items-center space-x-1">
         <Button
-          type="button"
-          className={'h-6 w-6'}
-          size={'icon'}
-          variant={'outline'}
+          className={"h-6 w-6"}
+          disabled={!table.getCanPreviousPage()}
           onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
+          size={"icon"}
+          type="button"
+          variant={"outline"}
         >
-          <ChevronsLeft className={'h-4'} />
+          <ChevronsLeft className={"h-4"} />
         </Button>
 
         <Button
-          type="button"
-          className={'h-6 w-6'}
-          size={'icon'}
-          variant={'outline'}
+          className={"h-6 w-6"}
+          disabled={!table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          size={"icon"}
+          type="button"
+          variant={"outline"}
         >
-          <ChevronLeft className={'h-4'} />
+          <ChevronLeft className={"h-4"} />
         </Button>
 
         <Button
-          type="button"
-          className={'h-6 w-6'}
-          size={'icon'}
-          variant={'outline'}
+          className={"h-6 w-6"}
+          disabled={!table.getCanNextPage()}
           onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
+          size={"icon"}
+          type="button"
+          variant={"outline"}
         >
-          <ChevronRight className={'h-4'} />
+          <ChevronRight className={"h-4"} />
         </Button>
 
         <Button
-          type="button"
-          className={'h-6 w-6'}
-          size={'icon'}
-          variant={'outline'}
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          className={"h-6 w-6"}
           disabled={!table.getCanNextPage()}
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          size={"icon"}
+          type="button"
+          variant={"outline"}
         >
-          <ChevronsRight className={'h-4'} />
+          <ChevronsRight className={"h-4"} />
         </Button>
       </div>
 
       <If condition={totalCount && rows.length > 0}>
-        <span className="text-muted-foreground flex items-center text-xs">
+        <span className="flex items-center text-muted-foreground text-xs">
           Showing {startRecord} to {endRecord} of {totalCount} rows
         </span>
       </If>
@@ -603,11 +598,11 @@ function Pagination<T>({
  */
 function useNavigateToNewPage(
   props: { pageParam?: string } = {
-    pageParam: 'page',
-  },
+    pageParam: "page",
+  }
 ) {
   const router = useRouter();
-  const param = props.pageParam ?? 'page';
+  const param = props.pageParam ?? "page";
 
   return useCallback(
     (pageIndex: number) => {
@@ -616,7 +611,7 @@ function useNavigateToNewPage(
 
       router.push(url.pathname + url.search);
     },
-    [param, router],
+    [param, router]
   );
 }
 
@@ -647,11 +642,11 @@ export function useColumnPinning({
   onPinningChange?: (pinning: ColumnPinningState) => void;
 }) {
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(
-    defaultPinning ?? { left: [], right: [] },
+    defaultPinning ?? { left: [], right: [] }
   );
 
   const toggleColumnPin = useCallback(
-    (columnId: string, side?: 'left' | 'right') => {
+    (columnId: string, side?: "left" | "right") => {
       setColumnPinning((prev) => {
         const newPinning = { ...prev };
         const leftColumns = [...(newPinning.left || [])];
@@ -661,13 +656,17 @@ export function useColumnPinning({
         const leftIndex = leftColumns.indexOf(columnId);
         const rightIndex = rightColumns.indexOf(columnId);
 
-        if (leftIndex > -1) leftColumns.splice(leftIndex, 1);
-        if (rightIndex > -1) rightColumns.splice(rightIndex, 1);
+        if (leftIndex > -1) {
+          leftColumns.splice(leftIndex, 1);
+        }
+        if (rightIndex > -1) {
+          rightColumns.splice(rightIndex, 1);
+        }
 
         // Add to the specified side if provided
-        if (side === 'left') {
+        if (side === "left") {
           leftColumns.push(columnId);
-        } else if (side === 'right') {
+        } else if (side === "right") {
           rightColumns.push(columnId);
         }
 
@@ -683,17 +682,21 @@ export function useColumnPinning({
         return updated;
       });
     },
-    [onPinningChange],
+    [onPinningChange]
   );
 
   const isColumnPinned = useCallback(
-    (columnId: string): 'left' | 'right' | false => {
-      if (columnPinning.left?.includes(columnId)) return 'left';
-      if (columnPinning.right?.includes(columnId)) return 'right';
+    (columnId: string): "left" | "right" | false => {
+      if (columnPinning.left?.includes(columnId)) {
+        return "left";
+      }
+      if (columnPinning.right?.includes(columnId)) {
+        return "right";
+      }
 
       return false;
     },
-    [columnPinning],
+    [columnPinning]
   );
 
   const resetPinning = useCallback(() => {
@@ -713,13 +716,7 @@ export function useColumnPinning({
       isColumnPinned,
       resetPinning,
     }),
-    [
-      columnPinning,
-      setColumnPinning,
-      toggleColumnPin,
-      isColumnPinned,
-      resetPinning,
-    ],
+    [columnPinning, toggleColumnPin, isColumnPinned, resetPinning]
   );
 }
 
@@ -747,7 +744,7 @@ export function useColumnVisibility({
   onVisibilityChange?: (visibility: VisibilityState) => void;
 }) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    defaultVisibility ?? {},
+    defaultVisibility ?? {}
   );
 
   const toggleColumnVisibility = useCallback(
@@ -765,14 +762,12 @@ export function useColumnVisibility({
         return updated;
       });
     },
-    [onVisibilityChange],
+    [onVisibilityChange]
   );
 
   const isColumnVisible = useCallback(
-    (columnId: string): boolean => {
-      return columnVisibility[columnId] !== false;
-    },
-    [columnVisibility],
+    (columnId: string): boolean => columnVisibility[columnId] !== false,
+    [columnVisibility]
   );
 
   const setColumnVisible = useCallback(
@@ -790,7 +785,7 @@ export function useColumnVisibility({
         return updated;
       });
     },
-    [onVisibilityChange],
+    [onVisibilityChange]
   );
 
   const resetVisibility = useCallback(() => {
@@ -813,12 +808,11 @@ export function useColumnVisibility({
     }),
     [
       columnVisibility,
-      setColumnVisibility,
       toggleColumnVisibility,
       isColumnVisible,
       setColumnVisible,
       resetVisibility,
-    ],
+    ]
   );
 }
 
@@ -886,7 +880,7 @@ export function useColumnManagement({
       // Combined actions
       resetPreferences,
     }),
-    [visibility, pinning, resetPreferences],
+    [visibility, pinning, resetPreferences]
   );
 }
 
@@ -927,15 +921,15 @@ export function useBatchSelection<T>(
   options?: {
     maxSelectable?: number;
     onSelectionChange?: (selectedRecords: Map<string, T>) => void;
-  },
+  }
 ) {
   const [selectedRecords, setSelectedRecords] = useState<Map<string, T>>(
-    new Map(),
+    new Map()
   );
 
   const selectedIds = useMemo(
     () => new Set(selectedRecords.keys()),
-    [selectedRecords],
+    [selectedRecords]
   );
 
   const toggleSelection = useCallback(
@@ -951,10 +945,10 @@ export function useBatchSelection<T>(
           }
 
           // Find the item in the current items array
-          const item = items.find((item) => getItemId(item) === id);
+          const selectedItem = items.find((item) => getItemId(item) === id);
 
-          if (item) {
-            newMap.set(id, item);
+          if (selectedItem) {
+            newMap.set(id, selectedItem);
           }
         }
 
@@ -965,7 +959,7 @@ export function useBatchSelection<T>(
         return newMap;
       });
     },
-    [items, getItemId, options],
+    [items, getItemId, options]
   );
 
   const toggleSelectAll = useCallback(
@@ -979,16 +973,16 @@ export function useBatchSelection<T>(
           }
 
           // Add all current items to selection
-          items.forEach((item) => {
+          for (const item of items) {
             const id = getItemId(item);
             newMap.set(id, item);
-          });
+          }
         } else {
           // Remove only current page items from selection
-          items.forEach((item) => {
+          for (const item of items) {
             const id = getItemId(item);
             newMap.delete(id);
-          });
+          }
         }
 
         if (options?.onSelectionChange) {
@@ -998,7 +992,7 @@ export function useBatchSelection<T>(
         return newMap;
       });
     },
-    [items, getItemId, options],
+    [items, getItemId, options]
   );
 
   const clearSelection = useCallback(() => {
@@ -1012,7 +1006,7 @@ export function useBatchSelection<T>(
 
   const isSelected = useCallback(
     (id: string) => selectedRecords.has(id),
-    [selectedRecords],
+    [selectedRecords]
   );
 
   const isAllSelected = useMemo(() => {
@@ -1037,7 +1031,7 @@ export function useBatchSelection<T>(
     }
 
     const currentPageSelectedCount = items.filter((item) =>
-      selectedRecords.has(getItemId(item)),
+      selectedRecords.has(getItemId(item))
     ).length;
 
     return (
@@ -1048,9 +1042,10 @@ export function useBatchSelection<T>(
   const selectedCount = selectedRecords.size;
 
   // Get array of selected records
-  const getSelectedRecords = useCallback(() => {
-    return Array.from(selectedRecords.values());
-  }, [selectedRecords]);
+  const getSelectedRecords = useCallback(
+    () => Array.from(selectedRecords.values()),
+    [selectedRecords]
+  );
 
   return useMemo(
     () => ({
@@ -1079,7 +1074,7 @@ export function useBatchSelection<T>(
       toggleSelectAll,
       clearSelection,
       getSelectedRecords,
-    ],
+    ]
   );
 }
 

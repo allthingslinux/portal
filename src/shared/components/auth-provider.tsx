@@ -1,32 +1,26 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect } from 'react';
-import { SessionProvider, useSession } from 'next-auth/react';
+import { useCallback, useEffect } from "react";
 
-import { useMonitoring } from '~/core/monitoring/api/hooks';
-import { useAppEvents } from '~/shared/events';
+import { authClient } from "~/core/auth/better-auth";
+import { useMonitoring } from "~/core/monitoring/api/hooks";
+import { useAppEvents } from "~/shared/events";
 
 export function AuthProvider(props: React.PropsWithChildren) {
-  return (
-    <SessionProvider>
-      <AuthEventDispatcher>{props.children}</AuthEventDispatcher>
-    </SessionProvider>
-  );
+  return <AuthEventDispatcher>{props.children}</AuthEventDispatcher>;
 }
 
 function AuthEventDispatcher({ children }: React.PropsWithChildren) {
-  const { data: session, status } = useSession();
+  const { data: session, isPending } = authClient.useSession();
   const dispatchEvent = useDispatchAppEventFromAuthEvent();
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
-      dispatchEvent('SIGNED_IN', session.user.id, {
-        email: session.user.email || '',
+    if (!isPending && session?.user) {
+      dispatchEvent("SIGNED_IN", session.user.id, {
+        email: session.user.email || "",
       });
-    } else if (status === 'unauthenticated') {
-      // Handle sign out if needed
     }
-  }, [status, session, dispatchEvent]);
+  }, [isPending, session, dispatchEvent]);
 
   return <>{children}</>;
 }
@@ -37,15 +31,15 @@ function useDispatchAppEventFromAuthEvent() {
 
   return useCallback(
     (
-      type: 'SIGNED_IN' | 'SIGNED_OUT' | 'USER_UPDATED',
+      type: "SIGNED_IN" | "SIGNED_OUT" | "USER_UPDATED",
       userId: string | undefined,
-      traits: Record<string, string> = {},
+      traits: Record<string, string> = {}
     ) => {
       switch (type) {
-        case 'SIGNED_IN':
+        case "SIGNED_IN":
           if (userId) {
             emit({
-              type: 'user.signedIn',
+              type: "user.signedIn",
               payload: { userId, ...traits },
             });
 
@@ -54,15 +48,21 @@ function useDispatchAppEventFromAuthEvent() {
 
           break;
 
-        case 'USER_UPDATED':
-          emit({
-            type: 'user.updated',
-            payload: { userId: userId!, ...traits },
-          });
+        case "USER_UPDATED":
+          if (userId) {
+            emit({
+              type: "user.updated",
+              payload: { userId, ...traits },
+            });
+          }
 
+          break;
+
+        default:
+          // No action needed for other event types
           break;
       }
     },
-    [emit, monitoring],
+    [emit, monitoring]
   );
 }

@@ -1,16 +1,18 @@
-import type { NoseconeOptions } from '@nosecone/next';
+import type { NoseconeOptions } from "@nosecone/next";
 
 // we need to allow connecting to the Supabase API from the client
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 
 // the URL used for Supabase Realtime
-const WEBSOCKET_URL = SUPABASE_URL.replace('https://', 'ws://').replace(
-  'http://',
-  'ws://',
+const WEBSOCKET_URL = SUPABASE_URL.replace("https://", "ws://").replace(
+  "http://",
+  "ws://"
 );
 
 // disabled to allow loading images from Supabase Storage
 const CROSS_ORIGIN_EMBEDDER_POLICY = false;
+
+const CSP_NONCE_REGEX = /nonce-([\w-]+)/;
 
 /**
  * @name ALLOWED_ORIGINS
@@ -31,7 +33,7 @@ const IMG_SRC_ORIGINS = [SUPABASE_URL] as never[];
  * @name UPGRADE_INSECURE_REQUESTS
  * @description Upgrade insecure requests to HTTPS when in production
  */
-const UPGRADE_INSECURE_REQUESTS = process.env.NODE_ENV === 'production';
+const UPGRADE_INSECURE_REQUESTS = process.env.NODE_ENV === "production";
 
 /**
  * @name createCspResponse
@@ -42,7 +44,7 @@ export async function createCspResponse() {
     createMiddleware,
     withVercelToolbar,
     defaults: noseconeConfig,
-  } = await import('@nosecone/next');
+  } = await import("@nosecone/next");
 
   /*
    * @name allowedOrigins
@@ -69,7 +71,7 @@ export async function createCspResponse() {
   };
 
   const middleware = createMiddleware(
-    process.env.VERCEL_ENV === 'preview' ? withVercelToolbar(config) : config,
+    process.env.VERCEL_ENV === "preview" ? withVercelToolbar(config) : config
   );
 
   // create response
@@ -77,16 +79,16 @@ export async function createCspResponse() {
 
   if (response) {
     const contentSecurityPolicy = response.headers.get(
-      'Content-Security-Policy',
+      "Content-Security-Policy"
     );
 
-    const matches = contentSecurityPolicy?.match(/nonce-([\w-]+)/) || [];
+    const matches = contentSecurityPolicy?.match(CSP_NONCE_REGEX) || [];
     const nonce = matches[1];
 
     // set x-nonce header if nonce is found
     // so we can pass it to client-side scripts
     if (nonce) {
-      response.headers.set('x-nonce', nonce);
+      response.headers.set("x-nonce", nonce);
     }
   }
 

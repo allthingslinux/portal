@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-type Condition<Value = unknown> = Value | false | null | undefined | 0 | '';
+type Condition<Value = unknown> = Value | false | null | undefined | 0 | "";
 
 export function If<Value = unknown>({
   condition,
@@ -13,7 +13,7 @@ export function If<Value = unknown>({
 }>) {
   return useMemo(() => {
     if (condition) {
-      if (typeof children === 'function') {
+      if (typeof children === "function") {
         return <>{children(condition)}</>;
       }
 
@@ -21,7 +21,7 @@ export function If<Value = unknown>({
     }
 
     if (fallback) {
-      if (typeof fallback === 'function') {
+      if (typeof fallback === "function") {
         return <>{fallback()}</>;
       }
 

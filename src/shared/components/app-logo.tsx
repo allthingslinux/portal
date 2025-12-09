@@ -1,19 +1,15 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { cn } from '~/components/lib/utils';
+import Image from "next/image";
+import Link from "next/link";
+import { cn } from "~/components/lib/utils";
 
-function LogoImage({
-  className,
-}: {
-  className?: string;
-}) {
+function LogoImage({ className }: { className?: string }) {
   return (
     <Image
-      src="/images/logo.png"
       alt="Logo"
-      width={100}
+      className={cn("w-[100px] object-contain", className)}
       height={100}
-      className={cn('w-[100px] object-contain', className)}
+      src="/images/logo.png"
+      width={100}
     />
   );
 }
@@ -32,7 +28,7 @@ export function AppLogo({
   }
 
   return (
-    <Link aria-label={label ?? 'Home Page'} href={href ?? '/'} prefetch={true}>
+    <Link aria-label={label ?? "Home Page"} href={href ?? "/"} prefetch={true}>
       <LogoImage className={className} />
     </Link>
   );

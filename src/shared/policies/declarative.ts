@@ -1,11 +1,11 @@
-import type { z } from 'zod';
+import type { z } from "zod";
 
-import type { PolicyContext, PolicyResult, PolicyStage } from './types';
+import type { PolicyContext, PolicyResult, PolicyStage } from "./types";
 
 /**
  * Error code for structured policy failures
  */
-export interface PolicyErrorCode {
+export type PolicyErrorCode = {
   /** Machine-readable error code */
   code: string;
   /** Human-readable error message */
@@ -14,36 +14,36 @@ export interface PolicyErrorCode {
   remediation?: string;
   /** Additional metadata */
   metadata?: Record<string, unknown>;
-}
+};
 
 /**
  * Enhanced policy result with structured error information
  */
-export interface PolicyReason extends PolicyErrorCode {
+export type PolicyReason = PolicyErrorCode & {
   /** Policy ID that generated this reason */
   policyId: string;
   /** Stage at which this reason was generated */
   stage?: PolicyStage;
-}
+};
 
 /**
  * Policy evaluator function with immutable context
  */
-export interface PolicyEvaluator<TContext extends PolicyContext> {
+export type PolicyEvaluator<TContext extends PolicyContext> = {
   /** Evaluate the policy for a specific stage */
   evaluate(stage?: PolicyStage): Promise<PolicyResult>;
 
   /** Get the immutable context */
   getContext(): Readonly<TContext>;
-}
+};
 
 /**
  * Policy definition factory configuration
  */
-export interface FeaturePolicyDefinition<
+export type FeaturePolicyDefinition<
   TContext extends PolicyContext = PolicyContext,
   TConfig = unknown,
-> {
+> = {
   /** Unique policy identifier */
   id: string;
 
@@ -55,7 +55,7 @@ export interface FeaturePolicyDefinition<
 
   /** Factory function to create evaluator instances */
   create(context: TContext, config?: TConfig): PolicyEvaluator<TContext>;
-}
+};
 
 /**
  * Helper function to create a successful policy result
@@ -100,7 +100,7 @@ function deepFreeze<T>(obj: T, visited = new WeakSet()): Readonly<T> {
   for (const name of propNames) {
     const value = (obj as Record<string, unknown>)[name as string];
 
-    if ((value && typeof value === 'object') || typeof value === 'function') {
+    if ((value && typeof value === "object") || typeof value === "function") {
       deepFreeze(value, visited);
     }
   }
@@ -117,7 +117,7 @@ function safeClone<T>(obj: T): T {
   } catch {
     // If structuredClone fails (e.g., due to functions), create a shallow clone
     // and recursively clone cloneable properties
-    if (obj && typeof obj === 'object') {
+    if (obj && typeof obj === "object") {
       const cloned = Array.isArray(obj) ? ([] as unknown as T) : ({} as T);
 
       for (const [key, value] of Object.entries(obj)) {
@@ -142,7 +142,7 @@ function safeClone<T>(obj: T): T {
  * Creates an immutable context wrapper
  */
 function createImmutableContext<T extends PolicyContext>(
-  context: T,
+  context: T
 ): Readonly<T> {
   // Safely clone the context, handling functions and other edge cases
   const cloned = safeClone(context);
@@ -171,7 +171,7 @@ export function definePolicy<
   evaluate: (
     context: Readonly<TContext>,
     config?: TConfig,
-    stage?: PolicyStage,
+    stage?: PolicyStage
   ) => Promise<PolicyResult>;
 }) {
   return {
@@ -186,7 +186,7 @@ export function definePolicy<
 
         if (!validation.success) {
           throw new Error(
-            `Invalid configuration for policy "${config.id}": ${validation.error.message}`,
+            `Invalid configuration for policy "${config.id}": ${validation.error.message}`
           );
         }
       }
@@ -208,7 +208,7 @@ export function definePolicy<
             const result = await config.evaluate(
               immutableContext,
               policyConfig,
-              stage,
+              stage
             );
 
             // Ensure metadata includes policy ID and stage
@@ -222,15 +222,15 @@ export function definePolicy<
             };
           } catch (error) {
             return deny({
-              code: 'POLICY_EVALUATION_ERROR',
+              code: "POLICY_EVALUATION_ERROR",
               message:
                 error instanceof Error
                   ? error.message
-                  : 'Policy evaluation failed',
+                  : "Policy evaluation failed",
               metadata: {
                 policyId: config.id,
                 stage,
-                error: error instanceof Error ? error.message : 'Unknown error',
+                error: error instanceof Error ? error.message : "Unknown error",
               },
             });
           }

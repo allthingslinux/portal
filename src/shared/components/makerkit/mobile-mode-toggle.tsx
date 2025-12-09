@@ -1,35 +1,35 @@
-'use client';
+"use client";
 
-import { Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
-
-import { cn } from '../lib/utils';
-import { Button } from '~/components/ui/button';
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Button } from "~/components/ui/button";
+import { cn } from "../lib/utils";
 
 export function MobileModeToggle(props: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
 
   const toggleTheme = () => {
-    const next = resolvedTheme === 'dark' ? 'light' : 'dark';
+    const next = resolvedTheme === "dark" ? "light" : "dark";
     setTheme(next);
     setCookieTheme(next);
   };
 
   return (
     <Button
-      variant="ghost"
-      size="icon"
       aria-label="Toggle theme"
       className={cn(props.className)}
       onClick={toggleTheme}
+      size="icon"
+      variant="ghost"
     >
-      <Sun className="h-[0.9rem] w-[0.9rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-      <Moon className="absolute h-[0.9rem] w-[0.9rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+      <Sun className="dark:-rotate-90 h-[0.9rem] w-[0.9rem] rotate-0 scale-100 transition-all dark:scale-0" />
+      <Moon className="absolute h-[0.9rem] w-[0.9rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );
 }
 
 function setCookieTheme(theme: string) {
+  // biome-ignore lint/suspicious/noDocumentCookie: theme preference stored client-side
   document.cookie = `theme=${theme}; path=/; max-age=31536000`;
 }

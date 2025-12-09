@@ -7,7 +7,7 @@
  * Check if the code is running in a browser environment.
  */
 export function isBrowser() {
-  return typeof window !== 'undefined';
+  return typeof window !== "undefined";
 }
 
 /**
@@ -19,10 +19,10 @@ export function formatCurrency(params: {
   locale: string;
   value: string | number;
 }) {
-  const [lang, region] = params.locale.split('-');
+  const [lang, region] = params.locale.split("-");
 
   return new Intl.NumberFormat(region ?? lang, {
-    style: 'currency',
+    style: "currency",
     currency: params.currencyCode,
   }).format(Number(params.value));
 }

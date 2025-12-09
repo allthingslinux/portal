@@ -1,31 +1,30 @@
-import 'server-only';
+import "server-only";
 
-import { redirect } from 'next/navigation';
-import { NextRequest, NextResponse } from 'next/server';
+import { redirect } from "next/navigation";
+import { type NextRequest, NextResponse } from "next/server";
 
-import { z } from 'zod';
+import type { z } from "zod";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import { requireUser } from "~/core/database/supabase/require-user";
+import { verifyCaptchaToken } from "~/features/auth/captcha/server";
+import { HTTP_STATUS } from "~/shared/constants";
+import { API_ERRORS } from "~/shared/constants/errors";
 
-import { verifyCaptchaToken } from '~/features/auth/captcha/server';
-import { requireUser } from '~/core/database/supabase/require-user';
-import { JWTUserData } from '~/core/database/supabase/types';
-import { HTTP_STATUS } from '~/shared/constants';
-import { API_ERRORS } from '~/shared/constants/errors';
-
-interface Config<Schema> {
+type Config<Schema> = {
   auth?: boolean;
   captcha?: boolean;
   schema?: Schema;
-}
+};
 
-interface HandlerParams<
+type HandlerParams<
   Schema extends z.ZodType | undefined,
   RequireAuth extends boolean | undefined,
-> {
+> = {
   request: NextRequest;
-  user: RequireAuth extends false ? undefined : JWTUserData;
+  user: RequireAuth extends false ? undefined : BetterAuthUser;
   body: Schema extends z.ZodType ? z.infer<Schema> : undefined;
   params: Record<string, string>;
-}
+};
 
 /**
  * Enhanced route handler function.
@@ -54,13 +53,13 @@ export const enhanceRouteHandler = <
   // Route handler function
   handler:
     | ((
-        params: HandlerParams<Params['schema'], Params['auth']>,
+        context: HandlerParams<Params["schema"], Params["auth"]>
       ) => NextResponse | Response)
     | ((
-        params: HandlerParams<Params['schema'], Params['auth']>,
+        context: HandlerParams<Params["schema"], Params["auth"]>
       ) => Promise<NextResponse | Response>),
   // Parameters object
-  params?: Params,
+  params?: Params
 ) => {
   /**
    * Route handler function.
@@ -71,9 +70,9 @@ export const enhanceRouteHandler = <
     request: NextRequest,
     routeParams: {
       params: Promise<Record<string, string>>;
-    },
+    }
   ) {
-    type UserParam = Params['auth'] extends false ? undefined : JWTUserData;
+    type UserParam = Params["auth"] extends false ? undefined : BetterAuthUser;
 
     let user: UserParam = undefined as UserParam;
 
@@ -109,8 +108,8 @@ export const enhanceRouteHandler = <
       user = auth.data as UserParam;
     }
 
-    let body: Params['schema'] extends z.ZodType
-      ? z.infer<Params['schema']>
+    let body: Params["schema"] extends z.ZodType
+      ? z.infer<Params["schema"]>
       : undefined;
 
     if (params?.schema) {
@@ -120,16 +119,15 @@ export const enhanceRouteHandler = <
       const parsedBody = await params.schema.safeParseAsync(json);
 
       if (parsedBody.success) {
-        body = parsedBody.data as Params['schema'] extends z.ZodType
-          ? z.infer<Params['schema']>
+        body = parsedBody.data as Params["schema"] extends z.ZodType
+          ? z.infer<Params["schema"]>
           : undefined;
       } else {
         return NextResponse.json(
           {
-            error:
-              parsedBody.error.message || API_ERRORS.INVALID_REQUEST_BODY,
+            error: parsedBody.error.message || API_ERRORS.INVALID_REQUEST_BODY,
           },
-          { status: HTTP_STATUS.BAD_REQUEST },
+          { status: HTTP_STATUS.BAD_REQUEST }
         );
       }
     }
@@ -148,5 +146,5 @@ export const enhanceRouteHandler = <
  * @param request
  */
 function captchaTokenGetter(request: NextRequest) {
-  return request.headers.get('x-captcha-token');
+  return request.headers.get("x-captcha-token");
 }

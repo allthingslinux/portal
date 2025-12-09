@@ -1,6 +1,6 @@
 /**
  * Application-wide constants
- * 
+ *
  * This file contains magic numbers and commonly used values that should be
  * centralized for maintainability and consistency.
  */
@@ -39,4 +39,3 @@ export const PASSWORD_MAX_LENGTH = 99;
  * Default page size for pagination
  */
 export const DEFAULT_PAGE_SIZE = 10;
-

@@ -2,19 +2,19 @@
  * Base context interface that all policy contexts must extend.
  * Provides common metadata and identifiers used across all policy types.
  */
-export interface PolicyContext {
+export type PolicyContext = {
   /** Timestamp when the policy evaluation was initiated */
   timestamp: string;
 
   /** Additional metadata for debugging and logging */
   metadata?: Record<string, unknown>;
-}
+};
 
 /**
- * Standard result interface returned by all policy evaluations.
+ * Standard result type returned by all policy evaluations.
  * Provides consistent structure for policy decisions across all features.
  */
-export interface PolicyResult {
+export type PolicyResult = {
   /** Whether the action is allowed by this policy */
   allowed: boolean;
 
@@ -26,7 +26,7 @@ export interface PolicyResult {
 
   /** Additional metadata for debugging, logging, and UI customization */
   metadata?: Record<string, unknown>;
-}
+};
 
 /**
  * Policy evaluation stages are user-defined strings for multi-phase validation.

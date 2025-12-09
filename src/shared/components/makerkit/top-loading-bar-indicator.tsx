@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { createRef, useEffect } from 'react';
+import { createRef, useEffect } from "react";
 
-import type { LoadingBarRef } from 'react-top-loading-bar';
-import LoadingBar from 'react-top-loading-bar';
+import type { LoadingBarRef } from "react-top-loading-bar";
+import LoadingBar from "react-top-loading-bar";
 
 let running = false;
 
@@ -29,12 +29,12 @@ export function TopLoadingBarIndicator() {
 
   return (
     <LoadingBar
-      className={'bg-primary'}
+      className={"bg-primary"}
+      color={""}
       height={4}
-      waitingTime={0}
-      shadow
-      color={''}
       ref={ref}
+      shadow
+      waitingTime={0}
     />
   );
 }

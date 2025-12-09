@@ -1,6 +1,6 @@
-import 'server-only';
+import "server-only";
 
-import { cache } from 'react';
+import { cache } from "react";
 
 /**
  * Creates a cached workspace loader function with common patterns.
@@ -17,8 +17,7 @@ import { cache } from 'react';
  * ```
  */
 export function createWorkspaceLoader<TParams extends unknown[], TReturn>(
-  loaderFn: (...params: TParams) => Promise<TReturn>,
+  loaderFn: (...params: TParams) => Promise<TReturn>
 ) {
   return cache(loaderFn);
 }
-

@@ -1,25 +1,21 @@
-import 'server-only';
+import "server-only";
 
-import { cache } from 'react';
+import { cookies, headers } from "next/headers";
+import { cache } from "react";
 
-import { cookies, headers } from 'next/headers';
-
-import { z } from 'zod';
-
+import { z } from "zod";
+import featuresFlagConfig from "~/config/feature-flags.config";
 import {
   initializeServerI18n,
   parseAcceptLanguageHeader,
-} from '~/core/i18n/i18n.server';
-
-import featuresFlagConfig from '~/config/feature-flags.config';
+} from "~/core/i18n/i18n.server";
 import {
-  I18N_COOKIE_NAME,
   getI18nSettings,
+  I18N_COOKIE_NAME,
   languages,
-} from '~/shared/lib/i18n/i18n.settings';
-
-import { i18nResolver } from './i18n.resolver';
-import { getLogger } from '~/shared/logger';
+} from "~/shared/lib/i18n/i18n.settings";
+import { getLogger } from "~/shared/logger";
+import { i18nResolver } from "./i18n.resolver";
 
 /**
  * @name priority
@@ -39,7 +35,7 @@ async function createInstance() {
   const cookieStore = await cookies();
   const langCookieValue = cookieStore.get(I18N_COOKIE_NAME)?.value;
 
-  let selectedLanguage: string | undefined = undefined;
+  let selectedLanguage: string | undefined;
 
   // if the cookie is set, use the language from the cookie
   if (langCookieValue) {
@@ -48,7 +44,7 @@ async function createInstance() {
 
   // if not, check if the language priority is set to user and
   // use the user's preferred language
-  if (!selectedLanguage && priority === 'user') {
+  if (!selectedLanguage && priority === "user") {
     const userPreferredLanguage = await getPreferredLanguageFromBrowser();
 
     selectedLanguage = await getLanguageOrFallback(userPreferredLanguage);
@@ -67,7 +63,7 @@ export const createI18nServerInstance = cache(createInstance);
  */
 async function getPreferredLanguageFromBrowser() {
   const headersStore = await headers();
-  const acceptLanguage = headersStore.get('accept-language');
+  const acceptLanguage = headersStore.get("accept-language");
 
   // no accept-language header, return
   if (!acceptLanguage) {
@@ -97,7 +93,7 @@ async function getLanguageOrFallback(selectedLanguage: string | undefined) {
       selectedLanguage,
       defaultLanguage: languages[0],
     },
-    `The language passed is invalid. Defaulted back to "${languages[0]}"`,
+    `The language passed is invalid. Defaulted back to "${languages[0]}"`
   );
 
   return languages[0];

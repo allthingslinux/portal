@@ -1,10 +1,10 @@
-import type { FeaturePolicyDefinition, PolicyErrorCode } from './declarative';
-import type { PolicyRegistry } from './registry';
-import type { PolicyContext, PolicyResult, PolicyStage } from './types';
+import type { FeaturePolicyDefinition, PolicyErrorCode } from "./declarative";
+import type { PolicyRegistry } from "./registry";
+import type { PolicyContext, PolicyResult, PolicyStage } from "./types";
 
 const OPERATORS = {
-  ALL: 'ALL' as const,
-  ANY: 'ANY' as const,
+  ALL: "ALL" as const,
+  ANY: "ANY" as const,
 };
 
 type Operator = (typeof OPERATORS)[keyof typeof OPERATORS];
@@ -14,34 +14,34 @@ type Operator = (typeof OPERATORS)[keyof typeof OPERATORS];
  */
 export type PolicyFunction<TContext extends PolicyContext = PolicyContext> = (
   context: Readonly<TContext>,
-  stage?: PolicyStage,
+  stage?: PolicyStage
 ) => Promise<PolicyResult>;
 
 /**
  * Policy group - just an array of policies with an operator
  */
-export interface PolicyGroup<TContext extends PolicyContext = PolicyContext> {
+export type PolicyGroup<TContext extends PolicyContext = PolicyContext> = {
   operator: Operator;
   policies: PolicyFunction<TContext>[];
-}
+};
 
 /**
  * Evaluation result
  */
-export interface EvaluationResult {
+export type EvaluationResult = {
   allowed: boolean;
   reasons: string[];
   results: PolicyResult[];
-}
+};
 
 /**
  * LRU Cache for policy definitions with size limit
  */
 class LRUCache<K, V> {
-  private cache = new Map<K, V>();
-  private maxSize: number;
+  private readonly cache = new Map<K, V>();
+  private readonly maxSize: number;
 
-  constructor(maxSize: number = 100) {
+  constructor(maxSize = 100) {
     this.maxSize = maxSize;
   }
 
@@ -95,13 +95,14 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
 
   private async getCachedPolicy(
     registry: PolicyRegistry,
-    policyId: string,
+    policyId: string
   ): Promise<FeaturePolicyDefinition<TContext> | undefined> {
-    if (!this.registryPolicyCache.has(registry)) {
-      this.registryPolicyCache.set(registry, new LRUCache(this.maxCacheSize));
-    }
+    let cache = this.registryPolicyCache.get(registry);
 
-    const cache = this.registryPolicyCache.get(registry)!;
+    if (!cache) {
+      cache = new LRUCache(this.maxCacheSize);
+      this.registryPolicyCache.set(registry, cache);
+    }
 
     let definition = cache.get(policyId);
 
@@ -126,7 +127,7 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
 
   async hasPoliciesForStage(
     registry: PolicyRegistry,
-    stage?: PolicyStage,
+    stage?: PolicyStage
   ): Promise<boolean> {
     const policyIds = registry.listPolicies();
 
@@ -160,7 +161,7 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
     registry: PolicyRegistry,
     context: TContext,
     operator: Operator = OPERATORS.ALL,
-    stage?: PolicyStage,
+    stage?: PolicyStage
   ): Promise<EvaluationResult> {
     const results: PolicyResult[] = [];
     const reasons: string[] = [];
@@ -199,7 +200,7 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
     if (results.length === 0 && operator === OPERATORS.ANY) {
       return {
         allowed: false,
-        reasons: ['No policies matched the criteria'],
+        reasons: ["No policies matched the criteria"],
         results: [],
       };
     }
@@ -218,7 +219,7 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
   async evaluateGroup(
     group: PolicyGroup<TContext>,
     context: TContext,
-    stage?: PolicyStage,
+    stage?: PolicyStage
   ): Promise<EvaluationResult> {
     const results: PolicyResult[] = [];
     const reasons: string[] = [];
@@ -268,7 +269,7 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
   async evaluateGroups(
     groups: PolicyGroup<TContext>[],
     context: TContext,
-    stage?: PolicyStage,
+    stage?: PolicyStage
   ): Promise<EvaluationResult> {
     const allResults: PolicyResult[] = [];
     const allReasons: string[] = [];
@@ -302,7 +303,7 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
     policies: PolicyFunction<TContext>[],
     context: TContext,
     operator: Operator = OPERATORS.ALL,
-    stage?: PolicyStage,
+    stage?: PolicyStage
   ) {
     return this.evaluateGroup({ operator, policies }, context, stage);
   }
@@ -314,8 +315,8 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
 export function createPolicy<TContext extends PolicyContext = PolicyContext>(
   evaluate: (
     context: Readonly<TContext>,
-    stage?: PolicyStage,
-  ) => Promise<PolicyResult>,
+    stage?: PolicyStage
+  ) => Promise<PolicyResult>
 ): PolicyFunction<TContext> {
   return evaluate;
 }
@@ -331,32 +332,31 @@ export const allow = (metadata?: Record<string, unknown>): PolicyResult => ({
 // Function overloads for deny() to support both string and structured errors
 export function deny(
   reason: string,
-  metadata?: Record<string, unknown>,
+  metadata?: Record<string, unknown>
 ): PolicyResult;
 
 export function deny(error: PolicyErrorCode): PolicyResult;
 
 export function deny(
   reasonOrError: string | PolicyErrorCode,
-  metadata?: Record<string, unknown>,
+  metadata?: Record<string, unknown>
 ): PolicyResult {
-  if (typeof reasonOrError === 'string') {
+  if (typeof reasonOrError === "string") {
     return {
       allowed: false,
       reason: reasonOrError,
       metadata,
     };
-  } else {
-    return {
-      allowed: false,
-      reason: reasonOrError.message,
-      metadata: {
-        code: reasonOrError.code,
-        remediation: reasonOrError.remediation,
-        ...reasonOrError.metadata,
-      },
-    };
   }
+  return {
+    allowed: false,
+    reason: reasonOrError.message,
+    metadata: {
+      code: reasonOrError.code,
+      remediation: reasonOrError.remediation,
+      ...reasonOrError.metadata,
+    },
+  };
 }
 
 /**
@@ -392,7 +392,7 @@ export async function createPoliciesFromRegistry<
   const policies: PolicyFunction<TContext>[] = [];
 
   for (const spec of policySpecs) {
-    if (typeof spec === 'string') {
+    if (typeof spec === "string") {
       // Simple policy ID
       policies.push(await createPolicyFromRegistry(registry, spec));
     } else {

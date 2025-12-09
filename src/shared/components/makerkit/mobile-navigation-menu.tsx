@@ -1,19 +1,18 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
+import { ChevronDown } from "lucide-react";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-import { ChevronDown } from 'lucide-react';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { Trans } from './trans';
+} from "~/components/ui/dropdown-menu";
+import { Trans } from "./trans";
 
 function MobileNavigationDropdown({
   links,
@@ -27,44 +26,40 @@ function MobileNavigationDropdown({
 
   const items = useMemo(
     function MenuItems() {
-      return Object.values(links).map((link) => {
-        return (
-          <DropdownMenuItem key={link.path}>
-            <Link
-              className={'flex h-full w-full items-center'}
-              href={link.path}
-            >
-              <Trans i18nKey={link.label} defaults={link.label} />
-            </Link>
-          </DropdownMenuItem>
-        );
-      });
+      return Object.values(links).map((link) => (
+        <DropdownMenuItem key={link.path}>
+          <Link className={"flex h-full w-full items-center"} href={link.path}>
+            <Trans defaults={link.label} i18nKey={link.label} />
+          </Link>
+        </DropdownMenuItem>
+      ));
     },
-    [links],
+    [links]
   );
 
-  const currentPathName = useMemo(() => {
-    return Object.values(links).find((link) => link.path === path)?.label;
-  }, [links, path]);
+  const currentPathName = useMemo(
+    () => Object.values(links).find((link) => link.path === path)?.label,
+    [links, path]
+  );
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={'w-full'}>
+      <DropdownMenuTrigger className={"w-full"}>
         <div
           className={
-            'Button dark:ring-dark-700 w-full justify-start ring-2 ring-gray-100'
+            "Button w-full justify-start ring-2 ring-gray-100 dark:ring-dark-700"
           }
         >
           <span
             className={
-              'ButtonNormal flex w-full items-center justify-between space-x-2'
+              "ButtonNormal flex w-full items-center justify-between space-x-2"
             }
           >
             <span>
-              <Trans i18nKey={currentPathName} defaults={currentPathName} />
+              <Trans defaults={currentPathName} i18nKey={currentPathName} />
             </span>
 
-            <ChevronDown className={'h-5'} />
+            <ChevronDown className={"h-5"} />
           </span>
         </div>
       </DropdownMenuTrigger>

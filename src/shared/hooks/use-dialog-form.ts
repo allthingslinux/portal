@@ -1,8 +1,8 @@
-import { useState, useTransition } from 'react';
-import { isRedirectError } from 'next/dist/client/components/redirect-error';
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { useState, useTransition } from "react";
 
 export function useDialogForm<T>(
-  onSubmit: (data: T) => Promise<{ error?: any } | void>,
+  onSubmit: (data: T) => Promise<{ error?: unknown } | undefined>,
   options: {
     preventCloseOnSuccess?: boolean;
     onSuccess?: () => void;
@@ -21,13 +21,11 @@ export function useDialogForm<T>(
         if (result?.error) {
           setError(true);
           options.onError?.();
-        } else {
-          if (!options.preventCloseOnSuccess) {
-            options.onSuccess?.();
-          }
+        } else if (!options.preventCloseOnSuccess) {
+          options.onSuccess?.();
         }
-      } catch (error) {
-        if (!isRedirectError(error)) {
+      } catch (caughtError) {
+        if (!isRedirectError(caughtError)) {
           setError(true);
           options.onError?.();
         }

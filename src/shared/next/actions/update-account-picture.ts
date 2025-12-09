@@ -1,9 +1,9 @@
-import 'server-only';
+import "server-only";
 
-import { eq } from 'drizzle-orm';
+import { eq } from "drizzle-orm";
 
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
-import { accounts } from '~/core/database/supabase/drizzle/schema';
+import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
+import { accounts } from "~/core/database/supabase/drizzle/schema";
 
 /**
  * Shared utility to update account picture URL in the database.
@@ -14,7 +14,7 @@ import { accounts } from '~/core/database/supabase/drizzle/schema';
  */
 export async function updateAccountPictureInDatabase(
   accountId: string,
-  pictureUrl: string | null,
+  pictureUrl: string | null
 ) {
   const drizzleClient = await getDrizzleSupabaseClient();
 
@@ -25,4 +25,3 @@ export async function updateAccountPictureInDatabase(
       .where(eq(accounts.id, accountId));
   });
 }
-

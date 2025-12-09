@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
-import { ImageUploader } from '~/components/makerkit/image-uploader';
-import { toast } from '~/components/ui/sonner';
-import { Trans } from '~/components/makerkit/trans';
+import { ImageUploader } from "~/components/makerkit/image-uploader";
+import { Trans } from "~/components/makerkit/trans";
+import { toast } from "~/components/ui/sonner";
 
-const AVATARS_BUCKET = 'account_image';
+const AVATARS_BUCKET = "account_image";
 
-interface AccountImageUploaderProps {
+type AccountImageUploaderProps = {
   accountId: string;
   pictureUrl: string | null;
   onUpdate: (pictureUrl: string | null) => Promise<void>;
-  translationNamespace: 'account' | 'teams';
+  translationNamespace: "account" | "teams";
   onSuccess?: () => void;
-}
+};
 
 /**
  * Shared component for uploading account profile images.
@@ -33,34 +33,33 @@ export function AccountImageUploader({
 
   const getTranslationKey = useCallback(
     (key: string) => {
-      if (translationNamespace === 'teams') {
+      if (translationNamespace === "teams") {
         const keyMap: Record<string, string> = {
-          success: 'updateTeamSuccessMessage',
-          error: 'updateTeamErrorMessage',
-          loading: 'updateTeamLoadingMessage',
+          success: "updateTeamSuccessMessage",
+          error: "updateTeamErrorMessage",
+          loading: "updateTeamLoadingMessage",
         };
         return keyMap[key] || key;
       }
       // account namespace
       const keyMap: Record<string, string> = {
-        success: 'updateProfileSuccess',
-        error: 'updateProfileError',
-        loading: 'updateProfileLoading',
+        success: "updateProfileSuccess",
+        error: "updateProfileError",
+        loading: "updateProfileLoading",
       };
       return keyMap[key] || key;
     },
-    [translationNamespace],
+    [translationNamespace]
   );
 
   const createToaster = useCallback(
-    (promise: () => Promise<unknown>) => {
-      return toast.promise(promise, {
-        success: t(getTranslationKey('success')),
-        error: t(getTranslationKey('error')),
-        loading: t(getTranslationKey('loading')),
-      });
-    },
-    [t, getTranslationKey],
+    (promise: () => Promise<unknown>) =>
+      toast.promise(promise, {
+        success: t(getTranslationKey("success")),
+        error: t(getTranslationKey("error")),
+        loading: t(getTranslationKey("loading")),
+      }),
+    [t, getTranslationKey]
   );
 
   const onValueChange = useCallback(
@@ -93,18 +92,18 @@ export function AccountImageUploader({
         createToaster(promise);
       }
     },
-    [accountId, pictureUrl, onUpdate, onSuccess, createToaster],
+    [accountId, pictureUrl, onUpdate, onSuccess, createToaster]
   );
 
   return (
-    <ImageUploader value={pictureUrl} onValueChange={onValueChange}>
-      <div className={'flex flex-col space-y-1'}>
-        <span className={'text-sm'}>
-          <Trans i18nKey={'account:profilePictureHeading'} />
+    <ImageUploader onValueChange={onValueChange} value={pictureUrl}>
+      <div className={"flex flex-col space-y-1"}>
+        <span className={"text-sm"}>
+          <Trans i18nKey={"account:profilePictureHeading"} />
         </span>
 
-        <span className={'text-xs'}>
-          <Trans i18nKey={'account:profilePictureSubheading'} />
+        <span className={"text-xs"}>
+          <Trans i18nKey={"account:profilePictureSubheading"} />
         </span>
       </div>
     </ImageUploader>
@@ -112,13 +111,15 @@ export function AccountImageUploader({
 }
 
 async function deleteProfilePhoto(url: string) {
-  const fileName = url.split('/').pop()?.split('?')[0];
+  const fileName = url.split("/").pop()?.split("?")[0];
 
   if (!fileName) {
     return;
   }
 
-  const { deleteFileFromStorage } = await import('~/core/storage/supabase-storage');
+  const { deleteFileFromStorage } = await import(
+    "~/core/storage/supabase-storage"
+  );
 
   return deleteFileFromStorage(AVATARS_BUCKET, fileName);
 }
@@ -126,11 +127,11 @@ async function deleteProfilePhoto(url: string) {
 async function uploadUserProfilePhoto(photoFile: File, userId: string) {
   const bytes = await photoFile.arrayBuffer();
   const fileName = getAvatarFileName(userId);
-  const { nanoid } = await import('nanoid');
+  const { nanoid } = await import("nanoid");
   const cacheBuster = nanoid(16);
 
   const { uploadFileToStorage, getPublicUrl } = await import(
-    '~/core/storage/supabase-storage'
+    "~/core/storage/supabase-storage"
   );
 
   const result = await uploadFileToStorage(AVATARS_BUCKET, fileName, bytes, {
@@ -149,4 +150,3 @@ async function uploadUserProfilePhoto(photoFile: File, userId: string) {
 function getAvatarFileName(userId: string) {
   return userId;
 }
-

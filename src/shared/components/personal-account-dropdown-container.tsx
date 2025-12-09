@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
-import { PersonalAccountDropdown } from '~/features/accounts/components/personal-account-dropdown';
-import { useSignOut } from '~/core/database/supabase/hooks/use-sign-out';
-import { useSession } from '~/core/auth/nextauth/hooks';
-import { JWTUserData } from '~/core/database/supabase/types';
-
-import featuresFlagConfig from '~/config/feature-flags.config';
-import pathsConfig from '~/config/paths.config';
+import featuresFlagConfig from "~/config/feature-flags.config";
+import pathsConfig from "~/config/paths.config";
+import { useSession, useSignOut } from "~/core/auth/better-auth/hooks";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import { PersonalAccountDropdown } from "~/features/accounts/components/personal-account-dropdown";
 
 const paths = {
   home: pathsConfig.app.home,
@@ -17,7 +15,7 @@ const features = {
 };
 
 export function ProfileAccountDropdownContainer(props: {
-  user?: JWTUserData | null;
+  user?: BetterAuthUser | null;
   showProfileName?: boolean;
 
   account?: {
@@ -36,13 +34,13 @@ export function ProfileAccountDropdownContainer(props: {
 
   return (
     <PersonalAccountDropdown
-      className={'w-full'}
-      paths={paths}
-      features={features}
-      user={userData}
       account={props.account}
-      signOutRequested={() => signOut.mutateAsync()}
+      className={"w-full"}
+      features={features}
+      paths={paths}
       showProfileName={props.showProfileName}
+      signOutRequested={() => signOut.mutateAsync()}
+      user={userData}
     />
   );
 }

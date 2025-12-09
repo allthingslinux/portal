@@ -1,31 +1,29 @@
-'use client';
+"use client";
 
+import { CheckCircle, File, Loader2, Upload, X } from "lucide-react";
 import {
-  type PropsWithChildren,
   createContext,
+  type PropsWithChildren,
   useCallback,
   useContext,
-} from 'react';
-
-import { CheckCircle, File, Loader2, Upload, X } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-
-import { type UseSupabaseUploadReturn } from '../hooks/use-supabase-upload';
-import { cn } from '../lib/utils';
-import { Button } from '~/components/ui/button';
-import { Trans } from './trans';
+} from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "~/components/ui/button";
+import type { UseSupabaseUploadReturn } from "../hooks/use-supabase-upload";
+import { cn } from "../lib/utils";
+import { Trans } from "./trans";
 
 export const formatBytes = (
   bytes: number,
   decimals = 2,
-  size?: 'bytes' | 'KB' | 'MB' | 'GB' | 'TB' | 'PB' | 'EB' | 'ZB' | 'YB',
+  size?: "bytes" | "KB" | "MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"
 ) => {
   const k = 1000;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const sizes = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
   if (bytes === 0 || bytes === undefined) {
-    return size !== undefined ? `0 ${size}` : '0 bytes';
+    return size !== undefined ? `0 ${size}` : "0 bytes";
   }
 
   const i =
@@ -33,16 +31,16 @@ export const formatBytes = (
       ? sizes.indexOf(size)
       : Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  return `${Number.parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 };
 
 type DropzoneContextType = Omit<
   UseSupabaseUploadReturn,
-  'getRootProps' | 'getInputProps'
+  "getRootProps" | "getInputProps"
 >;
 
 const DropzoneContext = createContext<DropzoneContextType | undefined>(
-  undefined,
+  undefined
 );
 
 type DropzoneProps = UseSupabaseUploadReturn & {
@@ -69,11 +67,11 @@ const Dropzone = ({
       <div
         {...getRootProps({
           className: cn(
-            'bg-card text-foreground rounded-lg border p-6 text-center transition-colors duration-300',
+            "rounded-lg border bg-card p-6 text-center text-foreground transition-colors duration-300",
             className,
-            isSuccess ? 'border-solid' : 'border-dashed',
-            isActive && 'border-primary',
-            isInvalid && 'border-destructive bg-destructive/10',
+            isSuccess ? "border-solid" : "border-dashed",
+            isActive && "border-primary",
+            isInvalid && "border-destructive bg-destructive/10"
           ),
         })}
       >
@@ -105,18 +103,18 @@ const DropzoneContent = ({ className }: { className?: string }) => {
     (fileName: string) => {
       setFiles(files.filter((file) => file.name !== fileName));
     },
-    [files, setFiles],
+    [files, setFiles]
   );
 
   if (isSuccess) {
     return (
       <div
         className={cn(
-          'flex flex-row items-center justify-center gap-x-2',
-          className,
+          "flex flex-row items-center justify-center gap-x-2",
+          className
         )}
       >
-        <CheckCircle size={16} className="text-primary" />
+        <CheckCircle className="text-primary" size={16} />
 
         <p className="text-primary text-sm">
           <Trans
@@ -129,78 +127,97 @@ const DropzoneContent = ({ className }: { className?: string }) => {
   }
 
   return (
-    <div className={cn('flex flex-col', className)}>
+    <div className={cn("flex flex-col", className)}>
       {files.map((file, idx) => {
         const fileError = errors.find((e) => e.name === file.name);
         const isSuccessfullyUploaded = !!successes.find((e) => e === file.name);
 
         return (
           <div
-            key={`${file.name}-${idx}`}
             className="flex items-center gap-x-4 border-b py-2 first:mt-4 last:mb-4"
+            key={`${file.name}-${idx}`}
           >
-            {file.type.startsWith('image/') ? (
-              <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+            {file.type.startsWith("image/") ? (
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded border bg-muted">
+                {/* biome-ignore lint/performance/noImgElement: local blob previews need native img */}
                 <img
-                  decoding={'async'}
-                  src={file.preview}
                   alt={file.name}
                   className="object-cover"
+                  decoding={"async"}
+                  height={40}
+                  src={file.preview}
+                  width={40}
                 />
               </div>
             ) : (
-              <div className="bg-muted flex h-10 w-10 items-center justify-center rounded border">
+              <div className="flex h-10 w-10 items-center justify-center rounded border bg-muted">
                 <File size={18} />
               </div>
             )}
 
             <div className="flex shrink grow flex-col items-start truncate">
-              <p title={file.name} className="max-w-full truncate text-sm">
+              <p className="max-w-full truncate text-sm" title={file.name}>
                 {file.name}
               </p>
 
-              {file.errors.length > 0 ? (
-                <p className="text-destructive text-xs">
-                  {file.errors
-                    .map((e) =>
-                      e.message.startsWith('File is larger than')
-                        ? t('common:dropzone.errorMessageFileSizeTooLarge', {
-                            size: formatBytes(file.size, 2),
-                            maxSize: formatBytes(maxFileSize, 2),
-                          })
-                        : e.message,
-                    )
-                    .join(', ')}
-                </p>
-              ) : loading && !isSuccessfullyUploaded ? (
-                <p className="text-muted-foreground text-xs">
-                  <Trans i18nKey="common:dropzone.uploading" />
-                </p>
-              ) : fileError ? (
-                <p className="text-destructive text-xs">
-                  <Trans
-                    i18nKey="common:dropzone.errorMessage"
-                    values={{ message: fileError.message }}
-                  />
-                </p>
-              ) : isSuccessfullyUploaded ? (
-                <p className="text-primary text-xs">
-                  <Trans i18nKey="common:dropzone.success" />
-                </p>
-              ) : (
-                <p className="text-muted-foreground text-xs">
-                  {formatBytes(file.size, 2)}
-                </p>
-              )}
+              {(() => {
+                if (file.errors.length > 0) {
+                  return (
+                    <p className="text-destructive text-xs">
+                      {file.errors
+                        .map((e) =>
+                          e.message.startsWith("File is larger than")
+                            ? t(
+                                "common:dropzone.errorMessageFileSizeTooLarge",
+                                {
+                                  size: formatBytes(file.size, 2),
+                                  maxSize: formatBytes(maxFileSize, 2),
+                                }
+                              )
+                            : e.message
+                        )
+                        .join(", ")}
+                    </p>
+                  );
+                }
+                if (loading && !isSuccessfullyUploaded) {
+                  return (
+                    <p className="text-muted-foreground text-xs">
+                      <Trans i18nKey="common:dropzone.uploading" />
+                    </p>
+                  );
+                }
+                if (fileError) {
+                  return (
+                    <p className="text-destructive text-xs">
+                      <Trans
+                        i18nKey="common:dropzone.errorMessage"
+                        values={{ message: fileError.message }}
+                      />
+                    </p>
+                  );
+                }
+                if (isSuccessfullyUploaded) {
+                  return (
+                    <p className="text-primary text-xs">
+                      <Trans i18nKey="common:dropzone.success" />
+                    </p>
+                  );
+                }
+                return (
+                  <p className="text-muted-foreground text-xs">
+                    {formatBytes(file.size, 2)}
+                  </p>
+                );
+              })()}
             </div>
 
-            {!loading && !isSuccessfullyUploaded && (
+            {!(loading || isSuccessfullyUploaded) && (
               <Button
+                className="shrink-0 justify-self-end text-muted-foreground hover:text-foreground"
+                onClick={() => handleRemoveFile(file.name)}
                 size="icon"
                 variant="link"
-                className="text-muted-foreground hover:text-foreground shrink-0 justify-self-end"
-                onClick={() => handleRemoveFile(file.name)}
               >
                 <X />
               </Button>
@@ -209,7 +226,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
         );
       })}
       {exceedMaxFiles && (
-        <p className="text-destructive mt-2 text-left text-sm">
+        <p className="mt-2 text-left text-destructive text-sm">
           <Trans
             i18nKey="common:dropzone.errorMaxFiles"
             values={{ count: maxFiles, files: files.length - maxFiles }}
@@ -219,9 +236,9 @@ const DropzoneContent = ({ className }: { className?: string }) => {
       {files.length > 0 && !exceedMaxFiles && (
         <div className="mt-2">
           <Button
-            variant="outline"
-            onClick={onUpload}
             disabled={files.some((file) => file.errors.length !== 0) || loading}
+            onClick={onUpload}
+            variant="outline"
           >
             {loading ? (
               <>
@@ -230,7 +247,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
               </>
             ) : (
               <span className="flex items-center">
-                <Upload size={20} className="mr-2 h-4 w-4" />
+                <Upload className="mr-2 h-4 w-4" size={20} />
 
                 <Trans
                   i18nKey="common:dropzone.uploadFiles"
@@ -255,8 +272,8 @@ const DropzoneEmptyState = ({ className }: { className?: string }) => {
   }
 
   return (
-    <div className={cn('flex flex-col items-center gap-y-2', className)}>
-      <Upload size={20} className="text-muted-foreground" />
+    <div className={cn("flex flex-col items-center gap-y-2", className)}>
+      <Upload className="text-muted-foreground" size={20} />
 
       <p className="text-sm">
         <Trans
@@ -267,16 +284,17 @@ const DropzoneEmptyState = ({ className }: { className?: string }) => {
 
       <div className="flex flex-col items-center gap-y-1">
         <p className="text-muted-foreground text-xs">
-          <Trans i18nKey="common:dropzone.dragAndDrop" />{' '}
-          <a
+          <Trans i18nKey="common:dropzone.dragAndDrop" />{" "}
+          <button
+            className="cursor-pointer underline transition hover:text-foreground"
             onClick={() => inputRef.current?.click()}
-            className="hover:text-foreground cursor-pointer underline transition"
+            type="button"
           >
             <Trans
               i18nKey="common:dropzone.select"
-              values={{ count: maxFiles === 1 ? `file` : 'files' }}
+              values={{ count: maxFiles === 1 ? "file" : "files" }}
             />
-          </a>{' '}
+          </button>{" "}
           <Trans i18nKey="common:dropzone.toUpload" />
         </p>
 
@@ -297,7 +315,7 @@ const useDropzoneContext = () => {
   const context = useContext(DropzoneContext);
 
   if (!context) {
-    throw new Error('useDropzoneContext must be used within a Dropzone');
+    throw new Error("useDropzoneContext must be used within a Dropzone");
   }
 
   return context;

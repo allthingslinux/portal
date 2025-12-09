@@ -3,9 +3,9 @@
  * These utilities are primarily used for styling, routing, and component-related operations.
  */
 
-import { clsx } from 'clsx';
-import type { ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import type { ClassValue } from "clsx";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 /**
  * Utility function to merge Tailwind CSS classes.
@@ -15,7 +15,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const ROOT_PATH = '/';
+const ROOT_PATH = "/";
 
 /**
  * @name isRouteActive
@@ -27,7 +27,7 @@ const ROOT_PATH = '/';
 export function isRouteActive(
   path: string,
   currentPath: string,
-  end?: boolean | ((path: string) => boolean),
+  end?: boolean | ((routePath: string) => boolean)
 ) {
   // if the path is the same as the current path, we return true
   if (path === currentPath) {
@@ -35,7 +35,7 @@ export function isRouteActive(
   }
 
   // if the end prop is a function, we call it with the current path
-  if (typeof end === 'function') {
+  if (typeof end === "function") {
     return !end(currentPath);
   }
 
@@ -61,10 +61,10 @@ export function isRouteActive(
 export function checkIfRouteIsActive(
   targetLink: string,
   currentRoute: string,
-  depth = 1,
+  depth = 1
 ) {
   // we remove any eventual query param from the route's URL
-  const currentRoutePath = currentRoute.split('?')[0] ?? '';
+  const currentRoutePath = currentRoute.split("?")[0] ?? "";
 
   if (!isRoot(currentRoutePath) && isRoot(targetLink)) {
     return false;
@@ -84,13 +84,13 @@ export function checkIfRouteIsActive(
 }
 
 function splitIntoSegments(href: string) {
-  return href.split('/').filter(Boolean);
+  return href.split("/").filter(Boolean);
 }
 
 function hasMatchingSegments(
   targetLink: string,
   currentRoute: string,
-  depth: number,
+  depth: number
 ) {
   const segments = splitIntoSegments(targetLink);
   const matchingSegments = numberOfMatchingSegments(currentRoute, segments);

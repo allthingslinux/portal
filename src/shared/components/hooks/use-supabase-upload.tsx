@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   type FileError,
   type FileRejection,
   useDropzone,
-} from 'react-dropzone';
+} from "react-dropzone";
 
-import { uploadFileToStorage } from '~/core/storage/supabase-storage';
+import { uploadFileToStorage } from "~/core/storage/supabase-storage";
 
 interface FileWithPreview extends File {
   preview?: string;
@@ -106,29 +106,34 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
           return file as FileWithPreview;
         });
 
-      const invalidFiles = fileRejections.map(({ file, errors }) => {
-        (file as FileWithPreview).preview = URL.createObjectURL(file);
-        (file as FileWithPreview).errors = errors;
+      const invalidFiles = fileRejections.map(
+        ({ file, errors: fileErrors }) => {
+          (file as FileWithPreview).preview = URL.createObjectURL(file);
+          (file as FileWithPreview).errors = fileErrors;
 
-        return file as FileWithPreview;
-      });
+          return file as FileWithPreview;
+        }
+      );
 
       const newFiles = [...files, ...validFiles, ...invalidFiles];
 
       setFiles(newFiles);
     },
-    [files, setFiles],
+    [files]
   );
 
   const dropzoneProps = useDropzone({
     onDrop,
     noClick: true,
     accept: allowedMimeTypes.reduce(
-      (acc, type) => ({ ...acc, [type]: [] }),
-      {},
+      (acc, type) => {
+        acc[type] = [];
+        return acc;
+      },
+      {} as Record<string, string[]>
     ),
     maxSize: maxFileSize,
-    maxFiles: maxFiles,
+    maxFiles,
     multiple: maxFiles !== 1,
   });
 
@@ -151,20 +156,24 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
       filesToUpload.map(async (file) => {
         const filePath = path ? `${path}/${file.name}` : file.name;
 
-        const { error } = await uploadFileToStorage(bucketName, filePath, file, {
-          cacheControl: `max-age=${cacheControl}`,
-          upsert,
-          contentType: file.type,
-        });
+        const { error } = await uploadFileToStorage(
+          bucketName,
+          filePath,
+          file,
+          {
+            cacheControl: `max-age=${cacheControl}`,
+            upsert,
+            contentType: file.type,
+          }
+        );
 
-        const fullFilePath = [bucketName, filePath].join('/');
+        const fullFilePath = [bucketName, filePath].join("/");
 
         if (error) {
           return { name: file.name, message: error.message, fullFilePath };
-        } else {
-          return { name: file.name, message: undefined, fullFilePath };
         }
-      }),
+        return { name: file.name, message: undefined, fullFilePath };
+      })
     );
 
     const responseErrors = responses.filter((x) => x.message !== undefined);
@@ -175,17 +184,15 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     const responseSuccesses = responses.filter((x) => x.message === undefined);
 
     const newSuccesses = Array.from(
-      new Set([...successes, ...responseSuccesses.map((x) => x.name)]),
+      new Set([...successes, ...responseSuccesses.map((x) => x.name)])
     );
 
     setSuccesses(newSuccesses);
 
     if (responseSuccesses.length > 0) {
-      const files = responseSuccesses.map((item) => {
-        return item.fullFilePath;
-      });
+      const uploadedFiles = responseSuccesses.map((item) => item.fullFilePath);
 
-      onUploadSuccess?.(files);
+      onUploadSuccess?.(uploadedFiles);
     }
 
     setLoading(false);
@@ -195,9 +202,6 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     errors,
     files,
     onUploadSuccess,
-    setLoading,
-    setErrors,
-    setSuccesses,
     path,
     successes,
     upsert,
@@ -205,7 +209,6 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
 
   useEffect(() => {
     if (files.length === 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setErrors([]);
     }
 
@@ -214,8 +217,8 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
       let changed = false;
 
       const newFiles = files.map((file) => {
-        if (file.errors.some((e) => e.code === 'too-many-files')) {
-          file.errors = file.errors.filter((e) => e.code !== 'too-many-files');
+        if (file.errors.some((e) => e.code === "too-many-files")) {
+          file.errors = file.errors.filter((e) => e.code !== "too-many-files");
           changed = true;
         }
         return file;
@@ -225,7 +228,7 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
         setFiles(newFiles);
       }
     }
-  }, [files.length, setFiles, maxFiles, files]);
+  }, [files.length, maxFiles, files]);
 
   return {
     files,
@@ -236,8 +239,8 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     errors,
     setErrors,
     onUpload,
-    maxFileSize: maxFileSize,
-    maxFiles: maxFiles,
+    maxFileSize,
+    maxFiles,
     allowedMimeTypes,
     ...dropzoneProps,
   };
