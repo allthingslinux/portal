@@ -1,34 +1,32 @@
-'use server';
+"use server";
 
-import { redirect } from 'next/navigation';
-
-import { and, eq } from 'drizzle-orm';
-
-import { enhanceAction } from '~/shared/next/actions';
+import { and, eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
+import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
+import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { getLogger } from "~/shared/logger";
+import { enhanceAction } from "~/shared/next/actions";
 import {
   revalidateAccountLayout,
   revalidateTeamAccountSettings,
-} from '~/shared/next/actions/revalidate-account-paths';
-import { updateAccountPictureInDatabase } from '~/shared/next/actions/update-account-picture';
-import { getLogger } from '~/shared/logger';
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
-import { accounts } from '~/core/database/supabase/drizzle/schema';
+} from "~/shared/next/actions/revalidate-account-paths";
+import { updateAccountPictureInDatabase } from "~/shared/next/actions/update-account-picture";
 
-import { CreateTeamSchema } from '../../schema/create-team.schema';
-import { DeleteTeamAccountSchema } from '../../schema/delete-team-account.schema';
-import { LeaveTeamAccountSchema } from '../../schema/leave-team-account.schema';
-import { UpdateTeamNameSchema } from '../../schema/update-team-name.schema';
-import { createCreateTeamAccountService } from '../services/create-team-account.service';
-import { createDeleteTeamAccountService } from '../services/delete-team-account.service';
-import { createLeaveTeamAccountService } from '../services/leave-team-account.service';
-import { createUpdateTeamAccountService } from '../services/update-team-account.service';
+import { CreateTeamSchema } from "../../schema/create-team.schema";
+import { DeleteTeamAccountSchema } from "../../schema/delete-team-account.schema";
+import { LeaveTeamAccountSchema } from "../../schema/leave-team-account.schema";
+import { UpdateTeamNameSchema } from "../../schema/update-team-name.schema";
+import { createCreateTeamAccountService } from "../services/create-team-account.service";
+import { createDeleteTeamAccountService } from "../services/delete-team-account.service";
+import { createLeaveTeamAccountService } from "../services/leave-team-account.service";
+import { createUpdateTeamAccountService } from "../services/update-team-account.service";
 
 /**
  * Update team account picture URL
  */
 export async function updateTeamAccountPictureUrlAction(
   accountId: string,
-  pictureUrl: string | null,
+  pictureUrl: string | null
 ) {
   await updateAccountPictureInDatabase(accountId, pictureUrl);
   revalidateTeamAccountSettings();
@@ -44,19 +42,19 @@ export const updateTeamAccountName = enhanceAction(
     const { name, path, slug } = params;
 
     const ctx = {
-      name: 'team-accounts.update',
+      name: "team-accounts.update",
       accountName: name,
     };
 
-    logger.info(ctx, `Updating team name...`);
+    logger.info(ctx, "Updating team name...");
 
     const result = await service.updateTeamName({ name, slug });
     const newSlug = result.slug;
 
-    logger.info(ctx, `Team name updated`);
+    logger.info(ctx, "Team name updated");
 
     if (newSlug) {
-      const nextPath = path.replace('[account]', newSlug);
+      const nextPath = path.replace("[account]", newSlug);
 
       redirect(nextPath);
     }
@@ -65,7 +63,7 @@ export const updateTeamAccountName = enhanceAction(
   },
   {
     schema: UpdateTeamNameSchema,
-  },
+  }
 );
 
 /**
@@ -77,12 +75,12 @@ export const createTeamAccountAction = enhanceAction(
     const service = createCreateTeamAccountService();
 
     const ctx = {
-      name: 'team-accounts.create',
+      name: "team-accounts.create",
       userId: user.id,
       accountName: name,
     };
 
-    logger.info(ctx, `Creating team account...`);
+    logger.info(ctx, "Creating team account...");
 
     const { data, error } = await service.createNewOrganizationAccount({
       name,
@@ -90,22 +88,22 @@ export const createTeamAccountAction = enhanceAction(
     });
 
     if (error) {
-      logger.error({ ...ctx, error }, `Failed to create team account`);
+      logger.error({ ...ctx, error }, "Failed to create team account");
 
       return {
         error: true,
       };
     }
 
-    logger.info(ctx, `Team account created`);
+    logger.info(ctx, "Team account created");
 
-    const accountHomePath = '/home/' + data.slug;
+    const accountHomePath = `/home/${data.slug}`;
 
     redirect(accountHomePath);
   },
   {
     schema: CreateTeamSchema,
-  },
+  }
 );
 
 /**
@@ -116,38 +114,38 @@ export const deleteTeamAccountAction = enhanceAction(
     const logger = await getLogger();
 
     const params = DeleteTeamAccountSchema.parse(
-      Object.fromEntries(formData.entries()),
+      Object.fromEntries(formData.entries())
     );
 
     const ctx = {
-      name: 'team-accounts.delete',
+      name: "team-accounts.delete",
       userId: user.id,
       accountId: params.accountId,
     };
 
     const enableTeamAccountDeletion =
-      process.env.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION === 'true';
+      process.env.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION === "true";
 
     if (!enableTeamAccountDeletion) {
-      logger.warn(ctx, `Team account deletion is not enabled`);
+      logger.warn(ctx, "Team account deletion is not enabled");
 
-      throw new Error('Team account deletion is not enabled');
+      throw new Error("Team account deletion is not enabled");
     }
 
-    logger.info(ctx, `Deleting team account...`);
+    logger.info(ctx, "Deleting team account...");
 
     await deleteTeamAccount({
       accountId: params.accountId,
       userId: user.id,
     });
 
-    logger.info(ctx, `Team account request successfully sent`);
+    logger.info(ctx, "Team account request successfully sent");
 
-    return redirect('/home');
+    return redirect("/home");
   },
   {
     auth: true,
-  },
+  }
 );
 
 /**
@@ -167,9 +165,9 @@ export const leaveTeamAccountAction = enhanceAction(
 
     revalidateAccountLayout();
 
-    return redirect('/home');
+    return redirect("/home");
   },
-  {},
+  {}
 );
 
 async function deleteTeamAccount(params: {
@@ -181,7 +179,7 @@ async function deleteTeamAccount(params: {
   // verify that the user has the necessary permissions to delete the team account
   await assertUserPermissionsToDeleteTeamAccount(
     params.accountId,
-    params.userId,
+    params.userId
   );
 
   // delete the team account
@@ -190,27 +188,28 @@ async function deleteTeamAccount(params: {
 
 async function assertUserPermissionsToDeleteTeamAccount(
   accountId: string,
-  userId: string,
+  userId: string
 ) {
   const drizzleClient = await getDrizzleSupabaseClient();
 
-  const result = await drizzleClient.runTransaction(async (tx) => {
-    return await tx
-      .select({ count: accounts.id })
-      .from(accounts)
-      .where(
-        and(
-          eq(accounts.id, accountId),
-          eq(accounts.primaryOwnerUserId, userId),
-        ),
-      )
-      .limit(1);
-  });
+  const result = await drizzleClient.runTransaction(
+    async (tx) =>
+      await tx
+        .select({ count: accounts.id })
+        .from(accounts)
+        .where(
+          and(
+            eq(accounts.id, accountId),
+            eq(accounts.primaryOwnerUserId, userId)
+          )
+        )
+        .limit(1)
+  );
 
   const isOwner = result.length > 0;
 
   if (!isOwner) {
-    throw new Error('You do not have permission to delete this account');
+    throw new Error("You do not have permission to delete this account");
   }
 
   return isOwner;

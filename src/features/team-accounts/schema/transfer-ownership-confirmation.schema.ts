@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const TransferOwnershipConfirmationSchema = z.object({
   accountId: z.string().uuid(),

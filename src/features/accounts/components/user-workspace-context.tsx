@@ -1,11 +1,9 @@
-'use client';
+"use client";
 
-import { createContext } from 'react';
+import { createContext } from "react";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
 
-import { Tables } from '~/core/database/supabase/database.types';
-import { JWTUserData } from '~/core/database/supabase/types';
-
-interface UserWorkspace {
+type UserWorkspace = {
   accounts: Array<{
     label: string | null;
     value: string | null;
@@ -18,17 +16,17 @@ interface UserWorkspace {
     picture_url: string | null;
   };
 
-  user: JWTUserData;
-}
+  user: BetterAuthUser;
+};
 
 export const UserWorkspaceContext = createContext<UserWorkspace>(
-  {} as UserWorkspace,
+  {} as UserWorkspace
 );
 
 export function UserWorkspaceContextProvider(
   props: React.PropsWithChildren<{
     value: UserWorkspace;
-  }>,
+  }>
 ) {
   return (
     <UserWorkspaceContext.Provider value={props.value}>

@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
-
-import { useSession } from '~/core/auth/nextauth/hooks';
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -16,14 +15,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '~/components/ui/alert-dialog';
-import { Button } from '~/components/ui/button';
-import { Form } from '~/components/ui/form';
-import { If } from '~/components/makerkit/if';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
+import { Form } from "~/components/ui/form";
 
-import { TransferOwnershipConfirmationSchema } from '../../schema/transfer-ownership-confirmation.schema';
-import { transferOwnershipAction } from '../../server/actions/team-members-server-actions';
+import { TransferOwnershipConfirmationSchema } from "../../schema/transfer-ownership-confirmation.schema";
+import { transferOwnershipAction } from "../../server/actions/team-members-server-actions";
 
 export function TransferOwnershipDialog({
   children,
@@ -53,8 +50,8 @@ export function TransferOwnershipDialog({
 
         <TransferOrganizationOwnershipForm
           accountId={accountId}
-          userId={userId}
           targetDisplayName={targetDisplayName}
+          userId={userId}
         />
       </AlertDialogContent>
     </AlertDialog>
@@ -72,7 +69,6 @@ function TransferOrganizationOwnershipForm({
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<boolean>();
-  const { data: user } = useSession();
 
   const form = useForm<{
     accountId: string;
@@ -83,14 +79,14 @@ function TransferOrganizationOwnershipForm({
     defaultValues: {
       accountId,
       userId,
-      otp: '', // OTP is now optional
+      otp: "", // OTP is now optional
     },
   });
 
   return (
     <Form {...form}>
       <form
-        className={'flex flex-col space-y-4 text-sm'}
+        className={"flex flex-col space-y-4 text-sm"}
         onSubmit={form.handleSubmit((data) => {
           startTransition(async () => {
             try {
@@ -105,50 +101,50 @@ function TransferOrganizationOwnershipForm({
           <TransferOwnershipErrorAlert />
         </If>
 
-        <div className="border-destructive rounded-md border p-4">
+        <div className="rounded-md border border-destructive p-4">
           <p className="text-destructive text-sm">
             <Trans
-              i18nKey={'teams:transferOwnershipDisclaimer'}
+              components={{ b: <b /> }}
+              i18nKey={"teams:transferOwnershipDisclaimer"}
               values={{
                 member: targetDisplayName,
               }}
-              components={{ b: <b /> }}
             />
           </p>
         </div>
 
-        <input type="hidden" name="otp" value="" />
-        <Alert variant={'warning'}>
+        <input name="otp" type="hidden" value="" />
+        <Alert variant={"warning"}>
           <AlertTitle>
-            <Trans i18nKey={'teams:transferOwnershipWarning'} />
+            <Trans i18nKey={"teams:transferOwnershipWarning"} />
           </AlertTitle>
           <AlertDescription>
-            <Trans i18nKey={'teams:transferOwnershipWarningDescription'} />
+            <Trans i18nKey={"teams:transferOwnershipWarningDescription"} />
           </AlertDescription>
         </Alert>
 
         <div>
-          <p className={'text-muted-foreground'}>
-            <Trans i18nKey={'common:modalConfirmationQuestion'} />
+          <p className={"text-muted-foreground"}>
+            <Trans i18nKey={"common:modalConfirmationQuestion"} />
           </p>
         </div>
 
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Trans i18nKey={'common:cancel'} />
+            <Trans i18nKey={"common:cancel"} />
           </AlertDialogCancel>
 
           <Button
-            type={'submit'}
-            data-test={'confirm-transfer-ownership-button'}
-            variant={'destructive'}
+            data-test={"confirm-transfer-ownership-button"}
             disabled={pending}
+            type={"submit"}
+            variant={"destructive"}
           >
             <If
               condition={pending}
-              fallback={<Trans i18nKey={'teams:transferOwnership'} />}
+              fallback={<Trans i18nKey={"teams:transferOwnership"} />}
             >
-              <Trans i18nKey={'teams:transferringOwnership'} />
+              <Trans i18nKey={"teams:transferringOwnership"} />
             </If>
           </Button>
         </AlertDialogFooter>
@@ -159,13 +155,13 @@ function TransferOrganizationOwnershipForm({
 
 function TransferOwnershipErrorAlert() {
   return (
-    <Alert variant={'destructive'}>
+    <Alert variant={"destructive"}>
       <AlertTitle>
-        <Trans i18nKey={'teams:transferTeamErrorHeading'} />
+        <Trans i18nKey={"teams:transferTeamErrorHeading"} />
       </AlertTitle>
 
       <AlertDescription>
-        <Trans i18nKey={'teams:transferTeamErrorMessage'} />
+        <Trans i18nKey={"teams:transferTeamErrorMessage"} />
       </AlertDescription>
     </Alert>
   );

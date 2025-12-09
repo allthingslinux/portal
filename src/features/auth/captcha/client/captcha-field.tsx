@@ -1,20 +1,19 @@
-'use client';
-
-import { useRef } from 'react';
+"use client";
 
 import {
   Turnstile,
-  TurnstileInstance,
-  TurnstileProps,
-} from '@marsidev/react-turnstile';
-import type { Control, FieldPath, FieldValues } from 'react-hook-form';
-import { useController } from 'react-hook-form';
+  type TurnstileInstance,
+  type TurnstileProps,
+} from "@marsidev/react-turnstile";
+import { useRef } from "react";
+import type { Control, FieldPath, FieldValues } from "react-hook-form";
+import { useController } from "react-hook-form";
 
-interface BaseCaptchaFieldProps {
+type BaseCaptchaFieldProps = {
   siteKey: string | undefined;
   options?: TurnstileProps;
   nonce?: string;
-}
+};
 
 interface StandaloneCaptchaFieldProps extends BaseCaptchaFieldProps {
   onTokenChange: (token: string) => void;
@@ -68,15 +67,18 @@ export function CaptchaField<
   const { siteKey, options, nonce } = props;
   const instanceRef = useRef<TurnstileInstance | null>(null);
 
+  const control = props.control;
+
+  if (!control) {
+    return null;
+  }
+
   // React Hook Form integration
-  const controller =
-    'control' in props && props.control
-      ? // eslint-disable-next-line react-hooks/rules-of-hooks
-        useController({
-          control: props.control,
-          name: props.name,
-        })
-      : null;
+  // biome-ignore lint/correctness/useHookAtTopLevel: hook only used in controlled mode
+  const controller = useController({
+    control,
+    name: props.name,
+  });
 
   if (!siteKey) {
     return null;
@@ -84,7 +86,7 @@ export function CaptchaField<
 
   const defaultOptions: Partial<TurnstileProps> = {
     options: {
-      size: 'invisible',
+      size: "invisible",
     },
   };
 
@@ -92,7 +94,7 @@ export function CaptchaField<
     if (controller) {
       // React Hook Form mode - use setValue from controller
       controller.field.onChange(token);
-    } else if ('onTokenChange' in props && props.onTokenChange) {
+    } else if ("onTokenChange" in props && props.onTokenChange) {
       // Standalone mode
       props.onTokenChange(token);
     }
@@ -101,23 +103,23 @@ export function CaptchaField<
   const handleInstanceChange = (instance: TurnstileInstance | null) => {
     instanceRef.current = instance;
 
-    if ('onInstanceChange' in props && props.onInstanceChange) {
+    if ("onInstanceChange" in props && props.onInstanceChange) {
       props.onInstanceChange(instance);
     }
   };
 
   return (
     <Turnstile
+      onSuccess={handleSuccess}
       ref={(instance) => {
         if (instance) {
           handleInstanceChange(instance);
         }
       }}
-      siteKey={siteKey}
-      onSuccess={handleSuccess}
       scriptOptions={{
         nonce,
       }}
+      siteKey={siteKey}
       {...defaultOptions}
       {...options}
     />

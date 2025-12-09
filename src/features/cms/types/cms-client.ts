@@ -1,6 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-namespace
+// biome-ignore lint/style/noNamespace: shared Cms namespace is used across the codebase
 export namespace Cms {
-  export interface ContentItem {
+  export type ContentItem = {
     id: string;
     title: string;
     label: string | undefined;
@@ -18,23 +18,23 @@ export namespace Cms {
     parentId: string | undefined;
     collapsible?: boolean;
     collapsed?: boolean;
-  }
+  };
 
-  export type ContentItemStatus = 'draft' | 'published' | 'review' | 'pending';
+  export type ContentItemStatus = "draft" | "published" | "review" | "pending";
 
-  export interface Category {
+  export type Category = {
     id: string;
     name: string;
     slug: string;
-  }
+  };
 
-  export interface Tag {
+  export type Tag = {
     id: string;
     name: string;
     slug: string;
-  }
+  };
 
-  export interface GetContentItemsOptions {
+  export type GetContentItemsOptions = {
     collection: string;
     limit?: number;
     offset?: number;
@@ -43,22 +43,22 @@ export namespace Cms {
     content?: boolean;
     parentIds?: string[];
     language?: string | undefined;
-    sortDirection?: 'asc' | 'desc';
-    sortBy?: 'publishedAt' | 'order' | 'title';
+    sortDirection?: "asc" | "desc";
+    sortBy?: "publishedAt" | "order" | "title";
     status?: ContentItemStatus;
-  }
+  };
 
-  export interface GetCategoriesOptions {
+  export type GetCategoriesOptions = {
     slugs?: string[];
     limit?: number;
     offset?: number;
-  }
+  };
 
-  export interface GetTagsOptions {
+  export type GetTagsOptions = {
     slugs?: string[];
     limit?: number;
     offset?: number;
-  }
+  };
 }
 
 /**
@@ -91,7 +91,7 @@ export abstract class CmsClient {
    * @returns A promise that resolves to an array of categories.
    */
   abstract getCategories(
-    options?: Cms.GetCategoriesOptions,
+    options?: Cms.GetCategoriesOptions
   ): Promise<Cms.Category[]>;
 
   /**

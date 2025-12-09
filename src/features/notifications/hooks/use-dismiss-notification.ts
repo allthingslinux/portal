@@ -1,12 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import { dismissNotificationAction } from '~/features/accounts/server/notifications-server-actions';
+import { dismissNotificationAction } from "~/features/accounts/server/notifications-server-actions";
 
 export function useDismissNotification() {
-  return useCallback(
-    async (notificationId: number) => {
-      await dismissNotificationAction(notificationId);
-    },
-    [],
-  );
+  return useCallback(async (notificationId: number) => {
+    await dismissNotificationAction(notificationId);
+  }, []);
 }

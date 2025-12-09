@@ -1,20 +1,17 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { Separator } from "~/components/ui/separator";
+import type { Provider } from "~/core/database/supabase/supabase-types";
+import { isBrowser } from "~/shared/utils";
 
-import { useRouter } from 'next/navigation';
-
-import type { Provider } from '~/core/database/supabase/supabase-types';
-
-import { isBrowser } from '~/shared/utils';
-import { If } from '~/components/makerkit/if';
-import { Separator } from '~/components/ui/separator';
-import { Trans } from '~/components/makerkit/trans';
-
-import { LastAuthMethodHint } from './last-auth-method-hint';
-import { MagicLinkAuthContainer } from './magic-link-auth-container';
-import { OauthProviders } from './oauth-providers';
-import { PasswordSignInContainer } from './password-sign-in-container';
+import { LastAuthMethodHint } from "./last-auth-method-hint";
+import { MagicLinkAuthContainer } from "./magic-link-auth-container";
+import { OauthProviders } from "./oauth-providers";
+import { PasswordSignInContainer } from "./password-sign-in-container";
 
 export function SignInMethodsContainer(props: {
   paths: {
@@ -35,10 +32,10 @@ export function SignInMethodsContainer(props: {
 
   const redirectUrl = isBrowser()
     ? new URL(props.paths.callback, window?.location.origin).toString()
-    : '';
+    : "";
 
   const onSignIn = useCallback(() => {
-    const returnPath = props.paths.returnPath || '/home';
+    const returnPath = props.paths.returnPath || "/home";
 
     router.replace(returnPath);
   }, [props.paths.returnPath, router]);
@@ -49,16 +46,16 @@ export function SignInMethodsContainer(props: {
 
       <If condition={props.providers.password}>
         <PasswordSignInContainer
-          onSignIn={onSignIn}
           captchaSiteKey={props.captchaSiteKey}
+          onSignIn={onSignIn}
         />
       </If>
 
       <If condition={props.providers.magicLink}>
         <MagicLinkAuthContainer
+          captchaSiteKey={props.captchaSiteKey}
           redirectUrl={redirectUrl}
           shouldCreateUser={false}
-          captchaSiteKey={props.captchaSiteKey}
         />
       </If>
 
@@ -69,7 +66,7 @@ export function SignInMethodsContainer(props: {
           </div>
 
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background text-muted-foreground px-2">
+            <span className="bg-background px-2 text-muted-foreground">
               <Trans i18nKey="auth:orContinueWith" />
             </span>
           </div>
@@ -77,11 +74,11 @@ export function SignInMethodsContainer(props: {
 
         <OauthProviders
           enabledProviders={props.providers.oAuth}
-          shouldCreateUser={false}
           paths={{
             callback: props.paths.callback,
             returnPath: props.paths.returnPath,
           }}
+          shouldCreateUser={false}
         />
       </If>
     </>

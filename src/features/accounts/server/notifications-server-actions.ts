@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
-import { and, eq, gt, inArray, sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from "drizzle-orm";
 
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
-import { notifications } from '~/core/database/supabase/drizzle/schema';
+import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
+import { notifications } from "~/core/database/supabase/drizzle/schema";
 
 /**
  * Dismiss a notification
@@ -26,27 +26,28 @@ export async function fetchNotificationsAction(accountIds: string[]) {
   const drizzleClient = await getDrizzleSupabaseClient();
   const now = new Date().toISOString();
 
-  const result = (await drizzleClient.runTransaction(async (tx) => {
-    return await tx
-      .select({
-        id: notifications.id,
-        body: notifications.body,
-        dismissed: notifications.dismissed,
-        type: notifications.type,
-        createdAt: notifications.createdAt,
-        link: notifications.link,
-      })
-      .from(notifications)
-      .where(
-        and(
-          inArray(notifications.accountId, accountIds),
-          eq(notifications.dismissed, false),
-          sql`${notifications.expiresAt} > ${now}`,
-        ),
-      )
-      .orderBy(sql`${notifications.createdAt} DESC`)
-      .limit(10);
-  })) as Array<{
+  const result = (await drizzleClient.runTransaction(
+    async (tx) =>
+      await tx
+        .select({
+          id: notifications.id,
+          body: notifications.body,
+          dismissed: notifications.dismissed,
+          type: notifications.type,
+          createdAt: notifications.createdAt,
+          link: notifications.link,
+        })
+        .from(notifications)
+        .where(
+          and(
+            inArray(notifications.accountId, accountIds),
+            eq(notifications.dismissed, false),
+            sql`${notifications.expiresAt} > ${now}`
+          )
+        )
+        .orderBy(sql`${notifications.createdAt} DESC`)
+        .limit(10)
+  )) as Array<{
     id: number;
     body: string;
     dismissed: boolean;
@@ -64,4 +65,3 @@ export async function fetchNotificationsAction(accountIds: string[]) {
     link: n.link,
   }));
 }
-

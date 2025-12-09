@@ -1,39 +1,37 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-
-import { ColumnDef } from '@tanstack/react-table';
-import { Ellipsis } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-
-import { Database } from '~/core/database/supabase/database.types';
-import { Badge } from '~/components/ui/badge';
-import { Button } from '~/components/ui/button';
-import { DataTable } from '~/components/ui/data-table';
+import type { ColumnDef } from "@tanstack/react-table";
+import { Ellipsis } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { If } from "~/components/makerkit/if";
+import { ProfileAvatar } from "~/components/makerkit/profile-avatar";
+import { Trans } from "~/components/makerkit/trans";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { DataTable } from "~/components/ui/data-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { If } from '~/components/makerkit/if';
-import { Input } from '~/components/ui/input';
-import { ProfileAvatar } from '~/components/makerkit/profile-avatar';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/dropdown-menu";
+import { Input } from "~/components/ui/input";
+import type { Database } from "~/core/database/supabase/database.types";
 
-import { RemoveMemberDialog } from './remove-member-dialog';
-import { RoleBadge } from './role-badge';
-import { TransferOwnershipDialog } from './transfer-ownership-dialog';
-import { UpdateMemberRoleDialog } from './update-member-role-dialog';
+import { RemoveMemberDialog } from "./remove-member-dialog";
+import { RoleBadge } from "./role-badge";
+import { TransferOwnershipDialog } from "./transfer-ownership-dialog";
+import { UpdateMemberRoleDialog } from "./update-member-role-dialog";
 
 type Members =
-  Database['public']['Functions']['get_account_members']['Returns'];
+  Database["public"]["Functions"]["get_account_members"]["Returns"];
 
-interface Permissions {
+type Permissions = {
   canUpdateRole: (roleHierarchy: number) => boolean;
   canRemoveFromAccount: (roleHierarchy: number) => boolean;
   canTransferOwnership: boolean;
-}
+};
 
 type AccountMembersTableProps = {
   members: Members;
@@ -52,20 +50,14 @@ export function AccountMembersTable({
   userRoleHierarchy,
   canManageRoles,
 }: AccountMembersTableProps) {
-  const [search, setSearch] = useState('');
-  const { t } = useTranslation('teams');
+  const [search, setSearch] = useState("");
+  const { t } = useTranslation("teams");
 
   const permissions = {
-    canUpdateRole: (targetRole: number) => {
-      return (
-        isPrimaryOwner || (canManageRoles && userRoleHierarchy < targetRole)
-      );
-    },
-    canRemoveFromAccount: (targetRole: number) => {
-      return (
-        isPrimaryOwner || (canManageRoles && userRoleHierarchy < targetRole)
-      );
-    },
+    canUpdateRole: (targetRole: number) =>
+      isPrimaryOwner || (canManageRoles && userRoleHierarchy < targetRole),
+    canRemoveFromAccount: (targetRole: number) =>
+      isPrimaryOwner || (canManageRoles && userRoleHierarchy < targetRole),
     canTransferOwnership: isPrimaryOwner,
   };
 
@@ -81,8 +73,8 @@ export function AccountMembersTable({
 
       const displayName = (
         member.name ??
-        member.email.split('@')[0] ??
-        ''
+        member.email.split("@")[0] ??
+        ""
       ).toLowerCase();
 
       return (
@@ -103,11 +95,11 @@ export function AccountMembersTable({
     });
 
   return (
-    <div className={'flex flex-col space-y-2'}>
+    <div className={"flex flex-col space-y-2"}>
       <Input
-        value={search}
         onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
-        placeholder={t(`searchMembersPlaceholder`)}
+        placeholder={t("searchMembersPlaceholder")}
+        value={search}
       />
 
       <DataTable columns={columns} data={filteredMembers} />
@@ -121,22 +113,22 @@ function useGetColumns(
     currentUserId: string;
     currentAccountId: string;
     currentRoleHierarchy: number;
-  },
+  }
 ): ColumnDef<Members[0]>[] {
-  const { t } = useTranslation('teams');
+  const { t } = useTranslation("teams");
 
   return useMemo(
     () => [
       {
-        header: t('memberName'),
+        header: t("memberName"),
         size: 200,
         cell: ({ row }) => {
           const member = row.original;
-          const displayName = member.name ?? member.email.split('@')[0];
+          const displayName = member.name ?? member.email.split("@")[0];
           const isSelf = member.user_id === params.currentUserId;
 
           return (
-            <span className={'flex items-center space-x-4 text-left'}>
+            <span className={"flex items-center space-x-4 text-left"}>
               <span>
                 <ProfileAvatar
                   displayName={displayName}
@@ -147,36 +139,34 @@ function useGetColumns(
               <span>{displayName}</span>
 
               <If condition={isSelf}>
-                <Badge variant={'outline'}>{t('youLabel')}</Badge>
+                <Badge variant={"outline"}>{t("youLabel")}</Badge>
               </If>
             </span>
           );
         },
       },
       {
-        header: t('emailLabel'),
-        accessorKey: 'email',
-        cell: ({ row }) => {
-          return row.original.email ?? '-';
-        },
+        header: t("emailLabel"),
+        accessorKey: "email",
+        cell: ({ row }) => row.original.email ?? "-",
       },
       {
-        header: t('roleLabel'),
+        header: t("roleLabel"),
         cell: ({ row }) => {
           const { role, primary_owner_user_id, user_id } = row.original;
           const isPrimaryOwner = primary_owner_user_id === user_id;
 
           return (
-            <span className={'flex items-center space-x-1'}>
+            <span className={"flex items-center space-x-1"}>
               <RoleBadge role={role} />
 
               <If condition={isPrimaryOwner}>
                 <span
                   className={
-                    'rounded-md bg-yellow-400 px-2.5 py-1 text-xs font-medium dark:text-black'
+                    "rounded-md bg-yellow-400 px-2.5 py-1 font-medium text-xs dark:text-black"
                   }
                 >
-                  {t('primaryOwnerLabel')}
+                  {t("primaryOwnerLabel")}
                 </span>
               </If>
             </span>
@@ -184,26 +174,25 @@ function useGetColumns(
         },
       },
       {
-        header: t('joinedAtLabel'),
-        cell: ({ row }) => {
-          return new Date(row.original.created_at).toLocaleDateString();
-        },
+        header: t("joinedAtLabel"),
+        cell: ({ row }) =>
+          new Date(row.original.created_at).toLocaleDateString(),
       },
       {
-        header: '',
-        id: 'actions',
+        header: "",
+        id: "actions",
         cell: ({ row }) => (
           <ActionsDropdown
-            permissions={permissions}
-            member={row.original}
-            currentUserId={params.currentUserId}
-            currentTeamAccountId={params.currentAccountId}
             currentRoleHierarchy={params.currentRoleHierarchy}
+            currentTeamAccountId={params.currentAccountId}
+            currentUserId={params.currentUserId}
+            member={row.original}
+            permissions={permissions}
           />
         ),
       },
     ],
-    [t, params, permissions],
+    [t, params, permissions]
   );
 }
 
@@ -236,60 +225,56 @@ function ActionsDropdown({
   // if has no permission to update role, transfer ownership or remove from account
   // do not render the dropdown menu
   if (
-    !canUpdateRole &&
-    !permissions.canTransferOwnership &&
-    !canRemoveFromAccount
+    !(canUpdateRole || permissions.canTransferOwnership || canRemoveFromAccount)
   ) {
     return null;
   }
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant={'ghost'} size={'icon'}>
-            <Ellipsis className={'h-5 w-5'} />
-          </Button>
-        </DropdownMenuTrigger>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size={"icon"} variant={"ghost"}>
+          <Ellipsis className={"h-5 w-5"} />
+        </Button>
+      </DropdownMenuTrigger>
 
-        <DropdownMenuContent>
-          <If condition={canUpdateRole}>
-            <UpdateMemberRoleDialog
-              userId={member.user_id}
-              userRole={member.role}
-              teamAccountId={currentTeamAccountId}
-              userRoleHierarchy={currentRoleHierarchy}
-            >
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                <Trans i18nKey={'teams:updateRole'} />
-              </DropdownMenuItem>
-            </UpdateMemberRoleDialog>
-          </If>
+      <DropdownMenuContent>
+        <If condition={canUpdateRole}>
+          <UpdateMemberRoleDialog
+            teamAccountId={currentTeamAccountId}
+            userId={member.user_id}
+            userRole={member.role}
+            userRoleHierarchy={currentRoleHierarchy}
+          >
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <Trans i18nKey={"teams:updateRole"} />
+            </DropdownMenuItem>
+          </UpdateMemberRoleDialog>
+        </If>
 
-          <If condition={permissions.canTransferOwnership}>
-            <TransferOwnershipDialog
-              targetDisplayName={member.name ?? member.email}
-              accountId={member.account_id}
-              userId={member.user_id}
-            >
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                <Trans i18nKey={'teams:transferOwnership'} />
-              </DropdownMenuItem>
-            </TransferOwnershipDialog>
-          </If>
+        <If condition={permissions.canTransferOwnership}>
+          <TransferOwnershipDialog
+            accountId={member.account_id}
+            targetDisplayName={member.name ?? member.email}
+            userId={member.user_id}
+          >
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <Trans i18nKey={"teams:transferOwnership"} />
+            </DropdownMenuItem>
+          </TransferOwnershipDialog>
+        </If>
 
-          <If condition={canRemoveFromAccount}>
-            <RemoveMemberDialog
-              teamAccountId={currentTeamAccountId}
-              userId={member.user_id}
-            >
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                <Trans i18nKey={'teams:removeMember'} />
-              </DropdownMenuItem>
-            </RemoveMemberDialog>
-          </If>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+        <If condition={canRemoveFromAccount}>
+          <RemoveMemberDialog
+            teamAccountId={currentTeamAccountId}
+            userId={member.user_id}
+          >
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <Trans i18nKey={"teams:removeMember"} />
+            </DropdownMenuItem>
+          </RemoveMemberDialog>
+        </If>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

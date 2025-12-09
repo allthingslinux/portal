@@ -1,13 +1,13 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { Database } from '~/core/database/supabase/database.types';
-import { updateAccountDataAction } from '../server/personal-accounts-server-actions';
+import type { Database } from "~/core/database/supabase/database.types";
+import { updateAccountDataAction } from "../server/personal-accounts-server-actions";
 
-type UpdateData = Database['public']['Tables']['accounts']['Update'];
+type UpdateData = Database["public"]["Tables"]["accounts"]["Update"];
 
 export function useUpdateAccountData(accountId: string) {
   const queryClient = useQueryClient();
-  const mutationKey = ['account:data', accountId];
+  const mutationKey = ["account:data", accountId];
 
   const mutationFn = async (data: UpdateData) => {
     await updateAccountDataAction(accountId, {
@@ -16,7 +16,7 @@ export function useUpdateAccountData(accountId: string) {
     });
 
     // Invalidate account data queries
-    await queryClient.invalidateQueries({ queryKey: ['account:data'] });
+    await queryClient.invalidateQueries({ queryKey: ["account:data"] });
   };
 
   return useMutation({

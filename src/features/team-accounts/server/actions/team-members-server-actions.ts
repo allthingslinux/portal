@@ -1,17 +1,16 @@
-'use server';
+"use server";
 
-import { eq } from 'drizzle-orm';
+import { eq } from "drizzle-orm";
+import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
+import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { getLogger } from "~/shared/logger";
+import { enhanceAction } from "~/shared/next/actions";
+import { revalidateAccountLayout } from "~/shared/next/actions/revalidate-account-paths";
 
-import { enhanceAction } from '~/shared/next/actions';
-import { revalidateAccountLayout } from '~/shared/next/actions/revalidate-account-paths';
-import { getLogger } from '~/shared/logger';
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
-import { accounts } from '~/core/database/supabase/drizzle/schema';
-
-import { RemoveMemberSchema } from '../../schema/remove-member.schema';
-import { TransferOwnershipConfirmationSchema } from '../../schema/transfer-ownership-confirmation.schema';
-import { UpdateMemberRoleSchema } from '../../schema/update-member-role.schema';
-import { createAccountMembersService } from '../services/account-members.service';
+import { RemoveMemberSchema } from "../../schema/remove-member.schema";
+import { TransferOwnershipConfirmationSchema } from "../../schema/transfer-ownership-confirmation.schema";
+import { UpdateMemberRoleSchema } from "../../schema/update-member-role.schema";
+import { createAccountMembersService } from "../services/account-members.service";
 
 /**
  * @name removeMemberFromAccountAction
@@ -33,7 +32,7 @@ export const removeMemberFromAccountAction = enhanceAction(
   },
   {
     schema: RemoveMemberSchema,
-  },
+  }
 );
 
 /**
@@ -54,7 +53,7 @@ export const updateMemberRoleAction = enhanceAction(
   },
   {
     schema: UpdateMemberRoleSchema,
-  },
+  }
 );
 
 /**
@@ -67,37 +66,37 @@ export const transferOwnershipAction = enhanceAction(
     const logger = await getLogger();
 
     const ctx = {
-      name: 'teams.transferOwnership',
+      name: "teams.transferOwnership",
       userId: user.id,
       accountId: data.accountId,
     };
 
-    logger.info(ctx, 'Processing team ownership transfer request...');
+    logger.info(ctx, "Processing team ownership transfer request...");
 
     // assert that the user is the owner of the account
     const drizzleClient = await getDrizzleSupabaseClient();
-    const ownerCheck = await drizzleClient.runTransaction(async (tx) => {
-      return tx
+    const ownerCheck = await drizzleClient.runTransaction(async (tx) =>
+      tx
         .select({ count: true })
         .from(accounts)
         .where(eq(accounts.id, data.accountId))
-        .where(eq(accounts.primaryOwnerUserId, user.id));
-    });
+        .where(eq(accounts.primaryOwnerUserId, user.id))
+    );
 
     const isOwner = ownerCheck.length > 0;
 
     if (!isOwner) {
-      logger.error(ctx, 'User is not the owner of this account');
+      logger.error(ctx, "User is not the owner of this account");
 
       throw new Error(
-        `You must be the owner of the account to transfer ownership`,
+        "You must be the owner of the account to transfer ownership"
       );
     }
 
     // OTP verification removed - ownership transfer now requires only owner authentication
     logger.info(
       ctx,
-      'Proceeding with ownership transfer (OTP verification removed)...',
+      "Proceeding with ownership transfer (OTP verification removed)..."
     );
 
     const service = createAccountMembersService();
@@ -111,7 +110,7 @@ export const transferOwnershipAction = enhanceAction(
     // revalidate all pages that depend on the account
     revalidateAccountLayout();
 
-    logger.info(ctx, 'Team ownership transferred successfully');
+    logger.info(ctx, "Team ownership transferred successfully");
 
     return {
       success: true,
@@ -119,5 +118,5 @@ export const transferOwnershipAction = enhanceAction(
   },
   {
     schema: TransferOwnershipConfirmationSchema,
-  },
+  }
 );

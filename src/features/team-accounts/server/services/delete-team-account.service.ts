@@ -1,17 +1,16 @@
-import 'server-only';
+import "server-only";
 
-import { eq } from 'drizzle-orm';
-
-import { getLogger } from '~/shared/logger';
-import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
-import { accounts } from '~/core/database/supabase/drizzle/schema';
+import { eq } from "drizzle-orm";
+import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
+import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { getLogger } from "~/shared/logger";
 
 export function createDeleteTeamAccountService() {
   return new DeleteTeamAccountService();
 }
 
 class DeleteTeamAccountService {
-  private readonly namespace = 'accounts.delete-team-account';
+  private readonly namespace = "accounts.delete-team-account";
 
   /**
    * Deletes a team account. Permissions are not checked here, as they are
@@ -31,7 +30,7 @@ class DeleteTeamAccountService {
       name: this.namespace,
     };
 
-    logger.info(ctx, `Requested team account deletion. Processing...`);
+    logger.info(ctx, "Requested team account deletion. Processing...");
 
     // Use admin client to delete the account (bypasses RLS)
     try {
@@ -39,14 +38,14 @@ class DeleteTeamAccountService {
         .delete(accounts)
         .where(eq(accounts.id, params.accountId));
 
-      logger.info(ctx, `Team account successfully deleted`);
+      logger.info(ctx, "Team account successfully deleted");
     } catch (error) {
       logger.error(
         {
           ...ctx,
           error,
         },
-        `Failed to delete team account`,
+        "Failed to delete team account"
       );
 
       throw error;

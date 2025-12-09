@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from "react";
 
-import type { AuthMethod, LastAuthMethod } from '../utils/last-auth-method';
+import type { AuthMethod, LastAuthMethod } from "../utils/last-auth-method";
 import {
   clearLastAuthMethod,
   getLastAuthMethod,
   saveLastAuthMethod,
-} from '../utils/last-auth-method';
+} from "../utils/last-auth-method";
 
 export function useLastAuthMethod() {
   const [lastAuthMethod, setLastAuthMethod] = useState<LastAuthMethod | null>(
-    getLastAuthMethod(),
+    getLastAuthMethod()
   );
 
   // Save a new auth method - memoized to prevent unnecessary re-renders
@@ -21,7 +21,7 @@ export function useLastAuthMethod() {
       options?: {
         provider?: string;
         email?: string;
-      },
+      }
     ) => {
       const authMethod: LastAuthMethod = {
         method,
@@ -33,7 +33,7 @@ export function useLastAuthMethod() {
       saveLastAuthMethod(authMethod);
       setLastAuthMethod(authMethod);
     },
-    [],
+    []
   );
 
   // Clear the stored auth method - memoized to prevent unnecessary re-renders
@@ -53,7 +53,7 @@ export function useLastAuthMethod() {
       };
     }
 
-    const isOAuth = lastAuthMethod.method === 'oauth';
+    const isOAuth = lastAuthMethod.method === "oauth";
 
     const providerName =
       isOAuth && lastAuthMethod.provider

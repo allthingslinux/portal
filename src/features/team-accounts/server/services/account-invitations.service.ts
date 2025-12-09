@@ -1,20 +1,19 @@
-import 'server-only';
+import "server-only";
 
-import { addDays, formatISO } from 'date-fns';
-import { and, eq } from 'drizzle-orm';
-import { z } from 'zod';
-
-import { getLogger } from '~/shared/logger';
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
+import { addDays, formatISO } from "date-fns";
+import { and, eq } from "drizzle-orm";
+import type { z } from "zod";
+import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
 import {
   accounts,
   accountsMemberships,
   invitations,
-} from '~/core/database/supabase/drizzle/schema';
+} from "~/core/database/supabase/drizzle/schema";
+import { getLogger } from "~/shared/logger";
 
-import type { DeleteInvitationSchema } from '../../schema/delete-invitation.schema';
-import type { InviteMembersSchema } from '../../schema/invite-members.schema';
-import type { UpdateInvitationSchema } from '../../schema/update-invitation.schema';
+import type { DeleteInvitationSchema } from "../../schema/delete-invitation.schema";
+import type { InviteMembersSchema } from "../../schema/invite-members.schema";
+import type { UpdateInvitationSchema } from "../../schema/update-invitation.schema";
 
 /**
  * Create an account invitations service using Drizzle.
@@ -28,7 +27,7 @@ export function createAccountInvitationsService() {
  * @description Service for managing account invitations using Drizzle.
  */
 class AccountInvitationsService {
-  private readonly namespace = 'invitations';
+  private readonly namespace = "invitations";
 
   /**
    * @name deleteInvitation
@@ -44,19 +43,20 @@ class AccountInvitationsService {
       ...params,
     };
 
-    logger.info(ctx, 'Removing invitation...');
+    logger.info(ctx, "Removing invitation...");
 
     try {
-      const result = await drizzleClient.runTransaction(async (tx) => {
-        return await tx
-          .delete(invitations)
-          .where(eq(invitations.id, params.invitationId));
-      });
+      const result = await drizzleClient.runTransaction(
+        async (tx) =>
+          await tx
+            .delete(invitations)
+            .where(eq(invitations.id, params.invitationId))
+      );
 
-      logger.info(ctx, 'Invitation successfully removed');
+      logger.info(ctx, "Invitation successfully removed");
       return result;
     } catch (error) {
-      logger.error(ctx, `Failed to remove invitation`);
+      logger.error(ctx, "Failed to remove invitation");
       throw error;
     }
   }
@@ -75,19 +75,20 @@ class AccountInvitationsService {
       ...params,
     };
 
-    logger.info(ctx, 'Updating invitation...');
+    logger.info(ctx, "Updating invitation...");
 
     try {
-      const result = await drizzleClient.runTransaction(async (tx) => {
-        return await tx
-          .update(invitations)
-          .set({
-            role: params.role,
-          })
-          .where(eq(invitations.id, params.invitationId));
-      });
+      const result = await drizzleClient.runTransaction(
+        async (tx) =>
+          await tx
+            .update(invitations)
+            .set({
+              role: params.role,
+            })
+            .where(eq(invitations.id, params.invitationId))
+      );
 
-      logger.info(ctx, 'Invitation successfully updated');
+      logger.info(ctx, "Invitation successfully updated");
       return result;
     } catch (error) {
       logger.error(
@@ -95,15 +96,15 @@ class AccountInvitationsService {
           ...ctx,
           error,
         },
-        'Failed to update invitation',
+        "Failed to update invitation"
       );
       throw error;
     }
   }
 
   async validateInvitation(
-    invitation: z.infer<typeof InviteMembersSchema>['invitations'][number],
-    accountSlug: string,
+    _invitation: z.infer<typeof InviteMembersSchema>["invitations"][number],
+    accountSlug: string
   ) {
     const drizzleClient = await getDrizzleSupabaseClient();
 
@@ -116,17 +117,17 @@ class AccountInvitationsService {
           .innerJoin(accounts, eq(accountsMemberships.accountId, accounts.id))
           .where(
             and(
-              eq(accounts.slug, accountSlug),
+              eq(accounts.slug, accountSlug)
               // We would need to join with users table to check by email
               // For now, this is a simplified version
-            ),
+            )
           )
           .limit(1);
-      },
+      }
     );
 
     if (existingMembership.length > 0) {
-      throw new Error('User already member of the team');
+      throw new Error("User already member of the team");
     }
   }
 
@@ -140,7 +141,7 @@ class AccountInvitationsService {
     accountSlug,
     invitations: invitationData,
   }: {
-    invitations: z.infer<typeof InviteMembersSchema>['invitations'];
+    invitations: z.infer<typeof InviteMembersSchema>["invitations"];
     accountSlug: string;
   }) {
     const logger = await getLogger();
@@ -151,13 +152,13 @@ class AccountInvitationsService {
       name: this.namespace,
     };
 
-    logger.info(ctx, 'Storing invitations...');
+    logger.info(ctx, "Storing invitations...");
 
     try {
       await Promise.all(
         invitationData.map((invitation) =>
-          this.validateInvitation(invitation, accountSlug),
-        ),
+          this.validateInvitation(invitation, accountSlug)
+        )
       );
     } catch (error) {
       logger.error(
@@ -165,28 +166,29 @@ class AccountInvitationsService {
           ...ctx,
           error: (error as Error).message,
         },
-        'Error validating invitations',
+        "Error validating invitations"
       );
 
       throw error;
     }
 
     // Get account name
-    const accountResult = await drizzleClient.runTransaction(async (tx) => {
-      return await tx
-        .select({ name: accounts.name })
-        .from(accounts)
-        .where(eq(accounts.slug, accountSlug))
-        .limit(1);
-    });
+    const accountResult = await drizzleClient.runTransaction(
+      async (tx) =>
+        await tx
+          .select({ name: accounts.name })
+          .from(accounts)
+          .where(eq(accounts.slug, accountSlug))
+          .limit(1)
+    );
 
     if (accountResult.length === 0) {
       logger.error(
         ctx,
-        'Account not found in database. Cannot send invitations.',
+        "Account not found in database. Cannot send invitations."
       );
 
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
 
     // TODO: Replace with Drizzle implementation of add_invitations_to_account RPC
@@ -195,9 +197,9 @@ class AccountInvitationsService {
     logger.info(
       {
         ...ctx,
-        message: 'TODO: Implement add_invitations_to_account in Drizzle',
+        message: "TODO: Implement add_invitations_to_account in Drizzle",
       },
-      'Invitations storage placeholder',
+      "Invitations storage placeholder"
     );
 
     // Placeholder for invitation data that would come from the RPC
@@ -213,7 +215,7 @@ class AccountInvitationsService {
         ...ctx,
         count: responseInvitations.length,
       },
-      'Invitations added to account',
+      "Invitations added to account"
     );
 
     await this.dispatchInvitationEmails(ctx, responseInvitations as unknown[]);
@@ -236,20 +238,21 @@ class AccountInvitationsService {
       ...params,
     };
 
-    logger.info(ctx, 'Accepting invitation to team');
+    logger.info(ctx, "Accepting invitation to team");
 
     // Get invitation details
-    const invitationResult = await drizzleClient.runTransaction(async (tx) => {
-      return await tx
-        .select({ email: invitations.email })
-        .from(invitations)
-        .where(eq(invitations.inviteToken, params.inviteToken))
-        .limit(1);
-    });
+    const invitationResult = await drizzleClient.runTransaction(
+      async (tx) =>
+        await tx
+          .select({ email: invitations.email })
+          .from(invitations)
+          .where(eq(invitations.inviteToken, params.inviteToken))
+          .limit(1)
+    );
 
     if (invitationResult.length === 0) {
-      logger.error(ctx, 'Invitation not found');
-      throw new Error('Invitation not found');
+      logger.error(ctx, "Invitation not found");
+      throw new Error("Invitation not found");
     }
 
     const invitation = invitationResult[0];
@@ -258,9 +261,9 @@ class AccountInvitationsService {
     if (invitation.email !== params.userEmail) {
       logger.error({
         ...ctx,
-        error: 'Invitation email does not match user email',
+        error: "Invitation email does not match user email",
       });
-      throw new Error('Invitation email does not match user email');
+      throw new Error("Invitation email does not match user email");
     }
 
     // TODO: Replace with Drizzle implementation of accept_invitation RPC
@@ -269,7 +272,7 @@ class AccountInvitationsService {
     // 2. Creates a membership record
     // 3. Marks the invitation as used or deletes it
 
-    logger.info(ctx, 'Successfully accepted invitation to team');
+    logger.info(ctx, "Successfully accepted invitation to team");
     return { success: true };
   }
 
@@ -287,21 +290,22 @@ class AccountInvitationsService {
       name: this.namespace,
     };
 
-    logger.info(ctx, 'Renewing invitation...');
+    logger.info(ctx, "Renewing invitation...");
 
     const sevenDaysFromNow = formatISO(addDays(new Date(), 7));
 
     try {
-      const result = await drizzleClient.runTransaction(async (tx) => {
-        return await tx
-          .update(invitations)
-          .set({
-            expiresAt: sevenDaysFromNow,
-          })
-          .where(eq(invitations.id, invitationId));
-      });
+      const result = await drizzleClient.runTransaction(
+        async (tx) =>
+          await tx
+            .update(invitations)
+            .set({
+              expiresAt: sevenDaysFromNow,
+            })
+            .where(eq(invitations.id, invitationId))
+      );
 
-      logger.info(ctx, 'Invitation successfully renewed');
+      logger.info(ctx, "Invitation successfully renewed");
       return result;
     } catch (error) {
       logger.error(
@@ -309,7 +313,7 @@ class AccountInvitationsService {
           ...ctx,
           error,
         },
-        'Failed to renew invitation',
+        "Failed to renew invitation"
       );
       throw error;
     }
@@ -324,7 +328,7 @@ class AccountInvitationsService {
    */
   private async dispatchInvitationEmails(
     ctx: { accountSlug: string; name: string },
-    _invitations: unknown[], // Using unknown for now to match existing interface
+    _invitations: unknown[] // Using unknown for now to match existing interface
   ) {
     if (!_invitations.length) {
       return;
@@ -334,6 +338,6 @@ class AccountInvitationsService {
     // TODO: Update dispatcher service to work with Drizzle
     // const service = createAccountInvitationsDispatchService(drizzleClient);
 
-    logger.info(ctx, 'Email dispatching placeholder - needs Drizzle migration');
+    logger.info(ctx, "Email dispatching placeholder - needs Drizzle migration");
   }
 }

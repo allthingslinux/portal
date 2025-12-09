@@ -1,27 +1,24 @@
-import 'server-only';
+import "server-only";
 
-import { and, eq } from 'drizzle-orm';
-import { z } from 'zod';
-
-import { getLogger } from '~/shared/logger';
+import { and, eq } from "drizzle-orm";
+import type { z } from "zod";
 import {
   getDrizzleSupabaseAdminClient,
   getDrizzleSupabaseClient,
-} from '~/core/database/supabase/clients/drizzle-client';
-import { accountsMemberships } from '~/core/database/supabase/drizzle/schema';
+} from "~/core/database/supabase/clients/drizzle-client";
+import { accountsMemberships } from "~/core/database/supabase/drizzle/schema";
+import { getLogger } from "~/shared/logger";
 
-import type { RemoveMemberSchema } from '../../schema/remove-member.schema';
-import type { TransferOwnershipConfirmationSchema } from '../../schema/transfer-ownership-confirmation.schema';
-import type { UpdateMemberRoleSchema } from '../../schema/update-member-role.schema';
+import type { RemoveMemberSchema } from "../../schema/remove-member.schema";
+import type { TransferOwnershipConfirmationSchema } from "../../schema/transfer-ownership-confirmation.schema";
+import type { UpdateMemberRoleSchema } from "../../schema/update-member-role.schema";
 
 export function createAccountMembersService() {
   return new AccountMembersService();
 }
 
 class AccountMembersService {
-  private readonly namespace = 'account-members';
-
-  constructor() {}
+  private readonly namespace = "account-members";
 
   /**
    * @name removeMemberFromAccount
@@ -37,21 +34,21 @@ class AccountMembersService {
       ...params,
     };
 
-    logger.info(ctx, `Removing member from account...`);
+    logger.info(ctx, "Removing member from account...");
 
     try {
-      const result = await drizzleClient.runTransaction(async (tx) => {
-        return tx
+      const result = await drizzleClient.runTransaction(async (tx) =>
+        tx
           .delete(accountsMemberships)
           .where(
             and(
               eq(accountsMemberships.accountId, params.accountId),
-              eq(accountsMemberships.userId, params.userId),
-            ),
-          );
-      });
+              eq(accountsMemberships.userId, params.userId)
+            )
+          )
+      );
 
-      logger.info(ctx, `Successfully removed member from account.`);
+      logger.info(ctx, "Successfully removed member from account.");
       return result;
     } catch (error) {
       logger.error(
@@ -59,7 +56,7 @@ class AccountMembersService {
           ...ctx,
           error,
         },
-        `Failed to remove member from account`,
+        "Failed to remove member from account"
       );
 
       throw error;
@@ -80,11 +77,11 @@ class AccountMembersService {
       ...params,
     };
 
-    logger.info(ctx, `Validating permissions to update member role...`);
+    logger.info(ctx, "Validating permissions to update member role...");
 
     // TODO: Replace with Drizzle equivalent of can_action_account_member RPC
     // For now, we'll use the admin client approach
-    logger.info(ctx, `Permissions validated. Updating member role...`);
+    logger.info(ctx, "Permissions validated. Updating member role...");
 
     try {
       const result = await adminClient
@@ -95,11 +92,11 @@ class AccountMembersService {
         .where(
           and(
             eq(accountsMemberships.accountId, params.accountId),
-            eq(accountsMemberships.userId, params.userId),
-          ),
+            eq(accountsMemberships.userId, params.userId)
+          )
         );
 
-      logger.info(ctx, `Successfully updated member role`);
+      logger.info(ctx, "Successfully updated member role");
       return result;
     } catch (error) {
       logger.error(
@@ -107,7 +104,7 @@ class AccountMembersService {
           ...ctx,
           error,
         },
-        `Failed to update member role`,
+        "Failed to update member role"
       );
 
       throw error;
@@ -120,7 +117,7 @@ class AccountMembersService {
    * @param params
    */
   async transferOwnership(
-    params: z.infer<typeof TransferOwnershipConfirmationSchema>,
+    params: z.infer<typeof TransferOwnershipConfirmationSchema>
   ) {
     const logger = await getLogger();
 
@@ -129,7 +126,7 @@ class AccountMembersService {
       ...params,
     };
 
-    logger.info(ctx, `Transferring ownership of account...`);
+    logger.info(ctx, "Transferring ownership of account...");
 
     try {
       // TODO: Implement transfer_team_account_ownership logic in Drizzle
@@ -138,12 +135,12 @@ class AccountMembersService {
       // 2. Update accounts_memberships for both old and new owner
       // 3. Potentially update other related records
 
-      logger.info(ctx, `Successfully transferred ownership of account`);
+      logger.info(ctx, "Successfully transferred ownership of account");
       return { success: true };
     } catch (error) {
       logger.error(
         { ...ctx, error },
-        `Failed to transfer ownership of account`,
+        "Failed to transfer ownership of account"
       );
 
       throw error;

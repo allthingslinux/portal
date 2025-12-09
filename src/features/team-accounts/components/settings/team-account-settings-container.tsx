@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
+import { Trans } from "~/components/makerkit/trans";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '~/components/ui/card';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/card";
 
-import { TeamAccountDangerZone } from './team-account-danger-zone';
-import { UpdateTeamAccountImage } from './update-team-account-image-container';
-import { UpdateTeamAccountNameForm } from './update-team-account-name-form';
+import { TeamAccountDangerZone } from "./team-account-danger-zone";
+import { UpdateTeamAccountImage } from "./update-team-account-image-container";
+import { UpdateTeamAccountNameForm } from "./update-team-account-name-form";
 
 export function TeamAccountSettingsContainer(props: {
   account: {
@@ -31,15 +31,15 @@ export function TeamAccountSettingsContainer(props: {
   };
 }) {
   return (
-    <div className={'flex w-full flex-col space-y-4'}>
+    <div className={"flex w-full flex-col space-y-4"}>
       <Card>
         <CardHeader>
           <CardTitle>
-            <Trans i18nKey={'teams:settings.teamLogo'} />
+            <Trans i18nKey={"teams:settings.teamLogo"} />
           </CardTitle>
 
           <CardDescription>
-            <Trans i18nKey={'teams:settings.teamLogoDescription'} />
+            <Trans i18nKey={"teams:settings.teamLogoDescription"} />
           </CardDescription>
         </CardHeader>
 
@@ -51,26 +51,26 @@ export function TeamAccountSettingsContainer(props: {
       <Card>
         <CardHeader>
           <CardTitle>
-            <Trans i18nKey={'teams:settings.teamName'} />
+            <Trans i18nKey={"teams:settings.teamName"} />
           </CardTitle>
 
           <CardDescription>
-            <Trans i18nKey={'teams:settings.teamNameDescription'} />
+            <Trans i18nKey={"teams:settings.teamNameDescription"} />
           </CardDescription>
         </CardHeader>
 
         <CardContent>
           <UpdateTeamAccountNameForm
-            path={props.paths.teamAccountSettings}
             account={props.account}
+            path={props.paths.teamAccountSettings}
           />
         </CardContent>
       </Card>
 
       <TeamAccountDangerZone
-        primaryOwnerUserId={props.account.primaryOwnerUserId}
         account={props.account}
         features={props.features}
+        primaryOwnerUserId={props.account.primaryOwnerUserId}
       />
     </div>
   );

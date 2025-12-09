@@ -1,8 +1,7 @@
-import { getLogger } from '~/shared/logger';
-import { getServerSession } from '~/core/auth/nextauth/session';
-import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
-import { usersInAuth } from '~/core/database/supabase/drizzle/schema';
-import { eq, sql } from 'drizzle-orm';
+import { sql } from "drizzle-orm";
+import { getServerSession } from "~/core/auth/better-auth/session";
+import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
+import { getLogger } from "~/shared/logger";
 
 /**
  * @name isSuperAdmin
@@ -30,17 +29,17 @@ export async function isSuperAdmin(): Promise<boolean> {
         FROM auth.users
         WHERE id = ${session.user.id}
         LIMIT 1
-      `,
+      `
     );
 
     if (result.length === 0) {
       return false;
     }
 
-    return result[0].role === 'super-admin';
+    return result[0].role === "super-admin";
   } catch (error) {
     const logger = await getLogger();
-    logger.error({ error }, 'Error checking super admin status');
+    logger.error({ error }, "Error checking super admin status");
     return false;
   }
 }

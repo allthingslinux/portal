@@ -1,9 +1,8 @@
-import { useCallback } from 'react';
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-
-import { Json } from '~/core/database/supabase/database.types';
-import { getPersonalAccountDataAction } from '../server/personal-accounts-server-actions';
+import type { Json } from "~/core/database/supabase/database.types";
+import { getPersonalAccountDataAction } from "../server/personal-accounts-server-actions";
 
 export function usePersonalAccountData(
   userId: string,
@@ -12,9 +11,9 @@ export function usePersonalAccountData(
     name: string | null;
     picture_url: string | null;
     public_data?: Json;
-  },
+  }
 ) {
-  const queryKey = ['account:data', userId];
+  const queryKey = ["account:data", userId];
 
   const queryFn = async () => {
     if (!userId) {
@@ -47,8 +46,8 @@ export function useRevalidatePersonalAccountDataQuery() {
   return useCallback(
     (userId: string) =>
       queryClient.invalidateQueries({
-        queryKey: ['account:data', userId],
+        queryKey: ["account:data", userId],
       }),
-    [queryClient],
+    [queryClient]
   );
 }

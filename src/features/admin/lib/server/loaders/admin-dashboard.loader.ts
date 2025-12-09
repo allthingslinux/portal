@@ -1,8 +1,8 @@
-import 'server-only';
+import "server-only";
 
-import { cache } from 'react';
+import { cache } from "react";
 
-import { createAdminDashboardService } from '../services/admin-dashboard.service';
+import { createAdminDashboardService } from "../services/admin-dashboard.service";
 
 /**
  * @name loadAdminDashboard

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { AccountImageUploader } from '~/shared/components/account-image-uploader';
+import { AccountImageUploader } from "~/shared/components/account-image-uploader";
 
-import { updateTeamAccountPictureUrlAction } from '../../server/actions/team-account-server-actions';
+import { updateTeamAccountPictureUrlAction } from "../../server/actions/team-account-server-actions";
 
 export function UpdateTeamAccountImage(props: {
   account: {
@@ -14,10 +14,10 @@ export function UpdateTeamAccountImage(props: {
   return (
     <AccountImageUploader
       accountId={props.account.id}
-      pictureUrl={props.account.pictureUrl}
       onUpdate={(pictureUrl) =>
         updateTeamAccountPictureUrlAction(props.account.id, pictureUrl)
       }
+      pictureUrl={props.account.pictureUrl}
       translationNamespace="teams"
     />
   );

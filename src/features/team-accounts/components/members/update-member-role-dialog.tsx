@@ -1,11 +1,10 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { useActionWithError } from '~/shared/hooks/use-action-with-error';
-
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
-import { Button } from '~/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '~/components/ui/dialog';
+} from "~/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -22,14 +21,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '~/components/ui/form';
-import { If } from '~/components/makerkit/if';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/form";
+import { useActionWithError } from "~/shared/hooks/use-action-with-error";
 
-import { RoleSchema } from '../../schema/update-member-role.schema';
-import { updateMemberRoleAction } from '../../server/actions/team-members-server-actions';
-import { MembershipRoleSelector } from './membership-role-selector';
-import { RolesDataProvider } from './roles-data-provider';
+import { RoleSchema } from "../../schema/update-member-role.schema";
+import { updateMemberRoleAction } from "../../server/actions/team-members-server-actions";
+import { MembershipRoleSelector } from "./membership-role-selector";
+import { RolesDataProvider } from "./roles-data-provider";
 
 type Role = string;
 
@@ -51,21 +49,21 @@ export function UpdateMemberRoleDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans i18nKey={'teams:updateMemberRoleModalHeading'} />
+            <Trans i18nKey={"teams:updateMemberRoleModalHeading"} />
           </DialogTitle>
 
           <DialogDescription>
-            <Trans i18nKey={'teams:updateMemberRoleModalDescription'} />
+            <Trans i18nKey={"teams:updateMemberRoleModalDescription"} />
           </DialogDescription>
         </DialogHeader>
 
         <RolesDataProvider maxRoleHierarchy={userRoleHierarchy}>
           {(data) => (
             <UpdateMemberForm
-              userId={userId}
-              teamAccountId={teamAccountId}
-              userRole={userRole}
               roles={data}
+              teamAccountId={teamAccountId}
+              userId={userId}
+              userRole={userRole}
             />
           )}
         </RolesDataProvider>
@@ -86,7 +84,7 @@ function UpdateMemberForm({
   roles: Role[];
 }>) {
   const { pending, error, execute } = useActionWithError();
-  const { t } = useTranslation('teams');
+  const { t } = useTranslation("teams");
 
   const onSubmit = ({ role }: { role: Role }) => {
     execute(async () => {
@@ -100,18 +98,13 @@ function UpdateMemberForm({
 
   const form = useForm({
     resolver: zodResolver(
-      RoleSchema.refine(
-        (data) => {
-          return data.role !== userRole;
-        },
-        {
-          message: t(`roleMustBeDifferent`),
-          path: ['role'],
-        },
-      ),
+      RoleSchema.refine((data) => data.role !== userRole, {
+        message: t("roleMustBeDifferent"),
+        path: ["role"],
+      })
     ),
-    reValidateMode: 'onChange',
-    mode: 'onChange',
+    reValidateMode: "onChange",
+    mode: "onChange",
     defaultValues: {
       role: userRole,
     },
@@ -120,40 +113,38 @@ function UpdateMemberForm({
   return (
     <Form {...form}>
       <form
-        data-test={'update-member-role-form'}
+        className={"flex flex-col space-y-6"}
+        data-test={"update-member-role-form"}
         onSubmit={form.handleSubmit(onSubmit)}
-        className={'flex flex-col space-y-6'}
       >
         <If condition={error}>
           <UpdateRoleErrorAlert />
         </If>
 
         <FormField
-          name={'role'}
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>{t('roleLabel')}</FormLabel>
+          name={"role"}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("roleLabel")}</FormLabel>
 
-                <FormControl>
-                  <MembershipRoleSelector
-                    roles={roles}
-                    currentUserRole={userRole}
-                    value={field.value}
-                    onChange={(newRole) => form.setValue('role', newRole)}
-                  />
-                </FormControl>
+              <FormControl>
+                <MembershipRoleSelector
+                  currentUserRole={userRole}
+                  onChange={(newRole) => form.setValue("role", newRole)}
+                  roles={roles}
+                  value={field.value}
+                />
+              </FormControl>
 
-                <FormDescription>{t('updateRoleDescription')}</FormDescription>
+              <FormDescription>{t("updateRoleDescription")}</FormDescription>
 
-                <FormMessage />
-              </FormItem>
-            );
-          }}
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        <Button data-test={'confirm-update-member-role'} disabled={pending}>
-          <Trans i18nKey={'teams:updateRoleSubmitLabel'} />
+        <Button data-test={"confirm-update-member-role"} disabled={pending}>
+          <Trans i18nKey={"teams:updateRoleSubmitLabel"} />
         </Button>
       </form>
     </Form>
@@ -162,13 +153,13 @@ function UpdateMemberForm({
 
 function UpdateRoleErrorAlert() {
   return (
-    <Alert variant={'destructive'}>
+    <Alert variant={"destructive"}>
       <AlertTitle>
-        <Trans i18nKey={'teams:updateRoleErrorHeading'} />
+        <Trans i18nKey={"teams:updateRoleErrorHeading"} />
       </AlertTitle>
 
       <AlertDescription>
-        <Trans i18nKey={'teams:updateRoleErrorMessage'} />
+        <Trans i18nKey={"teams:updateRoleErrorMessage"} />
       </AlertDescription>
     </Alert>
   );

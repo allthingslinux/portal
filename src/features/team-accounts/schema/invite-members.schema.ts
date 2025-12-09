@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const InviteSchema = z.object({
   email: z.string().email(),
@@ -12,7 +12,7 @@ export const InviteMembersSchema = z
   .refine(
     (data) => {
       const emails = data.invitations.map((member) =>
-        member.email.toLowerCase(),
+        member.email.toLowerCase()
       );
 
       const uniqueEmails = new Set(emails);
@@ -20,7 +20,7 @@ export const InviteMembersSchema = z
       return emails.length === uniqueEmails.size;
     },
     {
-      message: 'Duplicate emails are not allowed',
-      path: ['invitations'],
-    },
+      message: "Duplicate emails are not allowed",
+      path: ["invitations"],
+    }
   );

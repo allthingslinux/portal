@@ -1,26 +1,25 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
+import { Lightbulb } from "lucide-react";
 
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
+import { useMemo } from "react";
 
-import { Lightbulb } from 'lucide-react';
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
 
-import { If } from '~/components/makerkit/if';
-import { Trans } from '~/components/makerkit/trans';
+import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 
-import { useLastAuthMethod } from '../hooks/use-last-auth-method';
-
-interface LastAuthMethodHintProps {
+type LastAuthMethodHintProps = {
   className?: string;
-}
+};
 
 // we force dynamic import to avoid hydration errors
 export const LastAuthMethodHint = dynamic(
   async () => ({ default: LastAuthMethodHintImpl }),
   {
     ssr: false,
-  },
+  }
 );
 
 function LastAuthMethodHintImpl({ className }: LastAuthMethodHintProps) {
@@ -31,14 +30,14 @@ function LastAuthMethodHintImpl({ className }: LastAuthMethodHintProps) {
   // This must be called before any conditional returns to follow Rules of Hooks
   const methodKey = useMemo(() => {
     switch (methodType) {
-      case 'password':
-        return 'auth:methodPassword';
-      case 'otp':
-        return 'auth:methodOtp';
-      case 'magic_link':
-        return 'auth:methodMagicLink';
-      case 'oauth':
-        return 'auth:methodOauth';
+      case "password":
+        return "auth:methodPassword";
+      case "otp":
+        return "auth:methodOtp";
+      case "magic_link":
+        return "auth:methodMagicLink";
+      case "oauth":
+        return "auth:methodOauth";
       default:
         return null;
     }
@@ -55,24 +54,24 @@ function LastAuthMethodHintImpl({ className }: LastAuthMethodHintProps) {
 
   return (
     <div
+      className={`flex items-center justify-center gap-2 text-muted-foreground/80 text-xs ${className || ""}`}
       data-test="last-auth-method-hint"
-      className={`text-muted-foreground/80 flex items-center justify-center gap-2 text-xs ${className || ''}`}
     >
       <Lightbulb className="h-3 w-3" />
 
       <span>
-        <Trans i18nKey="auth:lastUsedMethodPrefix" />{' '}
+        <Trans i18nKey="auth:lastUsedMethodPrefix" />{" "}
         <If condition={isOAuth && Boolean(providerName)}>
           <Trans
+            components={{
+              provider: <span className="font-medium text-muted-foreground" />,
+            }}
             i18nKey="auth:methodOauthWithProvider"
             values={{ provider: providerName }}
-            components={{
-              provider: <span className="text-muted-foreground font-medium" />,
-            }}
           />
         </If>
-        <If condition={!isOAuth || !providerName}>
-          <span className="text-muted-foreground font-medium">
+        <If condition={!(isOAuth && providerName)}>
+          <span className="font-medium text-muted-foreground">
             <Trans i18nKey={methodKey} />
           </span>
         </If>

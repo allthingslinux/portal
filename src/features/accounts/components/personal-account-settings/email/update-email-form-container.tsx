@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useSession } from '~/core/auth/nextauth/hooks';
-import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
+import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
+import { useSession } from "~/core/auth/better-auth/hooks";
 
-import { UpdateEmailForm } from './update-email-form';
+import { UpdateEmailForm } from "./update-email-form";
 
 export function UpdateEmailFormContainer(props: { callbackPath: string }) {
   const { data: user, isLoading: isPending } = useSession();
@@ -12,7 +12,7 @@ export function UpdateEmailFormContainer(props: { callbackPath: string }) {
     return <LoadingOverlay fullPage={false} />;
   }
 
-  if (!user || !user.email) {
+  if (!user?.email) {
     return null;
   }
 

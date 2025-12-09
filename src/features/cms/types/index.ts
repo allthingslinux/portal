@@ -1,2 +1,2 @@
-export * from './cms-client';
-export * from './cms.type';
+export * from "./cms.type";
+export * from "./cms-client";

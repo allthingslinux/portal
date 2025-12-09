@@ -1,9 +1,10 @@
-import 'server-only';
+import "server-only";
 
-import { and, eq, gte, sql } from 'drizzle-orm';
-
-import { getLogger } from '~/shared/logger';
-import { getDrizzleSupabaseClient, getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
+import { and, eq, gte } from "drizzle-orm";
+import {
+  getDrizzleSupabaseAdminClient,
+  getDrizzleSupabaseClient,
+} from "~/core/database/supabase/clients/drizzle-client";
 import {
   accounts,
   accountsMemberships,
@@ -11,7 +12,8 @@ import {
   rolePermissions,
   roles,
   userAccounts,
-} from '~/core/database/supabase/drizzle/schema';
+} from "~/core/database/supabase/drizzle/schema";
+import { getLogger } from "~/shared/logger";
 
 export function createTeamAccountsApi() {
   return new _TeamAccountsApi();
@@ -21,7 +23,7 @@ export function createTeamAccountsApi() {
  * Team Accounts API using Drizzle ORM
  */
 class _TeamAccountsApi {
-  private readonly namespace = 'team-accounts.api';
+  private readonly namespace = "team-accounts.api";
 
   /**
    * Get team account by slug
@@ -29,22 +31,23 @@ class _TeamAccountsApi {
   async getTeamAccount(slug: string) {
     const drizzleClient = await getDrizzleSupabaseClient();
 
-    const result = await drizzleClient.runTransaction(async (tx) => {
-      return await tx
-        .select({
-          id: accounts.id,
-          name: accounts.name,
-          slug: accounts.slug,
-          primaryOwnerUserId: accounts.primaryOwnerUserId,
-        })
-        .from(accounts)
-        .where(eq(accounts.slug, slug))
-        .limit(1);
-    });
+    const result = await drizzleClient.runTransaction(
+      async (tx) =>
+        await tx
+          .select({
+            id: accounts.id,
+            name: accounts.name,
+            slug: accounts.slug,
+            primaryOwnerUserId: accounts.primaryOwnerUserId,
+          })
+          .from(accounts)
+          .where(eq(accounts.slug, slug))
+          .limit(1)
+    );
 
     if (result.length === 0) {
       return {
-        error: { message: 'Account not found' },
+        error: { message: "Account not found" },
         data: null,
       };
     }
@@ -61,22 +64,23 @@ class _TeamAccountsApi {
   async getTeamAccountById(accountId: string) {
     const drizzleClient = await getDrizzleSupabaseClient();
 
-    const result = await drizzleClient.runTransaction(async (tx) => {
-      return await tx
-        .select({
-          id: accounts.id,
-          name: accounts.name,
-          slug: accounts.slug,
-          primaryOwnerUserId: accounts.primaryOwnerUserId,
-        })
-        .from(accounts)
-        .where(eq(accounts.id, accountId))
-        .limit(1);
-    });
+    const result = await drizzleClient.runTransaction(
+      async (tx) =>
+        await tx
+          .select({
+            id: accounts.id,
+            name: accounts.name,
+            slug: accounts.slug,
+            primaryOwnerUserId: accounts.primaryOwnerUserId,
+          })
+          .from(accounts)
+          .where(eq(accounts.id, accountId))
+          .limit(1)
+    );
 
     if (result.length === 0) {
       return {
-        error: { message: 'Account not found' },
+        error: { message: "Account not found" },
         data: null,
       };
     }
@@ -94,44 +98,46 @@ class _TeamAccountsApi {
     const drizzleClient = await getDrizzleSupabaseClient();
 
     try {
-      const accountResult = await drizzleClient.runTransaction(async (tx) => {
-        return await tx
-          .select({
-            id: accounts.id,
-            name: accounts.name,
-            pictureUrl: accounts.pictureUrl,
-            slug: accounts.slug,
-            role: accountsMemberships.accountRole,
-            roleHierarchyLevel: roles.hierarchyLevel,
-            primaryOwnerUserId: accounts.primaryOwnerUserId,
-            permissions: rolePermissions.permission,
-          })
-          .from(accounts)
-          .innerJoin(
-            accountsMemberships,
-            eq(accounts.id, accountsMemberships.accountId),
-          )
-          .innerJoin(roles, eq(accountsMemberships.accountRole, roles.name))
-          .leftJoin(
-            rolePermissions,
-            eq(accountsMemberships.accountRole, rolePermissions.role),
-          )
-          .where(eq(accounts.slug, slug));
-      });
+      const accountResult = await drizzleClient.runTransaction(
+        async (tx) =>
+          await tx
+            .select({
+              id: accounts.id,
+              name: accounts.name,
+              pictureUrl: accounts.pictureUrl,
+              slug: accounts.slug,
+              role: accountsMemberships.accountRole,
+              roleHierarchyLevel: roles.hierarchyLevel,
+              primaryOwnerUserId: accounts.primaryOwnerUserId,
+              permissions: rolePermissions.permission,
+            })
+            .from(accounts)
+            .innerJoin(
+              accountsMemberships,
+              eq(accounts.id, accountsMemberships.accountId)
+            )
+            .innerJoin(roles, eq(accountsMemberships.accountRole, roles.name))
+            .leftJoin(
+              rolePermissions,
+              eq(accountsMemberships.accountRole, rolePermissions.role)
+            )
+            .where(eq(accounts.slug, slug))
+      );
 
-      const accountsResult = await drizzleClient.runTransaction(async (tx) => {
-        return await tx
-          .select({
-            name: userAccounts.name,
-            slug: userAccounts.slug,
-            pictureUrl: userAccounts.pictureUrl,
-          })
-          .from(userAccounts);
-      });
+      const accountsResult = await drizzleClient.runTransaction(
+        async (tx) =>
+          await tx
+            .select({
+              name: userAccounts.name,
+              slug: userAccounts.slug,
+              pictureUrl: userAccounts.pictureUrl,
+            })
+            .from(userAccounts)
+      );
 
       if (accountResult.length === 0) {
         return {
-          error: { message: 'Account not found or access denied' },
+          error: { message: "Account not found or access denied" },
           data: null,
         };
       }
@@ -162,11 +168,11 @@ class _TeamAccountsApi {
       const logger = await getLogger();
       logger.error(
         { ...error, slug, namespace: this.namespace },
-        'Failed to get account workspace',
+        "Failed to get account workspace"
       );
 
       return {
-        error: { message: 'Failed to get account workspace' },
+        error: { message: "Failed to get account workspace" },
         data: null,
       };
     }
@@ -183,30 +189,31 @@ class _TeamAccountsApi {
     const drizzleClient = await getDrizzleSupabaseClient();
 
     try {
-      const result = await drizzleClient.runTransaction(async (tx) => {
-        return await tx
-          .select()
-          .from(accountsMemberships)
-          .innerJoin(
-            rolePermissions,
-            eq(accountsMemberships.accountRole, rolePermissions.role),
-          )
-          .where(
-            and(
-              eq(accountsMemberships.userId, params.userId),
-              eq(accountsMemberships.accountId, params.accountId),
-              eq(rolePermissions.permission, params.permission),
-            ),
-          )
-          .limit(1);
-      });
+      const result = await drizzleClient.runTransaction(
+        async (tx) =>
+          await tx
+            .select()
+            .from(accountsMemberships)
+            .innerJoin(
+              rolePermissions,
+              eq(accountsMemberships.accountRole, rolePermissions.role)
+            )
+            .where(
+              and(
+                eq(accountsMemberships.userId, params.userId),
+                eq(accountsMemberships.accountId, params.accountId),
+                eq(rolePermissions.permission, params.permission)
+              )
+            )
+            .limit(1)
+      );
 
       return result.length > 0;
     } catch (error) {
       const logger = await getLogger();
       logger.error(
         { ...error, ...params, namespace: this.namespace },
-        'Failed to check permission',
+        "Failed to check permission"
       );
 
       return false;
@@ -234,13 +241,12 @@ class _TeamAccountsApi {
       const logger = await getLogger();
       logger.error(
         { ...error, accountId, namespace: this.namespace },
-        'Failed to get members count',
+        "Failed to get members count"
       );
 
       return 0;
     }
   }
-
 
   /**
    * @name getInvitation
@@ -268,14 +274,14 @@ class _TeamAccountsApi {
       .where(
         and(
           eq(invitations.inviteToken, token),
-          gte(invitations.expiresAt, new Date().toISOString()),
-        ),
+          gte(invitations.expiresAt, new Date().toISOString())
+        )
       )
       .limit(1);
 
     if (result.length === 0) {
       return {
-        error: { message: 'Invitation not found or expired' },
+        error: { message: "Invitation not found or expired" },
         data: null,
       };
     }
@@ -292,6 +298,4 @@ class _TeamAccountsApi {
       },
     };
   }
-
-
 }

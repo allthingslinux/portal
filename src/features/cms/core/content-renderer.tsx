@@ -1,12 +1,12 @@
-import { CmsType } from '~/features/cms/types';
-import { createRegistry } from '~/shared/registry';
+import type { CmsType } from "~/features/cms/types";
+import { createRegistry } from "~/shared/registry";
 
 const CMS_CLIENT = process.env.CMS_CLIENT as CmsType;
 
-interface ContentRendererProps {
+type ContentRendererProps = {
   content: unknown;
   type?: CmsType;
-}
+};
 
 // Create a registry for CMS client implementations
 const cmsContentRendererRegistry = createRegistry<
@@ -28,18 +28,14 @@ export async function ContentRenderer({
   return content as React.ReactNode;
 }
 
-cmsContentRendererRegistry.register('keystatic', async () => {
-  const { KeystaticContentRenderer } = await import(
-    '../keystatic'
-  );
+cmsContentRendererRegistry.register("keystatic", async () => {
+  const { KeystaticContentRenderer } = await import("../keystatic");
 
   return KeystaticContentRenderer;
 });
 
-cmsContentRendererRegistry.register('wordpress', async () => {
-  const { WordpressContentRenderer } = await import(
-    '../wordpress'
-  );
+cmsContentRendererRegistry.register("wordpress", async () => {
+  const { WordpressContentRenderer } = await import("../wordpress");
 
   return WordpressContentRenderer;
 });

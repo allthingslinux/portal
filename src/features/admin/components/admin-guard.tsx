@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 
-import { isSuperAdmin } from '../lib/server/utils/is-super-admin';
+import { isSuperAdmin } from "../lib/server/utils/is-super-admin";
 
 type LayoutOrPageComponent<Params> = React.ComponentType<Params>;
 
@@ -10,7 +10,7 @@ type LayoutOrPageComponent<Params> = React.ComponentType<Params>;
  * @param Component - The Page or Layout component to wrap
  */
 export function AdminGuard<Params extends object>(
-  Component: LayoutOrPageComponent<Params>,
+  Component: LayoutOrPageComponent<Params>
 ) {
   return async function AdminGuardServerComponentWrapper(params: Params) {
     const isUserSuperAdmin = await isSuperAdmin();

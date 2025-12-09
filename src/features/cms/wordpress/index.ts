@@ -1,1 +1,1 @@
-export * from './wp-client';
+export * from "./wp-client";

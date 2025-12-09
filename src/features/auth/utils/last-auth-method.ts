@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { isBrowser } from '~/shared/utils';
+import { isBrowser } from "~/shared/utils";
 
 // Key for localStorage
-const LAST_AUTH_METHOD_KEY = 'auth_last_method';
+const LAST_AUTH_METHOD_KEY = "auth_last_method";
 
 // Types of authentication methods
-export type AuthMethod = 'password' | 'otp' | 'magic_link' | 'oauth';
+export type AuthMethod = "password" | "otp" | "magic_link" | "oauth";
 
-export interface LastAuthMethod {
+export type LastAuthMethod = {
   method: AuthMethod;
   provider?: string; // For OAuth providers (e.g., 'google', 'github')
   email?: string; // Store email for method-specific hints
   timestamp: number;
-}
+};
 
 /**
  * Save the last used authentication method to localStorage
@@ -22,7 +22,7 @@ export function saveLastAuthMethod(authMethod: LastAuthMethod): void {
   try {
     localStorage.setItem(LAST_AUTH_METHOD_KEY, JSON.stringify(authMethod));
   } catch (error) {
-    console.warn('Failed to save last auth method:', error);
+    console.warn("Failed to save last auth method:", error);
   }
 }
 
@@ -54,7 +54,7 @@ export function getLastAuthMethod() {
 
     return parsed;
   } catch (error) {
-    console.warn('Failed to get last auth method:', error);
+    console.warn("Failed to get last auth method:", error);
     return null;
   }
 }
@@ -66,6 +66,6 @@ export function clearLastAuthMethod() {
   try {
     localStorage.removeItem(LAST_AUTH_METHOD_KEY);
   } catch (error) {
-    console.warn('Failed to clear last auth method:', error);
+    console.warn("Failed to clear last auth method:", error);
   }
 }

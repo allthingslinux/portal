@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const RoleSchema = z.object({
   role: z.string().min(1),

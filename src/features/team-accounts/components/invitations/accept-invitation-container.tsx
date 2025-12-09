@@ -1,13 +1,12 @@
-import Image from 'next/image';
+import Image from "next/image";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { Heading } from "~/components/ui/heading";
+import { Separator } from "~/components/ui/separator";
 
-import { Heading } from '~/components/ui/heading';
-import { If } from '~/components/makerkit/if';
-import { Separator } from '~/components/ui/separator';
-import { Trans } from '~/components/makerkit/trans';
-
-import { acceptInvitationAction } from '../../server/actions/team-invitations-server-actions';
-import { InvitationSubmitButton } from './invitation-submit-button';
-import { SignOutInvitationButton } from './sign-out-invitation-button';
+import { acceptInvitationAction } from "../../server/actions/team-invitations-server-actions";
+import { InvitationSubmitButton } from "./invitation-submit-button";
+import { SignOutInvitationButton } from "./sign-out-invitation-button";
 
 export function AcceptInvitationContainer(props: {
   inviteToken: string;
@@ -29,10 +28,10 @@ export function AcceptInvitationContainer(props: {
   };
 }) {
   return (
-    <div className={'flex flex-col items-center space-y-4'}>
-      <Heading className={'text-center'} level={4}>
+    <div className={"flex flex-col items-center space-y-4"}>
+      <Heading className={"text-center"} level={4}>
         <Trans
-          i18nKey={'teams:acceptInvitationHeading'}
+          i18nKey={"teams:acceptInvitationHeading"}
           values={{
             accountName: props.invitation.account.name,
           }}
@@ -42,41 +41,41 @@ export function AcceptInvitationContainer(props: {
       <If condition={props.invitation.account.picture_url}>
         {(url) => (
           <Image
-            alt={`Logo`}
+            alt={"Logo"}
+            className={"object-cover"}
+            height={64}
             src={url}
             width={64}
-            height={64}
-            className={'object-cover'}
           />
         )}
       </If>
 
-      <div className={'text-muted-foreground text-center text-sm'}>
+      <div className={"text-center text-muted-foreground text-sm"}>
         <Trans
-          i18nKey={'teams:acceptInvitationDescription'}
+          i18nKey={"teams:acceptInvitationDescription"}
           values={{
             accountName: props.invitation.account.name,
           }}
         />
       </div>
 
-      <div className={'flex flex-col space-y-4'}>
+      <div className={"flex flex-col space-y-4"}>
         <form
-          data-test={'join-team-form'}
-          className={'w-full'}
           action={acceptInvitationAction}
+          className={"w-full"}
+          data-test={"join-team-form"}
         >
-          <input type="hidden" name={'inviteToken'} value={props.inviteToken} />
+          <input name={"inviteToken"} type="hidden" value={props.inviteToken} />
 
           <input
-            type={'hidden'}
-            name={'nextPath'}
+            name={"nextPath"}
+            type={"hidden"}
             value={props.paths.nextPath}
           />
 
           <InvitationSubmitButton
-            email={props.email}
             accountName={props.invitation.account.name}
+            email={props.email}
           />
         </form>
 
@@ -84,8 +83,8 @@ export function AcceptInvitationContainer(props: {
 
         <SignOutInvitationButton nextPath={props.paths.signOutNext} />
 
-        <span className={'text-muted-foreground text-center text-xs'}>
-          <Trans i18nKey={'teams:signInWithDifferentAccountDescription'} />
+        <span className={"text-center text-muted-foreground text-xs"}>
+          <Trans i18nKey={"teams:signInWithDifferentAccountDescription"} />
         </span>
       </div>
     </div>

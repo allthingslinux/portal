@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 
-import { isSuperAdmin } from './is-super-admin';
+import { isSuperAdmin } from "./is-super-admin";
 
 /**
  * @name adminAction

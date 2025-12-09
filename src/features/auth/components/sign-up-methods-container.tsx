@@ -1,16 +1,15 @@
-'use client';
+"use client";
 
-import type { Provider } from '~/core/database/supabase/supabase-types';
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { Separator } from "~/components/ui/separator";
+import type { Provider } from "~/core/database/supabase/supabase-types";
+import { isBrowser } from "~/shared/utils";
 
-import { isBrowser } from '~/shared/utils';
-import { If } from '~/components/makerkit/if';
-import { Separator } from '~/components/ui/separator';
-import { Trans } from '~/components/makerkit/trans';
-
-import { ExistingAccountHint } from './existing-account-hint';
-import { MagicLinkAuthContainer } from './magic-link-auth-container';
-import { OauthProviders } from './oauth-providers';
-import { EmailPasswordSignUpContainer } from './password-sign-up-container';
+import { ExistingAccountHint } from "./existing-account-hint";
+import { MagicLinkAuthContainer } from "./magic-link-auth-container";
+import { OauthProviders } from "./oauth-providers";
+import { EmailPasswordSignUpContainer } from "./password-sign-up-container";
 
 export function SignUpMethodsContainer(props: {
   paths: {
@@ -37,20 +36,20 @@ export function SignUpMethodsContainer(props: {
 
       <If condition={props.providers.password}>
         <EmailPasswordSignUpContainer
-          emailRedirectTo={redirectUrl}
+          captchaSiteKey={props.captchaSiteKey}
           defaultValues={defaultValues}
           displayTermsCheckbox={props.displayTermsCheckbox}
-          captchaSiteKey={props.captchaSiteKey}
+          emailRedirectTo={redirectUrl}
         />
       </If>
 
       <If condition={props.providers.magicLink}>
         <MagicLinkAuthContainer
-          redirectUrl={redirectUrl}
-          shouldCreateUser={true}
+          captchaSiteKey={props.captchaSiteKey}
           defaultValues={defaultValues}
           displayTermsCheckbox={props.displayTermsCheckbox}
-          captchaSiteKey={props.captchaSiteKey}
+          redirectUrl={redirectUrl}
+          shouldCreateUser={true}
         />
       </If>
 
@@ -61,7 +60,7 @@ export function SignUpMethodsContainer(props: {
           </div>
 
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background text-muted-foreground px-2">
+            <span className="bg-background px-2 text-muted-foreground">
               <Trans i18nKey="auth:orContinueWith" />
             </span>
           </div>
@@ -69,11 +68,11 @@ export function SignUpMethodsContainer(props: {
 
         <OauthProviders
           enabledProviders={props.providers.oAuth}
-          shouldCreateUser={true}
           paths={{
             callback: props.paths.callback,
             returnPath: props.paths.appHome,
           }}
+          shouldCreateUser={true}
         />
       </If>
     </>
@@ -87,7 +86,7 @@ function getCallbackUrl(props: {
   };
 }) {
   if (!isBrowser()) {
-    return '';
+    return "";
   }
 
   const redirectPath = props.paths.callback;
@@ -95,10 +94,10 @@ function getCallbackUrl(props: {
   const url = new URL(redirectPath, origin);
 
   const searchParams = new URLSearchParams(window.location.search);
-  const next = searchParams.get('next');
+  const next = searchParams.get("next");
 
   if (next) {
-    url.searchParams.set('next', next);
+    url.searchParams.set("next", next);
   }
 
   return url.href;
@@ -106,12 +105,12 @@ function getCallbackUrl(props: {
 
 function getDefaultValues() {
   if (!isBrowser()) {
-    return { email: '' };
+    return { email: "" };
   }
 
   const searchParams = new URLSearchParams(window.location.search);
 
   return {
-    email: searchParams.get('email') ?? '',
+    email: searchParams.get("email") ?? "",
   };
 }

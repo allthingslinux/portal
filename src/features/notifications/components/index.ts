@@ -1,1 +1,1 @@
-export * from './notifications-popover';
+export * from "./notifications-popover";

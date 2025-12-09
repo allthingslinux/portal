@@ -1,24 +1,29 @@
 // Or replace this with your own function
-import { Config, Node, RenderableTreeNode, Tag } from '@markdoc/markdoc';
+import {
+  type Config,
+  type Node,
+  type RenderableTreeNode,
+  Tag,
+} from "@markdoc/markdoc";
 
 function generateID(
-  children: Array<RenderableTreeNode>,
-  attributes: Record<string, unknown>,
+  children: RenderableTreeNode[],
+  attributes: Record<string, unknown>
 ) {
-  if (attributes.id && typeof attributes.id === 'string') {
+  if (attributes.id && typeof attributes.id === "string") {
     return attributes.id;
   }
 
   return children
-    .filter((child) => typeof child === 'string')
-    .join(' ')
-    .replace(/[?]/g, '')
-    .replace(/\s+/g, '-')
+    .filter((child) => typeof child === "string")
+    .join(" ")
+    .replace(/[?]/g, "")
+    .replace(/\s+/g, "-")
     .toLowerCase();
 }
 
 const heading = {
-  children: ['inline'],
+  children: ["inline"],
   attributes: {
     id: { type: String },
     level: { type: Number, required: true, default: 1 },
@@ -32,7 +37,7 @@ const heading = {
     return new Tag(
       `h${node.attributes.level}`,
       { ...attributes, id },
-      children,
+      children
     );
   },
 };

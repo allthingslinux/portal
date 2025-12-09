@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { Mail } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { Mail } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from '~/components/ui/input-group';
+} from "~/components/ui/input-group";
 
-export function EmailInput(props: React.ComponentProps<'input'>) {
-  const { t } = useTranslation('auth');
+export function EmailInput(props: React.ComponentProps<"input">) {
+  const { t } = useTranslation("auth");
 
   return (
     <InputGroup className="dark:bg-background">
@@ -19,10 +19,10 @@ export function EmailInput(props: React.ComponentProps<'input'>) {
       </InputGroupAddon>
 
       <InputGroupInput
-        data-test={'email-input'}
+        data-test={"email-input"}
+        placeholder={t("emailPlaceholder")}
         required
         type="email"
-        placeholder={t('emailPlaceholder')}
         {...props}
       />
     </InputGroup>

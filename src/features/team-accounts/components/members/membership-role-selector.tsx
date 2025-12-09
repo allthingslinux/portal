@@ -1,11 +1,11 @@
+import { Trans } from "~/components/makerkit/trans";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '~/components/ui/select';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/select";
 
 type Role = string;
 
@@ -23,29 +23,27 @@ export function MembershipRoleSelector({
   triggerClassName?: string;
 }) {
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select onValueChange={onChange} value={value}>
       <SelectTrigger
         className={triggerClassName}
-        data-test={'role-selector-trigger'}
+        data-test={"role-selector-trigger"}
       >
         <SelectValue />
       </SelectTrigger>
 
       <SelectContent>
-        {roles.map((role) => {
-          return (
-            <SelectItem
-              key={role}
-              data-test={`role-option-${role}`}
-              disabled={currentUserRole === role}
-              value={role}
-            >
-              <span className={'text-sm capitalize'}>
-                <Trans i18nKey={`common:roles.${role}.label`} defaults={role} />
-              </span>
-            </SelectItem>
-          );
-        })}
+        {roles.map((role) => (
+          <SelectItem
+            data-test={`role-option-${role}`}
+            disabled={currentUserRole === role}
+            key={role}
+            value={role}
+          >
+            <span className={"text-sm capitalize"}>
+              <Trans defaults={role} i18nKey={`common:roles.${role}.label`} />
+            </span>
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );

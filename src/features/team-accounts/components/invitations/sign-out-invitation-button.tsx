@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { useSignOut } from '~/core/database/supabase/hooks/use-sign-out';
-import { Button } from '~/components/ui/button';
-import { Trans } from '~/components/makerkit/trans';
+import { Trans } from "~/components/makerkit/trans";
+import { Button } from "~/components/ui/button";
+import { useSignOut } from "~/core/auth/better-auth/hooks";
 
 export function SignOutInvitationButton(
   props: React.PropsWithChildren<{
     nextPath: string;
-  }>,
+  }>
 ) {
   const signOut = useSignOut();
 
   return (
     <Button
-      variant={'ghost'}
       onClick={async () => {
         await signOut.mutateAsync();
         window.location.assign(props.nextPath);
       }}
+      variant={"ghost"}
     >
-      <Trans i18nKey={'teams:signInWithDifferentAccount'} />
+      <Trans i18nKey={"teams:signInWithDifferentAccount"} />
     </Button>
   );
 }

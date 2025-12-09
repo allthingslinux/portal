@@ -1,17 +1,15 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
+import { useCallback } from "react";
+import { If } from "~/components/makerkit/if";
+import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
+import { Trans } from "~/components/makerkit/trans";
+import { useSignInWithProvider } from "~/core/auth/better-auth/hooks";
+import type { Provider } from "~/core/database/supabase/supabase-types";
 
-import type { Provider } from '~/core/database/supabase/supabase-types';
-
-import { useSignInWithProvider } from '~/core/auth/nextauth/hooks/use-sign-in-with-provider';
-import { If } from '~/components/makerkit/if';
-import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
-import { Trans } from '~/components/makerkit/trans';
-
-import { useLastAuthMethod } from '../hooks/use-last-auth-method';
-import { AuthErrorAlert } from './auth-error-alert';
-import { AuthProviderButton } from './auth-provider-button';
+import { useLastAuthMethod } from "../hooks/use-last-auth-method";
+import { AuthErrorAlert } from "./auth-error-alert";
+import { AuthProviderButton } from "./auth-provider-button";
 
 /**
  * @name OAUTH_SCOPES
@@ -22,9 +20,9 @@ import { AuthProviderButton } from './auth-provider-button';
  *
  * @see https://supabase.com/docs/guides/auth/social-login
  */
-const OAUTH_SCOPES: Partial<Record<Provider, string>> = {
-  azure: 'email',
-  keycloak: 'openid',
+const _OAUTH_SCOPES: Partial<Record<Provider, string>> = {
+  azure: "email",
+  keycloak: "openid",
   // add your OAuth providers here
 };
 
@@ -49,10 +47,10 @@ export const OauthProviders: React.FC<{
       const credential = await signInRequest();
 
       if (!credential) {
-        return Promise.reject(new Error(`No credential returned`));
+        return Promise.reject(new Error("No credential returned"));
       }
     },
-    [],
+    []
   );
 
   const enabledProviders = props.enabledProviders;
@@ -67,51 +65,56 @@ export const OauthProviders: React.FC<{
         <LoadingOverlay />
       </If>
 
-      <div className={'flex w-full flex-1 flex-col space-y-3'}>
-        <div className={'flex-col space-y-2'}>
+      <div className={"flex w-full flex-1 flex-col space-y-3"}>
+        <div className={"flex-col space-y-2"}>
           {enabledProviders.map((provider) => {
             return (
               <AuthProviderButton
                 key={provider}
-                providerId={provider}
                 onClick={() => {
                   // Build callback URL with return path
-                  const origin = window.location.origin;
                   const queryParams = new URLSearchParams();
 
                   if (props.paths.returnPath) {
-                    queryParams.set('next', props.paths.returnPath);
+                    queryParams.set("next", props.paths.returnPath);
                   }
 
                   // NextAuth handles OAuth callbacks automatically at /api/auth/callback/[provider]
                   // So we just need to set the callbackUrl to where we want to redirect after auth
-                  const callbackUrl = props.paths.returnPath || '/home';
+                  const callbackUrl = props.paths.returnPath || "/home";
 
                   // Map Supabase provider names to NextAuth provider names
                   const providerMap: Record<string, string> = {
-                    google: 'google',
-                    github: 'github',
-                    apple: 'apple',
-                    microsoft: 'microsoft',
-                    facebook: 'facebook',
-                    keycloak: 'keycloak',
+                    google: "google",
+                    github: "github",
+                    apple: "apple",
+                    microsoft: "microsoft",
+                    facebook: "facebook",
+                    keycloak: "keycloak",
                   };
 
                   const nextAuthProvider = providerMap[provider] || provider;
 
                   return onSignInWithProvider(async () => {
                     await signInWithProviderMutation.mutateAsync({
-                      provider: nextAuthProvider as 'google' | 'github' | 'apple' | 'microsoft' | 'facebook' | 'keycloak',
+                      provider: nextAuthProvider as
+                        | "google"
+                        | "github"
+                        | "apple"
+                        | "microsoft"
+                        | "facebook"
+                        | "keycloak",
                       redirectTo: callbackUrl,
                     });
 
                     // Record successful OAuth sign-in
-                    recordAuthMethod('oauth', { provider });
+                    recordAuthMethod("oauth", { provider });
                   });
                 }}
+                providerId={provider}
               >
                 <Trans
-                  i18nKey={'auth:signInWithProvider'}
+                  i18nKey={"auth:signInWithProvider"}
                   values={{
                     provider: getProviderName(provider),
                   }}
@@ -131,8 +134,9 @@ function getProviderName(providerId: string) {
   const capitalize = (value: string) =>
     value.slice(0, 1).toUpperCase() + value.slice(1);
 
-  if (providerId.endsWith('.com')) {
-    return capitalize(providerId.split('.com')[0]!);
+  if (providerId.endsWith(".com")) {
+    const [name] = providerId.split(".com");
+    return capitalize(name || providerId);
   }
 
   return capitalize(providerId);

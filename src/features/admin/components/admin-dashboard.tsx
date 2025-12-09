@@ -4,9 +4,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '~/components/ui/card';
+} from "~/components/ui/card";
 
-import { loadAdminDashboard } from '../lib/server/loaders/admin-dashboard.loader';
+import { loadAdminDashboard } from "../lib/server/loaders/admin-dashboard.loader";
 
 export async function AdminDashboard() {
   const data = await loadAdminDashboard();
@@ -14,8 +14,8 @@ export async function AdminDashboard() {
   return (
     <div
       className={
-        'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3' +
-        ' xl:grid-cols-4'
+        "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" +
+        "xl:grid-cols-4"
       }
     >
       <Card>
@@ -28,7 +28,7 @@ export async function AdminDashboard() {
         </CardHeader>
 
         <CardContent>
-          <div className={'flex justify-between'}>
+          <div className={"flex justify-between"}>
             <Figure>{data.accounts}</Figure>
           </div>
         </CardContent>
@@ -44,14 +44,14 @@ export async function AdminDashboard() {
         </CardHeader>
 
         <CardContent>
-          <div className={'flex justify-between'}>
+          <div className={"flex justify-between"}>
             <Figure>{data.teamAccounts}</Figure>
           </div>
         </CardContent>
       </Card>
 
       <div>
-        <p className={'text-muted-foreground w-max text-xs'}>
+        <p className={"w-max text-muted-foreground text-xs"}>
           The above data is estimated and may not be 100% accurate.
         </p>
       </div>
@@ -60,5 +60,5 @@ export async function AdminDashboard() {
 }
 
 function Figure(props: React.PropsWithChildren) {
-  return <div className={'text-3xl font-bold'}>{props.children}</div>;
+  return <div className={"font-bold text-3xl"}>{props.children}</div>;
 }

@@ -1,6 +1,4 @@
-import 'server-only';
-
-import { z } from 'zod';
+import "server-only";
 
 /**
  * @deprecated This service needs to be reimplemented using Supabase Auth REST API
@@ -16,15 +14,14 @@ export function createAdminAuthUserService() {
  * @deprecated Needs reimplementation with REST API or NextAuth
  */
 class AdminAuthUserService {
-
   /**
    * Delete a user by deleting the user record and auth record.
    * @param userId
    * @deprecated Needs reimplementation
    */
-  async deleteUser(userId: string) {
+  async deleteUser(_userId: string) {
     // TODO: Implement using Supabase Auth REST API
-    throw new Error('deleteUser needs to be reimplemented with REST API');
+    throw new Error("deleteUser needs to be reimplemented with REST API");
   }
 
   /**
@@ -32,9 +29,9 @@ class AdminAuthUserService {
    * @param userId
    * @deprecated Needs reimplementation
    */
-  async banUser(userId: string) {
+  async banUser(_userId: string) {
     // TODO: Implement using Supabase Auth REST API
-    throw new Error('banUser needs to be reimplemented with REST API');
+    throw new Error("banUser needs to be reimplemented with REST API");
   }
 
   /**
@@ -42,9 +39,9 @@ class AdminAuthUserService {
    * @param userId
    * @deprecated Needs reimplementation
    */
-  async reactivateUser(userId: string) {
+  async reactivateUser(_userId: string) {
     // TODO: Implement using Supabase Auth REST API
-    throw new Error('reactivateUser needs to be reimplemented with REST API');
+    throw new Error("reactivateUser needs to be reimplemented with REST API");
   }
 
   /**
@@ -52,27 +49,9 @@ class AdminAuthUserService {
    * @param userId
    * @deprecated Needs reimplementation
    */
-  async impersonateUser(userId: string) {
+  async impersonateUser(_userId: string) {
     // TODO: Implement using Supabase Auth REST API or NextAuth
-    throw new Error('impersonateUser needs to be reimplemented');
-  }
-
-  /**
-   * Assert that the target user is not the current user.
-   * @param targetUserId
-   * @deprecated Needs reimplementation
-   */
-  private async assertUserIsNotCurrentSuperAdmin(targetUserId: string) {
-    // TODO: Implement using NextAuth session
-    throw new Error('assertUserIsNotCurrentSuperAdmin needs to be reimplemented');
-  }
-
-  /**
-   * @deprecated Needs reimplementation
-   */
-  private async setBanDuration(userId: string, banDuration: string) {
-    // TODO: Implement using Supabase Auth REST API
-    throw new Error('setBanDuration needs to be reimplemented');
+    throw new Error("impersonateUser needs to be reimplemented");
   }
 
   /**
@@ -80,8 +59,8 @@ class AdminAuthUserService {
    * @param userId
    * @deprecated Needs reimplementation
    */
-  async resetPassword(userId: string) {
+  async resetPassword(_userId: string) {
     // TODO: Implement using Supabase Auth REST API or NextAuth
-    throw new Error('resetPassword needs to be reimplemented');
+    throw new Error("resetPassword needs to be reimplemented");
   }
 }

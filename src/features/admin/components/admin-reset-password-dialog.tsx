@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { If } from "~/components/makerkit/if";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -16,8 +15,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '~/components/ui/alert-dialog';
-import { Button } from '~/components/ui/button';
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -26,28 +25,27 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '~/components/ui/form';
-import { If } from '~/components/makerkit/if';
-import { Input } from '~/components/ui/input';
-import { toast } from '~/components/ui/sonner';
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { toast } from "~/components/ui/sonner";
 
-import { resetPasswordAction } from '../lib/server/admin-server-actions';
+import { resetPasswordAction } from "../lib/server/admin-server-actions";
 
 const FormSchema = z.object({
   userId: z.string().uuid(),
-  confirmation: z.custom<string>((value) => value === 'CONFIRM'),
+  confirmation: z.custom<string>((value) => value === "CONFIRM"),
 });
 
 export function AdminResetPasswordDialog(
   props: React.PropsWithChildren<{
     userId: string;
-  }>,
+  }>
 ) {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       userId: props.userId,
-      confirmation: '',
+      confirmation: "",
     },
   });
 
@@ -64,13 +62,13 @@ export function AdminResetPasswordDialog(
         await resetPasswordAction(data);
 
         setSuccess(true);
-        form.reset({ userId: props.userId, confirmation: '' });
+        form.reset({ userId: props.userId, confirmation: "" });
 
-        toast.success('Password reset email successfully sent');
+        toast.success("Password reset email successfully sent");
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
 
-        toast.error('We hit an error. Please read the logs.');
+        toast.error("We hit an error. Please read the logs.");
       }
     });
   });
@@ -90,7 +88,7 @@ export function AdminResetPasswordDialog(
 
         <div className="relative">
           <Form {...form}>
-            <form onSubmit={onSubmit} className="space-y-4">
+            <form className="space-y-4" onSubmit={onSubmit}>
               <FormField
                 control={form.control}
                 name="confirmation"
@@ -139,7 +137,7 @@ export function AdminResetPasswordDialog(
                 </Alert>
               </If>
 
-              <input type="hidden" name="userId" value={props.userId} />
+              <input name="userId" type="hidden" value={props.userId} />
 
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={isPending}>
@@ -147,11 +145,11 @@ export function AdminResetPasswordDialog(
                 </AlertDialogCancel>
 
                 <Button
-                  type="submit"
                   disabled={isPending}
+                  type="submit"
                   variant="destructive"
                 >
-                  {isPending ? 'Sending...' : 'Send Reset Email'}
+                  {isPending ? "Sending..." : "Send Reset Email"}
                 </Button>
               </AlertDialogFooter>
             </form>

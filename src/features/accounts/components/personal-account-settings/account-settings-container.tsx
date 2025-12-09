@@ -1,28 +1,27 @@
-'use client';
+"use client";
 
-import type { Provider } from '@supabase/supabase-js';
+import type { Provider } from "@supabase/supabase-js";
 
-import { useTranslation } from 'react-i18next';
-
+import { useTranslation } from "react-i18next";
+import { If } from "~/components/makerkit/if";
+import { LanguageSelector } from "~/components/makerkit/language-selector";
+import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
+import { Trans } from "~/components/makerkit/trans";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '~/components/ui/card';
-import { If } from '~/components/makerkit/if';
-import { LanguageSelector } from '~/components/makerkit/language-selector';
-import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/card";
 
-import { usePersonalAccountData } from '../../hooks/use-personal-account-data';
-import { AccountDangerZone } from './account-danger-zone';
-import { UpdateEmailFormContainer } from './email/update-email-form-container';
-import { LinkAccountsList } from './link-accounts';
-import { UpdatePasswordFormContainer } from './password/update-password-container';
-import { UpdateAccountDetailsFormContainer } from './update-account-details-form-container';
-import { UpdateAccountImageContainer } from './update-account-image-container';
+import { usePersonalAccountData } from "../../hooks/use-personal-account-data";
+import { AccountDangerZone } from "./account-danger-zone";
+import { UpdateEmailFormContainer } from "./email/update-email-form-container";
+import { LinkAccountsList } from "./link-accounts";
+import { UpdatePasswordFormContainer } from "./password/update-password-container";
+import { UpdateAccountDetailsFormContainer } from "./update-account-details-form-container";
+import { UpdateAccountImageContainer } from "./update-account-image-container";
 
 export function PersonalAccountSettingsContainer(
   props: React.PropsWithChildren<{
@@ -39,7 +38,7 @@ export function PersonalAccountSettingsContainer(
     };
 
     providers: Provider[];
-  }>,
+  }>
 ) {
   const supportsLanguageSelection = useSupportMultiLanguage();
   const user = usePersonalAccountData(props.userId);
@@ -49,15 +48,15 @@ export function PersonalAccountSettingsContainer(
   }
 
   return (
-    <div className={'flex w-full flex-col space-y-4 pb-32'}>
+    <div className={"flex w-full flex-col space-y-4 pb-32"}>
       <Card>
         <CardHeader>
           <CardTitle>
-            <Trans i18nKey={'account:accountImage'} />
+            <Trans i18nKey={"account:accountImage"} />
           </CardTitle>
 
           <CardDescription>
-            <Trans i18nKey={'account:accountImageDescription'} />
+            <Trans i18nKey={"account:accountImageDescription"} />
           </CardDescription>
         </CardHeader>
 
@@ -74,11 +73,11 @@ export function PersonalAccountSettingsContainer(
       <Card>
         <CardHeader>
           <CardTitle>
-            <Trans i18nKey={'account:name'} />
+            <Trans i18nKey={"account:name"} />
           </CardTitle>
 
           <CardDescription>
-            <Trans i18nKey={'account:nameDescription'} />
+            <Trans i18nKey={"account:nameDescription"} />
           </CardDescription>
         </CardHeader>
 
@@ -91,11 +90,11 @@ export function PersonalAccountSettingsContainer(
         <Card>
           <CardHeader>
             <CardTitle>
-              <Trans i18nKey={'account:language'} />
+              <Trans i18nKey={"account:language"} />
             </CardTitle>
 
             <CardDescription>
-              <Trans i18nKey={'account:languageDescription'} />
+              <Trans i18nKey={"account:languageDescription"} />
             </CardDescription>
           </CardHeader>
 
@@ -108,11 +107,11 @@ export function PersonalAccountSettingsContainer(
       <Card>
         <CardHeader>
           <CardTitle>
-            <Trans i18nKey={'account:updateEmailCardTitle'} />
+            <Trans i18nKey={"account:updateEmailCardTitle"} />
           </CardTitle>
 
           <CardDescription>
-            <Trans i18nKey={'account:updateEmailCardDescription'} />
+            <Trans i18nKey={"account:updateEmailCardDescription"} />
           </CardDescription>
         </CardHeader>
 
@@ -125,11 +124,11 @@ export function PersonalAccountSettingsContainer(
         <Card>
           <CardHeader>
             <CardTitle>
-              <Trans i18nKey={'account:updatePasswordCardTitle'} />
+              <Trans i18nKey={"account:updatePasswordCardTitle"} />
             </CardTitle>
 
             <CardDescription>
-              <Trans i18nKey={'account:updatePasswordCardDescription'} />
+              <Trans i18nKey={"account:updatePasswordCardDescription"} />
             </CardDescription>
           </CardHeader>
 
@@ -142,18 +141,18 @@ export function PersonalAccountSettingsContainer(
       <Card>
         <CardHeader>
           <CardTitle>
-            <Trans i18nKey={'account:linkedAccounts'} />
+            <Trans i18nKey={"account:linkedAccounts"} />
           </CardTitle>
 
           <CardDescription>
-            <Trans i18nKey={'account:linkedAccountsDescription'} />
+            <Trans i18nKey={"account:linkedAccountsDescription"} />
           </CardDescription>
         </CardHeader>
 
         <CardContent>
           <LinkAccountsList
-            providers={props.providers}
             enabled={props.features.enableAccountLinking}
+            providers={props.providers}
             showEmailOption
             showPasswordOption
           />
@@ -161,14 +160,14 @@ export function PersonalAccountSettingsContainer(
       </Card>
 
       <If condition={props.features.enableAccountDeletion}>
-        <Card className={'border-destructive'}>
+        <Card className={"border-destructive"}>
           <CardHeader>
             <CardTitle>
-              <Trans i18nKey={'account:dangerZone'} />
+              <Trans i18nKey={"account:dangerZone"} />
             </CardTitle>
 
             <CardDescription>
-              <Trans i18nKey={'account:dangerZoneDescription'} />
+              <Trans i18nKey={"account:dangerZoneDescription"} />
             </CardDescription>
           </CardHeader>
 
@@ -185,7 +184,7 @@ function useSupportMultiLanguage() {
   const { i18n } = useTranslation();
   const langs = (i18n?.options?.supportedLngs as string[]) ?? [];
 
-  const supportedLangs = langs.filter((lang) => lang !== 'cimode');
+  const supportedLangs = langs.filter((lang) => lang !== "cimode");
 
   return supportedLangs.length > 1;
 }

@@ -1,12 +1,14 @@
-import { eq } from 'drizzle-orm';
-import { z } from 'zod';
+import { eq } from "drizzle-orm";
+import type { z } from "zod";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
+import {
+  accounts,
+  accountsMemberships,
+} from "~/core/database/supabase/drizzle/schema";
 
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
-import { accounts, accountsMemberships } from '~/core/database/supabase/drizzle/schema';
-import { JWTUserData } from '~/core/database/supabase/types';
-
-import { InviteMembersSchema } from '../../schema/invite-members.schema';
-import type { FeaturePolicyInvitationContext } from './feature-policy-invitation-context';
+import type { InviteMembersSchema } from "../../schema/invite-members.schema";
+import type { FeaturePolicyInvitationContext } from "./feature-policy-invitation-context";
 
 /**
  * Creates an invitation context builder
@@ -20,13 +22,12 @@ export function createInvitationContextBuilder() {
  * Invitation context builder
  */
 class InvitationContextBuilder {
-
   /**
    * Build policy context for invitation evaluation with optimized parallel loading
    */
   async buildContext(
     params: z.infer<typeof InviteMembersSchema> & { accountSlug: string },
-    user: JWTUserData,
+    user: BetterAuthUser
   ): Promise<FeaturePolicyInvitationContext> {
     // Fetch all data in parallel for optimal performance
     const account = await this.getAccount(params.accountSlug);
@@ -65,21 +66,21 @@ class InvitationContextBuilder {
   private async getAccount(accountSlug: string) {
     const drizzleClient = await getDrizzleSupabaseClient();
 
-    const result = await drizzleClient.runTransaction(async (tx) => {
-      return await tx
-        .select({ id: accounts.id })
-        .from(accounts)
-        .where(eq(accounts.slug, accountSlug))
-        .limit(1);
-    });
+    const result = await drizzleClient.runTransaction(
+      async (tx) =>
+        await tx
+          .select({ id: accounts.id })
+          .from(accounts)
+          .where(eq(accounts.slug, accountSlug))
+          .limit(1)
+    );
 
     if (result.length === 0) {
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
 
     return result[0];
   }
-
 
   /**
    * Gets the member count from the database

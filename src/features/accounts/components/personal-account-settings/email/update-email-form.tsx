@@ -1,51 +1,45 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckIcon } from '@radix-ui/react-icons';
-import { Mail } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { useUpdateUser } from '~/core/database/supabase/hooks/use-update-user-mutation';
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
-import { Button } from '~/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckIcon } from "@radix-ui/react-icons";
+import { Mail } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '~/components/ui/form';
-import { If } from '~/components/makerkit/if';
+} from "~/components/ui/form";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from '~/components/ui/input-group';
-import { toast } from '~/components/ui/sonner';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/input-group";
+import { toast } from "~/components/ui/sonner";
+import { useUpdateUser } from "~/core/database/supabase/hooks/use-update-user-mutation";
 
-import { UpdateEmailSchema } from '~/features/accounts/schema/update-email.schema';
+import { UpdateEmailSchema } from "~/features/accounts/schema/update-email.schema";
 
 function createEmailResolver(
   currentEmail: string | null,
   emailsNotMatchingMessage: string,
-  emailNotChangedMessage: string,
+  emailNotChangedMessage: string
 ) {
   const schema = UpdateEmailSchema.withTranslation(emailsNotMatchingMessage);
 
   // If there's a current email, ensure the new email is different
   if (currentEmail) {
     return zodResolver(
-      schema.refine(
-        (data) => {
-          return data.email !== currentEmail;
-        },
-        {
-          path: ['email'],
-          message: emailNotChangedMessage,
-        },
-      ),
+      schema.refine((data) => data.email !== currentEmail, {
+        path: ["email"],
+        message: emailNotChangedMessage,
+      })
     );
   }
 
@@ -62,18 +56,18 @@ export function UpdateEmailForm({
   callbackPath: string;
   onSuccess?: () => void;
 }) {
-  const { t } = useTranslation('account');
+  const { t } = useTranslation("account");
   const updateUserMutation = useUpdateUser();
   const isSettingEmail = !email;
 
-  const updateEmail = ({ email }: { email: string }) => {
+  const updateEmail = ({ email: newEmail }: { email: string }) => {
     const promise = async () => {
       const redirectTo = new URL(
         callbackPath,
-        window.location.origin,
+        window.location.origin
       ).toString();
 
-      await updateUserMutation.mutateAsync({ email, redirectTo });
+      await updateUserMutation.mutateAsync({ email: newEmail, redirectTo });
 
       if (onSuccess) {
         onSuccess();
@@ -81,41 +75,41 @@ export function UpdateEmailForm({
     };
 
     toast.promise(promise, {
-      success: t(isSettingEmail ? 'setEmailSuccess' : 'updateEmailSuccess'),
-      loading: t(isSettingEmail ? 'setEmailLoading' : 'updateEmailLoading'),
-      error: t(isSettingEmail ? 'setEmailError' : 'updateEmailError'),
+      success: t(isSettingEmail ? "setEmailSuccess" : "updateEmailSuccess"),
+      loading: t(isSettingEmail ? "setEmailLoading" : "updateEmailLoading"),
+      error: t(isSettingEmail ? "setEmailError" : "updateEmailError"),
     });
   };
 
   const form = useForm({
     resolver: createEmailResolver(
       email ?? null,
-      t('emailNotMatching'),
-      t('emailNotChanged'),
+      t("emailNotMatching"),
+      t("emailNotChanged")
     ),
     defaultValues: {
-      email: '',
-      repeatEmail: '',
+      email: "",
+      repeatEmail: "",
     },
   });
 
   return (
     <Form {...form}>
       <form
-        className={'flex flex-col space-y-4'}
-        data-test={'account-email-form'}
+        className={"flex flex-col space-y-4"}
+        data-test={"account-email-form"}
         onSubmit={form.handleSubmit(updateEmail)}
       >
         <If condition={updateUserMutation.data}>
-          <Alert variant={'success'}>
-            <CheckIcon className={'h-4'} />
+          <Alert variant={"success"}>
+            <CheckIcon className={"h-4"} />
 
             <AlertTitle>
               <Trans
                 i18nKey={
                   isSettingEmail
-                    ? 'account:setEmailSuccess'
-                    : 'account:updateEmailSuccess'
+                    ? "account:setEmailSuccess"
+                    : "account:updateEmailSuccess"
                 }
               />
             </AlertTitle>
@@ -124,17 +118,18 @@ export function UpdateEmailForm({
               <Trans
                 i18nKey={
                   isSettingEmail
-                    ? 'account:setEmailSuccessMessage'
-                    : 'account:updateEmailSuccessMessage'
+                    ? "account:setEmailSuccessMessage"
+                    : "account:updateEmailSuccessMessage"
                 }
               />
             </AlertDescription>
           </Alert>
         </If>
 
-        <div className={'flex flex-col space-y-4'}>
+        <div className={"flex flex-col space-y-4"}>
           <div className="flex flex-col space-y-2">
             <FormField
+              name={"email"}
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -144,14 +139,14 @@ export function UpdateEmailForm({
                       </InputGroupAddon>
 
                       <InputGroupInput
-                        data-test={'account-email-form-email-input'}
-                        required
-                        type={'email'}
+                        data-test={"account-email-form-email-input"}
                         placeholder={t(
                           isSettingEmail
-                            ? 'account:emailAddress'
-                            : 'account:newEmail',
+                            ? "account:emailAddress"
+                            : "account:newEmail"
                         )}
+                        required
+                        type={"email"}
                         {...field}
                       />
                     </InputGroup>
@@ -160,10 +155,10 @@ export function UpdateEmailForm({
                   <FormMessage />
                 </FormItem>
               )}
-              name={'email'}
             />
 
             <FormField
+              name={"repeatEmail"}
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -174,10 +169,10 @@ export function UpdateEmailForm({
 
                       <InputGroupInput
                         {...field}
-                        data-test={'account-email-form-repeat-email-input'}
+                        data-test={"account-email-form-repeat-email-input"}
+                        placeholder={t("account:repeatEmail")}
                         required
-                        type={'email'}
-                        placeholder={t('account:repeatEmail')}
+                        type={"email"}
                       />
                     </InputGroup>
                   </FormControl>
@@ -185,7 +180,6 @@ export function UpdateEmailForm({
                   <FormMessage />
                 </FormItem>
               )}
-              name={'repeatEmail'}
             />
           </div>
 
@@ -194,8 +188,8 @@ export function UpdateEmailForm({
               <Trans
                 i18nKey={
                   isSettingEmail
-                    ? 'account:setEmailAddress'
-                    : 'account:updateEmailSubmitLabel'
+                    ? "account:setEmailAddress"
+                    : "account:updateEmailSubmitLabel"
                 }
               />
             </Button>

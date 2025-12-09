@@ -1,11 +1,8 @@
-import { useEffect } from 'react';
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
-import { useQuery } from '@tanstack/react-query';
-
-import { useSupabase } from '~/core/database/supabase/hooks/use-supabase';
-
-import { Notification } from '../types';
-import { useNotificationsStream } from './use-notifications-stream';
+import type { Notification } from "../types";
+import { useNotificationsStream } from "./use-notifications-stream";
 
 export function useFetchNotifications({
   onNotifications,
@@ -33,14 +30,12 @@ export function useFetchNotifications({
   }, [initialNotifications, onNotifications]);
 }
 
-import { fetchNotificationsAction } from '~/features/accounts/server/notifications-server-actions';
+import { fetchNotificationsAction } from "~/features/accounts/server/notifications-server-actions";
 
 function useFetchInitialNotifications(props: { accountIds: string[] }) {
   return useQuery({
-    queryKey: ['notifications', ...props.accountIds],
-    queryFn: async () => {
-      return await fetchNotificationsAction(props.accountIds);
-    },
+    queryKey: ["notifications", ...props.accountIds],
+    queryFn: async () => await fetchNotificationsAction(props.accountIds),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });

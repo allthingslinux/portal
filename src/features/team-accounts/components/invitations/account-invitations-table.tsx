@@ -1,33 +1,31 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-
-import { ColumnDef } from '@tanstack/react-table';
-import { Ellipsis } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-
-import { Database } from '~/core/database/supabase/database.types';
-import { Badge } from '~/components/ui/badge';
-import { Button } from '~/components/ui/button';
-import { DataTable } from '~/components/ui/data-table';
+import type { ColumnDef } from "@tanstack/react-table";
+import { Ellipsis } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { If } from "~/components/makerkit/if";
+import { ProfileAvatar } from "~/components/makerkit/profile-avatar";
+import { Trans } from "~/components/makerkit/trans";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { DataTable } from "~/components/ui/data-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { If } from '~/components/makerkit/if';
-import { Input } from '~/components/ui/input';
-import { ProfileAvatar } from '~/components/makerkit/profile-avatar';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/dropdown-menu";
+import { Input } from "~/components/ui/input";
+import type { Database } from "~/core/database/supabase/database.types";
 
-import { RoleBadge } from '../members/role-badge';
-import { DeleteInvitationDialog } from './delete-invitation-dialog';
-import { RenewInvitationDialog } from './renew-invitation-dialog';
-import { UpdateInvitationDialog } from './update-invitation-dialog';
+import { RoleBadge } from "../members/role-badge";
+import { DeleteInvitationDialog } from "./delete-invitation-dialog";
+import { RenewInvitationDialog } from "./renew-invitation-dialog";
+import { UpdateInvitationDialog } from "./update-invitation-dialog";
 
 type Invitations =
-  Database['public']['Functions']['get_account_invitations']['Returns'];
+  Database["public"]["Functions"]["get_account_invitations"]["Returns"];
 
 type AccountInvitationsTableProps = {
   invitations: Invitations;
@@ -43,15 +41,15 @@ export function AccountInvitationsTable({
   invitations,
   permissions,
 }: AccountInvitationsTableProps) {
-  const { t } = useTranslation('teams');
-  const [search, setSearch] = useState('');
+  const { t } = useTranslation("teams");
+  const [search, setSearch] = useState("");
   const columns = useGetColumns(permissions);
 
   const filteredInvitations = invitations.filter((member) => {
     const searchString = search.toLowerCase();
 
     const email = (
-      member.email.split('@')[0]?.toLowerCase() ?? ''
+      member.email.split("@")[0]?.toLowerCase() ?? ""
     ).toLowerCase();
 
     return (
@@ -61,17 +59,17 @@ export function AccountInvitationsTable({
   });
 
   return (
-    <div className={'flex flex-col space-y-2'}>
+    <div className={"flex flex-col space-y-2"}>
       <Input
-        value={search}
         onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
-        placeholder={t(`searchInvitations`)}
+        placeholder={t("searchInvitations")}
+        value={search}
       />
 
       <DataTable
-        data-cy={'invitations-table'}
         columns={columns}
         data={filteredInvitations}
+        data-cy={"invitations-table"}
       />
     </div>
   );
@@ -82,12 +80,12 @@ function useGetColumns(permissions: {
   canRemoveInvitation: boolean;
   currentUserRoleHierarchy: number;
 }): ColumnDef<Invitations[0]>[] {
-  const { t } = useTranslation('teams');
+  const { t } = useTranslation("teams");
 
   return useMemo(
     () => [
       {
-        header: t('emailLabel'),
+        header: t("emailLabel"),
         size: 200,
         cell: ({ row }) => {
           const member = row.original;
@@ -95,8 +93,8 @@ function useGetColumns(permissions: {
 
           return (
             <span
-              data-test={'invitation-email'}
-              className={'flex items-center space-x-4 text-left'}
+              className={"flex items-center space-x-4 text-left"}
+              data-test={"invitation-email"}
             >
               <span>
                 <ProfileAvatar text={email} />
@@ -108,7 +106,7 @@ function useGetColumns(permissions: {
         },
       },
       {
-        header: t('roleLabel'),
+        header: t("roleLabel"),
         cell: ({ row }) => {
           const { role } = row.original;
 
@@ -116,41 +114,39 @@ function useGetColumns(permissions: {
         },
       },
       {
-        header: t('invitedAtLabel'),
-        cell: ({ row }) => {
-          return new Date(row.original.created_at).toLocaleDateString();
-        },
+        header: t("invitedAtLabel"),
+        cell: ({ row }) =>
+          new Date(row.original.created_at).toLocaleDateString(),
       },
       {
-        header: t('expiresAtLabel'),
-        cell: ({ row }) => {
-          return new Date(row.original.expires_at).toLocaleDateString();
-        },
+        header: t("expiresAtLabel"),
+        cell: ({ row }) =>
+          new Date(row.original.expires_at).toLocaleDateString(),
       },
       {
-        header: t('inviteStatus'),
+        header: t("inviteStatus"),
         cell: ({ row }) => {
           const isExpired = getIsInviteExpired(row.original.expires_at);
 
           if (isExpired) {
-            return <Badge variant={'warning'}>{t('expired')}</Badge>;
+            return <Badge variant={"warning"}>{t("expired")}</Badge>;
           }
 
-          return <Badge variant={'success'}>{t('active')}</Badge>;
+          return <Badge variant={"success"}>{t("active")}</Badge>;
         },
       },
       {
-        header: '',
-        id: 'actions',
+        header: "",
+        id: "actions",
         cell: ({ row }) => (
           <ActionsDropdown
-            permissions={permissions}
             invitation={row.original}
+            permissions={permissions}
           />
         ),
       },
     ],
-    [permissions, t],
+    [permissions, t]
   );
 }
 
@@ -158,14 +154,14 @@ function ActionsDropdown({
   permissions,
   invitation,
 }: {
-  permissions: AccountInvitationsTableProps['permissions'];
+  permissions: AccountInvitationsTableProps["permissions"];
   invitation: Invitations[0];
 }) {
   const [isDeletingInvite, setIsDeletingInvite] = useState(false);
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
   const [isRenewingInvite, setIsRenewingInvite] = useState(false);
 
-  if (!permissions.canUpdateInvitation && !permissions.canRemoveInvitation) {
+  if (!(permissions.canUpdateInvitation || permissions.canRemoveInvitation)) {
     return null;
   }
 
@@ -173,36 +169,36 @@ function ActionsDropdown({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant={'ghost'} size={'icon'}>
-            <Ellipsis className={'h-5 w-5'} />
+          <Button size={"icon"} variant={"ghost"}>
+            <Ellipsis className={"h-5 w-5"} />
           </Button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent>
           <If condition={permissions.canUpdateInvitation}>
             <DropdownMenuItem
-              data-test={'update-invitation-trigger'}
+              data-test={"update-invitation-trigger"}
               onClick={() => setIsUpdatingRole(true)}
             >
-              <Trans i18nKey={'teams:updateInvitation'} />
+              <Trans i18nKey={"teams:updateInvitation"} />
             </DropdownMenuItem>
 
             <If condition={getIsInviteExpired(invitation.expires_at)}>
               <DropdownMenuItem
-                data-test={'renew-invitation-trigger'}
+                data-test={"renew-invitation-trigger"}
                 onClick={() => setIsRenewingInvite(true)}
               >
-                <Trans i18nKey={'teams:renewInvitation'} />
+                <Trans i18nKey={"teams:renewInvitation"} />
               </DropdownMenuItem>
             </If>
           </If>
 
           <If condition={permissions.canRemoveInvitation}>
             <DropdownMenuItem
-              data-test={'remove-invitation-trigger'}
+              data-test={"remove-invitation-trigger"}
               onClick={() => setIsDeletingInvite(true)}
             >
-              <Trans i18nKey={'teams:removeInvitation'} />
+              <Trans i18nKey={"teams:removeInvitation"} />
             </DropdownMenuItem>
           </If>
         </DropdownMenuContent>
@@ -210,17 +206,17 @@ function ActionsDropdown({
 
       <If condition={isDeletingInvite}>
         <DeleteInvitationDialog
+          invitationId={invitation.id}
           isOpen
           setIsOpen={setIsDeletingInvite}
-          invitationId={invitation.id}
         />
       </If>
 
       <If condition={isUpdatingRole}>
         <UpdateInvitationDialog
+          invitationId={invitation.id}
           isOpen
           setIsOpen={setIsUpdatingRole}
-          invitationId={invitation.id}
           userRole={invitation.role}
           userRoleHierarchy={permissions.currentUserRoleHierarchy}
         />
@@ -228,10 +224,10 @@ function ActionsDropdown({
 
       <If condition={isRenewingInvite}>
         <RenewInvitationDialog
+          email={invitation.email}
+          invitationId={invitation.id}
           isOpen
           setIsOpen={setIsRenewingInvite}
-          invitationId={invitation.id}
-          email={invitation.email}
         />
       </If>
     </>

@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { If } from "~/components/makerkit/if";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -15,9 +14,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '~/components/ui/alert-dialog';
-import { Button } from '~/components/ui/button';
-import { Checkbox } from '~/components/ui/checkbox';
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -26,16 +25,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '~/components/ui/form';
-import { If } from '~/components/makerkit/if';
-import { Input } from '~/components/ui/input';
-import { toast } from '~/components/ui/sonner';
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { toast } from "~/components/ui/sonner";
 
-import { createUserAction } from '../lib/server/admin-server-actions';
+import { createUserAction } from "../lib/server/admin-server-actions";
 import {
   CreateUserSchema,
-  CreateUserSchemaType,
-} from '../lib/server/schema/create-user.schema';
+  type CreateUserSchemaType,
+} from "../lib/server/schema/create-user.schema";
 
 export function AdminCreateUserDialog(props: React.PropsWithChildren) {
   const [pending, startTransition] = useTransition();
@@ -45,11 +43,11 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
   const form = useForm<CreateUserSchemaType>({
     resolver: zodResolver(CreateUserSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
       emailConfirm: false,
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const onSubmit = (data: CreateUserSchemaType) => {
@@ -58,7 +56,7 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
         const result = await createUserAction(data);
 
         if (result.success) {
-          toast.success('User creates successfully');
+          toast.success("User creates successfully");
           form.reset();
 
           setOpen(false);
@@ -66,13 +64,13 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
 
         setError(null);
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Error');
+        setError(e instanceof Error ? e.message : "Error");
       }
     });
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog onOpenChange={setOpen} open={open}>
       <AlertDialogTrigger asChild>{props.children}</AlertDialogTrigger>
 
       <AlertDialogContent>
@@ -86,12 +84,12 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
 
         <Form {...form}>
           <form
-            data-test={'admin-create-user-form'}
-            className={'flex flex-col space-y-4'}
+            className={"flex flex-col space-y-4"}
+            data-test={"admin-create-user-form"}
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <If condition={!!error}>
-              <Alert variant={'destructive'}>
+              <Alert variant={"destructive"}>
                 <AlertTitle>Error</AlertTitle>
 
                 <AlertDescription>{error}</AlertDescription>
@@ -99,16 +97,16 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
             </If>
 
             <FormField
-              name={'email'}
+              name={"email"}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
 
                   <FormControl>
                     <Input
+                      placeholder={"user@example.com"}
                       required
                       type="email"
-                      placeholder={'user@example.com'}
                       {...field}
                     />
                   </FormControl>
@@ -118,16 +116,16 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
             />
 
             <FormField
-              name={'password'}
+              name={"password"}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
 
                   <FormControl>
                     <Input
+                      placeholder={"Password"}
                       required
                       type="password"
-                      placeholder={'Password'}
                       {...field}
                     />
                   </FormControl>
@@ -141,9 +139,9 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
             />
 
             <FormField
-              name={'emailConfirm'}
+              name={"emailConfirm"}
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
@@ -166,8 +164,8 @@ export function AdminCreateUserDialog(props: React.PropsWithChildren) {
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
 
-              <Button disabled={pending} type={'submit'}>
-                {pending ? 'Creating...' : 'Create User'}
+              <Button disabled={pending} type={"submit"}>
+                {pending ? "Creating..." : "Create User"}
               </Button>
             </AlertDialogFooter>
           </form>

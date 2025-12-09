@@ -1,7 +1,6 @@
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
-import { Trans } from '~/components/makerkit/trans';
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { Trans } from "~/components/makerkit/trans";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 /**
  * @name AuthErrorAlert
@@ -24,18 +23,18 @@ export function AuthErrorAlert({
   const errorCode = error instanceof Error ? error.message : error;
 
   return (
-    <Alert variant={'destructive'}>
-      <ExclamationTriangleIcon className={'w-4'} />
+    <Alert variant={"destructive"}>
+      <ExclamationTriangleIcon className={"w-4"} />
 
       <AlertTitle>
-        <Trans i18nKey={`auth:errorAlertHeading`} />
+        <Trans i18nKey={"auth:errorAlertHeading"} />
       </AlertTitle>
 
-      <AlertDescription data-test={'auth-error-message'}>
+      <AlertDescription data-test={"auth-error-message"}>
         <Trans
-          i18nKey={`auth:errors.${errorCode}`}
-          defaults={'<DefaultError />'}
           components={{ DefaultError }}
+          defaults={"<DefaultError />"}
+          i18nKey={`auth:errors.${errorCode}`}
         />
       </AlertDescription>
     </Alert>

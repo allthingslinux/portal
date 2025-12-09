@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
-import type { z } from 'zod';
+import type { z } from "zod";
 
-import { useSignInWithEmailPassword } from '~/core/database/supabase/hooks/use-sign-in-with-email-password';
+import { useSignInWithEmailPassword } from "~/core/auth/better-auth/hooks";
 
-import { useCaptcha } from '../captcha/client';
-import { useLastAuthMethod } from '../hooks/use-last-auth-method';
-import type { PasswordSignInSchema } from '../schemas/password-sign-in.schema';
-import { AuthErrorAlert } from './auth-error-alert';
-import { PasswordSignInForm } from './password-sign-in-form';
+import { useCaptcha } from "../captcha/client";
+import { useLastAuthMethod } from "../hooks/use-last-auth-method";
+import type { PasswordSignInSchema } from "../schemas/password-sign-in.schema";
+import { AuthErrorAlert } from "./auth-error-alert";
+import { PasswordSignInForm } from "./password-sign-in-form";
 
 export function PasswordSignInContainer({
   onSignIn,
@@ -34,10 +34,10 @@ export function PasswordSignInContainer({
         });
 
         // Record successful password sign-in
-        recordAuthMethod('password', { email: credentials.email });
+        recordAuthMethod("password", { email: credentials.email });
 
         if (onSignIn) {
-          const userId = data?.user?.id;
+          const userId = data.data?.user?.id;
 
           onSignIn(userId);
         }
@@ -47,7 +47,7 @@ export function PasswordSignInContainer({
         captcha.reset();
       }
     },
-    [captcha, onSignIn, signInMutation, recordAuthMethod],
+    [captcha, onSignIn, signInMutation, recordAuthMethod]
   );
 
   return (
@@ -56,8 +56,8 @@ export function PasswordSignInContainer({
 
       <div>
         <PasswordSignInForm
-          onSubmit={onSubmit}
           loading={isLoading}
+          onSubmit={onSubmit}
           redirecting={isRedirecting}
         />
 

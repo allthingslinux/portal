@@ -1,20 +1,14 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const UpdateEmailSchema = {
-  withTranslation: (errorMessage: string) => {
-    return z
+  withTranslation: (errorMessage: string) =>
+    z
       .object({
         email: z.string().email(),
         repeatEmail: z.string().email(),
       })
-      .refine(
-        (values) => {
-          return values.email === values.repeatEmail;
-        },
-        {
-          path: ['repeatEmail'],
-          message: errorMessage,
-        },
-      );
-  },
+      .refine((values) => values.email === values.repeatEmail, {
+        path: ["repeatEmail"],
+        message: errorMessage,
+      }),
 };

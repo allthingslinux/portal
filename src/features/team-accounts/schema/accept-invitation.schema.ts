@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const AcceptInvitationSchema = z.object({
   inviteToken: z.string().uuid(),

@@ -1,10 +1,12 @@
-import 'server-only';
+import "server-only";
 
-import { eq } from 'drizzle-orm';
-
-import { getLogger } from '~/shared/logger';
-import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
-import { accounts, accountsMemberships } from '~/core/database/supabase/drizzle/schema';
+import { eq } from "drizzle-orm";
+import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
+import {
+  accounts,
+  accountsMemberships,
+} from "~/core/database/supabase/drizzle/schema";
+import { getLogger } from "~/shared/logger";
 
 export function createDeletePersonalAccountService() {
   return new DeletePersonalAccountService();
@@ -17,7 +19,7 @@ export function createDeletePersonalAccountService() {
  * const accountsService = createDeletePersonalAccountService();
  */
 class DeletePersonalAccountService {
-  private namespace = 'accounts.delete';
+  private readonly namespace = "accounts.delete";
 
   /**
    * @name deletePersonalAccount
@@ -41,7 +43,7 @@ class DeletePersonalAccountService {
 
     logger.info(
       ctx,
-      'User requested to delete their personal account. Processing...',
+      "User requested to delete their personal account. Processing..."
     );
 
     // execute the deletion of the user
@@ -54,7 +56,7 @@ class DeletePersonalAccountService {
       // Delete the account
       await tx.delete(accounts).where(eq(accounts.primaryOwnerUserId, userId));
 
-      logger.info(ctx, 'Personal account deleted successfully');
+      logger.info(ctx, "Personal account deleted successfully");
     });
 
     // Note: Auth user deletion should be handled separately

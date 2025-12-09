@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useSession } from '~/core/auth/nextauth/hooks';
-import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
+import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
+import { useSession } from "~/core/auth/better-auth/hooks";
 
-import { UpdatePasswordForm } from './update-password-form';
+import { UpdatePasswordForm } from "./update-password-form";
 
 export function UpdatePasswordFormContainer(
   props: React.PropsWithChildren<{
     callbackPath: string;
-  }>,
+  }>
 ) {
   const { data: user, isLoading: isPending } = useSession();
 

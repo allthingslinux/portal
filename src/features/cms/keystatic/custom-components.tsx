@@ -1,6 +1,5 @@
-import type { ComponentType } from 'react';
-
-import type { Schema } from '@markdoc/markdoc';
+import type { Schema } from "@markdoc/markdoc";
+import type { ComponentType } from "react";
 
 type Component = ComponentType<unknown>;
 

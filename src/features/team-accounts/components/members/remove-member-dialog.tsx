@@ -1,6 +1,7 @@
-import { useState, useTransition } from 'react';
-
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { useState, useTransition } from "react";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -10,12 +11,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '~/components/ui/alert-dialog';
-import { Button } from '~/components/ui/button';
-import { If } from '~/components/makerkit/if';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 
-import { removeMemberFromAccountAction } from '../../server/actions/team-members-server-actions';
+import { removeMemberFromAccountAction } from "../../server/actions/team-members-server-actions";
 
 export function RemoveMemberDialog({
   teamAccountId,
@@ -36,7 +35,7 @@ export function RemoveMemberDialog({
           </AlertDialogTitle>
 
           <AlertDialogDescription>
-            <Trans i18nKey={'teams:removeMemberModalDescription'} />
+            <Trans i18nKey={"teams:removeMemberModalDescription"} />
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -68,9 +67,9 @@ function RemoveMemberForm({
 
   return (
     <form action={onMemberRemoved}>
-      <div className={'flex flex-col space-y-6'}>
-        <p className={'text-muted-foreground text-sm'}>
-          <Trans i18nKey={'common:modalConfirmationQuestion'} />
+      <div className={"flex flex-col space-y-6"}>
+        <p className={"text-muted-foreground text-sm"}>
+          <Trans i18nKey={"common:modalConfirmationQuestion"} />
         </p>
 
         <If condition={error}>
@@ -79,15 +78,15 @@ function RemoveMemberForm({
 
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Trans i18nKey={'common:cancel'} />
+            <Trans i18nKey={"common:cancel"} />
           </AlertDialogCancel>
 
           <Button
-            data-test={'confirm-remove-member'}
-            variant={'destructive'}
+            data-test={"confirm-remove-member"}
             disabled={isSubmitting}
+            variant={"destructive"}
           >
-            <Trans i18nKey={'teams:removeMemberSubmitLabel'} />
+            <Trans i18nKey={"teams:removeMemberSubmitLabel"} />
           </Button>
         </AlertDialogFooter>
       </div>
@@ -97,13 +96,13 @@ function RemoveMemberForm({
 
 function RemoveMemberErrorAlert() {
   return (
-    <Alert variant={'destructive'}>
+    <Alert variant={"destructive"}>
       <AlertTitle>
-        <Trans i18nKey={'teams:removeMemberErrorHeading'} />
+        <Trans i18nKey={"teams:removeMemberErrorHeading"} />
       </AlertTitle>
 
       <AlertDescription>
-        <Trans i18nKey={'teams:removeMemberErrorMessage'} />
+        <Trans i18nKey={"teams:removeMemberErrorMessage"} />
       </AlertDescription>
     </Alert>
   );

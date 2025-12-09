@@ -1,35 +1,33 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
+import { UserCheck } from "lucide-react";
 
-import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { If } from "~/components/makerkit/if";
+import { Trans } from "~/components/makerkit/trans";
+import { Alert, AlertDescription } from "~/components/ui/alert";
 
-import { UserCheck } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 
-import { Alert, AlertDescription } from '~/components/ui/alert';
-import { If } from '~/components/makerkit/if';
-import { Trans } from '~/components/makerkit/trans';
-
-import { useLastAuthMethod } from '../hooks/use-last-auth-method';
-
-interface ExistingAccountHintProps {
+type ExistingAccountHintProps = {
   signInPath?: string;
   className?: string;
-}
+};
 
 // we force dynamic import to avoid hydration errors
 export const ExistingAccountHint = dynamic(
   async () => ({ default: ExistingAccountHintImpl }),
   {
     ssr: false,
-  },
+  }
 );
 
 export function ExistingAccountHintImpl({
-  signInPath = '/auth/sign-in',
+  signInPath = "/auth/sign-in",
   className,
 }: ExistingAccountHintProps) {
   const { hasLastMethod, methodType, providerName, isOAuth } =
@@ -38,10 +36,10 @@ export function ExistingAccountHintImpl({
   const params = useSearchParams();
   const { t } = useTranslation();
 
-  const isInvite = params.get('invite_token');
+  const isInvite = params.get("invite_token");
 
   if (isInvite) {
-    signInPath = signInPath + '?invite_token=' + isInvite;
+    signInPath = `${signInPath}?invite_token=${isInvite}`;
   }
 
   // Get the appropriate method description for the hint
@@ -52,14 +50,14 @@ export function ExistingAccountHintImpl({
     }
 
     switch (methodType) {
-      case 'password':
-        return 'auth:methodPassword';
-      case 'otp':
-        return 'auth:methodOtp';
-      case 'magic_link':
-        return 'auth:methodMagicLink';
+      case "password":
+        return "auth:methodPassword";
+      case "otp":
+        return "auth:methodOtp";
+      case "magic_link":
+        return "auth:methodMagicLink";
       default:
-        return 'auth:methodDefault';
+        return "auth:methodDefault";
     }
   }, [methodType, isOAuth, providerName]);
 
@@ -70,19 +68,19 @@ export function ExistingAccountHintImpl({
 
   return (
     <If condition={Boolean(methodDescription)}>
-      <Alert data-test={'existing-account-hint'} className={className}>
+      <Alert className={className} data-test={"existing-account-hint"}>
         <UserCheck className="h-4 w-4" />
 
         <AlertDescription>
           <Trans
-            i18nKey="auth:existingAccountHint"
-            values={{ method: t(methodDescription) }}
             components={{
               method: <span className="font-medium" />,
               signInLink: (
-                <Link href={signInPath} className="font-medium underline" />
+                <Link className="font-medium underline" href={signInPath} />
               ),
             }}
+            i18nKey="auth:existingAccountHint"
+            values={{ method: t(methodDescription) }}
           />
         </AlertDescription>
       </Alert>

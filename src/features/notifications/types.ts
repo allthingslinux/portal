@@ -1,6 +1,6 @@
-import { Tables } from '~/core/database/supabase/database.types';
+import type { Tables } from "~/core/database/supabase/database.types";
 
 export type Notification = Pick<
-  Tables<'notifications'>,
-  'id' | 'body' | 'dismissed' | 'type' | 'created_at' | 'link'
+  Tables<"notifications">,
+  "id" | "body" | "dismissed" | "type" | "created_at" | "link"
 >;
