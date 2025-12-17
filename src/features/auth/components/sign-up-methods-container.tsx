@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { If } from "~/components/makerkit/if";
+import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
 import { Trans } from "~/components/makerkit/trans";
 import { Separator } from "~/components/ui/separator";
-import type { Provider } from "~/core/database/supabase/supabase-types";
+import { useSignInWithProvider } from "~/core/auth/better-auth/hooks";
+import type { Provider } from "~/core/auth/better-auth/types";
 import { isBrowser } from "~/shared/utils";
 
 import { ExistingAccountHint } from "./existing-account-hint";
@@ -24,11 +27,43 @@ export function SignUpMethodsContainer(props: {
   displayTermsCheckbox?: boolean;
   captchaSiteKey?: string;
 }) {
+  const signInWithProviderMutation = useSignInWithProvider();
+  const hasAutoRedirectedRef = useRef(false);
+
+  const shouldAutoRedirect =
+    !props.providers.password && props.providers.oAuth.length === 1;
+  const autoRedirectProvider = props.providers.oAuth[0];
+
+  useEffect(() => {
+    if (!shouldAutoRedirect || hasAutoRedirectedRef.current) {
+      return;
+    }
+    hasAutoRedirectedRef.current = true;
+
+    const run = async () => {
+      await signInWithProviderMutation.mutateAsync({
+        provider: autoRedirectProvider,
+        redirectTo: props.paths.appHome,
+      });
+    };
+
+    run();
+  }, [
+    autoRedirectProvider,
+    props.paths.appHome,
+    shouldAutoRedirect,
+    signInWithProviderMutation,
+  ]);
+
   const redirectUrl = getCallbackUrl(props);
   const defaultValues = getDefaultValues();
 
   return (
     <>
+      <If condition={signInWithProviderMutation.isPending}>
+        <LoadingOverlay />
+      </If>
+
       {/* Show hint if user might already have an account */}
       <ExistingAccountHint />
 

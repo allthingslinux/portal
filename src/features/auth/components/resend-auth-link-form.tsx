@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Trans } from "~/components/makerkit/trans";
@@ -14,7 +13,7 @@ import {
   FormItem,
   FormMessage,
 } from "~/components/ui/form";
-import { useSupabase } from "~/core/database/supabase/hooks/use-supabase";
+import { useResendVerification } from "~/core/auth/better-auth/hooks";
 
 import { useCaptcha } from "../captcha/client";
 import { EmailInput } from "./email-input";
@@ -91,29 +90,17 @@ export function ResendAuthLinkForm(props: {
 }
 
 function useResendLink(captchaToken: string) {
-  const supabase = useSupabase();
+  const resendVerification = useResendVerification();
 
-  const mutationFn = async (props: {
-    email: string;
-    redirectPath?: string;
-  }) => {
-    const response = await supabase.auth.resend({
-      email: props.email,
-      type: "signup",
-      options: {
-        emailRedirectTo: props.redirectPath,
+  return {
+    mutateAsync: async (props: { email: string; redirectPath?: string }) =>
+      resendVerification.mutateAsync({
+        email: props.email,
+        redirectPath: props.redirectPath,
         captchaToken,
-      },
-    });
-
-    if (response.error) {
-      throw response.error;
-    }
-
-    return response.data;
+      }),
+    isPending: resendVerification.isPending,
+    data: resendVerification.data,
+    error: resendVerification.error,
   };
-
-  return useMutation({
-    mutationFn,
-  });
 }

@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Heading } from "~/components/ui/heading";
-import { useUpdateUser } from "~/core/database/supabase/hooks/use-update-user-mutation";
+import { useUpdateUser } from "~/core/auth/better-auth/hooks";
 
 import { PasswordResetSchema } from "../schemas/password-reset.schema";
 import { PasswordInput } from "./password-input";

@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { useRequestResetPassword } from "~/core/database/supabase/hooks/use-request-reset-password";
+import { useRequestResetPassword } from "~/core/auth/better-auth/hooks";
 
 import { useCaptcha } from "../captcha/client";
 import { AuthErrorAlert } from "./auth-error-alert";

@@ -5,7 +5,7 @@ import { If } from "~/components/makerkit/if";
 import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
 import { Trans } from "~/components/makerkit/trans";
 import { useSignInWithProvider } from "~/core/auth/better-auth/hooks";
-import type { Provider } from "~/core/database/supabase/supabase-types";
+import type { Provider } from "~/core/auth/better-auth/types";
 
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 import { AuthErrorAlert } from "./auth-error-alert";
@@ -18,7 +18,7 @@ import { AuthProviderButton } from "./auth-provider-button";
  *
  * Please add your OAuth providers here and the scopes you want to use.
  *
- * @see https://supabase.com/docs/guides/auth/social-login
+ * OAuth provider configuration for Better Auth
  */
 const _OAUTH_SCOPES: Partial<Record<Provider, string>> = {
   azure: "email",
@@ -83,7 +83,7 @@ export const OauthProviders: React.FC<{
                   // So we just need to set the callbackUrl to where we want to redirect after auth
                   const callbackUrl = props.paths.returnPath || "/home";
 
-                  // Map Supabase provider names to NextAuth provider names
+                  // Map provider names to Better Auth provider names
                   const providerMap: Record<string, string> = {
                     google: "google",
                     github: "github",

@@ -69,8 +69,36 @@ export function CaptchaField<
 
   const control = props.control;
 
+  const defaultOptions: Partial<TurnstileProps> = {
+    options: {
+      size: "invisible",
+    },
+  };
+
   if (!control) {
-    return null;
+    if (!siteKey) {
+      return null;
+    }
+
+    return (
+      <Turnstile
+        onSuccess={(token) => {
+          props.onTokenChange(token);
+        }}
+        ref={(instance) => {
+          if (instance) {
+            instanceRef.current = instance;
+            props.onInstanceChange?.(instance);
+          }
+        }}
+        scriptOptions={{
+          nonce,
+        }}
+        siteKey={siteKey}
+        {...defaultOptions}
+        {...options}
+      />
+    );
   }
 
   // React Hook Form integration
@@ -84,28 +112,17 @@ export function CaptchaField<
     return null;
   }
 
-  const defaultOptions: Partial<TurnstileProps> = {
-    options: {
-      size: "invisible",
-    },
-  };
-
   const handleSuccess = (token: string) => {
     if (controller) {
       // React Hook Form mode - use setValue from controller
       controller.field.onChange(token);
-    } else if ("onTokenChange" in props && props.onTokenChange) {
-      // Standalone mode
-      props.onTokenChange(token);
     }
   };
 
   const handleInstanceChange = (instance: TurnstileInstance | null) => {
     instanceRef.current = instance;
 
-    if ("onInstanceChange" in props && props.onInstanceChange) {
-      props.onInstanceChange(instance);
-    }
+    // Standalone mode handles onInstanceChange above
   };
 
   return (

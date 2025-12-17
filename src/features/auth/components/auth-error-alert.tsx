@@ -4,10 +4,9 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 /**
  * @name AuthErrorAlert
- * @param error This error comes from Supabase as the code returned on errors
+ * @param error Authentication error code
  * This error is mapped from the translation auth:errors.{error}
  * To update the error messages, please update the translation file
- * https://github.com/supabase/gotrue-js/blob/master/lib/errors.ts
  * @constructor
  */
 export function AuthErrorAlert({
