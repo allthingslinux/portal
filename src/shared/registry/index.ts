@@ -63,7 +63,12 @@ export function createRegistry<T, Names extends string = string>(): Registry<
         if (!setupPromises.has(group)) {
           const callbacks = setupCallbacks.get(group) ?? [];
 
-          setupPromises.set(group, Promise.all(callbacks.map((cb) => cb())));
+          setupPromises.set(
+            group,
+            Promise.all(callbacks.map((cb) => cb())).then(() => {
+              // callbacks already resolved
+            })
+          );
         }
 
         return setupPromises.get(group);
