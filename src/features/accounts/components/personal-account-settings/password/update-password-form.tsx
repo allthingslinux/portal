@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import type { PostgrestError } from "@supabase/supabase-js";
+// Removed PostgrestError import - using standard Error type now
 import { Check, Lock, XIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,7 +25,7 @@ import {
   InputGroupInput,
 } from "~/components/ui/input-group";
 import { toast } from "~/components/ui/sonner";
-import { useUpdateUser } from "~/core/database/supabase/hooks/use-update-user-mutation";
+import { useUpdateUser } from "~/core/auth/better-auth/hooks";
 
 import { PasswordUpdateSchema } from "~/features/accounts/schema/update-password.schema";
 
@@ -104,7 +104,13 @@ export const UpdatePasswordForm = ({
           </If>
 
           <If condition={updateUserMutation.error}>
-            {(error) => <ErrorAlert error={error as PostgrestError} />}
+            {(error) => {
+              const errorObj =
+                error instanceof Error
+                  ? { code: error.message, message: error.message }
+                  : (error as { code: string; message?: string });
+              return <ErrorAlert error={errorObj} />;
+            }}
           </If>
 
           <If condition={needsReauthentication}>

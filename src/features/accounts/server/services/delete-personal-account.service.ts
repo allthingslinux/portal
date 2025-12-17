@@ -1,11 +1,8 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
-import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
-import {
-  accounts,
-  accountsMemberships,
-} from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accounts, accountsMemberships } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 export function createDeletePersonalAccountService() {
@@ -36,7 +33,7 @@ class DeletePersonalAccountService {
     };
   }) {
     const logger = await getLogger();
-    const adminClient = getDrizzleSupabaseAdminClient();
+    const adminClient = db;
 
     const userId = params.account.id;
     const ctx = { userId, name: this.namespace };
@@ -60,6 +57,6 @@ class DeletePersonalAccountService {
     });
 
     // Note: Auth user deletion should be handled separately
-    // as it requires Supabase Auth Admin API, not database operations
+    // Note: User deletion should be handled through Better Auth admin API
   }
 }

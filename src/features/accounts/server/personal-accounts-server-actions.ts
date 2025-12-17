@@ -1,14 +1,23 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { betterAuthUserIdToUuid } from "~/core/auth/better-auth/utils/user-id-to-uuid";
+import { db } from "~/core/database/client";
+import {
+  accounts,
+  accountsMemberships,
+  betterAuthAccount,
+  betterAuthUser,
+  usersInAuth,
+} from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 import { enhanceAction } from "~/shared/next/actions";
 import { revalidateAccountSettings } from "~/shared/next/actions/revalidate-account-paths";
 import { updateAccountPictureInDatabase } from "~/shared/next/actions/update-account-picture";
+import { createAdminAuthUserService } from "~/features/admin/lib/server/services/admin-auth-user.service";
+import { getSessionUserData } from "~/core/auth/better-auth/session";
 
 import { DeletePersonalAccountSchema } from "../schema/delete-personal-account.schema";
 import { createDeletePersonalAccountService } from "./services/delete-personal-account.service";
@@ -34,6 +43,7 @@ export async function updateAccountPictureUrlAction(
 
 /**
  * Update account data (name, public_data, etc.)
+ * Also syncs name changes to Better Auth user table and Keycloak
  */
 export async function updateAccountDataAction(
   accountId: string,
@@ -42,23 +52,99 @@ export async function updateAccountDataAction(
     public_data?: Record<string, unknown> | null;
   }
 ) {
-  const drizzleClient = await getDrizzleSupabaseClient();
+  const updateData: {
+    name?: string;
+    publicData?: Record<string, unknown>;
+  } = {};
 
-  await drizzleClient.runTransaction(async (tx) => {
-    const updateData: {
-      name?: string;
-      publicData?: Record<string, unknown>;
-    } = {};
+  if (data.name !== undefined) {
+    updateData.name = data.name ?? undefined;
+  }
+  if (data.public_data !== undefined) {
+    updateData.publicData = data.public_data ?? undefined;
+  }
 
-    if (data.name !== undefined) {
-      updateData.name = data.name ?? undefined;
+  await db.update(accounts).set(updateData).where(eq(accounts.id, accountId));
+
+  // If name was updated, sync to Better Auth user table and Keycloak
+  if (data.name !== undefined && data.name !== null) {
+    try {
+      // Get current user session
+      const user = await getSessionUserData();
+      if (!user) {
+        // Not authenticated, skip sync
+        revalidateAccountSettings();
+        return;
+      }
+
+      // Update Better Auth user table
+      await db
+        .update(betterAuthUser)
+        .set({
+          name: data.name,
+          updatedAt: new Date(),
+        })
+        .where(eq(betterAuthUser.id, user.id));
+
+      // Get Keycloak user ID (sub) from account record
+      const accountRecords = await db
+        .select({
+          userId: betterAuthAccount.userId,
+          providerId: betterAuthAccount.providerId,
+        })
+        .from(betterAuthAccount)
+        .where(
+          and(
+            eq(betterAuthAccount.userId, user.id),
+            eq(betterAuthAccount.providerId, "keycloak")
+          )
+        )
+        .limit(1);
+
+      if (accountRecords.length > 0) {
+        // Get Keycloak user ID from accountId field (Better Auth stores the Keycloak sub here)
+        const accountWithKeycloakId = await db
+          .select({
+            accountId: betterAuthAccount.accountId,
+          })
+          .from(betterAuthAccount)
+          .where(
+            and(
+              eq(betterAuthAccount.userId, user.id),
+              eq(betterAuthAccount.providerId, "keycloak")
+            )
+          )
+          .limit(1);
+
+        if (accountWithKeycloakId.length > 0 && accountWithKeycloakId[0].accountId) {
+          try {
+            // Update Keycloak user name via Admin API
+            const adminService = createAdminAuthUserService();
+            await adminService.updateUserName(
+              accountWithKeycloakId[0].accountId,
+              data.name
+            );
+
+            // Mark that we updated Keycloak to prevent immediate sync overwrite
+            const { markKeycloakUpdate } = await import(
+              "~/core/auth/better-auth/server/sync-user-from-keycloak"
+            );
+            await markKeycloakUpdate();
+          } catch (adminError) {
+            // Log error but don't fail the account update
+            if (process.env.NODE_ENV === "development") {
+              console.error("Failed to sync name to Keycloak:", adminError);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      // Log error but don't fail the account update
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to sync name to Keycloak:", error);
+      }
     }
-    if (data.public_data !== undefined) {
-      updateData.publicData = data.public_data ?? undefined;
-    }
-
-    await tx.update(accounts).set(updateData).where(eq(accounts.id, accountId));
-  });
+  }
 
   revalidateAccountSettings();
 }
@@ -67,30 +153,96 @@ export async function updateAccountDataAction(
  * Get personal account data
  */
 export async function getPersonalAccountDataAction(userId: string) {
-  const drizzleClient = await getDrizzleSupabaseClient();
+  // Convert Better Auth user ID (text) to UUID for querying
+  const userIdUuid = betterAuthUserIdToUuid(userId);
 
-  const result = (await drizzleClient.runTransaction(
-    async (tx) =>
-      await tx
-        .select({
-          id: accounts.id,
-          name: accounts.name,
-          pictureUrl: accounts.pictureUrl,
-          publicData: accounts.publicData,
-        })
-        .from(accounts)
-        .where(eq(accounts.primaryOwnerUserId, userId))
-        .where(eq(accounts.isPersonalAccount, true))
-        .limit(1)
-  )) as Array<{
-    id: string;
-    name: string | null;
-    pictureUrl: string | null;
-    publicData: Record<string, unknown> | null;
-  }>;
+  const result = await db
+    .select({
+      id: accounts.id,
+      name: accounts.name,
+      pictureUrl: accounts.pictureUrl,
+      publicData: accounts.publicData,
+    })
+    .from(accounts)
+    .where(
+      and(
+        eq(accounts.primaryOwnerUserId, userIdUuid),
+        eq(accounts.isPersonalAccount, true)
+      )
+    )
+    .limit(1);
 
+  // If account doesn't exist, create it (for existing users who logged in before the hook was added)
   if (result.length === 0) {
-    return null;
+    try {
+      // Get Better Auth user data
+      const betterAuthUserData = await db
+        .select({
+          id: betterAuthUser.id,
+          name: betterAuthUser.name,
+          email: betterAuthUser.email,
+        })
+        .from(betterAuthUser)
+        .where(eq(betterAuthUser.id, userId))
+        .limit(1);
+
+      if (betterAuthUserData.length === 0) {
+        return null;
+      }
+
+      const userData = betterAuthUserData[0];
+
+      // Create personal account and membership in a transaction
+      const [account] = await db.transaction(async (tx) => {
+        // First, ensure the user exists in auth.users table
+        await tx
+          .insert(usersInAuth)
+          .values({
+            id: userIdUuid,
+            email: userData.email || null,
+          })
+          .onConflictDoUpdate({
+            target: usersInAuth.id,
+            set: {
+              email: userData.email || null,
+            },
+          });
+
+        // Create the personal account
+        const [newAccount] = await tx
+          .insert(accounts)
+          .values({
+            primaryOwnerUserId: userIdUuid,
+            name: userData.name || userData.email?.split("@")[0] || "User",
+            isPersonalAccount: true,
+            publicData: {},
+          })
+          .returning();
+
+        if (!newAccount) {
+          throw new Error("Failed to create personal account");
+        }
+
+        // Create membership record (required for user_accounts view)
+        await tx.insert(accountsMemberships).values({
+          userId: userIdUuid,
+          accountId: newAccount.id,
+          accountRole: "owner",
+        });
+
+      return [newAccount];
+    });
+
+    return {
+        id: account.id,
+        name: account.name,
+        picture_url: account.pictureUrl,
+        public_data: account.publicData,
+      };
+    } catch (error) {
+      // If account creation fails, return null (don't throw - let the UI handle it)
+      return null;
+    }
   }
 
   const account = result[0];

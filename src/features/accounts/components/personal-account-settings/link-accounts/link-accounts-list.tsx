@@ -1,7 +1,5 @@
 "use client";
 
-import type { Provider, UserIdentity } from "@supabase/supabase-js";
-
 import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
 import { If } from "~/components/makerkit/if";
@@ -39,10 +37,14 @@ import {
 } from "~/components/ui/item";
 import { Separator } from "~/components/ui/separator";
 import { toast } from "~/components/ui/sonner";
-import { useSession } from "~/core/auth/better-auth/hooks";
-import { useLinkIdentityWithProvider } from "~/core/database/supabase/hooks/use-link-identity-with-provider";
-import { useUnlinkUserIdentity } from "~/core/database/supabase/hooks/use-unlink-user-identity";
-import { useUserIdentities } from "~/core/database/supabase/hooks/use-user-identities";
+import {
+  type UserAccount,
+  useLinkAccount,
+  useSession,
+  useUnlinkAccount,
+  useUserAccounts,
+} from "~/core/auth/better-auth/hooks";
+import type { Provider } from "~/core/auth/better-auth/types";
 
 import { UpdateEmailForm } from "../email/update-email-form";
 import { UpdatePasswordForm } from "../password/update-password-form";
@@ -56,53 +58,53 @@ type LinkAccountsListProps = {
 };
 
 export function LinkAccountsList(props: LinkAccountsListProps) {
-  const unlinkMutation = useUnlinkUserIdentity();
-  const linkMutation = useLinkIdentityWithProvider();
+  const unlinkMutation = useUnlinkAccount();
+  const linkMutation = useLinkAccount();
   const pathname = usePathname();
 
-  const {
-    identities,
-    hasMultipleIdentities,
-    isProviderConnected,
-    isLoading: isLoadingIdentities,
-  } = useUserIdentities();
+  const { data: accountsData, isLoading: isLoadingIdentities } =
+    useUserAccounts();
 
-  // Get user email from email identity
-  const emailIdentity = identities.find(
-    (identity) => identity.provider === "email"
-  );
+  const accounts = accountsData?.accounts || [];
+  const hasMultipleIdentities = accountsData?.hasMultipleAccounts;
+  const isProviderConnected =
+    accountsData?.isProviderConnected || (() => false);
 
-  const userEmail = (emailIdentity?.identity_data?.email as string) || "";
+  // Get user email from session
+  const { data: user } = useSession();
+  const userEmail = user?.email || "";
 
   // If enabled, display available providers
   const availableProviders = props.enabled
     ? props.providers.filter((provider) => !isProviderConnected(provider))
     : [];
-
-  const { data: user } = useSession();
-  const amr = user ? user.amr : [];
+  const amr =
+    user && Array.isArray((user as Record<string, unknown>).amr)
+      ? ((user as Record<string, unknown>).amr as Array<{ method: string }>)
+      : [];
 
   const isConnectedWithPassword = amr.some(
     (item: { method: string }) => item.method === "password"
   );
 
-  // Show all connected identities, even if their provider isn't in the allowed providers list
-  const connectedIdentities = identities;
+  // Show all connected accounts, even if their provider isn't in the allowed providers list
+  const connectedIdentities = accounts;
 
-  const canLinkEmailAccount = !emailIdentity && props.showEmailOption;
+  const emailAccount = accounts.find((acc) => acc.provider === "email");
+  const canLinkEmailAccount = !emailAccount && props.showEmailOption;
 
   const canLinkPassword =
-    emailIdentity && props.showPasswordOption && !isConnectedWithPassword;
+    emailAccount && props.showPasswordOption && !isConnectedWithPassword;
 
   const shouldDisplayAvailableAccountsSection =
     canLinkEmailAccount || canLinkPassword || availableProviders.length;
 
   /**
    * @name handleUnlinkAccount
-   * @param identity
+   * @param account
    */
-  const handleUnlinkAccount = (identity: UserIdentity) => {
-    const promise = unlinkMutation.mutateAsync(identity);
+  const handleUnlinkAccount = (account: UserAccount) => {
+    const promise = unlinkMutation.mutateAsync({ accountId: account.id });
 
     toast.promise(promise, {
       loading: <Trans i18nKey={"account:unlinkingAccount"} />,
@@ -148,11 +150,11 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
           </div>
 
           <div className="flex flex-col space-y-2">
-            {connectedIdentities.map((identity) => (
-              <Item key={identity.id} variant="muted">
+            {connectedIdentities.map((account) => (
+              <Item key={account.id} variant="muted">
                 <ItemMedia>
                   <div className="flex h-5 w-5 items-center justify-center text-muted-foreground">
-                    <OauthProviderLogoImage providerId={identity.provider} />
+                    <OauthProviderLogoImage providerId={account.provider} />
                   </div>
                 </ItemMedia>
 
@@ -160,13 +162,11 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
                   <ItemHeader>
                     <div className="flex flex-col">
                       <ItemTitle className="font-medium text-sm capitalize">
-                        <span>{identity.provider}</span>
+                        <span>{account.provider}</span>
                       </ItemTitle>
 
-                      <If condition={identity.identity_data?.email}>
-                        <ItemDescription>
-                          {identity.identity_data?.email as string}
-                        </ItemDescription>
+                      <If condition={userEmail && account.provider === "email"}>
+                        <ItemDescription>{userEmail}</ItemDescription>
                       </If>
                     </div>
                   </ItemHeader>
@@ -197,7 +197,7 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
                           <AlertDialogDescription>
                             <Trans
                               i18nKey={"account:unlinkAccountConfirmation"}
-                              values={{ provider: identity.provider }}
+                              values={{ provider: account.provider }}
                             />
                           </AlertDialogDescription>
                         </AlertDialogHeader>
@@ -209,7 +209,7 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
 
                           <AlertDialogAction
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            onClick={() => handleUnlinkAccount(identity)}
+                            onClick={() => handleUnlinkAccount(account)}
                           >
                             <Trans i18nKey={"account:unlinkAccount"} />
                           </AlertDialogAction>

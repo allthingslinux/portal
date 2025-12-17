@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import type { Database } from "~/core/database/supabase/database.types";
 import { updateAccountDataAction } from "../server/personal-accounts-server-actions";
 
-type UpdateData = Database["public"]["Tables"]["accounts"]["Update"];
+type UpdateData = {
+  name?: string | null;
+  public_data?: Record<string, unknown> | null;
+};
 
 export function useUpdateAccountData(accountId: string) {
   const queryClient = useQueryClient();

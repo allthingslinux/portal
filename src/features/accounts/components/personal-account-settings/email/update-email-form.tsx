@@ -22,7 +22,7 @@ import {
   InputGroupInput,
 } from "~/components/ui/input-group";
 import { toast } from "~/components/ui/sonner";
-import { useUpdateUser } from "~/core/database/supabase/hooks/use-update-user-mutation";
+import { useUpdateUser } from "~/core/auth/better-auth/hooks";
 
 import { UpdateEmailSchema } from "~/features/accounts/schema/update-email.schema";
 

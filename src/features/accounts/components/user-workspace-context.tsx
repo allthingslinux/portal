@@ -19,9 +19,7 @@ type UserWorkspace = {
   user: BetterAuthUser;
 };
 
-export const UserWorkspaceContext = createContext<UserWorkspace>(
-  {} as UserWorkspace
-);
+export const UserWorkspaceContext = createContext<UserWorkspace | null>(null);
 
 export function UserWorkspaceContextProvider(
   props: React.PropsWithChildren<{

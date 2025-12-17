@@ -16,13 +16,14 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "~/components/ui/input-group";
-import type { Database } from "~/core/database/supabase/database.types";
 import { useToastAction } from "~/shared/hooks/use-toast-action";
 
 import { useUpdateAccountData } from "../../hooks/use-update-account";
 import { AccountDetailsSchema } from "../../schema/account-details.schema";
 
-type UpdateUserDataParams = Database["public"]["Tables"]["accounts"]["Update"];
+type UpdateUserDataParams = {
+  name?: string | null;
+};
 
 export function UpdateAccountDetailsForm({
   displayName,

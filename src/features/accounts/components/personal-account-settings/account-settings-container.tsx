@@ -1,7 +1,6 @@
 "use client";
 
-import type { Provider } from "@supabase/supabase-js";
-
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { If } from "~/components/makerkit/if";
 import { LanguageSelector } from "~/components/makerkit/language-selector";
@@ -14,6 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { useSyncUserFromKeycloak } from "~/core/auth/better-auth/hooks/use-sync-user-from-keycloak";
+import type { Provider } from "~/core/auth/better-auth/types";
 
 import { usePersonalAccountData } from "../../hooks/use-personal-account-data";
 import { AccountDangerZone } from "./account-danger-zone";
@@ -42,9 +43,55 @@ export function PersonalAccountSettingsContainer(
 ) {
   const supportsLanguageSelection = useSupportMultiLanguage();
   const user = usePersonalAccountData(props.userId);
+  const syncUser = useSyncUserFromKeycloak();
+  const hasSyncedRef = React.useRef(false);
 
-  if (!user.data || user.isPending) {
+  // Sync user data from Keycloak on mount (only once)
+  React.useEffect(() => {
+    if (!hasSyncedRef.current && !syncUser.isPending) {
+      hasSyncedRef.current = true;
+      syncUser.mutate();
+    }
+  }, []); // Only run on mount
+
+  if (user.isPending) {
     return <LoadingOverlay fullPage />;
+  }
+
+  if (user.isError) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-8">
+        <p className="text-destructive">
+          Failed to load account settings: {user.error?.message}
+        </p>
+        <button
+          type="button"
+          onClick={() => user.refetch()}
+          className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  // Accounts are created automatically, so this should never happen
+  // But if it does, treat it as an error
+  if (!user.data) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-8">
+        <p className="text-destructive">
+          Unable to load account settings. Please try refreshing the page.
+        </p>
+        <button
+          type="button"
+          onClick={() => user.refetch()}
+          className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   return (
