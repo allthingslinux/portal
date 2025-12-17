@@ -40,8 +40,8 @@ async function TeamAccountSettingsPage(props: TeamAccountSettingsPageProps) {
   const account = {
     id: data.id,
     name: data.name,
-    pictureUrl: data.pictureUrl,
-    slug: data.slug as string,
+    pictureUrl: data.pictureUrl ?? null,
+    slug: (data.slug as string | null) ?? "",
     primaryOwnerUserId: data.primaryOwnerUserId,
   };
 

@@ -16,7 +16,7 @@ export function TeamAccountNavigationMenu(props: {
 }) {
   const { account, user, accounts } = props.workspace;
 
-  const routes = getTeamAccountSidebarConfig(account.slug).routes.reduce<
+  const routes = getTeamAccountSidebarConfig(account.slug ?? "").routes.reduce<
     Array<{
       path: string;
       label: string;
@@ -53,18 +53,12 @@ export function TeamAccountNavigationMenu(props: {
         <TeamAccountNotifications accountId={account.id} userId={user.id} />
 
         <TeamAccountAccountsSelector
-          accounts={accounts.map(
-            (accountItem: {
-              name: string;
-              slug: string;
-              pictureUrl: string | null;
-            }) => ({
-              label: accountItem.name,
-              value: accountItem.slug,
-              image: accountItem.pictureUrl,
-            })
-          )}
-          selectedAccount={account.slug}
+          accounts={accounts.map((accountItem) => ({
+            label: accountItem.name,
+            value: accountItem.slug,
+            image: accountItem.picture_url,
+          }))}
+          selectedAccount={account.slug ?? ""}
           userId={user.id}
         />
 

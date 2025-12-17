@@ -4,8 +4,8 @@ import pathsConfig from "~/config/paths.config";
 
 /**
  * Auth confirm route
- * NextAuth handles email verification automatically.
- * This route is kept for backward compatibility.
+ * Better Auth handles email verification automatically via its `/api/auth` handler.
+ * This route is kept for backward compatibility and simple redirects.
  */
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);

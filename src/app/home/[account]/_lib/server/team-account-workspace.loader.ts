@@ -34,8 +34,23 @@ export const loadTeamWorkspace = createWorkspaceLoader(
       return redirect(pathsConfig.app.home);
     }
 
+    const account = {
+      ...workspace.data.account,
+      slug: workspace.data.account.slug ?? "",
+      picture_url: workspace.data.account.picture_url ?? "",
+    };
+
+    const accounts = workspace.data.accounts.map((acc) => ({
+      id: acc.id ?? "",
+      name: acc.name ?? "",
+      slug: acc.slug ?? "",
+      role: acc.role ?? "",
+      picture_url: acc.pictureUrl ?? "",
+    }));
+
     return {
-      ...workspace.data,
+      account,
+      accounts,
       user,
     };
   }

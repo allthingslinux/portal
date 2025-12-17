@@ -1,11 +1,8 @@
 import { eq } from "drizzle-orm";
+import type { Metadata } from "next";
 import { cache } from "react";
-import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
-import type { Tables } from "~/core/database/supabase/database.types";
-import {
-  accounts,
-  accountsMemberships,
-} from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accounts, accountsMemberships } from "~/core/database/schema";
 import { AdminAccountPage } from "~/features/admin/components/admin-account-page";
 import { AdminGuard } from "~/features/admin/components/admin-guard";
 
@@ -15,7 +12,7 @@ type Params = {
   }>;
 };
 
-export const generateMetadata = async (props: Params) => {
+export const generateMetadata = async (props: Params): Promise<Metadata> => {
   const params = await props.params;
   const account = await loadAccount(params.id);
 
@@ -35,8 +32,13 @@ export default AdminGuard(AccountPage);
 
 const loadAccount = cache(accountLoader);
 
-async function accountLoader(id: string) {
-  const adminClient = getDrizzleSupabaseAdminClient();
+type AccountRow = typeof accounts.$inferSelect;
+type MembershipRow = typeof accountsMemberships.$inferSelect;
+
+type AdminAccount = AccountRow & { memberships: MembershipRow[] };
+
+async function accountLoader(id: string): Promise<AdminAccount> {
+  const adminClient = db;
 
   // Get the account
   const accountResult = await adminClient
@@ -58,9 +60,18 @@ async function accountLoader(id: string) {
     .where(eq(accountsMemberships.accountId, id));
 
   return {
-    ...account,
+    id: account.id,
+    name: account.name,
+    slug: account.slug ?? null,
+    email: account.email ?? null,
+    isPersonalAccount: account.isPersonalAccount,
+    updatedAt: account.updatedAt,
+    createdAt: account.createdAt,
+    createdBy: account.createdBy,
+    updatedBy: account.updatedBy,
+    pictureUrl: account.pictureUrl,
+    publicData: account.publicData,
+    primaryOwnerUserId: account.primaryOwnerUserId,
     memberships,
-  } as unknown as Tables<"accounts"> & {
-    memberships: Tables<"accounts_memberships">[];
   };
 }

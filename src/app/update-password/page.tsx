@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
 import { AppLogo } from "~/components/app-logo";
 import pathsConfig from "~/config/paths.config";
-import { requireUser } from "~/core/database/supabase/require-user";
+import { requireUser } from "~/core/database/require-user";
 import { UpdatePasswordForm } from "~/features/auth/password-reset";
 import { AuthLayoutShell } from "~/features/auth/shared";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
@@ -24,13 +23,9 @@ type UpdatePasswordPageProps = {
 };
 
 async function UpdatePasswordPage(props: UpdatePasswordPageProps) {
-  const result = await requireUser({
+  await requireUser({
     next: pathsConfig.auth.passwordUpdate,
   });
-
-  if (result.error) {
-    return redirect(result.redirectTo);
-  }
 
   const { callback } = await props.searchParams;
   const redirectTo = callback ?? pathsConfig.app.home;

@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { AppLogo } from "~/components/app-logo";
 import { Trans } from "~/components/makerkit/trans";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
 import authConfig from "~/config/auth.config";
 import pathsConfig from "~/config/paths.config";
-import { requireUser } from "~/core/database/supabase/require-user";
-import type { Provider } from "~/core/database/supabase/supabase-types";
+import type { Provider } from "~/core/auth/better-auth/types";
+import { requireUser } from "~/core/database/require-user";
 import { LinkAccountsList } from "~/features/accounts/components/personal-account-settings";
 import { AuthLayoutShell } from "~/features/auth/shared";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
@@ -115,12 +114,7 @@ function IdentitiesStep(props: {
 
 async function fetchData(props: IdentitiesPageProps) {
   const searchParams = await props.searchParams;
-  const auth = await requireUser();
-
-  // If not authenticated, redirect to sign in
-  if (!auth.data) {
-    throw redirect(pathsConfig.auth.signIn);
-  }
+  await requireUser(); // Ensure user is authenticated
 
   // Get the next path from URL params (where to redirect after setup)
   const nextPath = searchParams.next || pathsConfig.app.home;
@@ -131,7 +125,7 @@ async function fetchData(props: IdentitiesPageProps) {
   // Show email option if password sign-in is enabled
   const showEmailOption = authConfig.providers.password;
 
-  const oAuthProviders = authConfig.providers.oAuth;
+  const oAuthProviders = authConfig.providers.oAuth as Provider[];
   const enableIdentityLinking = authConfig.enableIdentityLinking;
 
   return {

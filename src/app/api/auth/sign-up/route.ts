@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       await verifyCaptchaToken(captchaToken);
     }
 
-    // Use Better Auth's sign-up API
+    // Use Better Auth's sign-up API (returns { user, token })
     const result = await auth.api.signUpEmail({
       body: {
         email,
@@ -39,8 +39,7 @@ export async function POST(request: Request) {
       headers: await headers(),
     });
 
-    // Better Auth returns data directly, not wrapped in error property
-    if (!result.data) {
+    if (!result.user) {
       return NextResponse.json(
         { error: API_ERRORS.FAILED_TO_CREATE_USER },
         { status: HTTP_STATUS.BAD_REQUEST }
@@ -49,7 +48,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      userId: result.data.user?.id,
+      userId: result.user.id,
+      token: result.token ?? null,
     });
   } catch (error) {
     return createErrorResponse(error, API_ERRORS.FAILED_TO_CREATE_USER);

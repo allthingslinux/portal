@@ -23,6 +23,7 @@ type HomeSidebarProps = {
 
 export function HomeSidebar(props: HomeSidebarProps) {
   const { workspace, user, accounts } = props.workspace;
+  const personalAccount = workspace ?? undefined;
   const collapsible = personalAccountNavigationConfig.sidebarCollapsedStyle;
 
   return (
@@ -50,7 +51,10 @@ export function HomeSidebar(props: HomeSidebarProps) {
           <HomeAccountSelector accounts={accounts} userId={user.id} />
         </If>
 
-        <ProfileAccountDropdownContainer account={workspace} user={user} />
+        <ProfileAccountDropdownContainer
+          account={personalAccount}
+          user={user}
+        />
       </SidebarFooter>
     </Sidebar>
   );

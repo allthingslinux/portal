@@ -5,13 +5,13 @@ import pathsConfig from "~/config/paths.config";
 
 /**
  * Auth callback route
- * NextAuth handles OAuth callbacks automatically via /api/auth/callback/[provider]
- * This route is kept for backward compatibility and can handle additional logic if needed
+ * Better Auth handles OAuth callbacks via the `/api/auth` handler.
+ * This route is kept for backward compatibility (old deep links) and can host
+ * additional redirect logic if needed.
  */
 export async function GET(request: NextRequest) {
-  // NextAuth handles OAuth callbacks via its own route
-  // If we need custom callback logic, we can add it here
-  // For now, redirect to home
+  // Better Auth processes the callback; we simply land users on the requested
+  // destination (or home) afterward.
   const searchParams = request.nextUrl.searchParams;
   const next = searchParams.get("next") || pathsConfig.app.home;
 

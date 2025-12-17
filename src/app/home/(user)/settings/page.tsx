@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { use } from "react";
 import { PageBody } from "~/components/makerkit/page";
 import authConfig from "~/config/auth.config";
@@ -23,7 +24,7 @@ const paths = {
   callback: `${callbackPath}?next=${accountSettingsPath}`,
 };
 
-export const generateMetadata = async () => {
+export const generateMetadata = async (): Promise<Metadata> => {
   const i18n = await createI18nServerInstance();
   const title = i18n.t("account:settingsTab");
 

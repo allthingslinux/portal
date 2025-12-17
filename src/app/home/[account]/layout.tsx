@@ -41,19 +41,52 @@ function SidebarLayout({
   account: string;
 }>) {
   const data = use(loadTeamWorkspace(account));
+  const permissions = data.account.permissions.filter(
+    (
+      p
+    ): p is
+      | "roles.manage"
+      | "settings.manage"
+      | "members.manage"
+      | "invites.manage" =>
+      [
+        "roles.manage",
+        "settings.manage",
+        "members.manage",
+        "invites.manage",
+      ].includes(p as string)
+  );
+  const workspaceValue = {
+    ...data,
+    account: {
+      ...data.account,
+      permissions,
+      picture_url: data.account.picture_url ?? "",
+      slug: data.account.slug ?? "",
+    },
+    accounts: data.accounts.map((acc) => ({
+      ...acc,
+      picture_url: acc.picture_url ?? "",
+      slug: acc.slug ?? "",
+    })),
+  };
   const state = use(getLayoutState(account));
 
-  const accounts = data.accounts;
+  const accountsForSelector = data.accounts.map((acc) => ({
+    label: acc.name,
+    value: acc.slug,
+    image: acc.picture_url,
+  }));
 
   return (
-    <TeamAccountWorkspaceContextProvider value={data}>
+    <TeamAccountWorkspaceContextProvider value={workspaceValue}>
       <SidebarProvider defaultOpen={state.open}>
         <Page style={"sidebar"}>
           <PageNavigation>
             <TeamAccountLayoutSidebar
               account={account}
               accountId={data.account.id}
-              accounts={accounts}
+              accounts={accountsForSelector}
               user={data.user}
             />
           </PageNavigation>
@@ -64,7 +97,7 @@ function SidebarLayout({
             <div className={"flex space-x-4"}>
               <TeamAccountLayoutMobileNavigation
                 account={account}
-                accounts={accounts}
+                accounts={accountsForSelector}
                 userId={data.user.id}
               />
             </div>
@@ -84,14 +117,47 @@ function HeaderLayout({
   account: string;
 }>) {
   const data = use(loadTeamWorkspace(account));
+  const permissions = data.account.permissions.filter(
+    (
+      p
+    ): p is
+      | "roles.manage"
+      | "settings.manage"
+      | "members.manage"
+      | "invites.manage" =>
+      [
+        "roles.manage",
+        "settings.manage",
+        "members.manage",
+        "invites.manage",
+      ].includes(p as string)
+  );
+  const workspaceValue = {
+    ...data,
+    account: {
+      ...data.account,
+      permissions,
+      picture_url: data.account.picture_url ?? "",
+      slug: data.account.slug ?? "",
+    },
+    accounts: data.accounts.map((acc) => ({
+      ...acc,
+      picture_url: acc.picture_url ?? "",
+      slug: acc.slug ?? "",
+    })),
+  };
 
-  const accounts = data.accounts;
+  const accountsForSelector = data.accounts.map((acc) => ({
+    label: acc.name,
+    value: acc.slug,
+    image: acc.picture_url,
+  }));
 
   return (
-    <TeamAccountWorkspaceContextProvider value={data}>
+    <TeamAccountWorkspaceContextProvider value={workspaceValue}>
       <Page style={"header"}>
         <PageNavigation>
-          <TeamAccountNavigationMenu workspace={data} />
+          <TeamAccountNavigationMenu workspace={workspaceValue} />
         </PageNavigation>
 
         <PageMobileNavigation className={"flex items-center justify-between"}>
@@ -100,7 +166,7 @@ function HeaderLayout({
           <div className={"group-data-[mobile:hidden]"}>
             <TeamAccountLayoutMobileNavigation
               account={account}
-              accounts={accounts}
+              accounts={accountsForSelector}
               userId={data.user.id}
             />
           </div>

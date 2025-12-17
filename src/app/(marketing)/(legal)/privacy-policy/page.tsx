@@ -1,8 +1,8 @@
+import type { Metadata } from "next";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 import { SitePageHeader } from "../../_components/site-page-header";
-
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
   const { t } = await createI18nServerInstance();
 
   return {

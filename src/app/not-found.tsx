@@ -4,7 +4,8 @@ import { SiteHeader } from "~/(marketing)/_components/site-header";
 import { Trans } from "~/components/makerkit/trans";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
-import { requireUser } from "~/core/database/supabase/require-user";
+import { getSessionUserData } from "~/core/auth/better-auth/session";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
@@ -18,11 +19,20 @@ export const generateMetadata = async () => {
 };
 
 const NotFoundPage = async () => {
-  const user = await requireUser();
+  // 404 page should be publicly accessible - get user if logged in, but don't require it
+  let user: BetterAuthUser | null = null;
+  try {
+    user = await getSessionUserData();
+  } catch (error) {
+    // Silently handle any errors - 404 page should always be accessible
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Session check failed in not-found page:", error);
+    }
+  }
 
   return (
     <div className={"flex h-screen flex-1 flex-col"}>
-      <SiteHeader user={user.data} />
+      <SiteHeader user={user} />
 
       <div
         className={

@@ -6,6 +6,11 @@ import { createWorkspaceLoader } from "~/shared/next/loaders/create-workspace-lo
 const shouldLoadAccounts = featureFlagsConfig.enableTeamAccounts;
 
 type AccountItem = { label: string; value: string; image: string | null };
+type WorkspaceRecord = {
+  id: string | null;
+  name: string | null;
+  pictureUrl: string | null;
+};
 
 export type UserWorkspace = Awaited<ReturnType<typeof loadUserWorkspace>>;
 
@@ -22,7 +27,8 @@ export const loadUserWorkspace = createWorkspaceLoader(async () => {
     ? () => api.loadUserAccounts()
     : () => Promise.resolve([] as AccountItem[]);
 
-  const workspacePromise = api.getAccountWorkspace();
+  const workspacePromise =
+    api.getAccountWorkspace() as Promise<WorkspaceRecord>;
 
   const [accounts, workspace, user] = await Promise.all([
     accountsPromise(),
@@ -30,9 +36,17 @@ export const loadUserWorkspace = createWorkspaceLoader(async () => {
     requireUserInServerComponent(),
   ]);
 
+  const mappedWorkspace = workspace
+    ? {
+        id: workspace.id ?? null,
+        name: workspace.name ?? null,
+        picture_url: workspace.pictureUrl ?? null,
+      }
+    : { id: null, name: null, picture_url: null };
+
   return {
     accounts,
-    workspace,
+    workspace: mappedWorkspace,
     user,
   };
 });

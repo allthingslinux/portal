@@ -1,4 +1,5 @@
 import { ArrowRight, ChevronDown } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SitePageHeader } from "~/(marketing)/_components/site-page-header";
 import { Trans } from "~/components/makerkit/trans";
@@ -6,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
-export const generateMetadata = async () => {
+export const generateMetadata = async (): Promise<Metadata> => {
   const { t } = await createI18nServerInstance();
 
   return {

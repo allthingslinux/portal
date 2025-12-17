@@ -8,9 +8,9 @@ import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
 import authConfig from "~/config/auth.config";
 import pathsConfig from "~/config/paths.config";
-import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accountsMemberships } from "~/core/database/supabase/drizzle/schema";
-import { requireUser } from "~/core/database/supabase/require-user";
+import { db } from "~/core/database/client";
+import { requireUser } from "~/core/database/require-user";
+import { accountsMemberships } from "~/core/database/schema";
 import { AuthLayoutShell } from "~/features/auth/shared";
 import { AcceptInvitationContainer } from "~/features/team-accounts/components";
 import { createTeamAccountsApi } from "~/features/team-accounts/server/api";
@@ -47,7 +47,7 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
   // if the user is not logged in or there is an error
   // redirect to the sign up page with the invite token
   // so that they will get back to this page after signing up
-  if (auth.error ?? !auth.data) {
+  if (!auth) {
     const urlParams = new URLSearchParams({
       invite_token: token,
     });
@@ -65,10 +65,7 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
   const invitationResult = await api.getInvitation(token);
 
   // the invitation is not found or expired or the email is not the same as the user's email
-  if (
-    !invitationResult.data ||
-    invitationResult.data.email !== auth.data.email
-  ) {
+  if (!invitationResult.data || invitationResult.data.email !== auth.email) {
     return (
       <AuthLayoutShell Logo={AppLogo}>
         <InviteNotFoundOrExpired />
@@ -80,20 +77,16 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
 
   // we need to verify the user isn't already in the account
   // we do so by checking if the user is already a member of the account
-  const drizzleClient = await getDrizzleSupabaseClient();
-  const membershipCheck = (await drizzleClient.runTransaction(
-    async (tx) =>
-      await tx
-        .select()
-        .from(accountsMemberships)
-        .where(
-          and(
-            eq(accountsMemberships.accountId, invitation.account.id),
-            eq(accountsMemberships.userId, auth.data.id)
-          )
-        )
-        .limit(1)
-  )) as unknown[];
+  const membershipCheck = await db
+    .select()
+    .from(accountsMemberships)
+    .where(
+      and(
+        eq(accountsMemberships.accountId, invitation.account.id),
+        eq(accountsMemberships.userId, auth.id)
+      )
+    )
+    .limit(1);
 
   const isAlreadyTeamMember = membershipCheck.length > 0;
 
@@ -106,7 +99,7 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
       {
         name: "join-team-account",
         accountId: invitation.account.id,
-        userId: auth.data.id,
+        userId: auth.id,
       },
       "User is already in the account. Redirecting to account page."
     );
@@ -145,7 +138,7 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
     ? `/identities?next=${encodeURIComponent(accountHome)}`
     : accountHome;
 
-  const email = auth.data.email ?? "";
+  const email = auth.email ?? "";
 
   return (
     <AuthLayoutShell Logo={AppLogo}>

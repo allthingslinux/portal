@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { AppBreadcrumbs } from "~/components/makerkit/app-breadcrumbs";
 import { PageBody, PageHeader } from "~/components/makerkit/page";
 import { Button } from "~/components/ui/button";
@@ -17,7 +19,7 @@ type AdminAccountsPageProps = {
   searchParams: Promise<SearchParams>;
 };
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Accounts",
 };
 

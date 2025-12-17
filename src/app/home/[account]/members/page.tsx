@@ -52,7 +52,7 @@ async function TeamAccountMembersPage({ params }: TeamAccountMembersPageProps) {
   return (
     <>
       <TeamAccountLayoutPageHeader
-        account={account.slug}
+        account={account.slug ?? ""}
         description={<AppBreadcrumbs />}
         title={<Trans i18nKey={"common:routes.members"} />}
       />
@@ -73,7 +73,7 @@ async function TeamAccountMembersPage({ params }: TeamAccountMembersPageProps) {
 
               <If condition={canManageInvitations && canAddMember}>
                 <InviteMembersDialogContainer
-                  accountSlug={account.slug}
+                  accountSlug={account.slug ?? ""}
                   userRoleHierarchy={currentUserRoleHierarchy}
                 >
                   <Button data-test={"invite-members-form-trigger"} size={"sm"}>

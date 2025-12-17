@@ -15,6 +15,7 @@ import type { UserWorkspace } from "../_lib/server/load-user-workspace";
 
 export function HomeMenuNavigation(props: { workspace: UserWorkspace }) {
   const { workspace, user, accounts } = props.workspace;
+  const personalAccount = workspace ?? undefined;
 
   const routes = personalAccountNavigationConfig.routes.reduce<
     Array<{
@@ -58,7 +59,7 @@ export function HomeMenuNavigation(props: { workspace: UserWorkspace }) {
 
         <div>
           <ProfileAccountDropdownContainer
-            account={workspace}
+            account={personalAccount}
             showProfileName={false}
             user={user}
           />

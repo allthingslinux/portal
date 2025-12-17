@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import pathsConfig from "~/config/paths.config";
 import { getServerSession } from "~/core/auth/better-auth/session";
@@ -10,7 +11,7 @@ type Props = {
   }>;
 };
 
-export const generateMetadata = async () => {
+export const generateMetadata = async (): Promise<Metadata> => {
   const i18n = await createI18nServerInstance();
 
   return {
@@ -26,7 +27,6 @@ async function VerifyPage(props: Props) {
     return null;
   }
 
-  // MFA is not implemented - redirect to home
   const nextPath = (await props.searchParams).next;
   const redirectPath = nextPath ?? pathsConfig.app.home;
 

@@ -1,10 +1,8 @@
-import type { AuthError } from "@supabase/supabase-js";
 import Link from "next/link";
 import { Trans } from "~/components/makerkit/trans";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import pathsConfig from "~/config/paths.config";
-import { ResendAuthLinkForm } from "~/features/auth/components/resend-auth-link-form";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
 type AuthCallbackErrorPageProps = {
@@ -12,12 +10,11 @@ type AuthCallbackErrorPageProps = {
     error: string;
     callback?: string;
     email?: string;
-    code?: AuthError["code"];
   }>;
 };
 
 async function AuthCallbackErrorPage(props: AuthCallbackErrorPageProps) {
-  const { error, callback, code } = await props.searchParams;
+  const { error, callback } = await props.searchParams;
   const signInPath = pathsConfig.auth.signIn;
   const redirectPath = callback ?? pathsConfig.auth.callback;
 
@@ -33,11 +30,7 @@ async function AuthCallbackErrorPage(props: AuthCallbackErrorPageProps) {
         </AlertDescription>
       </Alert>
 
-      <AuthCallbackForm
-        code={code}
-        redirectPath={redirectPath}
-        signInPath={signInPath}
-      />
+      <AuthCallbackForm redirectPath={redirectPath} signInPath={signInPath} />
     </div>
   );
 }
@@ -45,14 +38,8 @@ async function AuthCallbackErrorPage(props: AuthCallbackErrorPageProps) {
 function AuthCallbackForm(props: {
   signInPath: string;
   redirectPath?: string;
-  code?: AuthError["code"];
 }) {
-  switch (props.code) {
-    case "otp_expired":
-      return <ResendAuthLinkForm redirectPath={props.redirectPath} />;
-    default:
-      return <SignInButton signInPath={props.signInPath} />;
-  }
+  return <SignInButton signInPath={props.signInPath} />;
 }
 
 function SignInButton(props: { signInPath: string }) {

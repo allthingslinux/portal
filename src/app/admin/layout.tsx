@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { use } from "react";
 import { AdminSidebar } from "~/admin/_components/admin-sidebar";
@@ -9,7 +10,7 @@ import {
 } from "~/components/makerkit/page";
 import { SidebarProvider } from "~/components/ui/sidebar";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Super Admin",
 };
 

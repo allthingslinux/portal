@@ -11,7 +11,7 @@ export const POST = enhanceRouteHandler(
     const service = getDatabaseWebhookHandlerService();
 
     try {
-      const signature = request.headers.get("X-Supabase-Event-Signature");
+      const signature = request.headers.get("X-Database-Webhook-Signature");
 
       if (!signature) {
         return new Response("Missing signature", { status: 400 });
