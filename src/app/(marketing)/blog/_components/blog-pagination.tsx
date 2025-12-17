@@ -2,8 +2,8 @@
 
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { If } from "~/components/makerkit/if";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 
 export function BlogPagination(props: {

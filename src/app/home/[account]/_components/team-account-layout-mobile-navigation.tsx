@@ -3,7 +3,7 @@
 import { Home, LogOut, Menu } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import {
   Dialog,
   DialogContent,

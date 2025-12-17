@@ -1,4 +1,4 @@
-import { OauthProviderLogoImage } from "~/components/makerkit/oauth-provider-logo-image";
+import { OauthProviderLogoImage } from "~/components/portal/oauth-provider-logo-image";
 import { Button } from "~/components/ui/button";
 
 export function AuthProviderButton({

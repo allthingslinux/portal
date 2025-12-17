@@ -3,8 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { If } from "~/components/makerkit/if";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import {
   Form,

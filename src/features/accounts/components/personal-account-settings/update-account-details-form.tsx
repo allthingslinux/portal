@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import {
   Form,

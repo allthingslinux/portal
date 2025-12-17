@@ -7,7 +7,7 @@ import {
   Page,
   PageMobileNavigation,
   PageNavigation,
-} from "~/components/makerkit/page";
+} from "~/components/portal/page";
 import { SidebarProvider } from "~/components/ui/sidebar";
 import { getTeamAccountSidebarConfig } from "~/config/team-account-navigation.config";
 import { TeamAccountWorkspaceContextProvider } from "~/features/team-accounts/components";

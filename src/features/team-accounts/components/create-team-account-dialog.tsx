@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,

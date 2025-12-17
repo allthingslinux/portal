@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
+import { LoadingOverlay } from "~/components/portal/loading-overlay";
 import { authClient } from "~/core/auth/better-auth";
 import { ConfirmationDialog } from "~/shared/components/confirmation-dialog";
 

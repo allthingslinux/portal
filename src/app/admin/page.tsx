@@ -1,4 +1,4 @@
-import { PageBody, PageHeader } from "~/components/makerkit/page";
+import { PageBody, PageHeader } from "~/components/portal/page";
 import { AdminDashboard } from "~/features/admin/components/admin-dashboard";
 import { AdminGuard } from "~/features/admin/components/admin-guard";
 

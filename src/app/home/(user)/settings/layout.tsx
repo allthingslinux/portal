@@ -1,5 +1,5 @@
-import { AppBreadcrumbs } from "~/components/makerkit/app-breadcrumbs";
-import { Trans } from "~/components/makerkit/trans";
+import { AppBreadcrumbs } from "~/components/portal/app-breadcrumbs";
+import { Trans } from "~/components/portal/trans";
 
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 

@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback } from "react";
-import { If } from "~/components/makerkit/if";
-import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import { LoadingOverlay } from "~/components/portal/loading-overlay";
+import { Trans } from "~/components/portal/trans";
 import { useSignInWithProvider } from "~/core/auth/better-auth/hooks";
 import type { Provider } from "~/core/auth/better-auth/types";
 

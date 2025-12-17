@@ -1,6 +1,6 @@
 import { SitePageHeader } from "~/(marketing)/_components/site-page-header";
 import { ContactForm } from "~/(marketing)/contact/_components/contact-form";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Heading } from "~/components/ui/heading";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";

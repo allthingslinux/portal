@@ -1,5 +1,5 @@
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 /**

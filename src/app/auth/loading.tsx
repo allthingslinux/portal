@@ -1,4 +1,4 @@
-import { GlobalLoader } from "~/components/makerkit/global-loader";
+import { GlobalLoader } from "~/components/portal/global-loader";
 
 const AuthLoading = GlobalLoader;
 

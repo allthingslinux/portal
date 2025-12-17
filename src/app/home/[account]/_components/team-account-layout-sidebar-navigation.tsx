@@ -1,6 +1,6 @@
 import type { z } from "zod";
 
-import type { NavigationConfigSchema } from "~/components/makerkit/navigation-config.schema";
+import type { NavigationConfigSchema } from "~/components/portal/navigation-config.schema";
 import { SidebarNavigation } from "~/components/ui/sidebar";
 
 export function TeamAccountLayoutSidebarNavigation({

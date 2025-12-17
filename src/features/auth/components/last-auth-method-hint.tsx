@@ -5,8 +5,8 @@ import { Lightbulb } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
 
-import { If } from "~/components/makerkit/if";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import { Trans } from "~/components/portal/trans";
 
 import { useLastAuthMethod } from "../hooks/use-last-auth-method";
 

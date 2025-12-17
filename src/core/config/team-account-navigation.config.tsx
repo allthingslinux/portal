@@ -1,6 +1,6 @@
 import { LayoutDashboard, Settings, Users } from "lucide-react";
 
-import { NavigationConfigSchema } from "~/components/makerkit/navigation-config.schema";
+import { NavigationConfigSchema } from "~/components/portal/navigation-config.schema";
 
 import pathsConfig from "~/config/paths.config";
 

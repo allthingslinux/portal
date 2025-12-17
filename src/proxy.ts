@@ -28,11 +28,11 @@ export async function proxy(request: NextRequest) {
     try {
       const { auth } = await import("~/core/auth/better-auth");
       const { toNextJsHandler } = await import("better-auth/next-js");
-      
+
       // Create a POST request to Better Auth's OAuth2 endpoint
       const authHandler = toNextJsHandler(auth);
       const authUrl = new URL(`${baseURL}/api/auth/sign-in/oauth2`);
-      
+
       // Create a new request with POST method and body
       const authRequest = new Request(authUrl.toString(), {
         method: "POST",
@@ -71,7 +71,10 @@ export async function proxy(request: NextRequest) {
     } catch (error) {
       // If handler call fails, log error but continue to fallback
       if (process.env.NODE_ENV === "development") {
-        console.error("Failed to initiate OAuth flow via Better Auth handler:", error);
+        console.error(
+          "Failed to initiate OAuth flow via Better Auth handler:",
+          error
+        );
       }
     }
 

@@ -4,7 +4,7 @@ import { type Label as LabelPrimitive, Slot } from "radix-ui";
 import * as React from "react";
 import type { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
 import { Controller, FormProvider, useFormContext } from "react-hook-form";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { cn } from "../lib/utils";
 import { Label } from "./label";
 

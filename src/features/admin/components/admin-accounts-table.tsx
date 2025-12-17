@@ -7,8 +7,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
-import { DataTable } from "~/components/makerkit/data-table";
-import { If } from "~/components/makerkit/if";
+import { DataTable } from "~/components/portal/data-table";
+import { If } from "~/components/portal/if";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,

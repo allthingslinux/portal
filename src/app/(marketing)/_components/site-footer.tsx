@@ -1,6 +1,6 @@
 import { AppLogo } from "~/components/app-logo";
-import { Footer } from "~/components/makerkit/marketing";
-import { Trans } from "~/components/makerkit/trans";
+import { Footer } from "~/components/portal/marketing";
+import { Trans } from "~/components/portal/trans";
 import appConfig from "~/config/app.config";
 
 export function SiteFooter() {

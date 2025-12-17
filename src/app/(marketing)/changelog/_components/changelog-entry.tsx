@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cn } from "~/components/lib/utils";
-import { If } from "~/components/makerkit/if";
+import { If } from "~/components/portal/if";
 import type { Cms } from "~/features/cms/core";
 
 import { DateBadge } from "./date-badge";

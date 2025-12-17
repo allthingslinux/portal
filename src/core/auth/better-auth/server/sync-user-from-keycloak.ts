@@ -1,11 +1,12 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
+
 import { db } from "~/core/database/client";
 import {
+  accounts,
   betterAuthAccount,
   betterAuthUser,
-  accounts,
 } from "~/core/database/schema";
 import { getSessionUserData } from "../session";
 import { betterAuthUserIdToUuid } from "../utils/user-id-to-uuid";
@@ -83,7 +84,7 @@ export async function syncUserFromKeycloak(): Promise<{
       };
     }
 
-    if (!KEYCLOAK_ISSUER || !KEYCLOAK_CLIENT_ID || !KEYCLOAK_CLIENT_SECRET) {
+    if (!(KEYCLOAK_ISSUER && KEYCLOAK_CLIENT_ID && KEYCLOAK_CLIENT_SECRET)) {
       return {
         success: false,
         updated: false,
@@ -204,7 +205,10 @@ export async function syncUserFromKeycloak(): Promise<{
 
     if (!needsUpdate) {
       // Update refresh token if provided (for token rotation)
-      if (tokenData.refresh_token && tokenData.refresh_token !== account.refreshToken) {
+      if (
+        tokenData.refresh_token &&
+        tokenData.refresh_token !== account.refreshToken
+      ) {
         await db
           .update(betterAuthAccount)
           .set({
@@ -260,8 +264,7 @@ export async function syncUserFromKeycloak(): Promise<{
     return {
       success: false,
       updated: false,
-      error:
-        error instanceof Error ? error.message : String(error),
+      error: error instanceof Error ? error.message : String(error),
     };
   }
 }

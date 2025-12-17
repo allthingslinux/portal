@@ -5,7 +5,7 @@ import { Bell, CircleAlert, Info, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "~/components/lib/utils";
-import { If } from "~/components/makerkit/if";
+import { If } from "~/components/portal/if";
 import { Button } from "~/components/ui/button";
 import {
   Popover,

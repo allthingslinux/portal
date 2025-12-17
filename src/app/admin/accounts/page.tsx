@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { AppBreadcrumbs } from "~/components/makerkit/app-breadcrumbs";
-import { PageBody, PageHeader } from "~/components/makerkit/page";
+import { AppBreadcrumbs } from "~/components/portal/app-breadcrumbs";
+import { PageBody, PageHeader } from "~/components/portal/page";
 import { Button } from "~/components/ui/button";
 import { AdminAccountsTable } from "~/features/admin/components/admin-accounts-table";
 import { AdminCreateUserDialog } from "~/features/admin/components/admin-create-user-dialog";

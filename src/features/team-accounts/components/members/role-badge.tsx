@@ -1,5 +1,5 @@
 import { cva } from "class-variance-authority";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Badge } from "~/components/ui/badge";
 
 type Role = string;

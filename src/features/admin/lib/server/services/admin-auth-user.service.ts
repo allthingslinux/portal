@@ -4,6 +4,7 @@ import { z } from "zod";
 
 const REALM_REGEX = /\/realms\/([^/]+)\/?$/;
 const REALM_STRIP_REGEX = /\/realms\/[^/]+\/?$/;
+const WHITESPACE_REGEX = /\s+/;
 
 type KeycloakAdminConfig = {
   issuer: string;
@@ -123,7 +124,7 @@ class AdminAuthUserService {
     const token = await this.getAdminToken();
 
     // Parse name: if it has spaces, split into first/last; otherwise use as single name
-    const nameParts = name.trim().split(/\s+/);
+    const nameParts = name.trim().split(WHITESPACE_REGEX);
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || "";
 

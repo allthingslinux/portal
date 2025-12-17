@@ -99,7 +99,12 @@ export const impersonateUserAction = adminAction(
 
       logger.info({ userId }, "Super Admin is impersonating user...");
 
-      return await service.impersonateUser(userId);
+      try {
+        return await service.impersonateUser(userId);
+      } catch (error) {
+        logger.error({ error }, "Error impersonating user");
+        throw error;
+      }
     },
     {
       schema: ImpersonateUserSchema,
@@ -207,14 +212,19 @@ export const resetPasswordAction = adminAction(
 
       logger.info({ userId }, "Super Admin is resetting user password...");
 
-      const result = await service.resetPassword(userId);
+      try {
+        const result = await service.resetPassword(userId);
 
-      logger.info(
-        { userId },
-        "Super Admin has successfully sent password reset email"
-      );
+        logger.info(
+          { userId },
+          "Super Admin has successfully sent password reset email"
+        );
 
-      return result;
+        return result;
+      } catch (error) {
+        logger.error({ error }, "Error resetting user password");
+        throw error;
+      }
     },
     {
       schema: ResetPasswordSchema,

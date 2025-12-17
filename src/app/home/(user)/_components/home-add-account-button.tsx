@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import { CreateTeamAccountDialog } from "~/features/team-accounts/components";
 

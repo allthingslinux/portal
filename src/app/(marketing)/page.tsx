@@ -12,8 +12,8 @@ import {
   Hero,
   Pill,
   PillActionButton,
-} from "~/components/makerkit/marketing";
-import { Trans } from "~/components/makerkit/trans";
+} from "~/components/portal/marketing";
+import { Trans } from "~/components/portal/trans";
 
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 

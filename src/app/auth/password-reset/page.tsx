@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
 import pathsConfig from "~/config/paths.config";

@@ -1,6 +1,6 @@
-import { AppBreadcrumbs } from "~/components/makerkit/app-breadcrumbs";
-import { PageBody } from "~/components/makerkit/page";
-import { Trans } from "~/components/makerkit/trans";
+import { AppBreadcrumbs } from "~/components/portal/app-breadcrumbs";
+import { PageBody } from "~/components/portal/page";
+import { Trans } from "~/components/portal/trans";
 import featuresFlagConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";
 import { TeamAccountSettingsContainer } from "~/features/team-accounts/components";

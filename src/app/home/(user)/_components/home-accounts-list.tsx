@@ -5,14 +5,14 @@ import {
   CardButton,
   CardButtonHeader,
   CardButtonTitle,
-} from "~/components/makerkit/card-button";
+} from "~/components/portal/card-button";
 import {
   EmptyState,
   EmptyStateButton,
   EmptyStateHeading,
   EmptyStateText,
-} from "~/components/makerkit/empty-state";
-import { Trans } from "~/components/makerkit/trans";
+} from "~/components/portal/empty-state";
+import { Trans } from "~/components/portal/trans";
 
 import { loadUserWorkspace } from "../_lib/server/load-user-workspace";
 import { HomeAddAccountButton } from "./home-add-account-button";

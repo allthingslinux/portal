@@ -2,10 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
-import { If } from "~/components/makerkit/if";
-import { OauthProviderLogoImage } from "~/components/makerkit/oauth-provider-logo-image";
-import { Spinner } from "~/components/makerkit/spinner";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import { OauthProviderLogoImage } from "~/components/portal/oauth-provider-logo-image";
+import { Spinner } from "~/components/portal/spinner";
+import { Trans } from "~/components/portal/trans";
 import {
   AlertDialog,
   AlertDialogAction,

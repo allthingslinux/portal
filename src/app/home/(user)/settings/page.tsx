@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { use } from "react";
-import { PageBody } from "~/components/makerkit/page";
+import { PageBody } from "~/components/portal/page";
 import authConfig from "~/config/auth.config";
 import featureFlagsConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";

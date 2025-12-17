@@ -1,5 +1,5 @@
 import { AppLogo } from "~/components/app-logo";
-import { Header } from "~/components/makerkit/marketing";
+import { Header } from "~/components/portal/marketing";
 import type { BetterAuthUser } from "~/core/auth/better-auth/types";
 
 import { SiteHeaderAccountSection } from "./site-header-account-section";

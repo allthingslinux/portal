@@ -103,7 +103,7 @@ The codebase has two component directories:
    - Simple, reusable components
    - Examples: `Button`, `Input`, `Dialog`, `DataTable` (simple version)
 
-2. **`src/shared/components/makerkit/`**: Application-specific components
+2. **`src/shared/components/portal/`**: Application-specific components
    - Feature-rich components with business logic
    - Examples: `DataTable` (full-featured), `GlobalLoader`, `Sidebar`
 
@@ -268,6 +268,6 @@ Key environment variables:
 
 1. **Email Provider**: Consider Resend for better DX and React Email integration
 2. **Real-time**: Could migrate from Supabase Realtime to SSE/WebSockets if moving away from Supabase
-3. **Component Consolidation**: Some UI/makerkit components could be further consolidated
+3. **Component Consolidation**: Some UI/portal components could be further consolidated
 4. **NextAuth Stable**: Upgrade to stable version when v5 is released
 

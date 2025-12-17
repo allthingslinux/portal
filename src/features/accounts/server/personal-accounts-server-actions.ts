@@ -3,6 +3,7 @@
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getSessionUserData } from "~/core/auth/better-auth/session";
 import { betterAuthUserIdToUuid } from "~/core/auth/better-auth/utils/user-id-to-uuid";
 import { db } from "~/core/database/client";
 import {
@@ -12,12 +13,11 @@ import {
   betterAuthUser,
   usersInAuth,
 } from "~/core/database/schema";
+import { createAdminAuthUserService } from "~/features/admin/lib/server/services/admin-auth-user.service";
 import { getLogger } from "~/shared/logger";
 import { enhanceAction } from "~/shared/next/actions";
 import { revalidateAccountSettings } from "~/shared/next/actions/revalidate-account-paths";
 import { updateAccountPictureInDatabase } from "~/shared/next/actions/update-account-picture";
-import { createAdminAuthUserService } from "~/features/admin/lib/server/services/admin-auth-user.service";
-import { getSessionUserData } from "~/core/auth/better-auth/session";
 
 import { DeletePersonalAccountSchema } from "../schema/delete-personal-account.schema";
 import { createDeletePersonalAccountService } from "./services/delete-personal-account.service";
@@ -116,7 +116,10 @@ export async function updateAccountDataAction(
           )
           .limit(1);
 
-        if (accountWithKeycloakId.length > 0 && accountWithKeycloakId[0].accountId) {
+        if (
+          accountWithKeycloakId.length > 0 &&
+          accountWithKeycloakId[0].accountId
+        ) {
           try {
             // Update Keycloak user name via Admin API
             const adminService = createAdminAuthUserService();
@@ -193,7 +196,7 @@ export async function getPersonalAccountDataAction(userId: string) {
       const userData = betterAuthUserData[0];
 
       // Create personal account and membership in a transaction
-      const [account] = await db.transaction(async (tx) => {
+      const [createdAccount] = await db.transaction(async (tx) => {
         // First, ensure the user exists in auth.users table
         await tx
           .insert(usersInAuth)
@@ -230,16 +233,16 @@ export async function getPersonalAccountDataAction(userId: string) {
           accountRole: "owner",
         });
 
-      return [newAccount];
-    });
+        return [newAccount];
+      });
 
-    return {
-        id: account.id,
-        name: account.name,
-        picture_url: account.pictureUrl,
-        public_data: account.publicData,
+      return {
+        id: createdAccount.id,
+        name: createdAccount.name,
+        picture_url: createdAccount.pictureUrl,
+        public_data: createdAccount.publicData,
       };
-    } catch (error) {
+    } catch {
       // If account creation fails, return null (don't throw - let the UI handle it)
       return null;
     }

@@ -22,4 +22,3 @@ export function betterAuthUserIdToUuid(userId: string): string {
 
   return userIdUuid;
 }
-

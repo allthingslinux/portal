@@ -2,10 +2,10 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { If } from "~/components/makerkit/if";
-import { LanguageSelector } from "~/components/makerkit/language-selector";
-import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import { LanguageSelector } from "~/components/portal/language-selector";
+import { LoadingOverlay } from "~/components/portal/loading-overlay";
+import { Trans } from "~/components/portal/trans";
 import {
   Card,
   CardContent,
@@ -48,11 +48,11 @@ export function PersonalAccountSettingsContainer(
 
   // Sync user data from Keycloak on mount (only once)
   React.useEffect(() => {
-    if (!hasSyncedRef.current && !syncUser.isPending) {
+    if (!(hasSyncedRef.current || syncUser.isPending)) {
       hasSyncedRef.current = true;
       syncUser.mutate();
     }
-  }, []); // Only run on mount
+  }, [syncUser.isPending, syncUser.mutate]); // Only run on mount
 
   if (user.isPending) {
     return <LoadingOverlay fullPage />;
@@ -65,9 +65,9 @@ export function PersonalAccountSettingsContainer(
           Failed to load account settings: {user.error?.message}
         </p>
         <button
-          type="button"
-          onClick={() => user.refetch()}
           className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+          onClick={() => user.refetch()}
+          type="button"
         >
           Retry
         </button>
@@ -84,9 +84,9 @@ export function PersonalAccountSettingsContainer(
           Unable to load account settings. Please try refreshing the page.
         </p>
         <button
-          type="button"
-          onClick={() => user.refetch()}
           className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+          onClick={() => user.refetch()}
+          type="button"
         >
           Retry
         </button>

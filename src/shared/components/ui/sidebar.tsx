@@ -9,9 +9,9 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 
 import { useIsMobile } from "~/components/hooks/use-mobile";
-import { If } from "~/components/makerkit/if";
-import type { SidebarConfig } from "~/components/makerkit/sidebar";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import type { SidebarConfig } from "~/components/portal/sidebar";
+import { Trans } from "~/components/portal/trans";
 import { cn, isRouteActive } from "../lib/utils";
 import { Button } from "./button";
 import {

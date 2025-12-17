@@ -2,8 +2,8 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { If } from "~/components/makerkit/if";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import featuresFlagConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";
@@ -13,7 +13,7 @@ import { PersonalAccountDropdown } from "~/features/accounts/components/personal
 
 const ModeToggle = dynamic(
   () =>
-    import("~/components/makerkit/mode-toggle").then((mod) => ({
+    import("~/components/portal/mode-toggle").then((mod) => ({
       default: mod.ModeToggle,
     })),
   { ssr: false }
@@ -21,7 +21,7 @@ const ModeToggle = dynamic(
 
 const MobileModeToggle = dynamic(
   () =>
-    import("~/components/makerkit/mobile-mode-toggle").then((mod) => ({
+    import("~/components/portal/mobile-mode-toggle").then((mod) => ({
       default: mod.MobileModeToggle,
     })),
   { ssr: false }

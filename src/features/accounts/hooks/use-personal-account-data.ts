@@ -31,23 +31,19 @@ export function usePersonalAccountData(
       return null;
     }
 
-    try {
-      const result = await getPersonalAccountDataAction(userId);
+    const result = await getPersonalAccountDataAction(userId);
 
-      if (!result) {
-        return null;
-      }
-
-      return {
-        id: result.id,
-        name: result.name ?? null,
-        picture_url: result.picture_url ?? null,
-        public_data:
-          (result.public_data as Record<string, unknown> | null) ?? null,
-      };
-    } catch (error) {
-      throw error;
+    if (!result) {
+      return null;
     }
+
+    return {
+      id: result.id,
+      name: result.name ?? null,
+      picture_url: result.picture_url ?? null,
+      public_data:
+        (result.public_data as Record<string, unknown> | null) ?? null,
+    };
   };
 
   return useQuery<

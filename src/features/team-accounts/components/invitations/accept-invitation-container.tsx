@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { If } from "~/components/makerkit/if";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import { Trans } from "~/components/portal/trans";
 import { Heading } from "~/components/ui/heading";
 import { Separator } from "~/components/ui/separator";
 

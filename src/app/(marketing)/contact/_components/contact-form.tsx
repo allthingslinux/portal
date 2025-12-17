@@ -5,7 +5,7 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { ContactEmailSchema } from "~/(marketing)/contact/_lib/contact-email.schema";
 import { sendContactEmail } from "~/(marketing)/contact/_lib/server/server-actions";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import {

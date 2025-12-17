@@ -7,7 +7,7 @@ import {
   Page,
   PageMobileNavigation,
   PageNavigation,
-} from "~/components/makerkit/page";
+} from "~/components/portal/page";
 import { SidebarProvider } from "~/components/ui/sidebar";
 
 export const metadata: Metadata = {

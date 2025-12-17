@@ -11,10 +11,10 @@ import {
 import Link from "next/link";
 import { useMemo } from "react";
 import { cn } from "~/components/lib/utils";
-import { If } from "~/components/makerkit/if";
-import { SubMenuModeToggle } from "~/components/makerkit/mode-toggle";
-import { ProfileAvatar } from "~/components/makerkit/profile-avatar";
-import { Trans } from "~/components/makerkit/trans";
+import { If } from "~/components/portal/if";
+import { SubMenuModeToggle } from "~/components/portal/mode-toggle";
+import { ProfileAvatar } from "~/components/portal/profile-avatar";
+import { Trans } from "~/components/portal/trans";
 import {
   DropdownMenu,
   DropdownMenuContent,

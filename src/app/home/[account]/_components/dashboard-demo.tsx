@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
+import { LoadingOverlay } from "~/components/portal/loading-overlay";
 
 export const DashboardDemo = dynamic(() => import("./dashboard-demo-charts"), {
   ssr: false,

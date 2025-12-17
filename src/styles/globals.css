@@ -6,7 +6,7 @@
 @import "./theme.utilities.css";
 @import "./shadcn-ui.css";
 @import "./markdoc.css";
-@import "./makerkit.css";
+@import "./portal.css";
 @import "tw-animate-css";
 
 /* content sources - update the below if you add a new path */

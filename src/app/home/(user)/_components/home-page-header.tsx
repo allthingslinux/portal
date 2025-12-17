@@ -1,4 +1,4 @@
-import { PageHeader } from "~/components/makerkit/page";
+import { PageHeader } from "~/components/portal/page";
 
 export function HomeLayoutPageHeader(
   props: React.PropsWithChildren<{

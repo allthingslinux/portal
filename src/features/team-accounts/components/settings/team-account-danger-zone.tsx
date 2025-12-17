@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
-import { Trans } from "~/components/makerkit/trans";
+import { LoadingOverlay } from "~/components/portal/loading-overlay";
+import { Trans } from "~/components/portal/trans";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
   AlertDialog,

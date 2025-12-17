@@ -1,8 +1,8 @@
 import { use } from "react";
 
-import { AppBreadcrumbs } from "~/components/makerkit/app-breadcrumbs";
-import { PageBody } from "~/components/makerkit/page";
-import { Trans } from "~/components/makerkit/trans";
+import { AppBreadcrumbs } from "~/components/portal/app-breadcrumbs";
+import { PageBody } from "~/components/portal/page";
+import { Trans } from "~/components/portal/trans";
 
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";

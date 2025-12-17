@@ -1,6 +1,6 @@
 "use client";
 
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import {
   Card,
   CardContent,

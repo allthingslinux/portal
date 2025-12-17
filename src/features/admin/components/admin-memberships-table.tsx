@@ -2,7 +2,7 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import { DataTable } from "~/components/makerkit/data-table";
+import { DataTable } from "~/components/portal/data-table";
 
 type Membership = {
   user_id: string;

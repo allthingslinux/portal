@@ -37,7 +37,7 @@ function AuthEventDispatcher({ children }: React.PropsWithChildren) {
       const timeSinceLastSync = now - lastSyncTimeRef.current;
       const shouldSync =
         isNewSession ||
-        (timeSinceLastSync > 60000 && !syncInProgressRef.current); // At least 1 minute since last sync
+        (timeSinceLastSync > 60_000 && !syncInProgressRef.current); // At least 1 minute since last sync
 
       if (shouldSync) {
         syncInProgressRef.current = true;
@@ -49,7 +49,7 @@ function AuthEventDispatcher({ children }: React.PropsWithChildren) {
         });
       }
     }
-  }, [isPending, session?.user?.id, dispatchEvent]); // Removed syncUser from deps
+  }, [isPending, session?.user, dispatchEvent, syncUser.mutate]);
 
   // Periodic sync every 5 minutes to keep user data fresh
   useEffect(() => {
@@ -57,20 +57,23 @@ function AuthEventDispatcher({ children }: React.PropsWithChildren) {
       return;
     }
 
-    const interval = setInterval(() => {
-      if (!syncInProgressRef.current) {
-        syncInProgressRef.current = true;
-        lastSyncTimeRef.current = Date.now();
-        syncUser.mutate(undefined, {
-          onSettled: () => {
-            syncInProgressRef.current = false;
-          },
-        });
-      }
-    }, 5 * 60 * 1000); // 5 minutes
+    const interval = setInterval(
+      () => {
+        if (!syncInProgressRef.current) {
+          syncInProgressRef.current = true;
+          lastSyncTimeRef.current = Date.now();
+          syncUser.mutate(undefined, {
+            onSettled: () => {
+              syncInProgressRef.current = false;
+            },
+          });
+        }
+      },
+      5 * 60 * 1000
+    ); // 5 minutes
 
     return () => clearInterval(interval);
-  }, [session?.user?.id]); // Only depend on userId, not syncUser
+  }, [session?.user, syncUser.mutate]);
 
   return <>{children}</>;
 }

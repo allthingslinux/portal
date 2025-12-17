@@ -1,10 +1,10 @@
 import { AppLogo } from "~/components/app-logo";
+import { ProfileAccountDropdownContainer } from "~/components/personal-account-dropdown-container";
 import {
   BorderedNavigationMenu,
   BorderedNavigationMenuItem,
-} from "~/components/makerkit/bordered-navigation-menu";
-import { If } from "~/components/makerkit/if";
-import { ProfileAccountDropdownContainer } from "~/components/personal-account-dropdown-container";
+} from "~/components/portal/bordered-navigation-menu";
+import { If } from "~/components/portal/if";
 import featuresFlagConfig from "~/config/feature-flags.config";
 import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
 

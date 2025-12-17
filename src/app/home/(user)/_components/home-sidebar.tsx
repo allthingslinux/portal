@@ -1,7 +1,7 @@
 import { AppLogo } from "~/components/app-logo";
 import { cn } from "~/components/lib/utils";
-import { If } from "~/components/makerkit/if";
 import { ProfileAccountDropdownContainer } from "~/components/personal-account-dropdown-container";
+import { If } from "~/components/portal/if";
 import {
   Sidebar,
   SidebarContent,
@@ -11,11 +11,11 @@ import {
 } from "~/components/ui/sidebar";
 import featuresFlagConfig from "~/config/feature-flags.config";
 import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
-import { UserNotifications } from "~/home/(user)/_components/user-notifications";
+import type { UserWorkspace } from "../_lib/server/load-user-workspace";
 
 // home imports
-import type { UserWorkspace } from "../_lib/server/load-user-workspace";
 import { HomeAccountSelector } from "./home-account-selector";
+import { UserNotifications } from "./user-notifications";
 
 type HomeSidebarProps = {
   workspace: UserWorkspace;

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
   FormControl,

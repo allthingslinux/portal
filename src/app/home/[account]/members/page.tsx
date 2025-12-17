@@ -1,8 +1,8 @@
 import { PlusCircle } from "lucide-react";
-import { AppBreadcrumbs } from "~/components/makerkit/app-breadcrumbs";
-import { If } from "~/components/makerkit/if";
-import { PageBody } from "~/components/makerkit/page";
-import { Trans } from "~/components/makerkit/trans";
+import { AppBreadcrumbs } from "~/components/portal/app-breadcrumbs";
+import { If } from "~/components/portal/if";
+import { PageBody } from "~/components/portal/page";
+import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import {
   Card,

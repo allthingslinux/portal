@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import pathsConfig from "~/config/paths.config";

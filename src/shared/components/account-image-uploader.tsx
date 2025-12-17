@@ -4,8 +4,8 @@ import { useCallback } from "react";
 
 import { useTranslation } from "react-i18next";
 
-import { ImageUploader } from "~/components/makerkit/image-uploader";
-import { Trans } from "~/components/makerkit/trans";
+import { ImageUploader } from "~/components/portal/image-uploader";
+import { Trans } from "~/components/portal/trans";
 import { toast } from "~/components/ui/sonner";
 
 const AVATARS_BUCKET = "account_image";

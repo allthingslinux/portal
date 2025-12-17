@@ -48,4 +48,3 @@ async function seedDatabase() {
 }
 
 seedDatabase();
-

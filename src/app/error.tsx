@@ -3,7 +3,7 @@
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { SiteHeader } from "~/(marketing)/_components/site-header";
-import { Trans } from "~/components/makerkit/trans";
+import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
 import { useSession } from "~/core/auth/better-auth/hooks";

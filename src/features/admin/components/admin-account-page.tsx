@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
 import { BadgeX, Ban, ShieldPlus, VenetianMask } from "lucide-react";
-import { AppBreadcrumbs } from "~/components/makerkit/app-breadcrumbs";
-import { If } from "~/components/makerkit/if";
-import { PageBody, PageHeader } from "~/components/makerkit/page";
-import { ProfileAvatar } from "~/components/makerkit/profile-avatar";
+import { AppBreadcrumbs } from "~/components/portal/app-breadcrumbs";
+import { If } from "~/components/portal/if";
+import { PageBody, PageHeader } from "~/components/portal/page";
+import { ProfileAvatar } from "~/components/portal/profile-avatar";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";

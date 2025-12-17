@@ -32,12 +32,12 @@ export function RedirectHandler({
         } else if (result.error) {
           console.error("OAuth initiation error:", result.error);
           // Fallback: redirect to sign-in page with error
-          window.location.href = `/auth/sign-in?error=oauth_init_failed`;
+          window.location.href = "/auth/sign-in?error=oauth_init_failed";
         }
       } catch (error) {
         console.error("Failed to initiate OAuth flow:", error);
         // Fallback: redirect to sign-in page with error
-        window.location.href = `/auth/sign-in?error=oauth_init_failed`;
+        window.location.href = "/auth/sign-in?error=oauth_init_failed";
       }
     };
 

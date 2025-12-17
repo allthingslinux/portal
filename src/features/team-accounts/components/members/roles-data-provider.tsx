@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
+import { LoadingOverlay } from "~/components/portal/loading-overlay";
 
 export function RolesDataProvider(props: {
   maxRoleHierarchy: number;

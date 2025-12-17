@@ -1,14 +1,14 @@
 import { AppLogo } from "~/components/app-logo";
+import { ProfileAccountDropdownContainer } from "~/components/personal-account-dropdown-container";
 import {
   BorderedNavigationMenu,
   BorderedNavigationMenuItem,
-} from "~/components/makerkit/bordered-navigation-menu";
-import { ProfileAccountDropdownContainer } from "~/components/personal-account-dropdown-container";
+} from "~/components/portal/bordered-navigation-menu";
 import { getTeamAccountSidebarConfig } from "~/config/team-account-navigation.config";
-import { TeamAccountAccountsSelector } from "~/home/[account]/_components/team-account-accounts-selector";
+import type { TeamAccountWorkspace } from "../_lib/server/team-account-workspace.loader";
 
 // local imports
-import type { TeamAccountWorkspace } from "../_lib/server/team-account-workspace.loader";
+import { TeamAccountAccountsSelector } from "./team-account-accounts-selector";
 import { TeamAccountNotifications } from "./team-account-notifications";
 
 export function TeamAccountNavigationMenu(props: {
