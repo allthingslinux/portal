@@ -101,22 +101,23 @@ Applies when the request includes any of:
 - Maintain semantic HTML, reading order, contrast, and keyboard navigation.
 
 ### Concept hook (required)
-- Each new/changed view must have a visible, verifiable “concept hook” (documented in PR).
-- Examples (choose one direction, don’t blend randomly):
-  - diagonal kinetic grid
-  - typographic collage layout
-  - noise-texture atmosphere
-  - brutalist grid-break fold
+- Each new/changed view must have a visible, verifiable "concept hook" with objective verification criteria.
+- Choose one directional approach, don't blend randomly. Accepted concept hooks include:
+  - diagonal kinetic grid (e.g., staggered card layouts with angled separators)
+  - typographic collage layout (e.g., overlapping text elements with varied sizes)
+  - noise-texture atmosphere (e.g., subtle grain overlays or geometric patterns)
+  - brutalist grid-break fold (e.g., sharp corners with intentional breaks)
+- PR description must include: 2-3 line design rationale explaining the chosen concept hook and how it serves the user experience, plus Design Lead sign-off field for pass/fail verification.
 
 ### Typography
 - Max 2 font families.
 - Must be tokenized (`type.family.*`, `type.weight.*`, `type.tracking.*`).
-- Forbidden defaults: Inter, Roboto, Poppins, Montserrat, Space Grotesk, DM Sans, system-ui.
-- New fonts require license + legibility + contrast proof and usage rationale.
+- Use of non-standard fonts (Inter, Roboto, Poppins, Montserrat, Space Grotesk, DM Sans, system-ui) requires a short justification covering legibility, licensing, contrast proof, and product fit rationale.
+- All new fonts require license + legibility + contrast proof and usage rationale.
 
 ### Color
 - Token-only, semantic purpose per color (hierarchy/state/signal).
-- Forbidden: purple-on-white SaaS gradient clichés, timid palettes, uncontrolled saturation.
+- Avoid generic SaaS gradient conventions unless explicitly justified for brand/product strategy.
 - Adjustments bounded (lighten/darken up to ~±15%).
 
 ### Layout & space
