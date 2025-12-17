@@ -43,6 +43,36 @@ export function PasswordSignInForm({
     },
   });
 
+  const renderButtonLabel = () => {
+    if (redirecting) {
+      return (
+        <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
+          <Trans i18nKey={"auth:redirecting"} />
+        </span>
+      );
+    }
+
+    if (loading) {
+      return (
+        <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
+          <Trans i18nKey={"auth:signingIn"} />
+        </span>
+      );
+    }
+
+    return (
+      <span className={"fade-out flex animate-out items-center"}>
+        <Trans i18nKey={"auth:signInWithEmail"} />
+
+        <ArrowRight
+          className={
+            "zoom-in slide-in-from-left-2 h-4 animate-in fill-mode-both delay-500 duration-500"
+          }
+        />
+      </span>
+    );
+  };
+
   return (
     <Form {...form}>
       <form
@@ -111,33 +141,7 @@ export function PasswordSignInForm({
           disabled={loading || redirecting}
           type="submit"
         >
-          {(() => {
-            if (redirecting) {
-              return (
-                <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
-                  <Trans i18nKey={"auth:redirecting"} />
-                </span>
-              );
-            }
-            if (loading) {
-              return (
-                <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
-                  <Trans i18nKey={"auth:signingIn"} />
-                </span>
-              );
-            }
-            return (
-              <span className={"fade-out flex animate-out items-center"}>
-                <Trans i18nKey={"auth:signInWithEmail"} />
-
-                <ArrowRight
-                  className={
-                    "zoom-in slide-in-from-left-2 h-4 animate-in fill-mode-both delay-500 duration-500"
-                  }
-                />
-              </span>
-            );
-          })()}
+          {renderButtonLabel()}
         </Button>
       </form>
     </Form>
