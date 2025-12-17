@@ -26,3 +26,30 @@ export type BetterAuthSession = {
     userAgent?: string | null;
   };
 };
+
+/**
+ * OAuth provider type
+ * Migrated from Supabase types
+ */
+export type Provider = string;
+
+/**
+ * User account/identity type for Better Auth
+ */
+export type UserAccount = {
+  id: string;
+  provider: string;
+  providerAccountId: string;
+  userId: string;
+};
+
+/**
+ * JSON type for database JSONB fields
+ */
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
