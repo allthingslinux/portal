@@ -18,7 +18,9 @@ export class SentryMonitoringService implements MonitoringService {
   private readonly readyResolver?: (value?: unknown) => void;
 
   constructor() {
-    let resolver: (value?: unknown) => void;
+    let resolver: (value?: unknown) => void = () => {
+      // resolver reassigned inside readyPromise
+    };
     this.readyPromise = new Promise((resolve) => {
       resolver = resolve;
     });
