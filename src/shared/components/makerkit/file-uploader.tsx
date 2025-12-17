@@ -1,4 +1,4 @@
-import { useSupabaseUpload } from "../hooks/use-supabase-upload";
+import { useFileUpload } from "../hooks/use-file-upload";
 import { cn } from "../lib/utils";
 import { Dropzone, DropzoneContent, DropzoneEmptyState } from "./dropzone";
 
@@ -12,7 +12,7 @@ export const FileUploader = (props: {
   cacheControl?: number;
   onUploadSuccess?: (files: string[]) => void;
 }) => {
-  const uploader = useSupabaseUpload(props);
+  const uploader = useFileUpload(props);
 
   return (
     <div className={cn(props.className)}>

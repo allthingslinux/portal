@@ -5,9 +5,9 @@ import type {
   ColumnFiltersState,
   ColumnPinningState,
   PaginationState,
-  Table as ReactTable,
   Row,
   SortingState,
+  Table as TanstackTable,
   VisibilityState,
 } from "@tanstack/react-table";
 import {
@@ -49,12 +49,14 @@ export type {
   ColumnFiltersState,
   ColumnPinningState,
   PaginationState,
-  ReactTable,
   Row,
   SortingState,
   VisibilityState,
 } from "@tanstack/react-table";
+export type ReactTable<T> = TanstackTable<T>;
 export { flexRender } from "@tanstack/react-table";
+
+type ReactTableInstance<T> = TanstackTable<T>;
 
 type ReactTableProps<T extends DataItem> = {
   data: T[];
@@ -514,7 +516,7 @@ function Pagination<T>({
   table,
   totalCount,
 }: React.PropsWithChildren<{
-  table: ReactTable<T>;
+  table: ReactTableInstance<T>;
   totalCount?: number;
   pageSize?: number;
 }>) {

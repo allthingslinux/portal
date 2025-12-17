@@ -9,7 +9,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "~/components/ui/button";
-import type { UseSupabaseUploadReturn } from "../hooks/use-supabase-upload";
+import type { UseFileUploadReturn } from "../hooks/use-file-upload";
 import { cn } from "../lib/utils";
 import { Trans } from "./trans";
 
@@ -35,7 +35,7 @@ export const formatBytes = (
 };
 
 type DropzoneContextType = Omit<
-  UseSupabaseUploadReturn,
+  UseFileUploadReturn,
   "getRootProps" | "getInputProps"
 >;
 
@@ -43,7 +43,7 @@ const DropzoneContext = createContext<DropzoneContextType | undefined>(
   undefined
 );
 
-type DropzoneProps = UseSupabaseUploadReturn & {
+type DropzoneProps = UseFileUploadReturn & {
   className?: string;
 };
 
