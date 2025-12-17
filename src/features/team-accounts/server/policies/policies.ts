@@ -1,4 +1,4 @@
-import { createPolicyRegistry } from "~/shared/policies";
+import { createPolicyRegistry } from "~/shared/policies/registry";
 
 /**
  * Feature-specific registry for invitation policies

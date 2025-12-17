@@ -80,8 +80,6 @@ const SidebarProvider: React.FC<
   const [openMobile, setOpenMobile] = React.useState(false);
   const collapsibleStyle = process.env.NEXT_PUBLIC_SIDEBAR_COLLAPSIBLE_STYLE;
 
-  // This is the internal state of the sidebar.
-  // We use openProp and setOpenProp for control from outside the component.
   const [_open, _setOpen] = React.useState(defaultOpen);
   const open = openProp ?? _open;
 
@@ -95,21 +93,18 @@ const SidebarProvider: React.FC<
 
       _setOpen(nextOpen);
 
-      // This sets the cookie to keep the sidebar state.
       // biome-ignore lint/suspicious/noDocumentCookie: stores sidebar preference client-side
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${nextOpen}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
     },
     [setOpenProp, open]
   );
 
-  // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(
     () =>
       isMobile ? setOpenMobile((prev) => !prev) : setOpen((prev) => !prev),
     [isMobile, setOpen]
   );
 
-  // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
@@ -125,8 +120,6 @@ const SidebarProvider: React.FC<
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleSidebar]);
 
-  // We add a state so that we can do data-state="expanded" or "collapsed".
-  // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed";
 
   const contextValue = React.useMemo<SidebarContext>(
@@ -269,7 +262,6 @@ const Sidebar: React.FC<
           side === "left"
             ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
-          // Adjust the padding for floating and inset variants.
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
             : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
@@ -479,7 +471,6 @@ const SidebarGroupAction: React.FC<
     <Comp
       className={cn(
         "absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-hidden ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
-        // Increases the hit area of the button on mobile.
         "after:-inset-2 after:absolute md:after:hidden",
         "group-data-[collapsible=icon]:hidden",
         className
@@ -625,7 +616,6 @@ const SidebarMenuAction: React.FC<
     <Comp
       className={cn(
         "absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-hidden ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0",
-        // Increases the hit area of the button on mobile.
         "after:-inset-2 after:absolute md:after:hidden",
         "peer-data-[size=sm]/menu-button:top-1",
         "peer-data-[size=default]/menu-button:top-1.5",

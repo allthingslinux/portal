@@ -29,7 +29,9 @@ export function MobileModeToggle(props: { className?: string }) {
   );
 }
 
+const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
 function setCookieTheme(theme: string) {
   // biome-ignore lint/suspicious/noDocumentCookie: theme preference stored client-side
-  document.cookie = `theme=${theme}; path=/; max-age=31536000`;
+  document.cookie = `theme=${theme}; path=/; max-age=${THEME_COOKIE_MAX_AGE}`;
 }

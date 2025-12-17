@@ -42,7 +42,7 @@ class _TeamAccountsApi {
   async getTeamAccount(slug: string) {
     // Using shared Drizzle client
 
-    const result = await db.transaction(async (tx) =>
+    const teamAccounts = await db.transaction(async (tx) =>
       tx
         .select({
           id: accounts.id,
@@ -56,16 +56,16 @@ class _TeamAccountsApi {
         .limit(1)
     );
 
-    if (result.length === 0) {
+    if (teamAccounts.length === 0) {
       return {
         error: { message: "Account not found" },
-        data: null,
+        account: null,
       };
     }
 
     return {
       error: null,
-      data: result[0],
+      account: teamAccounts[0],
     };
   }
 
@@ -75,7 +75,7 @@ class _TeamAccountsApi {
   async getTeamAccountById(accountId: string) {
     // Using shared Drizzle client
 
-    const result = await db.transaction(async (tx) =>
+    const teamAccounts = await db.transaction(async (tx) =>
       tx
         .select({
           id: accounts.id,
@@ -88,16 +88,16 @@ class _TeamAccountsApi {
         .limit(1)
     );
 
-    if (result.length === 0) {
+    if (teamAccounts.length === 0) {
       return {
         error: { message: "Account not found" },
-        data: null,
+        account: null,
       };
     }
 
     return {
       error: null,
-      data: result[0],
+      account: teamAccounts[0],
     };
   }
 
@@ -133,7 +133,7 @@ class _TeamAccountsApi {
           .where(eq(accounts.slug, slug))
       );
 
-      const accountsResult = await db.transaction(async (tx) =>
+      const teamAccounts = await db.transaction(async (tx) =>
         tx
           .select({
             id: userAccounts.id,
@@ -148,7 +148,7 @@ class _TeamAccountsApi {
       if (accountResult.length === 0) {
         return {
           error: { message: "Account not found or access denied" },
-          data: null,
+          workspace: null,
         };
       }
 
@@ -171,9 +171,9 @@ class _TeamAccountsApi {
 
       return {
         error: null,
-        data: {
+        workspace: {
           account: workspaceData,
-          accounts: accountsResult as WorkspaceAccountItem[],
+          accounts: teamAccounts as WorkspaceAccountItem[],
         },
       };
     } catch (error) {
@@ -267,7 +267,7 @@ class _TeamAccountsApi {
     // Use admin client since the user is not yet part of the account
     // Using shared Drizzle client
 
-    const result = await db
+    const invitationsResult = await db
       .select({
         id: invitations.id,
         expiresAt: invitations.expiresAt,
@@ -289,26 +289,26 @@ class _TeamAccountsApi {
       )
       .limit(1);
 
-    if (result.length === 0) {
+    if (invitationsResult.length === 0) {
       return {
         error: { message: "Invitation not found or expired" },
-        data: null,
+        invitation: null,
       };
     }
 
-    const invitation = result[0];
+    const invitationRow = invitationsResult[0];
 
     return {
       error: null,
-      data: {
-        id: invitation.id,
-        expires_at: invitation.expiresAt,
-        email: invitation.email,
+      invitation: {
+        id: invitationRow.id,
+        expires_at: invitationRow.expiresAt,
+        email: invitationRow.email,
         account: {
-          id: invitation.account.id,
-          name: invitation.account.name,
-          slug: invitation.account.slug,
-          picture_url: invitation.account.pictureUrl,
+          id: invitationRow.account.id,
+          name: invitationRow.account.name,
+          slug: invitationRow.account.slug,
+          picture_url: invitationRow.account.pictureUrl,
         },
       },
     };

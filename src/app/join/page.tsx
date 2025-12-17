@@ -12,7 +12,7 @@ import { db } from "~/core/database/client";
 import { requireUser } from "~/core/database/require-user";
 import { accountsMemberships } from "~/core/database/schema";
 import { AuthLayoutShell } from "~/features/auth/shared";
-import { AcceptInvitationContainer } from "~/features/team-accounts/components";
+import { AcceptInvitationContainer } from "~/features/team-accounts/components/invitations/accept-invitation-container";
 import { createTeamAccountsApi } from "~/features/team-accounts/server/api";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
@@ -62,18 +62,15 @@ async function JoinTeamAccountPage(props: JoinTeamAccountPageProps) {
   const api = createTeamAccountsApi();
 
   // the user is logged in, we can now check if the token is valid
-  const invitationResult = await api.getInvitation(token);
+  const { invitation } = await api.getInvitation(token);
 
-  // the invitation is not found or expired or the email is not the same as the user's email
-  if (!invitationResult.data || invitationResult.data.email !== auth.email) {
+  if (!invitation || invitation.email !== auth.email) {
     return (
       <AuthLayoutShell Logo={AppLogo}>
         <InviteNotFoundOrExpired />
       </AuthLayoutShell>
     );
   }
-
-  const invitation = invitationResult.data;
 
   // we need to verify the user isn't already in the account
   // we do so by checking if the user is already a member of the account

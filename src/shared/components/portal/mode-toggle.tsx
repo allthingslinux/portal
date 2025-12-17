@@ -35,7 +35,7 @@ export function ModeToggle(props: { className?: string }) {
             key={mode}
             onClick={() => {
               setTheme(mode);
-              setCookeTheme(mode);
+              setCookieTheme(mode);
             }}
           >
             <Icon theme={mode} />
@@ -80,7 +80,7 @@ export function SubMenuModeToggle() {
             key={mode}
             onClick={() => {
               setTheme(mode);
-              setCookeTheme(mode);
+              setCookieTheme(mode);
             }}
           >
             <Icon theme={mode} />
@@ -125,9 +125,11 @@ export function SubMenuModeToggle() {
   );
 }
 
-function setCookeTheme(theme: string) {
+const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+function setCookieTheme(theme: string) {
   // biome-ignore lint/suspicious/noDocumentCookie: theme preference stored client-side
-  document.cookie = `theme=${theme}; path=/; max-age=31536000`;
+  document.cookie = `theme=${theme}; path=/; max-age=${THEME_COOKIE_MAX_AGE}`;
 }
 
 function Icon({ theme }: { theme: string | undefined }) {

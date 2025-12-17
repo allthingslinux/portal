@@ -12,7 +12,8 @@ export function useUpdateAccountData(accountId: string) {
   const mutationKey = ["account:data", accountId];
 
   const mutationFn = async (data: UpdateData) => {
-    await updateAccountDataAction(accountId, {
+    await updateAccountDataAction({
+      accountId,
       name: data.name ?? undefined,
       public_data: data.public_data as Record<string, unknown> | undefined,
     });

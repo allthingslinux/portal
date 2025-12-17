@@ -1,7 +1,5 @@
-import {
-  ConsoleMonitoringService,
-  type MonitoringService,
-} from "~/core/monitoring/core";
+import { ConsoleMonitoringService } from "~/core/monitoring/core/console-monitoring.service";
+import type { MonitoringService } from "~/core/monitoring/core/monitoring.service";
 import { createRegistry } from "~/shared/registry";
 
 import {

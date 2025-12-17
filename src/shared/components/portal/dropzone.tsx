@@ -13,14 +13,25 @@ import type { UseFileUploadReturn } from "../hooks/use-file-upload";
 import { cn } from "../lib/utils";
 import { Trans } from "./trans";
 
+const BYTES_IN_KB = 1000;
+const SIZE_UNITS = [
+  "bytes",
+  "KB",
+  "MB",
+  "GB",
+  "TB",
+  "PB",
+  "EB",
+  "ZB",
+  "YB",
+] as const;
+
 export const formatBytes = (
   bytes: number,
   decimals = 2,
-  size?: "bytes" | "KB" | "MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"
+  size?: (typeof SIZE_UNITS)[number]
 ) => {
-  const k = 1000;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
   if (bytes === 0 || bytes === undefined) {
     return size !== undefined ? `0 ${size}` : "0 bytes";
@@ -28,10 +39,10 @@ export const formatBytes = (
 
   const i =
     size !== undefined
-      ? sizes.indexOf(size)
-      : Math.floor(Math.log(bytes) / Math.log(k));
+      ? SIZE_UNITS.indexOf(size)
+      : Math.floor(Math.log(bytes) / Math.log(BYTES_IN_KB));
 
-  return `${Number.parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
+  return `${Number.parseFloat((bytes / BYTES_IN_KB ** i).toFixed(dm))} ${SIZE_UNITS[i]}`;
 };
 
 type DropzoneContextType = Omit<

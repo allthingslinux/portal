@@ -23,24 +23,22 @@ export const loadTeamWorkspace = createWorkspaceLoader(
   async (accountSlug: string) => {
     const api = createTeamAccountsApi();
 
-    const [workspace, user] = await Promise.all([
+    const [workspaceResult, user] = await Promise.all([
       api.getAccountWorkspace(accountSlug),
       requireUserInServerComponent(),
     ]);
 
-    // we cannot find any record for the selected account
-    // so we redirect the user to the home page
-    if (!workspace.data?.account) {
+    if (!workspaceResult.workspace?.account) {
       return redirect(pathsConfig.app.home);
     }
 
     const account = {
-      ...workspace.data.account,
-      slug: workspace.data.account.slug ?? "",
-      picture_url: workspace.data.account.picture_url ?? "",
+      ...workspaceResult.workspace.account,
+      slug: workspaceResult.workspace.account.slug ?? "",
+      picture_url: workspaceResult.workspace.account.picture_url ?? "",
     };
 
-    const accounts = workspace.data.accounts.map((acc) => ({
+    const accounts = workspaceResult.workspace.accounts.map((acc) => ({
       id: acc.id ?? "",
       name: acc.name ?? "",
       slug: acc.slug ?? "",

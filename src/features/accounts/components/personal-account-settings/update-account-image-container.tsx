@@ -20,7 +20,7 @@ export function UpdateAccountImageContainer({
       accountId={user.id}
       onSuccess={() => revalidateUserDataQuery(user.id)}
       onUpdate={(pictureUrl) =>
-        updateAccountPictureUrlAction(user.id, pictureUrl)
+        updateAccountPictureUrlAction({ accountId: user.id, pictureUrl })
       }
       pictureUrl={user.pictureUrl ?? null}
       translationNamespace="account"

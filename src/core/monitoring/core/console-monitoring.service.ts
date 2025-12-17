@@ -1,4 +1,4 @@
-import type { MonitoringService } from ".";
+import type { MonitoringService } from "./monitoring.service";
 
 export class ConsoleMonitoringService implements MonitoringService {
   identifyUser(data: { id: string }) {

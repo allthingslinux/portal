@@ -9,7 +9,7 @@ import { VersionUpdater } from "~/components/portal/version-updater";
 import appConfig from "~/config/app.config";
 import featuresFlagConfig from "~/config/feature-flags.config";
 import { I18nProvider } from "~/core/i18n/i18n-provider";
-import { MonitoringProvider } from "~/core/monitoring/api/components";
+import { MonitoringProvider } from "~/core/monitoring/api/components/provider";
 import { AppEventsProvider } from "~/shared/events";
 import { i18nResolver } from "~/shared/lib/i18n/i18n.resolver";
 import { getI18nSettings } from "~/shared/lib/i18n/i18n.settings";

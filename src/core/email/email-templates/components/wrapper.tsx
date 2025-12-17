@@ -1,4 +1,5 @@
 import { Container } from "@react-email/components";
+import { COLORS } from "~/shared/constants/colors";
 
 export function EmailWrapper(
   props: React.PropsWithChildren<{
@@ -8,10 +9,10 @@ export function EmailWrapper(
   return (
     <Container
       style={{
-        backgroundColor: "#fafafa",
+        backgroundColor: COLORS.background,
         margin: "auto",
         fontFamily: "sans-serif",
-        color: "#242424",
+        color: COLORS.foreground,
         width: "100%",
       }}
     >
@@ -19,7 +20,7 @@ export function EmailWrapper(
         className={`mx-auto px-[20px] py-[40px]${props.className || ""}`}
         style={{
           maxWidth: "720px",
-          backgroundColor: "#fafafa",
+          backgroundColor: COLORS.background,
           margin: "auto",
         }}
       >

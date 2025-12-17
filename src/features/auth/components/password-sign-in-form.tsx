@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import type { z } from "zod";
-import { If } from "~/components/portal/if";
 import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import {
@@ -112,29 +111,33 @@ export function PasswordSignInForm({
           disabled={loading || redirecting}
           type="submit"
         >
-          <If condition={redirecting}>
-            <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
-              <Trans i18nKey={"auth:redirecting"} />
-            </span>
-          </If>
+          {(() => {
+            if (redirecting) {
+              return (
+                <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
+                  <Trans i18nKey={"auth:redirecting"} />
+                </span>
+              );
+            }
+            if (loading) {
+              return (
+                <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
+                  <Trans i18nKey={"auth:signingIn"} />
+                </span>
+              );
+            }
+            return (
+              <span className={"fade-out flex animate-out items-center"}>
+                <Trans i18nKey={"auth:signInWithEmail"} />
 
-          <If condition={loading}>
-            <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
-              <Trans i18nKey={"auth:signingIn"} />
-            </span>
-          </If>
-
-          <If condition={!(redirecting || loading)}>
-            <span className={"fade-out flex animate-out items-center"}>
-              <Trans i18nKey={"auth:signInWithEmail"} />
-
-              <ArrowRight
-                className={
-                  "zoom-in slide-in-from-left-2 h-4 animate-in fill-mode-both delay-500 duration-500"
-                }
-              />
-            </span>
-          </If>
+                <ArrowRight
+                  className={
+                    "zoom-in slide-in-from-left-2 h-4 animate-in fill-mode-both delay-500 duration-500"
+                  }
+                />
+              </span>
+            );
+          })()}
         </Button>
       </form>
     </Form>

@@ -57,7 +57,6 @@ export const enhanceRouteHandler = <
     | ((
         context: HandlerParams<Params["schema"], Params["auth"]>
       ) => Promise<NextResponse | Response>),
-  // Parameters object
   params?: Params
 ) => {
   /**

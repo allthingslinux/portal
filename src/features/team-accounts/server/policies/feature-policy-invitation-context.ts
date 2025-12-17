@@ -1,4 +1,4 @@
-import type { PolicyContext, PolicyResult } from "~/shared/policies";
+import type { PolicyContext, PolicyResult } from "~/shared/policies/types";
 
 /**
  * Invitation policy context that extends the base PolicyContext

@@ -8,52 +8,31 @@ export function createAdminDashboardService() {
 }
 
 export class AdminDashboardService {
-  /**
-   * Get the dashboard data for the admin dashboard
-   * @param count
-   */
-  async getDashboardData(
-    { count: _count }: { count: "exact" | "estimated" | "planned" } = {
-      count: "estimated",
-    }
-  ) {
+  async getDashboardStats() {
     const logger = await getLogger();
-    const adminClient = db;
 
-    const ctx = {
-      name: "admin.dashboard",
-    };
-
-    const accountsPromise = adminClient
-      .$count(accounts, eq(accounts.isPersonalAccount, true))
-      .then((accountCount) => accountCount)
-      .catch((countError) => {
+    const [personalAccountsCount, teamAccountsCount] = await Promise.all([
+      this.countAccounts({ isPersonal: true }).catch((error) => {
         logger.error(
-          { ...ctx, error: countError.message },
-          "Error fetching personal accounts"
+          { error: error.message },
+          "Failed to count personal accounts"
         );
         return 0;
-      });
-
-    const teamAccountsPromise = adminClient
-      .$count(accounts, eq(accounts.isPersonalAccount, false))
-      .then((accountCount) => accountCount)
-      .catch((countError) => {
-        logger.error(
-          { ...ctx, error: countError.message },
-          "Error fetching team accounts"
-        );
+      }),
+      this.countAccounts({ isPersonal: false }).catch((error) => {
+        logger.error({ error: error.message }, "Failed to count team accounts");
         return 0;
-      });
-
-    const [accountsCount, teamAccounts] = await Promise.all([
-      accountsPromise,
-      teamAccountsPromise,
+      }),
     ]);
 
     return {
-      accounts: accountsCount,
-      teamAccounts,
+      personalAccountsCount,
+      teamAccountsCount,
+      totalAccountsCount: personalAccountsCount + teamAccountsCount,
     };
+  }
+
+  private async countAccounts({ isPersonal }: { isPersonal: boolean }) {
+    return db.$count(accounts, eq(accounts.isPersonalAccount, isPersonal));
   }
 }

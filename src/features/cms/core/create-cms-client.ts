@@ -1,4 +1,5 @@
-import type { CmsClient, CmsType } from "~/features/cms/types";
+import type { CmsType } from "~/features/cms/types/cms.type";
+import type { CmsClient } from "~/features/cms/types/cms-client";
 import { createRegistry } from "~/shared/registry";
 
 /**
@@ -6,16 +7,13 @@ import { createRegistry } from "~/shared/registry";
  */
 const CMS_CLIENT = process.env.CMS_CLIENT as CmsType;
 
-// Create a registry for CMS client implementations
 const cmsRegistry = createRegistry<CmsClient, CmsType>();
 
-// Register the WordPress CMS client implementation
 cmsRegistry.register("wordpress", async () => {
   const { createWordpressClient } = await import("../wordpress");
   return createWordpressClient();
 });
 
-// Register the Keystatic CMS client implementation
 cmsRegistry.register("keystatic", async () => {
   const { createKeystaticClient } = await import("../keystatic");
   return createKeystaticClient();

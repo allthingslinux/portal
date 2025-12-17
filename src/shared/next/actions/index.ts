@@ -35,7 +35,6 @@ export function enhanceAction<
     const requireAuth = config.auth ?? true;
     let user: UserParam = undefined as UserParam;
 
-    // validate the schema passed in the config if it exists
     const validateData = async () => {
       if (config.schema) {
         const parsed = await config.schema.safeParseAsync(params);
@@ -52,16 +51,13 @@ export function enhanceAction<
 
     const data = await validateData();
 
-    // by default, the CAPTCHA token is not required
     const verifyCaptcha = config.captcha ?? false;
 
-    // verify the CAPTCHA token if required. It will throw an error if the token is invalid.
     if (verifyCaptcha) {
       const token = (data as Args & { captchaToken: string }).captchaToken;
       await verifyCaptchaToken(token);
     }
 
-    // verify the user is authenticated if required
     if (requireAuth) {
       user = (await requireUser()) as UserParam;
     }

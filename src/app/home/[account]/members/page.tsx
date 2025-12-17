@@ -11,16 +11,13 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import {
-  AccountInvitationsTable,
-  AccountMembersTable,
-  InviteMembersDialogContainer,
-} from "~/features/team-accounts/components";
+import { AccountInvitationsTable } from "~/features/team-accounts/components/invitations/account-invitations-table";
+import { AccountMembersTable } from "~/features/team-accounts/components/members/account-members-table";
+import { InviteMembersDialogContainer } from "~/features/team-accounts/components/members/invite-members-dialog-container";
 
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
-// local imports
 import { TeamAccountLayoutPageHeader } from "../_components/team-account-layout-page-header";
 import { loadMembersPageData } from "./_lib/server/members-page.loader";
 

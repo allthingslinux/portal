@@ -14,5 +14,5 @@ export const loadAdminDashboard = cache(adminDashboardLoader);
 function adminDashboardLoader() {
   const service = createAdminDashboardService();
 
-  return service.getDashboardData();
+  return service.getDashboardStats();
 }

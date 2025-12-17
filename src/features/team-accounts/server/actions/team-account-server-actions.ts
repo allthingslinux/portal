@@ -111,40 +111,26 @@ export const createTeamAccountAction = enhanceAction(
  */
 export const deleteTeamAccountAction = enhanceAction(
   async (formData: FormData, user) => {
-    const logger = await getLogger();
-
-    const params = DeleteTeamAccountSchema.parse(
-      Object.fromEntries(formData.entries())
-    );
-
-    const ctx = {
-      name: "team-accounts.delete",
-      userId: user.id,
-      accountId: params.accountId,
-    };
-
     const enableTeamAccountDeletion =
       process.env.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION === "true";
 
-    if (!enableTeamAccountDeletion) {
-      logger.warn(ctx, "Team account deletion is not enabled");
+    const { success, data } = DeleteTeamAccountSchema.safeParse(
+      Object.fromEntries(formData.entries())
+    );
 
-      throw new Error("Team account deletion is not enabled");
+    if (!(success && enableTeamAccountDeletion)) {
+      throw new Error("Invalid request or deletion disabled");
     }
 
-    logger.info(ctx, "Deleting team account...");
-
     await deleteTeamAccount({
-      accountId: params.accountId,
+      accountId: data.accountId,
       userId: user.id,
     });
 
-    logger.info(ctx, "Team account request successfully sent");
-
-    return redirect("/home");
+    redirect("/home");
   },
   {
-    auth: true,
+    schema: undefined,
   }
 );
 
@@ -153,13 +139,18 @@ export const deleteTeamAccountAction = enhanceAction(
  */
 export const leaveTeamAccountAction = enhanceAction(
   async (formData: FormData, user) => {
-    const body = Object.fromEntries(formData.entries());
-    const params = LeaveTeamAccountSchema.parse(body);
+    const { success, data } = LeaveTeamAccountSchema.safeParse(
+      Object.fromEntries(formData.entries())
+    );
+
+    if (!success) {
+      throw new Error("Invalid request");
+    }
 
     const service = createLeaveTeamAccountService();
 
     await service.leaveTeamAccount({
-      accountId: params.accountId,
+      accountId: data.accountId,
       userId: user.id,
     });
 
@@ -167,7 +158,9 @@ export const leaveTeamAccountAction = enhanceAction(
 
     return redirect("/home");
   },
-  {}
+  {
+    schema: undefined,
+  }
 );
 
 async function deleteTeamAccount(params: {

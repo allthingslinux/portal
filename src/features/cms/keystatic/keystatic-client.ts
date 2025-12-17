@@ -1,4 +1,4 @@
-import type { Cms, CmsClient } from "~/features/cms/types";
+import type { Cms, CmsClient } from "~/features/cms/types/cms-client";
 
 import { createKeystaticReader } from "./create-reader";
 import type {
@@ -38,7 +38,7 @@ class KeystaticClient implements CmsClient {
         }
 
         const categoryMatch = options?.categories?.length
-          ? options.categories.find((category) =>
+          ? options.categories.find((category: string) =>
               item.entry.categories.includes(category)
             )
           : true;
@@ -56,7 +56,7 @@ class KeystaticClient implements CmsClient {
         }
 
         const tagMatch = options?.tags?.length
-          ? options.tags.find((tag) => item.entry.tags.includes(tag))
+          ? options.tags.find((tag: string) => item.entry.tags.includes(tag))
           : true;
 
         if (!tagMatch) {
@@ -77,8 +77,14 @@ class KeystaticClient implements CmsClient {
           return value ?? 0;
         };
 
-        const left = transform(a.entry[sortBy]);
-        const right = transform(b.entry[sortBy]);
+        // Type-safe access to sortable fields
+        const getSortableValue = (
+          entry: Record<string, unknown>,
+          field: "publishedAt" | "order" | "title"
+        ) => entry[field] as string | number | undefined | null;
+
+        const left = transform(getSortableValue(a.entry, sortBy));
+        const right = transform(getSortableValue(b.entry, sortBy));
 
         if (direction === "asc") {
           return left - right;

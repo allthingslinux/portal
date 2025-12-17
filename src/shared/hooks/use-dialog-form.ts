@@ -2,7 +2,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { useState, useTransition } from "react";
 
 export function useDialogForm<T>(
-  onSubmit: (data: T) => Promise<{ error?: unknown } | undefined>,
+  onSubmit: (formValues: T) => Promise<{ error?: unknown } | undefined>,
   options: {
     preventCloseOnSuccess?: boolean;
     onSuccess?: () => void;
@@ -12,11 +12,11 @@ export function useDialogForm<T>(
   const [error, setError] = useState<boolean>(false);
   const [pending, startTransition] = useTransition();
 
-  const handleSubmit = async (data: T) => {
+  const handleSubmit = async (formValues: T) => {
     startTransition(async () => {
       try {
         setError(false);
-        const result = await onSubmit(data);
+        const result = await onSubmit(formValues);
 
         if (result?.error) {
           setError(true);

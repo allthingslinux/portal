@@ -3,11 +3,10 @@ import { PageBody } from "~/components/portal/page";
 import { Trans } from "~/components/portal/trans";
 import featuresFlagConfig from "~/config/feature-flags.config";
 import pathsConfig from "~/config/paths.config";
-import { TeamAccountSettingsContainer } from "~/features/team-accounts/components";
+import { TeamAccountSettingsContainer } from "~/features/team-accounts/components/settings/team-account-settings-container";
 import { createTeamAccountsApi } from "~/features/team-accounts/server/api";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 
-// local imports
 import { TeamAccountLayoutPageHeader } from "../_components/team-account-layout-page-header";
 
 export const generateMetadata = async () => {
@@ -30,19 +29,18 @@ const paths = {
 async function TeamAccountSettingsPage(props: TeamAccountSettingsPageProps) {
   const api = createTeamAccountsApi();
   const slug = (await props.params).account;
-  const result = await api.getTeamAccount(slug);
+  const { error, account: accountData } = await api.getTeamAccount(slug);
 
-  if (result.error || !result.data) {
-    throw new Error(result.error?.message || "Account not found");
+  if (error || !accountData) {
+    throw new Error(error?.message || "Account not found");
   }
 
-  const data = result.data;
   const account = {
-    id: data.id,
-    name: data.name,
-    pictureUrl: data.pictureUrl ?? null,
-    slug: (data.slug as string | null) ?? "",
-    primaryOwnerUserId: data.primaryOwnerUserId,
+    id: accountData.id,
+    name: accountData.name,
+    pictureUrl: accountData.pictureUrl ?? null,
+    slug: (accountData.slug as string | null) ?? "",
+    primaryOwnerUserId: accountData.primaryOwnerUserId,
   };
 
   const features = {

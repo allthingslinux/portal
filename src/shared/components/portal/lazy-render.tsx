@@ -3,14 +3,7 @@
 import { createRef, useLayoutEffect, useMemo, useState } from "react";
 
 /**
- * @description Render a component lazily based on the IntersectionObserver
- * appConfig provided.
- * Full documentation at: https://portal.dev/docs/components-utilities#lazyrender
- * @param children
- * @param threshold
- * @param rootMargin
- * @param onVisible
- * @constructor
+ * Render a component lazily based on the IntersectionObserver config provided.
  */
 export function LazyRender({
   children,

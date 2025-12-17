@@ -30,9 +30,7 @@ class AccountInvitationsService {
   private readonly namespace = "invitations";
 
   /**
-   * @name deleteInvitation
-   * @description Removes an invitation from the database.
-   * @param params
+   * Removes an invitation from the database.
    */
   async deleteInvitation(params: z.infer<typeof DeleteInvitationSchema>) {
     const logger = await getLogger();
@@ -59,9 +57,7 @@ class AccountInvitationsService {
   }
 
   /**
-   * @name updateInvitation
-   * @param params
-   * @description Updates an invitation in the database.
+   * Updates an invitation in the database.
    */
   async updateInvitation(params: z.infer<typeof UpdateInvitationSchema>) {
     const logger = await getLogger();
@@ -114,10 +110,7 @@ class AccountInvitationsService {
   }
 
   /**
-   * @name sendInvitations
-   * @description Sends invitations to join a team.
-   * @param accountSlug
-   * @param invitations
+   * Sends invitations to join a team.
    */
   async sendInvitations({
     accountSlug,
@@ -201,8 +194,7 @@ class AccountInvitationsService {
   }
 
   /**
-   * @name acceptInvitationToTeam
-   * @description Accepts an invitation to join a team.
+   * Accepts an invitation to join a team.
    */
   async acceptInvitationToTeam(params: {
     userId: string;
@@ -256,9 +248,7 @@ class AccountInvitationsService {
   }
 
   /**
-   * @name renewInvitation
-   * @description Renews an invitation to join a team by extending the expiration date by 7 days.
-   * @param invitationId
+   * Renews an invitation to join a team by extending the expiration date by 7 days.
    */
   async renewInvitation(invitationId: number) {
     const logger = await getLogger();
@@ -299,11 +289,7 @@ class AccountInvitationsService {
   }
 
   /**
-   * @name dispatchInvitationEmails
-   * @description Dispatches invitation emails to the invited users.
-   * @param ctx
-   * @param invitations
-   * @returns
+   * Dispatches invitation emails to the invited users.
    */
   private async dispatchInvitationEmails(
     ctx: { accountSlug: string; name: string },

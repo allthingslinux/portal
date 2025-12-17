@@ -18,11 +18,7 @@ export function cn(...inputs: ClassValue[]) {
 const ROOT_PATH = "/";
 
 /**
- * @name isRouteActive
- * @description A function to check if a route is active. This is used to
- * @param end
- * @param path
- * @param currentPath
+ * Checks if a route is active.
  */
 export function isRouteActive(
   path: string,
@@ -51,12 +47,7 @@ export function isRouteActive(
 }
 
 /**
- * @name checkIfRouteIsActive
- * @description A function to check if a route is active. This is used to
- * highlight the active link in the navigation.
- * @param targetLink - The link to check against
- * @param currentRoute - the current route
- * @param depth - how far down should segments be matched?
+ * Checks if a route is active. Highlight the active link in the navigation.
  */
 export function checkIfRouteIsActive(
   targetLink: string,

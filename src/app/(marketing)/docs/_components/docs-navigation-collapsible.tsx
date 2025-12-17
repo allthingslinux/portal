@@ -14,7 +14,7 @@ export function DocsNavigationCollapsible(
   const currentPath = usePathname();
   const prefix = props.prefix;
 
-  const isChildActive = props.node.children.some((child) =>
+  const isChildActive = props.node.children.some((child: Cms.ContentItem) =>
     isRouteActive(`${prefix}/${child.url}`, currentPath, false)
   );
 

@@ -29,7 +29,7 @@ export async function AdminDashboard() {
 
         <CardContent>
           <div className={"flex justify-between"}>
-            <Figure>{data.accounts}</Figure>
+            <Figure>{data.personalAccountsCount}</Figure>
           </div>
         </CardContent>
       </Card>
@@ -45,7 +45,7 @@ export async function AdminDashboard() {
 
         <CardContent>
           <div className={"flex justify-between"}>
-            <Figure>{data.teamAccounts}</Figure>
+            <Figure>{data.teamAccountsCount}</Figure>
           </div>
         </CardContent>
       </Card>

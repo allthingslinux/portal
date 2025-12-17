@@ -134,7 +134,6 @@ export function DataTable<RecordData extends DataItem>({
   const [sorting, setSorting] = useState<SortingState>(controlledSorting ?? []);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  // Internal states for uncontrolled mode
   const [internalColumnVisibility, setInternalColumnVisibility] =
     useState<VisibilityState>(controlledColumnVisibility ?? {});
 
@@ -146,8 +145,6 @@ export function DataTable<RecordData extends DataItem>({
   const [internalRowSelection, setInternalRowSelection] = useState(
     controlledRowSelection ?? {}
   );
-
-  // Computed values for table state - computed inline in callbacks for fresh values
 
   const navigateToPage = useNavigateToNewPage();
 
@@ -189,18 +186,14 @@ export function DataTable<RecordData extends DataItem>({
         const currentPinning = controlledColumnPinning ?? internalColumnPinning;
         const nextState = updater(currentPinning);
 
-        // If controlled mode (callback provided), call it
         if (onColumnPinningChange) {
           onColumnPinningChange(nextState);
         } else {
-          // Otherwise update internal state (uncontrolled mode)
           setInternalColumnPinning(nextState);
         }
       } else if (onColumnPinningChange) {
-        // If controlled mode (callback provided), call it
         onColumnPinningChange(updater);
       } else {
-        // Otherwise update internal state (uncontrolled mode)
         setInternalColumnPinning(updater);
       }
     },
@@ -209,18 +202,14 @@ export function DataTable<RecordData extends DataItem>({
         const currentSelection = controlledRowSelection ?? internalRowSelection;
         const nextState = updater(currentSelection);
 
-        // If controlled mode (callback provided), call it
         if (onRowSelectionChange) {
           onRowSelectionChange(nextState);
         } else {
-          // Otherwise update internal state (uncontrolled mode)
           setInternalRowSelection(nextState);
         }
       } else if (onRowSelectionChange) {
-        // If controlled mode (callback provided), call it
         onRowSelectionChange(updater);
       } else {
-        // Otherwise update internal state (uncontrolled mode)
         setInternalRowSelection(updater);
       }
     },
@@ -314,7 +303,6 @@ export function DataTable<RecordData extends DataItem>({
                 const isPinned = header.column.getIsPinned();
                 const size = header.column.getSize();
 
-                // Calculate proper left offset for left-pinned columns
                 const left =
                   isPinned === "left"
                     ? headerGroup.headers
@@ -323,7 +311,6 @@ export function DataTable<RecordData extends DataItem>({
                         .reduce((acc, h) => acc + h.column.getSize(), 0)
                     : undefined;
 
-                // Calculate right offset for right-pinned columns
                 const right =
                   isPinned === "right"
                     ? headerGroup.headers
@@ -404,7 +391,6 @@ export function DataTable<RecordData extends DataItem>({
               const isPinned = cell.column.getIsPinned();
               const size = cell.column.getSize();
 
-              // Calculate proper left offset for left-pinned columns
               const left =
                 isPinned === "left"
                   ? row
@@ -414,7 +400,6 @@ export function DataTable<RecordData extends DataItem>({
                       .reduce((acc, c) => acc + c.column.getSize(), 0)
                   : undefined;
 
-              // Calculate right offset for right-pinned columns
               const right =
                 isPinned === "right"
                   ? row
@@ -524,7 +509,6 @@ function Pagination<T>({
   const currentPageSize = table.getState().pagination.pageSize;
   const rows = table.getRowModel().rows;
 
-  // Calculate what records are being shown on this page
   const startRecord = currentPageIndex * currentPageSize + 1;
   const endRecord = startRecord + rows.length - 1;
 
@@ -654,7 +638,6 @@ export function useColumnPinning({
         const leftColumns = [...(newPinning.left || [])];
         const rightColumns = [...(newPinning.right || [])];
 
-        // Remove column from both sides first
         const leftIndex = leftColumns.indexOf(columnId);
         const rightIndex = rightColumns.indexOf(columnId);
 
@@ -665,7 +648,6 @@ export function useColumnPinning({
           rightColumns.splice(rightIndex, 1);
         }
 
-        // Add to the specified side if provided
         if (side === "left") {
           leftColumns.push(columnId);
         } else if (side === "right") {
@@ -866,20 +848,17 @@ export function useColumnManagement({
 
   return useMemo(
     () => ({
-      // Visibility state
       columnVisibility: visibility.columnVisibility,
       setColumnVisibility: visibility.setColumnVisibility,
       toggleColumnVisibility: visibility.toggleColumnVisibility,
       isColumnVisible: visibility.isColumnVisible,
       setColumnVisible: visibility.setColumnVisible,
 
-      // Pinning state
       columnPinning: pinning.columnPinning,
       setColumnPinning: pinning.setColumnPinning,
       toggleColumnPin: pinning.toggleColumnPin,
       isColumnPinned: pinning.isColumnPinned,
 
-      // Combined actions
       resetPreferences,
     }),
     [visibility, pinning, resetPreferences]
@@ -946,7 +925,6 @@ export function useBatchSelection<T>(
             return prev;
           }
 
-          // Find the item in the current items array
           const selectedItem = items.find((item) => getItemId(item) === id);
 
           if (selectedItem) {
@@ -974,13 +952,11 @@ export function useBatchSelection<T>(
             return prev;
           }
 
-          // Add all current items to selection
           for (const item of items) {
             const id = getItemId(item);
             newMap.set(id, item);
           }
         } else {
-          // Remove only current page items from selection
           for (const item of items) {
             const id = getItemId(item);
             newMap.delete(id);
@@ -1043,7 +1019,6 @@ export function useBatchSelection<T>(
 
   const selectedCount = selectedRecords.size;
 
-  // Get array of selected records
   const getSelectedRecords = useCallback(
     () => Array.from(selectedRecords.values()),
     [selectedRecords]
