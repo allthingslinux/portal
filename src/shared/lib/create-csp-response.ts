@@ -1,15 +1,6 @@
 import type { NoseconeOptions } from "@nosecone/next";
 
-// we need to allow connecting to the Supabase API from the client
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-
-// the URL used for Supabase Realtime
-const WEBSOCKET_URL = SUPABASE_URL.replace("https://", "ws://").replace(
-  "http://",
-  "ws://"
-);
-
-// disabled to allow loading images from Supabase Storage
+// disabled to allow loading images from storage
 const CROSS_ORIGIN_EMBEDDER_POLICY = false;
 
 const CSP_NONCE_REGEX = /nonce-([\w-]+)/;
@@ -19,15 +10,13 @@ const CSP_NONCE_REGEX = /nonce-([\w-]+)/;
  * @description List of allowed origins for the "connectSrc" directive in the Content Security Policy.
  */
 const ALLOWED_ORIGINS = [
-  SUPABASE_URL,
-  WEBSOCKET_URL,
   // add here additional allowed origins
 ] as never[];
 
 /**
  * @name IMG_SRC_ORIGINS
  */
-const IMG_SRC_ORIGINS = [SUPABASE_URL] as never[];
+const IMG_SRC_ORIGINS = [] as never[];
 
 /**
  * @name UPGRADE_INSECURE_REQUESTS
