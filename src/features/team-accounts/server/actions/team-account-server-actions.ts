@@ -145,6 +145,8 @@ export const deleteTeamAccountAction = enhanceAction(
  */
 export const leaveTeamAccountAction = enhanceAction(
   async (formData: FormData, user) => {
+    const logger = await getLogger();
+
     const { success, data } = LeaveTeamAccountSchema.safeParse(
       Object.fromEntries(formData.entries())
     );
@@ -153,12 +155,22 @@ export const leaveTeamAccountAction = enhanceAction(
       throw new Error("Invalid request");
     }
 
+    const ctx = {
+      name: "team-accounts.leave",
+      userId: user.id,
+      accountId: data.accountId,
+    };
+
+    logger.info(ctx, "User leaving team account...");
+
     const service = createLeaveTeamAccountService();
 
     await service.leaveTeamAccount({
       accountId: data.accountId,
       userId: user.id,
     });
+
+    logger.info(ctx, "User left team account");
 
     revalidateAccountLayout();
 
