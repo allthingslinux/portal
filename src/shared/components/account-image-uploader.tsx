@@ -117,11 +117,9 @@ async function deleteProfilePhoto(url: string) {
     return;
   }
 
-  const { deleteFileFromStorage } = await import(
-    "~/core/storage/supabase-storage"
-  );
+  const { storageClient } = await import("~/core/storage/storage-client");
 
-  return deleteFileFromStorage(AVATARS_BUCKET, fileName);
+  return storageClient.deleteFile(AVATARS_BUCKET, fileName);
 }
 
 async function uploadUserProfilePhoto(photoFile: File, userId: string) {
@@ -130,21 +128,23 @@ async function uploadUserProfilePhoto(photoFile: File, userId: string) {
   const { nanoid } = await import("nanoid");
   const cacheBuster = nanoid(16);
 
-  const { uploadFileToStorage, getPublicUrl } = await import(
-    "~/core/storage/supabase-storage"
+  const { storageClient } = await import("~/core/storage/storage-client");
+
+  const result = await storageClient.uploadFile(
+    AVATARS_BUCKET,
+    fileName,
+    bytes,
+    {
+      contentType: photoFile.type,
+      upsert: true,
+    }
   );
 
-  const result = await uploadFileToStorage(AVATARS_BUCKET, fileName, bytes, {
-    contentType: photoFile.type,
-    upsert: true,
-  });
-
-  if (!result.error) {
-    const url = getPublicUrl(AVATARS_BUCKET, fileName);
-    return `${url}?v=${cacheBuster}`;
+  if (!result.error && result.url) {
+    return `${result.url}?v=${cacheBuster}`;
   }
 
-  throw result.error;
+  throw result.error || new Error("Failed to upload file");
 }
 
 function getAvatarFileName(userId: string) {

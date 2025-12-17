@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import { authClient } from "~/core/auth/better-auth";
+import { useSyncUserFromKeycloak } from "~/core/auth/better-auth/hooks/use-sync-user-from-keycloak";
 import { useMonitoring } from "~/core/monitoring/api/hooks";
 import { useAppEvents } from "~/shared/events";
 
@@ -13,14 +14,63 @@ export function AuthProvider(props: React.PropsWithChildren) {
 function AuthEventDispatcher({ children }: React.PropsWithChildren) {
   const { data: session, isPending } = authClient.useSession();
   const dispatchEvent = useDispatchAppEventFromAuthEvent();
+  const syncUser = useSyncUserFromKeycloak();
+  const lastSyncTimeRef = useRef<number>(0);
+  const syncInProgressRef = useRef<boolean>(false);
+  const userIdRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     if (!isPending && session?.user) {
-      dispatchEvent("SIGNED_IN", session.user.id, {
-        email: session.user.email || "",
-      });
+      const userId = session.user.id;
+      const isNewSession = userIdRef.current !== userId;
+
+      if (isNewSession) {
+        userIdRef.current = userId;
+        dispatchEvent("SIGNED_IN", userId, {
+          email: session.user.email || "",
+        });
+      }
+
+      // Sync user data from Keycloak on session load (only once per session)
+      // This ensures user profile changes in Keycloak are reflected without re-login
+      const now = Date.now();
+      const timeSinceLastSync = now - lastSyncTimeRef.current;
+      const shouldSync =
+        isNewSession ||
+        (timeSinceLastSync > 60000 && !syncInProgressRef.current); // At least 1 minute since last sync
+
+      if (shouldSync) {
+        syncInProgressRef.current = true;
+        lastSyncTimeRef.current = now;
+        syncUser.mutate(undefined, {
+          onSettled: () => {
+            syncInProgressRef.current = false;
+          },
+        });
+      }
     }
-  }, [isPending, session, dispatchEvent]);
+  }, [isPending, session?.user?.id, dispatchEvent]); // Removed syncUser from deps
+
+  // Periodic sync every 5 minutes to keep user data fresh
+  useEffect(() => {
+    if (!session?.user) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (!syncInProgressRef.current) {
+        syncInProgressRef.current = true;
+        lastSyncTimeRef.current = Date.now();
+        syncUser.mutate(undefined, {
+          onSettled: () => {
+            syncInProgressRef.current = false;
+          },
+        });
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(interval);
+  }, [session?.user?.id]); // Only depend on userId, not syncUser
 
   return <>{children}</>;
 }

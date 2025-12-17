@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { useState, useTransition } from "react";
+import type { DefaultValues, SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { If } from "~/components/makerkit/if";
@@ -105,20 +106,22 @@ export function ConfirmationDialog<
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<boolean>(false);
 
-  const confirmationSchema = createConfirmationSchema(confirmationText);
-  const finalSchema = schema
-    ? schema.merge(confirmationSchema)
-    : (confirmationSchema as z.ZodType<TData & { confirmation: string }>);
+  type FormValues = TData & { confirmation: string };
 
-  const form = useForm({
-    resolver: zodResolver(finalSchema),
+  const confirmationSchema = createConfirmationSchema(confirmationText);
+  const finalSchema = (
+    schema ? z.intersection(schema, confirmationSchema) : confirmationSchema
+  ) as z.ZodType<FormValues>;
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(finalSchema as z.ZodTypeAny),
     defaultValues: {
       confirmation: "",
-      ...defaultValues,
-    } as TData & { confirmation: string },
+      ...(defaultValues ?? {}),
+    } as DefaultValues<FormValues>,
   });
 
-  const handleSubmit = (data: TData & { confirmation: string }) => {
+  const handleSubmit: SubmitHandler<FormValues> = (data) => {
     startTransition(async () => {
       try {
         setError(false);
@@ -155,7 +158,9 @@ export function ConfirmationDialog<
           <form
             className={"flex flex-col space-y-8"}
             data-test={testId}
-            onSubmit={form.handleSubmit(handleSubmit)}
+            onSubmit={form.handleSubmit(
+              handleSubmit as SubmitHandler<FormValues>
+            )}
           >
             <If condition={error}>
               <Alert variant={"destructive"}>
