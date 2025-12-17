@@ -1,13 +1,12 @@
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-
-import type * as schema from "~/core/database/supabase/drizzle/schema";
+import type * as schema from "~/core/database/schema";
 
 import type { RecordChange, Tables } from "../record-change.type";
 
 export function createDatabaseWebhookRouterService(
-  adminClient: PostgresJsDatabase<typeof schema>
+  _adminClient: PostgresJsDatabase<typeof schema>
 ) {
-  return new DatabaseWebhookRouterService(adminClient);
+  return new DatabaseWebhookRouterService();
 }
 
 /**

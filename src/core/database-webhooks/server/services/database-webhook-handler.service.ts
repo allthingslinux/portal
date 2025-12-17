@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
+import { db } from "~/core/database/client";
 import { getLogger } from "~/shared/logger";
 
 import type { RecordChange, Tables } from "../record-change.type";
@@ -30,12 +30,10 @@ class DatabaseWebhookHandlerService {
    * @description Handle the webhook event
    * @param params
    */
-  async handleWebhook(params: {
-    body: RecordChange<keyof Tables>;
+  async handleWebhook<TTable extends keyof Tables>(params: {
+    body: RecordChange<TTable>;
     signature: string;
-    handleEvent?<Table extends keyof Tables>(
-      payload: Table extends keyof Tables ? DatabaseChangePayload<Table> : never
-    ): unknown;
+    handleEvent?(payload: DatabaseChangePayload<TTable>): unknown;
   }) {
     const logger = await getLogger();
     const { table, type } = params.body;
@@ -56,9 +54,13 @@ class DatabaseWebhookHandlerService {
     // all good, we can now the webhook
 
     // create a client with admin access since we are handling webhooks and no user is authenticated
-    const adminClient = getDrizzleSupabaseAdminClient();
+    const adminClient = db;
 
-    const service = createDatabaseWebhookRouterService(adminClient);
+    const service = createDatabaseWebhookRouterService(
+      adminClient as unknown as import("drizzle-orm/postgres-js").PostgresJsDatabase<
+        typeof import("~/core/database/schema")
+      >
+    );
 
     try {
       // handle the webhook event based on the table
@@ -66,9 +68,7 @@ class DatabaseWebhookHandlerService {
 
       // if a custom handler is provided, call it
       if (params?.handleEvent) {
-        await params.handleEvent(
-          params.body as DatabaseChangePayload<keyof Tables>
-        );
+        await params.handleEvent(params.body);
       }
 
       logger.info(ctx, "Webhook processed successfully");

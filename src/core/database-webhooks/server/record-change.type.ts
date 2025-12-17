@@ -1,6 +1,9 @@
-import type { Database } from "~/core/database/supabase/database.types";
-
-export type Tables = Database["public"]["Tables"];
+export type Tables = Record<
+  string,
+  {
+    Row: Record<string, unknown>;
+  }
+>;
 
 export type TableChangeType = "INSERT" | "UPDATE" | "DELETE";
 

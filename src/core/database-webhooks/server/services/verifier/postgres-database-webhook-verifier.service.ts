@@ -6,10 +6,10 @@ const webhooksSecret = z
   .string({
     description: "The secret used to verify the webhook signature",
     required_error:
-      "Provide the variable SUPABASE_DB_WEBHOOK_SECRET. This is used to authenticate the webhook event from Supabase.",
+      "Provide the variable DATABASE_WEBHOOK_SECRET. This is used to authenticate the webhook event.",
   })
   .min(1)
-  .parse(process.env.SUPABASE_DB_WEBHOOK_SECRET);
+  .parse(process.env.DATABASE_WEBHOOK_SECRET);
 
 export function createDatabaseWebhookVerifierService() {
   return new PostgresDatabaseWebhookVerifierService();
