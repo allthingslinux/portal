@@ -2,11 +2,8 @@ import "server-only";
 
 import { and, eq } from "drizzle-orm";
 import type { z } from "zod";
-import {
-  getDrizzleSupabaseAdminClient,
-  getDrizzleSupabaseClient,
-} from "~/core/database/supabase/clients/drizzle-client";
-import { accountsMemberships } from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accountsMemberships } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 import type { RemoveMemberSchema } from "../../schema/remove-member.schema";
@@ -27,7 +24,7 @@ class AccountMembersService {
    */
   async removeMemberFromAccount(params: z.infer<typeof RemoveMemberSchema>) {
     const logger = await getLogger();
-    const drizzleClient = await getDrizzleSupabaseClient();
+    const drizzleClient = db;
 
     const ctx = {
       namespace: this.namespace,
@@ -37,16 +34,14 @@ class AccountMembersService {
     logger.info(ctx, "Removing member from account...");
 
     try {
-      const result = await drizzleClient.runTransaction(async (tx) =>
-        tx
-          .delete(accountsMemberships)
-          .where(
-            and(
-              eq(accountsMemberships.accountId, params.accountId),
-              eq(accountsMemberships.userId, params.userId)
-            )
+      const result = await drizzleClient
+        .delete(accountsMemberships)
+        .where(
+          and(
+            eq(accountsMemberships.accountId, params.accountId),
+            eq(accountsMemberships.userId, params.userId)
           )
-      );
+        );
 
       logger.info(ctx, "Successfully removed member from account.");
       return result;
@@ -70,7 +65,7 @@ class AccountMembersService {
    */
   async updateMemberRole(params: z.infer<typeof UpdateMemberRoleSchema>) {
     const logger = await getLogger();
-    const adminClient = getDrizzleSupabaseAdminClient();
+    const adminClient = db;
 
     const ctx = {
       namespace: this.namespace,

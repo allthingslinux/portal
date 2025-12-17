@@ -1,8 +1,8 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
-import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accounts } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 export function createUpdateTeamAccountService() {
@@ -14,7 +14,7 @@ class UpdateTeamAccountService {
 
   async updateTeamName(params: { name: string; slug: string }) {
     const logger = await getLogger();
-    const client = await getDrizzleSupabaseClient();
+    const client = db;
 
     const ctx = {
       name: this.namespace,
@@ -25,17 +25,14 @@ class UpdateTeamAccountService {
     logger.info(ctx, "Updating team name...");
 
     try {
-      const result = await client.runTransaction(
-        async (tx) =>
-          await tx
-            .update(accounts)
-            .set({
-              name: params.name,
-              slug: params.slug,
-            })
-            .where(eq(accounts.slug, params.slug))
-            .returning({ slug: accounts.slug })
-      );
+      const result = await client
+        .update(accounts)
+        .set({
+          name: params.name,
+          slug: params.slug,
+        })
+        .where(eq(accounts.slug, params.slug))
+        .returning({ slug: accounts.slug });
 
       if (result.length === 0) {
         throw new Error("Account not found or update failed");

@@ -1,4 +1,3 @@
-import type { Database } from "~/core/database/supabase/database.types";
 import type { PolicyContext, PolicyResult } from "~/shared/policies";
 
 /**
@@ -15,13 +14,13 @@ export interface FeaturePolicyInvitationContext extends PolicyContext {
   /** Current subscription data for the account (not used - billing removed) */
   subscription?: {
     id: string;
-    status: Database["public"]["Enums"]["subscription_status"];
+    status: string;
     active: boolean;
     trial_starts_at?: string;
     trial_ends_at?: string;
     items: Array<{
       id: string;
-      type: Database["public"]["Enums"]["subscription_item_type"];
+      type: string;
       quantity: number;
       product_id: string;
       variant_id: string;

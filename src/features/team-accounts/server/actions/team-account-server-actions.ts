@@ -2,8 +2,8 @@
 
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accounts } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 import { enhanceAction } from "~/shared/next/actions";
 import {
@@ -190,21 +190,13 @@ async function assertUserPermissionsToDeleteTeamAccount(
   accountId: string,
   userId: string
 ) {
-  const drizzleClient = await getDrizzleSupabaseClient();
-
-  const result = await drizzleClient.runTransaction(
-    async (tx) =>
-      await tx
-        .select({ count: accounts.id })
-        .from(accounts)
-        .where(
-          and(
-            eq(accounts.id, accountId),
-            eq(accounts.primaryOwnerUserId, userId)
-          )
-        )
-        .limit(1)
-  );
+  const result = await db
+    .select({ count: accounts.id })
+    .from(accounts)
+    .where(
+      and(eq(accounts.id, accountId), eq(accounts.primaryOwnerUserId, userId))
+    )
+    .limit(1);
 
   const isOwner = result.length > 0;
 

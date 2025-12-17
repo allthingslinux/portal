@@ -1,7 +1,7 @@
 import "server-only";
 
-import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accounts } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 export function createCreateTeamAccountService() {
@@ -26,15 +26,15 @@ class CreateTeamAccountService {
     }
 
     // Create the team account using Drizzle
-    const drizzleClient = await getDrizzleSupabaseClient();
-
     try {
-      const result = await drizzleClient.runTransaction(async (tx) => {
+      const result = await db.transaction(async (tx) => {
         const insertResult = await tx
           .insert(accounts)
           .values({
             name: params.name,
+            primaryOwnerUserId: params.userId,
             isPersonalAccount: false,
+            publicData: {},
           })
           .returning();
 

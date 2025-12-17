@@ -2,8 +2,8 @@ import "server-only";
 
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accountsMemberships } from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accountsMemberships } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 const Schema = z.object({
@@ -29,7 +29,7 @@ class LeaveTeamAccountService {
    */
   async leaveTeamAccount(params: z.infer<typeof Schema>) {
     const logger = await getLogger();
-    const adminClient = getDrizzleSupabaseAdminClient();
+    const adminClient = db;
 
     const ctx = {
       ...params,

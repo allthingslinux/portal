@@ -1,14 +1,14 @@
 import "server-only";
 
 import { addDays, formatISO } from "date-fns";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import type { z } from "zod";
-import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
+import { db } from "~/core/database/client";
 import {
   accounts,
   accountsMemberships,
   invitations,
-} from "~/core/database/supabase/drizzle/schema";
+} from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 import type { DeleteInvitationSchema } from "../../schema/delete-invitation.schema";
@@ -36,7 +36,7 @@ class AccountInvitationsService {
    */
   async deleteInvitation(params: z.infer<typeof DeleteInvitationSchema>) {
     const logger = await getLogger();
-    const drizzleClient = await getDrizzleSupabaseClient();
+    const drizzleClient = db;
 
     const ctx = {
       name: this.namespace,
@@ -46,12 +46,9 @@ class AccountInvitationsService {
     logger.info(ctx, "Removing invitation...");
 
     try {
-      const result = await drizzleClient.runTransaction(
-        async (tx) =>
-          await tx
-            .delete(invitations)
-            .where(eq(invitations.id, params.invitationId))
-      );
+      const result = await drizzleClient
+        .delete(invitations)
+        .where(eq(invitations.id, params.invitationId));
 
       logger.info(ctx, "Invitation successfully removed");
       return result;
@@ -68,7 +65,7 @@ class AccountInvitationsService {
    */
   async updateInvitation(params: z.infer<typeof UpdateInvitationSchema>) {
     const logger = await getLogger();
-    const drizzleClient = await getDrizzleSupabaseClient();
+    const drizzleClient = db;
 
     const ctx = {
       name: this.namespace,
@@ -78,15 +75,12 @@ class AccountInvitationsService {
     logger.info(ctx, "Updating invitation...");
 
     try {
-      const result = await drizzleClient.runTransaction(
-        async (tx) =>
-          await tx
-            .update(invitations)
-            .set({
-              role: params.role,
-            })
-            .where(eq(invitations.id, params.invitationId))
-      );
+      const result = await drizzleClient
+        .update(invitations)
+        .set({
+          role: params.role,
+        })
+        .where(eq(invitations.id, params.invitationId));
 
       logger.info(ctx, "Invitation successfully updated");
       return result;
@@ -106,25 +100,13 @@ class AccountInvitationsService {
     _invitation: z.infer<typeof InviteMembersSchema>["invitations"][number],
     accountSlug: string
   ) {
-    const drizzleClient = await getDrizzleSupabaseClient();
-
     // Check if user is already a member by looking at accounts_memberships
-    const existingMembership = await drizzleClient.runTransaction(
-      async (tx) => {
-        return await tx
-          .select()
-          .from(accountsMemberships)
-          .innerJoin(accounts, eq(accountsMemberships.accountId, accounts.id))
-          .where(
-            and(
-              eq(accounts.slug, accountSlug)
-              // We would need to join with users table to check by email
-              // For now, this is a simplified version
-            )
-          )
-          .limit(1);
-      }
-    );
+    const existingMembership = await db
+      .select()
+      .from(accountsMemberships)
+      .innerJoin(accounts, eq(accountsMemberships.accountId, accounts.id))
+      .where(eq(accounts.slug, accountSlug))
+      .limit(1);
 
     if (existingMembership.length > 0) {
       throw new Error("User already member of the team");
@@ -145,7 +127,7 @@ class AccountInvitationsService {
     accountSlug: string;
   }) {
     const logger = await getLogger();
-    const drizzleClient = await getDrizzleSupabaseClient();
+    const drizzleClient = db;
 
     const ctx = {
       accountSlug,
@@ -173,14 +155,11 @@ class AccountInvitationsService {
     }
 
     // Get account name
-    const accountResult = await drizzleClient.runTransaction(
-      async (tx) =>
-        await tx
-          .select({ name: accounts.name })
-          .from(accounts)
-          .where(eq(accounts.slug, accountSlug))
-          .limit(1)
-    );
+    const accountResult = await drizzleClient
+      .select({ name: accounts.name })
+      .from(accounts)
+      .where(eq(accounts.slug, accountSlug))
+      .limit(1);
 
     if (accountResult.length === 0) {
       logger.error(
@@ -231,7 +210,7 @@ class AccountInvitationsService {
     inviteToken: string;
   }) {
     const logger = await getLogger();
-    const drizzleClient = await getDrizzleSupabaseClient();
+    // Using shared Drizzle client
 
     const ctx = {
       name: this.namespace,
@@ -241,7 +220,7 @@ class AccountInvitationsService {
     logger.info(ctx, "Accepting invitation to team");
 
     // Get invitation details
-    const invitationResult = await drizzleClient.runTransaction(
+    const invitationResult = await db.runTransaction(
       async (tx) =>
         await tx
           .select({ email: invitations.email })
@@ -283,7 +262,7 @@ class AccountInvitationsService {
    */
   async renewInvitation(invitationId: number) {
     const logger = await getLogger();
-    const drizzleClient = await getDrizzleSupabaseClient();
+    // Using shared Drizzle client
 
     const ctx = {
       invitationId,
@@ -295,7 +274,7 @@ class AccountInvitationsService {
     const sevenDaysFromNow = formatISO(addDays(new Date(), 7));
 
     try {
-      const result = await drizzleClient.runTransaction(
+      const result = await db.runTransaction(
         async (tx) =>
           await tx
             .update(invitations)

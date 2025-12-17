@@ -1,8 +1,8 @@
 "use server";
 
-import { eq } from "drizzle-orm";
-import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { and, eq } from "drizzle-orm";
+import { db } from "~/core/database/client";
+import { accounts } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 import { enhanceAction } from "~/shared/next/actions";
 import { revalidateAccountLayout } from "~/shared/next/actions/revalidate-account-paths";
@@ -74,14 +74,16 @@ export const transferOwnershipAction = enhanceAction(
     logger.info(ctx, "Processing team ownership transfer request...");
 
     // assert that the user is the owner of the account
-    const drizzleClient = await getDrizzleSupabaseClient();
-    const ownerCheck = await drizzleClient.runTransaction(async (tx) =>
-      tx
-        .select({ count: true })
-        .from(accounts)
-        .where(eq(accounts.id, data.accountId))
-        .where(eq(accounts.primaryOwnerUserId, user.id))
-    );
+    const ownerCheck = await db
+      .select({ id: accounts.id })
+      .from(accounts)
+      .where(
+        and(
+          eq(accounts.id, data.accountId),
+          eq(accounts.primaryOwnerUserId, user.id)
+        )
+      )
+      .limit(1);
 
     const isOwner = ownerCheck.length > 0;
 
