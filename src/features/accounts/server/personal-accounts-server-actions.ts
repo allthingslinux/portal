@@ -20,10 +20,11 @@ const enableAccountDeletion =
  */
 export const updateAccountPictureUrlAction = enhanceAction(
   async (params, user) => {
-    if (params.accountId !== user.id) {
-      throw new Error("Unauthorized: Cannot update another user's account");
-    }
-    await updateAccountPictureInDatabase(params.accountId, params.pictureUrl);
+    await updateAccountPictureInDatabase(
+      params.accountId,
+      params.pictureUrl,
+      user.id
+    );
     revalidateAccountSettings();
   },
   {

@@ -28,7 +28,7 @@ export async function updateTeamAccountPictureUrlAction(
   accountId: string,
   pictureUrl: string | null
 ) {
-  await updateAccountPictureInDatabase(accountId, pictureUrl);
+  await updateAccountPictureInDatabase(accountId, pictureUrl, undefined);
   revalidateTeamAccountSettings();
 }
 
