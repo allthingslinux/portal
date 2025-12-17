@@ -1,5 +1,12 @@
+export type { UserAccount } from "../types";
+export { useLinkAccount } from "./use-link-account";
+export { useRequestResetPassword } from "./use-request-reset-password";
+export { useResendVerification } from "./use-resend-verification";
 export { useSession } from "./use-session";
 export { useSignInWithEmailPassword } from "./use-sign-in";
 export { useSignInWithProvider } from "./use-sign-in-with-provider";
 export { useSignOut } from "./use-sign-out";
 export { useSignUpWithEmailAndPassword } from "./use-sign-up";
+export { useUnlinkAccount } from "./use-unlink-account";
+export { useUpdateUser } from "./use-update-user";
+export { useUserAccounts } from "./use-user-accounts";

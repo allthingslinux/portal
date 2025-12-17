@@ -7,6 +7,7 @@ import { authClient } from "../client";
 /**
  * Hook for signing in with OAuth provider
  * Migrated from NextAuth to Better Auth
+ * Uses genericOAuth plugin for Keycloak
  */
 export function useSignInWithProvider() {
   return useMutation({
@@ -14,8 +15,10 @@ export function useSignInWithProvider() {
       provider: "google" | "keycloak" | string;
       redirectTo?: string;
     }) => {
-      const result = await authClient.signIn.social({
-        provider: params.provider as "google" | "keycloak",
+      // Use genericOAuth API for Keycloak (and other generic OAuth providers)
+      // The genericOAuth plugin uses signIn.oauth2() method
+      const result = await authClient.signIn.oauth2({
+        providerId: params.provider,
         callbackURL: params.redirectTo || "/home",
       });
 
