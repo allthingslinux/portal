@@ -142,13 +142,13 @@ const SidebarProvider: React.FC<
     [state, open, setOpen, isMobile, openMobile, toggleSidebar]
   );
 
-  let sidebarWidth: number;
+  let sidebarWidth: string;
   if (open) {
     sidebarWidth = SIDEBAR_WIDTH;
   } else if (collapsibleStyle === "icon") {
     sidebarWidth = SIDEBAR_WIDTH_ICON;
   } else if (collapsibleStyle === "offcanvas") {
-    sidebarWidth = 0;
+    sidebarWidth = "0";
   } else {
     sidebarWidth = SIDEBAR_MINIMIZED_WIDTH;
   }
@@ -763,7 +763,12 @@ export function SidebarNavigation({
         const isLast = index === config.routes.length - 1;
 
         if ("divider" in item) {
-          return <SidebarSeparator key={item.label ?? `divider-${index}`} />;
+          const dividerLabel = "label" in item ? item.label : undefined;
+          return (
+            <SidebarSeparator
+              key={String(dividerLabel ?? `divider-${index}`)}
+            />
+          );
         }
 
         if ("children" in item) {
