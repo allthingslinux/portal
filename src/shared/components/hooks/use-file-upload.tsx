@@ -6,20 +6,20 @@ import {
   useDropzone,
 } from "react-dropzone";
 
-import { uploadFileToStorage } from "~/core/storage/supabase-storage";
+import { storageClient } from "~/core/storage/storage-client";
 
 interface FileWithPreview extends File {
   preview?: string;
   errors: readonly FileError[];
 }
 
-type UseSupabaseUploadOptions = {
+type UseFileUploadOptions = {
   /**
-   * Name of bucket to upload files to in your Supabase project
+   * Name of bucket/folder to upload files to
    */
   bucketName: string;
   /**
-   * Folder to upload files to in the specified bucket within your Supabase project.
+   * Folder to upload files to within the specified bucket.
    *
    * Defaults to uploading files to the root of the bucket
    *
@@ -41,7 +41,7 @@ type UseSupabaseUploadOptions = {
    */
   maxFiles?: number;
   /**
-   * The number of seconds the asset is cached in the browser and in the Supabase CDN.
+   * The number of seconds the asset is cached in the browser.
    *
    * This is set in the Cache-Control: max-age=<seconds> header. Defaults to 3600 seconds.
    */
@@ -58,15 +58,13 @@ type UseSupabaseUploadOptions = {
   onUploadSuccess?: (files: string[]) => void;
 };
 
-export type UseSupabaseUploadReturn = ReturnType<typeof useSupabaseUpload>;
-
 /**
- * Hook to upload files to a Supabase bucket.
+ * Hook to upload files to storage.
  *
  * @param options - Options for the upload.
  * @returns The upload state.
  */
-export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
+export const useFileUpload = (options: UseFileUploadOptions) => {
   const {
     bucketName,
     path,
@@ -156,7 +154,7 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
       filesToUpload.map(async (file) => {
         const filePath = path ? `${path}/${file.name}` : file.name;
 
-        const { error } = await uploadFileToStorage(
+        const { error, url } = await storageClient.uploadFile(
           bucketName,
           filePath,
           file,
@@ -167,7 +165,7 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
           }
         );
 
-        const fullFilePath = [bucketName, filePath].join("/");
+        const fullFilePath = url || [bucketName, filePath].join("/");
 
         if (error) {
           return { name: file.name, message: error.message, fullFilePath };
@@ -245,3 +243,5 @@ export const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     ...dropzoneProps,
   };
 };
+
+export type UseFileUploadReturn = ReturnType<typeof useFileUpload>;
