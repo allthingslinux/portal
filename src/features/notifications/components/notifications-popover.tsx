@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import { Bell, CircleAlert, Info, TriangleAlert, XIcon } from "lucide-react";

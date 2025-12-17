@@ -1,7 +1,7 @@
 import "server-only";
 
-import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
-import { notifications } from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { notifications } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 type Notification = typeof notifications.$inferInsert;
@@ -13,7 +13,7 @@ export function createNotificationsService() {
 class NotificationsService {
   async createNotification(params: Notification) {
     const logger = await getLogger();
-    const client = await getDrizzleSupabaseClient();
+    const client = db;
 
     const ctx = {
       name: "notifications.create",
@@ -24,9 +24,7 @@ class NotificationsService {
     logger.info(ctx, "Creating notification");
 
     try {
-      await client.runTransaction(async (tx) => {
-        await tx.insert(notifications).values(params);
-      });
+      await client.insert(notifications).values(params);
 
       logger.info(ctx, "Notification created successfully");
     } catch (error) {
