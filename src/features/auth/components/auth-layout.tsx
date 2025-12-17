@@ -21,7 +21,7 @@ export function AuthLayoutShell({
 
       <div
         className={cn(
-          "flex w-full max-w-(--width-auth-shell) flex-col gap-y-6 rounded-lg bg-background px-6 md:w-8/12 md:px-8 md:py-6 lg:w-5/12 lg:px-8 xl:w-4/12 xl:py-8",
+          "flex w-full max-w-[var(--width-auth-shell)] flex-col gap-y-6 rounded-lg bg-background px-6 md:w-8/12 md:px-8 md:py-6 lg:w-5/12 lg:px-8 xl:w-4/12 xl:py-8",
           contentClassName
         )}
       >
