@@ -111,6 +111,7 @@ export const createTeamAccountAction = enhanceAction(
  */
 export const deleteTeamAccountAction = enhanceAction(
   async (formData: FormData, user) => {
+    const logger = await getLogger();
     const enableTeamAccountDeletion =
       process.env.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION === "true";
 
@@ -118,8 +119,13 @@ export const deleteTeamAccountAction = enhanceAction(
       Object.fromEntries(formData.entries())
     );
 
-    if (!(success && enableTeamAccountDeletion)) {
-      throw new Error("Invalid request or deletion disabled");
+    if (!success) {
+      throw new Error("Invalid request");
+    }
+
+    if (!enableTeamAccountDeletion) {
+      logger.warn({ userId: user.id }, "Team account deletion is disabled");
+      throw new Error("Team account deletion is not enabled");
     }
 
     await deleteTeamAccount({
