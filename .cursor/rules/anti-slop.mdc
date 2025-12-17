@@ -1,0 +1,47 @@
+---
+alwaysApply: true
+---
+
+# ANTI-SLOP STANDARD RULES (Cursor)
+
+## PRINCIPLES
+- Nothing redundant, generic, or purposeless.
+- Eliminate slop: obvious comments, dead code, duplication.
+- Comments only explain the "why".
+- Do not invent APIs, structures, or concepts foreign to the code.
+
+## MODES AND COMMANDS
+anti-slop check <path>       # non-destructive inspection
+anti-slop apply <path>       # applies safe fixes
+anti-slop validate <path>    # validates types, routes, schemas
+
+Flags:
+--mode normal | backend | frontend | design
+--auto-apply
+--dry-run
+
+## BACKEND RULES
+- Clean and non-duplicated REST routes.
+- A single HTTP client and a single DB client.
+- Handlers <10 lines; logic in services.
+- Mandatory Zod validation.
+- Errors with uniform structure.
+- ENV validated at startup.
+
+## FRONTEND TECH RULES
+- Server Components by default.
+- `use client` only if essential.
+- Tailwind without arbitrary classes.
+- Images with width/height; lazy loading.
+- Goals: LCP≤2.5s, INP≤200ms, CLS≤0.1.
+- Accessibility: contrast ≥4.5.
+
+## DESIGN RULES
+- Colors only from tokens.
+- Do not hardcode hex.
+- Non-generic fonts without justification.
+- Maximum 1–2 animations per view.
+
+## PR RULES
+- Destructive changes require human PR.
+- API, DB, AUTH contracts or tokens require mandatory review.
