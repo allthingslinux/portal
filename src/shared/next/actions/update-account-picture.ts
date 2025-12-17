@@ -2,8 +2,8 @@ import "server-only";
 
 import { eq } from "drizzle-orm";
 
-import { getDrizzleSupabaseClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accounts } from "~/core/database/schema";
 
 /**
  * Shared utility to update account picture URL in the database.
@@ -16,12 +16,8 @@ export async function updateAccountPictureInDatabase(
   accountId: string,
   pictureUrl: string | null
 ) {
-  const drizzleClient = await getDrizzleSupabaseClient();
-
-  await drizzleClient.runTransaction(async (tx) => {
-    await tx
-      .update(accounts)
-      .set({ pictureUrl })
-      .where(eq(accounts.id, accountId));
-  });
+  await db
+    .update(accounts)
+    .set({ pictureUrl })
+    .where(eq(accounts.id, accountId));
 }

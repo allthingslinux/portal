@@ -1,11 +1,10 @@
 import "server-only";
 
-import { redirect } from "next/navigation";
 import { type NextRequest, NextResponse } from "next/server";
 
 import type { z } from "zod";
 import type { BetterAuthUser } from "~/core/auth/better-auth/types";
-import { requireUser } from "~/core/database/supabase/require-user";
+import { requireUser } from "~/core/database/require-user";
 import { verifyCaptchaToken } from "~/features/auth/captcha/server";
 import { HTTP_STATUS } from "~/shared/constants";
 import { API_ERRORS } from "~/shared/constants/errors";
@@ -97,15 +96,7 @@ export const enhanceRouteHandler = <
 
     // Check if the user should be authenticated
     if (shouldVerifyAuth) {
-      // Get the authenticated user
-      const auth = await requireUser();
-
-      // If the user is not authenticated, redirect to the specified URL.
-      if (auth.error) {
-        return redirect(auth.redirectTo);
-      }
-
-      user = auth.data as UserParam;
+      user = (await requireUser()) as UserParam;
     }
 
     let body: Params["schema"] extends z.ZodType
@@ -130,6 +121,8 @@ export const enhanceRouteHandler = <
           { status: HTTP_STATUS.BAD_REQUEST }
         );
       }
+    } else {
+      body = undefined;
     }
 
     return handler({

@@ -1,10 +1,8 @@
 import "server-only";
 
-import { redirect } from "next/navigation";
-
 import type { ZodType, z } from "zod";
 import type { BetterAuthUser } from "~/core/auth/better-auth/types";
-import { requireUser } from "~/core/database/supabase/require-user";
+import { requireUser } from "~/core/database/require-user";
 import { verifyCaptchaToken } from "~/features/auth/captcha/server";
 
 /**
@@ -65,14 +63,7 @@ export function enhanceAction<
 
     // verify the user is authenticated if required
     if (requireAuth) {
-      const auth = await requireUser();
-
-      // If the user is not authenticated, redirect to the specified URL.
-      if (!auth.data) {
-        redirect(auth.redirectTo);
-      }
-
-      user = auth.data as UserParam;
+      user = (await requireUser()) as UserParam;
     }
 
     return fn(data, user);
