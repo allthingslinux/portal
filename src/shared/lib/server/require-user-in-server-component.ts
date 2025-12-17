@@ -1,9 +1,8 @@
 import "server-only";
 
-import { redirect } from "next/navigation";
 import { cache } from "react";
 
-import { requireUser } from "~/core/database/supabase/require-user";
+import { requireUser } from "~/core/database/require-user";
 
 /**
  * @name requireUserInServerComponent
@@ -12,11 +11,6 @@ import { requireUser } from "~/core/database/supabase/require-user";
  * Use this instead of `requireUser` in server components, so you don't need to hit the database multiple times in a single request.
  */
 export const requireUserInServerComponent = cache(async () => {
-  const result = await requireUser();
-
-  if (result.error) {
-    redirect(result.redirectTo);
-  }
-
-  return result.data;
+  const user = await requireUser();
+  return user;
 });
