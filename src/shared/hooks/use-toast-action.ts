@@ -28,12 +28,17 @@ export function useToastAction(messages: {
   const execute = useCallback(
     async <TResult = void>(
       action: () => Promise<TResult>
-    ): Promise<TResult | undefined> =>
-      toast.promise(action, {
+    ): Promise<TResult> => {
+      const promise = action();
+
+      toast.promise(promise, {
         success: messages.success,
         error: messages.error,
         loading: messages.loading,
-      }),
+      });
+
+      return await promise;
+    },
     [messages]
   );
 
