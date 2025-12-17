@@ -17,18 +17,25 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import type { Database } from "~/core/database/supabase/database.types";
+
+type Invitation = {
+  id: string | number;
+  email: string;
+  role: string;
+  created_at: string;
+  updated_at: string;
+  expires_at: string;
+  account_id: string;
+  invited_by: string;
+};
 
 import { RoleBadge } from "../members/role-badge";
 import { DeleteInvitationDialog } from "./delete-invitation-dialog";
 import { RenewInvitationDialog } from "./renew-invitation-dialog";
 import { UpdateInvitationDialog } from "./update-invitation-dialog";
 
-type Invitations =
-  Database["public"]["Functions"]["get_account_invitations"]["Returns"];
-
 type AccountInvitationsTableProps = {
-  invitations: Invitations;
+  invitations: Invitation[];
 
   permissions: {
     canUpdateInvitation: boolean;
@@ -79,7 +86,7 @@ function useGetColumns(permissions: {
   canUpdateInvitation: boolean;
   canRemoveInvitation: boolean;
   currentUserRoleHierarchy: number;
-}): ColumnDef<Invitations[0]>[] {
+}): ColumnDef<Invitation>[] {
   const { t } = useTranslation("teams");
 
   return useMemo(
@@ -155,7 +162,7 @@ function ActionsDropdown({
   invitation,
 }: {
   permissions: AccountInvitationsTableProps["permissions"];
-  invitation: Invitations[0];
+  invitation: Invitation;
 }) {
   const [isDeletingInvite, setIsDeletingInvite] = useState(false);
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
@@ -206,7 +213,7 @@ function ActionsDropdown({
 
       <If condition={isDeletingInvite}>
         <DeleteInvitationDialog
-          invitationId={invitation.id}
+          invitationId={Number(invitation.id)}
           isOpen
           setIsOpen={setIsDeletingInvite}
         />
@@ -214,7 +221,7 @@ function ActionsDropdown({
 
       <If condition={isUpdatingRole}>
         <UpdateInvitationDialog
-          invitationId={invitation.id}
+          invitationId={Number(invitation.id)}
           isOpen
           setIsOpen={setIsUpdatingRole}
           userRole={invitation.role}
@@ -225,7 +232,7 @@ function ActionsDropdown({
       <If condition={isRenewingInvite}>
         <RenewInvitationDialog
           email={invitation.email}
-          invitationId={invitation.id}
+          invitationId={Number(invitation.id)}
           isOpen
           setIsOpen={setIsRenewingInvite}
         />

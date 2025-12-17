@@ -17,15 +17,25 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import type { Database } from "~/core/database/supabase/database.types";
+
+type Member = {
+  id: string;
+  user_id: string;
+  account_id: string;
+  role: string;
+  role_hierarchy_level: number;
+  primary_owner_user_id: string;
+  name: string | null;
+  email: string;
+  picture_url: string;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
 
 import { RemoveMemberDialog } from "./remove-member-dialog";
 import { RoleBadge } from "./role-badge";
 import { TransferOwnershipDialog } from "./transfer-ownership-dialog";
 import { UpdateMemberRoleDialog } from "./update-member-role-dialog";
-
-type Members =
-  Database["public"]["Functions"]["get_account_members"]["Returns"];
 
 type Permissions = {
   canUpdateRole: (roleHierarchy: number) => boolean;
@@ -34,7 +44,7 @@ type Permissions = {
 };
 
 type AccountMembersTableProps = {
-  members: Members;
+  members: Member[];
   currentUserId: string;
   currentAccountId: string;
   userRoleHierarchy: number;
@@ -114,7 +124,7 @@ function useGetColumns(
     currentAccountId: string;
     currentRoleHierarchy: number;
   }
-): ColumnDef<Members[0]>[] {
+): ColumnDef<Member>[] {
   const { t } = useTranslation("teams");
 
   return useMemo(
@@ -175,8 +185,10 @@ function useGetColumns(
       },
       {
         header: t("joinedAtLabel"),
-        cell: ({ row }) =>
-          new Date(row.original.created_at).toLocaleDateString(),
+        cell: ({ row }) => {
+          const value = row.original.created_at ?? "";
+          return value ? new Date(value).toLocaleDateString() : "";
+        },
       },
       {
         header: "",
@@ -204,7 +216,7 @@ function ActionsDropdown({
   currentRoleHierarchy,
 }: {
   permissions: Permissions;
-  member: Members[0];
+  member: Member;
   currentUserId: string;
   currentTeamAccountId: string;
   currentRoleHierarchy: number;

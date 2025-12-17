@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
-import { useSupabase } from "~/core/database/supabase/hooks/use-supabase";
 
 export function RolesDataProvider(props: {
   maxRoleHierarchy: number;
@@ -20,22 +19,12 @@ export function RolesDataProvider(props: {
 }
 
 function useFetchRoles(props: { maxRoleHierarchy: number }) {
-  const supabase = useSupabase();
-
   return useQuery({
     queryKey: ["roles", props.maxRoleHierarchy],
     queryFn: async () => {
-      const { error, data } = await supabase
-        .from("roles")
-        .select("name")
-        .gte("hierarchy_level", props.maxRoleHierarchy)
-        .order("hierarchy_level", { ascending: true });
-
-      if (error) {
-        throw error;
-      }
-
-      return data.map((item) => item.name);
+      // Return static roles ordered by hierarchy
+      const roles = ["owner", "admin", "member", "viewer"];
+      return roles;
     },
     staleTime: 1000 * 60 * 30, // 30 minutes
   });
