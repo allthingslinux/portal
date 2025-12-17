@@ -1,0 +1,117 @@
+---
+# Keycloak Production Docker Compose
+# Modern, secure Keycloak setup with PostgreSQL (external proxy handling)
+
+services:
+  portal-db:
+    image: postgres:${POSTGRES_VERSION:-17}
+    container_name: portal-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PORTAL_DB_NAME:-portal}
+      POSTGRES_USER: ${PORTAL_DB_USER:-portal}
+      POSTGRES_PASSWORD: ${PORTAL_DB_PASSWORD:-portal}
+    ports:
+      - "${PORTAL_DB_PORT:-5433}:5432"
+    volumes:
+      - portal_postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PORTAL_DB_USER:-portal} -d ${PORTAL_DB_NAME:-portal}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-17}
+    container_name: keycloak-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_DB_NAME:-keycloak}
+      POSTGRES_USER: ${KEYCLOAK_DB_USER:-keycloak}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${KEYCLOAK_DB_USER:-keycloak} -d ${KEYCLOAK_DB_NAME:-keycloak}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    # security_opt:
+      # - no-new-privileges:true
+
+  # Keycloak Identity Provider
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-24.0.5}
+    container_name: keycloak-app
+    restart: unless-stopped
+    command: start-dev
+    ports:
+      - "8080:8080"
+    environment:
+      # Database Configuration
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: ${KEYCLOAK_DB_NAME:-keycloak}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER:-keycloak}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+      KC_DB_SCHEMA: public
+
+      # Admin Credentials (Keycloak 24+ uses KEYCLOAK_ADMIN / KEYCLOAK_ADMIN_PASSWORD)
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin_password}
+
+      # Hostname Configuration (for external proxy)
+      # For local testing we default to localhost. Override for real domains.
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-localhost}
+
+      # Proxy Configuration (for external reverse proxy)
+      KC_HTTP_ENABLED: true
+      # KC_PROXY_HEADERS: xforwarded
+      # PROXY_ADDRESS_FORWARDING: true
+
+      # Health Checks
+      # KC_HEALTH_ENABLED: true
+
+      # Metrics (optional, for monitoring)
+      # KC_METRICS_ENABLED: ${KEYCLOAK_METRICS_ENABLED:-true}
+
+      # Logging
+      KC_LOG_LEVEL: ${KEYCLOAK_LOG_LEVEL:-INFO}
+
+      # Features (uncomment to customize)
+      # KC_FEATURES: ${KEYCLOAK_FEATURES}
+    networks:
+      - keycloak-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    # security_opt:
+      # - no-new-privileges:true
+
+# Networks
+networks:
+  keycloak-network:
+    name: keycloak-network
+    driver: bridge
+
+# Volumes
+volumes:
+  postgres_data:
+    name: keycloak-postgres-data
+  portal_postgres_data:
+    name: portal-postgres-data
+  # keycloak_backups:
+  #   name: keycloak-database-backups
