@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ultracite": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://www.ultracite.ai/api/mcp/mcp"]
+    },
+    "Better Auth": {
+      "url": "https://mcp.chonkie.ai/better-auth/better-auth-builder/mcp",
+      "headers": {}
+    }
+  }
+}
