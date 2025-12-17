@@ -10,14 +10,22 @@ export async function i18nResolver(language: string, namespace: string) {
   const logger = await getLogger();
 
   try {
-    logger.debug(`Loading translation file: ${language}/${namespace}.json`);
+    // Only log in development - these logs are too verbose for production
+    if (process.env.NODE_ENV !== "production") {
+      logger.debug(`Loading translation file: ${language}/${namespace}.json`);
+    }
+
     const data = await import(
       `../../../../public/locales/${language}/${namespace}.json`
     );
 
-    logger.debug(
-      `Successfully loaded translation file: ${language}/${namespace}.json`
-    );
+    // Only log in development - these logs are too verbose for production
+    if (process.env.NODE_ENV !== "production") {
+      logger.debug(
+        `Successfully loaded translation file: ${language}/${namespace}.json`
+      );
+    }
+
     return data as Record<string, string>;
   } catch (error) {
     logger.error(
