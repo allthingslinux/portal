@@ -2,15 +2,14 @@
 alwaysApply: true
 ---
 
-# ANTI-SLOP STANDARD RULES (Cursor)
+# Anti-slop (Cursor)
 
-## PRINCIPLES
-- Nothing redundant, generic, or purposeless.
-- Eliminate slop: obvious comments, dead code, duplication.
-- Comments only explain the "why".
-- Do not invent APIs, structures, or concepts foreign to the code.
+## Purpose
+- Eliminate redundancy, dead weight, and generic output.
+- Prefer clarity in code over commentary; comments only explain *why*.
+- Do not invent APIs, structures, or concepts foreign to the repo.
 
-## MODES AND COMMANDS
+## Local commands
 anti-slop check <path>       # non-destructive inspection
 anti-slop apply <path>       # applies safe fixes
 anti-slop validate <path>    # validates types, routes, schemas
@@ -20,28 +19,136 @@ Flags:
 --auto-apply
 --dry-run
 
-## BACKEND RULES
-- Clean and non-duplicated REST routes.
-- A single HTTP client and a single DB client.
-- Handlers <10 lines; logic in services.
-- Mandatory Zod validation.
-- Errors with uniform structure.
+## Engineering rules (always)
+
+### Backend
+- Clean, non-duplicated REST routes.
+- Single HTTP client and single DB client (no parallel stacks).
+- Handlers <10 lines; logic lives in services.
+- Mandatory Zod validation at boundaries.
+- Errors have a uniform shape.
 - ENV validated at startup.
 
-## FRONTEND TECH RULES
-- Server Components by default.
-- `use client` only if essential.
-- Tailwind without arbitrary classes.
-- Images with width/height; lazy loading.
-- Goals: LCP≤2.5s, INP≤200ms, CLS≤0.1.
-- Accessibility: contrast ≥4.5.
+### Frontend (technical)
+- Server Components by default; `use client` only when essential.
+- Tailwind without arbitrary values.
+- Images include `width`/`height` and lazy-load when appropriate.
+- Targets: LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1.
+- Accessibility: contrast ≥ 4.5 and keyboardable UI.
 
-## DESIGN RULES
-- Colors only from tokens.
-- Do not hardcode hex.
-- Non-generic fonts without justification.
-- Maximum 1–2 animations per view.
+### Design system (always)
+- Colors come from tokens; no hex.
+- Spacing, typography, radii, z-index, motion come from tokens.
+- Max 1–2 animations per view, only when they serve hierarchy.
 
-## PR RULES
-- Destructive changes require human PR.
-- API, DB, AUTH contracts or tokens require mandatory review.
+### PR / change control
+- Destructive changes require a human PR.
+- API, DB, auth contracts, or tokens require mandatory review.
+
+## Commit messages (always)
+- Use Conventional Commits or include a ticket.
+- Message must explain the *why*, not just the *what*.
+- If changes contain an AI footprint (markers, comments, patterns), include:
+  - `AI-REVIEWED: <ticket|initials>`
+
+Valid:
+- feat(api): adds Zod validation to protect /users route
+- fix(ui): fixes CLS by adding width/height to images (ABC-142)
+- refactor(core): removes duplicated policy evaluation — AI-REVIEWED: JG
+
+Invalid:
+- update
+- small fix
+- minor changes
+
+## Nuclear mode (manual only; never “by default”)
+Use only with:
+anti-slop purge <path> --mode nuclear --destructive-open-pr
+
+### Principles
+- Zero redundancy.
+- Zero unnecessary comments.
+- Zero wrapper code without semantic value.
+- Avoid excessive structural depth (prefer max ~2 nested levels).
+
+### Allowed actions
+- Delete duplicated functions and passive wrappers.
+- Remove unused imports.
+- Flatten structure when it reduces mental overhead.
+- Split multi-responsibility functions into single-purpose units.
+- Delete “organizer” files that contain no logic.
+- Rename generic variables (`data`, `info`, `result`) to semantic names.
+
+### Red flags (remove)
+- Syntax comments.
+- Commented-out code.
+- Redundant try/catch.
+- Files that only re-export.
+- Empty AI-words (“robust”, “seamless”, etc.).
+
+## Frontend design engineering (applies when the task is UI/UX/styling)
+
+### Activation triggers
+Applies when the request includes any of:
+- UI, frontend, web, landing, dashboard, page, component
+- styling, layout, spacing, colors, fonts, motion
+- “beautify”, “polish”, “make it nicer”
+
+### Non-negotiables
+- No generic layouts or “template” structure.
+- No hard-coded visual values (use tokens).
+- Aesthetics must be intentional and explainable.
+- Maintain semantic HTML, reading order, contrast, and keyboard navigation.
+
+### Concept hook (required)
+- Each new/changed view must have a visible, verifiable “concept hook” (documented in PR).
+- Examples (choose one direction, don’t blend randomly):
+  - diagonal kinetic grid
+  - typographic collage layout
+  - noise-texture atmosphere
+  - brutalist grid-break fold
+
+### Typography
+- Max 2 font families.
+- Must be tokenized (`type.family.*`, `type.weight.*`, `type.tracking.*`).
+- Forbidden defaults: Inter, Roboto, Poppins, Montserrat, Space Grotesk, DM Sans, system-ui.
+- New fonts require license + legibility + contrast proof and usage rationale.
+
+### Color
+- Token-only, semantic purpose per color (hierarchy/state/signal).
+- Forbidden: purple-on-white SaaS gradient clichés, timid palettes, uncontrolled saturation.
+- Adjustments bounded (lighten/darken up to ~±15%).
+
+### Layout & space
+- Spacing from tokens; no “padding by habit”.
+- Break at least one pattern intentionally (asymmetry, controlled overflow, diagonals, collage, extreme negative space) without breaking a11y.
+
+### Components
+- Prefer existing components; extend via composition, don’t mutate bases.
+- No wrapper components without visual/behavioral responsibility.
+- If using shadcn: composition > modification; no template copying.
+
+### Motion
+- Max 1–2 high-impact moments per view.
+- No default easing; motion must reinforce hierarchy and rhythm.
+
+### Textures/materials (if used)
+- Must be licensed and intentional (grain, geometric noise, paper/dust, etc.).
+
+### Forbidden (auto-fail)
+- Generic “hero + 3 columns + CTA” layouts.
+- Symmetric centered grids without a stated reason.
+- Default parallax and “template” motion.
+- UI that looks like a generic kit with a palette swap.
+
+### Delivery checklist (required for UI work)
+- Declared aesthetic direction + concept hook
+- Complete token mapping (colors/type/space/radii/motion)
+- 2–5 lines of visual rationale
+- A11y evidence (contrast + keyboard)
+- Performance evidence (LCP/INP/CLS targets)
+- Confirmation: "No generic elements / no AI patterns"
+- Design Engineering approval when the change is visual/brand-defining
+
+### Exceptions
+- Only per ticket, with rationale and Design Owner approval (expires in 30 days).
