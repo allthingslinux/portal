@@ -7,17 +7,13 @@ import { ProfileAvatar } from "~/components/makerkit/profile-avatar";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
-import {
-  getDrizzleSupabaseAdminClient,
-  getDrizzleSupabaseClient,
-} from "~/core/database/supabase/clients/drizzle-client";
-import type { Tables } from "~/core/database/supabase/database.types";
+import { db } from "~/core/database/client";
 import {
   accounts,
   accountsMemberships,
   roles,
   usersInAuth,
-} from "~/core/database/supabase/drizzle/schema";
+} from "~/core/database/schema";
 
 import { AdminBanUserDialog } from "./admin-ban-user-dialog";
 import { AdminDeleteAccountDialog } from "./admin-delete-account-dialog";
@@ -27,13 +23,40 @@ import { AdminMembersTable } from "./admin-members-table";
 import { AdminMembershipsTable } from "./admin-memberships-table";
 import { AdminReactivateUserDialog } from "./admin-reactivate-user-dialog";
 
-type Account = Tables<"accounts">;
-type Membership = Tables<"accounts_memberships">;
+type Account = typeof accounts.$inferSelect;
+type Membership = typeof accountsMemberships.$inferSelect;
+type MembershipWithAccount = {
+  id: string;
+  user_id: string;
+  account_id: string;
+  account_role: string;
+  created_at: string | null;
+  updated_at: string | null;
+  created_by: string | null;
+  updated_by: string | null;
+  account: {
+    id: string;
+    name: string;
+  };
+};
+type AdminMember = {
+  id: string;
+  user_id: string;
+  account_id: string;
+  role: string;
+  role_hierarchy_level: number;
+  primary_owner_user_id: string | null;
+  name: string;
+  email: string;
+  picture_url: string;
+  created_at: string | null;
+  updated_at: string | null;
+};
 
 export function AdminAccountPage(props: {
   account: Account & { memberships: Membership[] };
 }) {
-  const isPersonalAccount = props.account.is_personal_account;
+  const isPersonalAccount = props.account.isPersonalAccount;
 
   if (isPersonalAccount) {
     return <PersonalAccountPage account={props.account} />;
@@ -123,7 +146,7 @@ async function PersonalAccountPage(props: { account: Account }) {
             <div className={"flex items-center gap-x-2.5"}>
               <ProfileAvatar
                 displayName={props.account.name}
-                pictureUrl={props.account.picture_url}
+                pictureUrl={props.account.pictureUrl}
               />
 
               <span className={"font-semibold text-sm capitalize"}>
@@ -189,7 +212,7 @@ async function TeamAccountPage(props: {
             <div className={"flex items-center gap-x-2.5"}>
               <ProfileAvatar
                 displayName={props.account.name}
-                pictureUrl={props.account.picture_url}
+                pictureUrl={props.account.pictureUrl}
               />
 
               <span className={"font-semibold text-sm capitalize"}>
@@ -217,17 +240,20 @@ async function TeamAccountPage(props: {
   );
 }
 
-async function getMemberships(userId: string) {
-  const db = getDrizzleSupabaseAdminClient();
+async function getMemberships(
+  userId: string
+): Promise<MembershipWithAccount[]> {
+  // Using shared Drizzle client
 
   const memberships = await db
     .select({
-      id: accountsMemberships.id,
       userId: accountsMemberships.userId,
       accountId: accountsMemberships.accountId,
-      role: accountsMemberships.accountRole,
+      accountRole: accountsMemberships.accountRole,
       createdAt: accountsMemberships.createdAt,
       updatedAt: accountsMemberships.updatedAt,
+      createdBy: accountsMemberships.createdBy,
+      updatedBy: accountsMemberships.updatedBy,
       account: {
         id: accounts.id,
         name: accounts.name,
@@ -238,17 +264,25 @@ async function getMemberships(userId: string) {
     .where(eq(accountsMemberships.userId, userId));
 
   return memberships.map((m) => ({
-    ...m,
+    id: `${m.userId}-${m.accountId}`,
     user_id: m.userId,
     account_id: m.accountId,
-    role: m.role,
-  })) as unknown[];
+    account_role: m.accountRole,
+    created_at: m.createdAt,
+    updated_at: m.updatedAt,
+    created_by: m.createdBy ?? null,
+    updated_by: m.updatedBy ?? null,
+    account: {
+      id: m.account.id,
+      name: m.account.name,
+    },
+  }));
 }
 
-async function getMembers(accountSlug: string) {
-  const drizzleClient = await getDrizzleSupabaseClient();
+async function getMembers(accountSlug: string): Promise<AdminMember[]> {
+  // Using shared Drizzle client
 
-  const data = (await drizzleClient.runTransaction(async (tx) => {
+  const data = await db.transaction(async (tx) => {
     return await tx
       .select({
         userId: accountsMemberships.userId,
@@ -267,12 +301,21 @@ async function getMembers(accountSlug: string) {
       .innerJoin(usersInAuth, eq(usersInAuth.id, accountsMemberships.userId))
       .leftJoin(roles, eq(roles.name, accountsMemberships.accountRole))
       .where(eq(accounts.slug, accountSlug));
-  })) as unknown[];
+  });
 
   // Add generated id for components that expect it
-  const dataWithId = data.map((item) => ({
-    id: `${item.userId}-${item.accountId}`,
-    ...item,
+  const dataWithId: AdminMember[] = data.map((item) => ({
+    id: item.accountId,
+    user_id: item.userId,
+    account_id: item.accountId,
+    role: item.role ?? "",
+    role_hierarchy_level: item.roleHierarchyLevel ?? 0,
+    primary_owner_user_id: item.primaryOwnerUserId,
+    name: item.name ?? item.email ?? "",
+    email: item.email ?? "",
+    picture_url: item.pictureUrl ?? "",
+    created_at: item.createdAt,
+    updated_at: item.updatedAt,
   }));
 
   return dataWithId;

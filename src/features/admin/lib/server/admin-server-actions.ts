@@ -18,6 +18,11 @@ import { createAdminAccountsService } from "./services/admin-accounts.service";
 import { createAdminAuthUserService } from "./services/admin-auth-user.service";
 import { adminAction } from "./utils/admin-action";
 
+export type ImpersonationTokens = {
+  accessToken: string;
+  refreshToken: string;
+};
+
 /**
  * @name banUserAction
  * @description Ban a user from the system.
@@ -30,9 +35,9 @@ export const banUserAction = adminAction(
 
       logger.info({ userId }, "Super Admin is banning user...");
 
-      const { error } = await service.banUser(userId);
-
-      if (error) {
+      try {
+        await service.banUser(userId);
+      } catch (error) {
         logger.error({ error }, "Error banning user");
 
         return {
@@ -62,9 +67,9 @@ export const reactivateUserAction = adminAction(
 
       logger.info({ userId }, "Super Admin is reactivating user...");
 
-      const { error } = await service.reactivateUser(userId);
-
-      if (error) {
+      try {
+        await service.reactivateUser(userId);
+      } catch (error) {
         logger.error({ error }, "Error reactivating user");
 
         return {
@@ -88,7 +93,7 @@ export const reactivateUserAction = adminAction(
  */
 export const impersonateUserAction = adminAction(
   enhanceAction(
-    async ({ userId }) => {
+    async ({ userId }): Promise<ImpersonationTokens> => {
       const service = getAdminAuthService();
       const logger = await getLogger();
 
@@ -161,17 +166,28 @@ export const deleteAccountAction = adminAction(
  */
 export const createUserAction = adminAction(
   enhanceAction(
-    async ({ email, password: _password, emailConfirm: _emailConfirm }) => {
-      // TODO: Implement user creation using Drizzle and NextAuth
-      // This should create a user in auth.users table and send confirmation email if needed
+    async ({ email, password, emailConfirm }) => {
       const logger = await getLogger();
 
-      logger.info({ email }, "Super Admin is creating a new user...");
-
-      // For now, throw an error indicating this needs to be implemented
-      throw new Error(
-        "User creation via admin is not yet implemented with NextAuth. Please use the sign-up flow."
+      logger.info(
+        { email },
+        "Super Admin is creating a new user in Keycloak..."
       );
+
+      const service = getAdminAuthService();
+
+      await service.createUser({
+        email,
+        password,
+        emailVerified: Boolean(emailConfirm),
+      });
+
+      logger.info({ email }, "Keycloak user created successfully");
+
+      return {
+        success: true,
+        error: undefined,
+      };
     },
     {
       schema: CreateUserSchema,

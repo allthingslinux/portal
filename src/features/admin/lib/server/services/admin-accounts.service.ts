@@ -1,8 +1,8 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
-import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accounts } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 export function createAdminAccountsService() {
@@ -12,7 +12,7 @@ export function createAdminAccountsService() {
 class AdminAccountsService {
   async deleteAccount(accountId: string) {
     const logger = await getLogger();
-    const adminClient = getDrizzleSupabaseAdminClient();
+    const adminClient = db;
 
     const ctx = {
       name: "admin.accounts.delete",

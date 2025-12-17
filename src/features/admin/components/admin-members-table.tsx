@@ -4,16 +4,24 @@ import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { DataTable } from "~/components/makerkit/data-table";
 import { ProfileAvatar } from "~/components/makerkit/profile-avatar";
-import type { Database } from "~/core/database/supabase/database.types";
 
-type Memberships =
-  Database["public"]["Functions"]["get_account_members"]["Returns"][number];
+type AdminMember = {
+  id: string;
+  user_id: string;
+  account_id: string;
+  role: string;
+  name: string;
+  email: string;
+  picture_url: string;
+  created_at: string | null;
+  updated_at: string | null;
+};
 
-export function AdminMembersTable(props: { members: Memberships[] }) {
+export function AdminMembersTable(props: { members: AdminMember[] }) {
   return <DataTable columns={getColumns()} data={props.members} />;
 }
 
-function getColumns(): ColumnDef<Memberships>[] {
+function getColumns(): ColumnDef<AdminMember>[] {
   return [
     {
       header: "User ID",

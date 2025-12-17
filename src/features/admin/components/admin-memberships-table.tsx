@@ -3,9 +3,15 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { DataTable } from "~/components/makerkit/data-table";
-import type { Tables } from "~/core/database/supabase/database.types";
 
-type Membership = Tables<"accounts_memberships"> & {
+type Membership = {
+  user_id: string;
+  account_id: string;
+  account_role: string;
+  created_at: string | null;
+  updated_at: string | null;
+  created_by: string | null;
+  updated_by: string | null;
   account: {
     id: string;
     name: string;

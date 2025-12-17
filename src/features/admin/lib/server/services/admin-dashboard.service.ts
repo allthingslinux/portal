@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
-import { accounts } from "~/core/database/supabase/drizzle/schema";
+import { db } from "~/core/database/client";
+import { accounts } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 export function createAdminDashboardService() {
@@ -18,7 +18,7 @@ export class AdminDashboardService {
     }
   ) {
     const logger = await getLogger();
-    const adminClient = getDrizzleSupabaseAdminClient();
+    const adminClient = db;
 
     const ctx = {
       name: "admin.dashboard",

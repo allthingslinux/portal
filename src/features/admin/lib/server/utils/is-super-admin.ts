@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { getServerSession } from "~/core/auth/better-auth/session";
-import { getDrizzleSupabaseAdminClient } from "~/core/database/supabase/clients/drizzle-client";
+import { db } from "~/core/database/client";
 import { getLogger } from "~/shared/logger";
 
 /**
@@ -18,7 +18,6 @@ export async function isSuperAdmin(): Promise<boolean> {
 
     // Query the database to check if user is a super admin
     // This checks the app_metadata.role field in auth.users
-    const db = getDrizzleSupabaseAdminClient();
     const result = await db.execute<{ role: string }>(
       sql`
         SELECT 

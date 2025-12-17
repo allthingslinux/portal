@@ -29,14 +29,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import type { Tables } from "~/core/database/supabase/database.types";
+import type { AdminAccountRow } from "~/features/admin/lib/server/loaders/admin-accounts.loader";
 
 import { AdminDeleteAccountDialog } from "./admin-delete-account-dialog";
 import { AdminDeleteUserDialog } from "./admin-delete-user-dialog";
 import { AdminImpersonateUserDialog } from "./admin-impersonate-user-dialog";
 import { AdminResetPasswordDialog } from "./admin-reset-password-dialog";
 
-type Account = Tables<"accounts">;
+type Account = AdminAccountRow;
 
 const FiltersSchema = z.object({
   type: z.enum(["all", "team", "personal"]),
@@ -186,24 +186,23 @@ function getColumns(): ColumnDef<Account>[] {
     {
       id: "type",
       header: "Type",
-      cell: ({ row }) =>
-        row.original.is_personal_account ? "Personal" : "Team",
+      cell: ({ row }) => (row.original.isPersonalAccount ? "Personal" : "Team"),
     },
     {
       id: "created_at",
       header: "Created At",
-      accessorKey: "created_at",
+      accessorKey: "createdAt",
     },
     {
       id: "updated_at",
       header: "Updated At",
-      accessorKey: "updated_at",
+      accessorKey: "updatedAt",
     },
     {
       id: "actions",
       header: "",
       cell: ({ row }) => {
-        const isPersonalAccount = row.original.is_personal_account;
+        const isPersonalAccount = row.original.isPersonalAccount;
         const userId = row.original.id;
 
         return (

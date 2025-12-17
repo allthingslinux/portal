@@ -3,10 +3,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { LoadingOverlay } from "~/components/makerkit/loading-overlay";
-import { useSupabase } from "~/core/database/supabase/hooks/use-supabase";
+import { authClient } from "~/core/auth/better-auth";
 import { ConfirmationDialog } from "~/shared/components/confirmation-dialog";
 
-import { impersonateUserAction } from "../lib/server/admin-server-actions";
+import {
+  type ImpersonationTokens,
+  impersonateUserAction,
+} from "../lib/server/admin-server-actions";
 import { ImpersonateUserSchema } from "../lib/server/schema/admin-actions.schema";
 
 export function AdminImpersonateUserDialog(
@@ -46,8 +49,8 @@ export function AdminImpersonateUserDialog(
         </div>
       }
       errorMessage="Failed to impersonate user. Please check the logs to understand what went wrong."
-      onConfirm={impersonateUserAction}
-      onSuccess={(result) => {
+      onConfirm={async (params) => impersonateUserAction(params)}
+      onSuccess={(result: ImpersonationTokens) => {
         setTokens(result);
       }}
       pendingText="Impersonating"
@@ -74,18 +77,34 @@ function ImpersonateUserAuthSetter({
 }
 
 function useSetSession(tokens: { accessToken: string; refreshToken: string }) {
-  const supabase = useSupabase();
-
   return useQuery({
     queryKey: ["impersonate-user", tokens.accessToken, tokens.refreshToken],
     gcTime: 0,
     queryFn: async () => {
-      await supabase.auth.signOut();
+      // Sign out current session first
+      await authClient.signOut();
 
-      await supabase.auth.setSession({
-        refresh_token: tokens.refreshToken,
-        access_token: tokens.accessToken,
+      // Better Auth handles session via cookies, so we need to set the session
+      // by calling the API endpoint with the tokens
+      const baseURL =
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const apiPath = "/api/auth";
+
+      const response = await fetch(`${baseURL}${apiPath}/session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+        }),
+        credentials: "include",
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to set impersonation session");
+      }
 
       // use a hard refresh to avoid hitting cached pages
       window.location.replace("/home");
