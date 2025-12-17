@@ -1,13 +1,17 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import type { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
+import { DataTable } from "~/components/portal/data-table";
 
-import { ColumnDef } from '@tanstack/react-table';
-
-import { Tables } from '~/core/database/supabase/database.types';
-import { DataTable } from '~/components/makerkit/data-table';
-
-type Membership = Tables<'accounts_memberships'> & {
+type Membership = {
+  user_id: string;
+  account_id: string;
+  account_role: string;
+  created_at: string | null;
+  updated_at: string | null;
+  created_by: string | null;
+  updated_by: string | null;
   account: {
     id: string;
     name: string;
@@ -15,39 +19,37 @@ type Membership = Tables<'accounts_memberships'> & {
 };
 
 export function AdminMembershipsTable(props: { memberships: Membership[] }) {
-  return <DataTable data={props.memberships} columns={getColumns()} />;
+  return <DataTable columns={getColumns()} data={props.memberships} />;
 }
 
 function getColumns(): ColumnDef<Membership>[] {
   return [
     {
-      header: 'User ID',
-      accessorKey: 'user_id',
+      header: "User ID",
+      accessorKey: "user_id",
     },
     {
-      header: 'Team',
-      cell: ({ row }) => {
-        return (
-          <Link
-            className={'hover:underline'}
-            href={`/admin/accounts/${row.original.account_id}`}
-          >
-            {row.original.account.name}
-          </Link>
-        );
-      },
+      header: "Team",
+      cell: ({ row }) => (
+        <Link
+          className={"hover:underline"}
+          href={`/admin/accounts/${row.original.account_id}`}
+        >
+          {row.original.account.name}
+        </Link>
+      ),
     },
     {
-      header: 'Role',
-      accessorKey: 'account_role',
+      header: "Role",
+      accessorKey: "account_role",
     },
     {
-      header: 'Created At',
-      accessorKey: 'created_at',
+      header: "Created At",
+      accessorKey: "created_at",
     },
     {
-      header: 'Updated At',
-      accessorKey: 'updated_at',
+      header: "Updated At",
+      accessorKey: "updated_at",
     },
   ];
 }

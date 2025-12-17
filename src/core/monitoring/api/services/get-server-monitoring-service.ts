@@ -1,13 +1,13 @@
 import {
   ConsoleMonitoringService,
-  MonitoringService,
-} from '~/core/monitoring/core';
-import { createRegistry } from '~/shared/registry';
+  type MonitoringService,
+} from "~/core/monitoring/core";
+import { createRegistry } from "~/shared/registry";
 
 import {
-  MonitoringProvider,
   getMonitoringProvider,
-} from '../get-monitoring-provider';
+  type MonitoringProvider,
+} from "../get-monitoring-provider";
 
 // create a registry for the server monitoring services
 const serverMonitoringRegistry = createRegistry<
@@ -16,8 +16,8 @@ const serverMonitoringRegistry = createRegistry<
 >();
 
 // Register the 'sentry' monitoring service
-serverMonitoringRegistry.register('sentry', async () => {
-  const { SentryMonitoringService } = await import('~/core/monitoring/sentry');
+serverMonitoringRegistry.register("sentry", async () => {
+  const { SentryMonitoringService } = await import("~/core/monitoring/sentry");
 
   return new SentryMonitoringService();
 });
@@ -34,7 +34,7 @@ export async function getServerMonitoringService() {
 
   if (!provider) {
     console.info(
-      `No instrumentation provider specified. Returning console service...`,
+      "No instrumentation provider specified. Returning console service..."
     );
 
     return new ConsoleMonitoringService();

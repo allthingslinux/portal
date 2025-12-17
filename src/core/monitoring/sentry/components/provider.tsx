@@ -1,6 +1,6 @@
-import { MonitoringContext } from '~/core/monitoring/core';
+import { MonitoringContext } from "~/core/monitoring/core";
 
-import { SentryMonitoringService } from '../services/sentry-monitoring.service';
+import { SentryMonitoringService } from "../services/sentry-monitoring.service";
 
 const sentry = new SentryMonitoringService();
 

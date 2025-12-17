@@ -1,13 +1,11 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
+import { useSignUpWithEmailAndPassword } from "~/core/auth/better-auth/hooks";
+import { useAppEvents } from "~/shared/events";
 
-import { useRouter } from 'next/navigation';
-
-import { useAppEvents } from '~/shared/events';
-import { useSignUpWithEmailAndPassword } from '~/core/database/supabase/hooks/use-sign-up-with-email-password';
-
-import { useLastAuthMethod } from './use-last-auth-method';
+import { useLastAuthMethod } from "./use-last-auth-method";
 
 type SignUpCredentials = {
   email: string;
@@ -51,13 +49,13 @@ export function usePasswordSignUpFlow({
         });
 
         // Record last auth method
-        recordAuthMethod('password', { email: credentials.email });
+        recordAuthMethod("password", { email: credentials.email });
 
         // emit event to track sign up
         appEvents.emit({
-          type: 'user.signedUp',
+          type: "user.signedUp",
           payload: {
-            method: 'password',
+            method: "password",
           },
         });
 
@@ -65,11 +63,11 @@ export function usePasswordSignUpFlow({
         // to understand that the form was submitted successfully.
         const url = new URL(window.location.href);
 
-        url.searchParams.set('status', 'success');
+        url.searchParams.set("status", "success");
         router.replace(url.pathname + url.search);
 
         if (onSignUp) {
-          onSignUp(data.user?.id);
+          onSignUp(data.userId);
         }
       } catch (error) {
         console.error(error);
@@ -88,7 +86,7 @@ export function usePasswordSignUpFlow({
       onSignUp,
       resetCaptchaToken,
       recordAuthMethod,
-    ],
+    ]
   );
 
   return {

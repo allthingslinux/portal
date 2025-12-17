@@ -16,7 +16,7 @@ export abstract class MonitoringService {
   >(
     error: Error & { digest?: string },
     extra?: Extra,
-    config?: Config,
+    config?: Config
   ): unknown;
 
   /**
@@ -26,7 +26,7 @@ export abstract class MonitoringService {
    */
   abstract captureEvent<Extra extends object>(
     event: string,
-    extra?: Extra,
+    extra?: Extra
   ): unknown;
 
   /**

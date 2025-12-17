@@ -1,15 +1,11 @@
-'use client';
+"use client";
 
-import { Suspense, useState } from 'react';
-
-import { usePathname } from 'next/navigation';
-
-import type { Provider, UserIdentity } from '@supabase/supabase-js';
-
-import { useLinkIdentityWithProvider } from '~/core/database/supabase/hooks/use-link-identity-with-provider';
-import { useUnlinkUserIdentity } from '~/core/database/supabase/hooks/use-unlink-user-identity';
-import { useUser } from '~/core/database/supabase/hooks/use-user';
-import { useUserIdentities } from '~/core/database/supabase/hooks/use-user-identities';
+import { usePathname } from "next/navigation";
+import { Suspense, useState } from "react";
+import { If } from "~/components/portal/if";
+import { OauthProviderLogoImage } from "~/components/portal/oauth-provider-logo-image";
+import { Spinner } from "~/components/portal/spinner";
+import { Trans } from "~/components/portal/trans";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,8 +16,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '~/components/ui/alert-dialog';
-import { Button } from '~/components/ui/button';
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -29,8 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '~/components/ui/dialog';
-import { If } from '~/components/makerkit/if';
+} from "~/components/ui/dialog";
 import {
   Item,
   ItemActions,
@@ -39,77 +34,82 @@ import {
   ItemHeader,
   ItemMedia,
   ItemTitle,
-} from '~/components/ui/item';
-import { OauthProviderLogoImage } from '~/components/makerkit/oauth-provider-logo-image';
-import { Separator } from '~/components/ui/separator';
-import { toast } from '~/components/ui/sonner';
-import { Spinner } from '~/components/makerkit/spinner';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/item";
+import { Separator } from "~/components/ui/separator";
+import { toast } from "~/components/ui/sonner";
+import {
+  type UserAccount,
+  useLinkAccount,
+  useSession,
+  useUnlinkAccount,
+  useUserAccounts,
+} from "~/core/auth/better-auth/hooks";
+import type { Provider } from "~/core/auth/better-auth/types";
 
-import { UpdateEmailForm } from '../email/update-email-form';
-import { UpdatePasswordForm } from '../password/update-password-form';
+import { UpdateEmailForm } from "../email/update-email-form";
+import { UpdatePasswordForm } from "../password/update-password-form";
 
-interface LinkAccountsListProps {
+type LinkAccountsListProps = {
   providers: Provider[];
   showPasswordOption?: boolean;
   showEmailOption?: boolean;
   enabled?: boolean;
   redirectTo?: string;
-}
+};
 
 export function LinkAccountsList(props: LinkAccountsListProps) {
-  const unlinkMutation = useUnlinkUserIdentity();
-  const linkMutation = useLinkIdentityWithProvider();
+  const unlinkMutation = useUnlinkAccount();
+  const linkMutation = useLinkAccount();
   const pathname = usePathname();
 
-  const {
-    identities,
-    hasMultipleIdentities,
-    isProviderConnected,
-    isLoading: isLoadingIdentities,
-  } = useUserIdentities();
+  const { data: accountsData, isLoading: isLoadingIdentities } =
+    useUserAccounts();
 
-  // Get user email from email identity
-  const emailIdentity = identities.find(
-    (identity) => identity.provider === 'email',
-  );
+  const accounts = accountsData?.accounts || [];
+  const hasMultipleIdentities = accountsData?.hasMultipleAccounts;
+  const isProviderConnected =
+    accountsData?.isProviderConnected || (() => false);
 
-  const userEmail = (emailIdentity?.identity_data?.email as string) || '';
+  // Get user email from session
+  const { data: user } = useSession();
+  const userEmail = user?.email || "";
 
   // If enabled, display available providers
   const availableProviders = props.enabled
     ? props.providers.filter((provider) => !isProviderConnected(provider))
     : [];
-
-  const user = useUser();
-  const amr = user.data ? user.data.amr : [];
+  const amr =
+    user && Array.isArray((user as Record<string, unknown>).amr)
+      ? ((user as Record<string, unknown>).amr as Array<{ method: string }>)
+      : [];
 
   const isConnectedWithPassword = amr.some(
-    (item: { method: string }) => item.method === 'password',
+    (item: { method: string }) => item.method === "password"
   );
 
-  // Show all connected identities, even if their provider isn't in the allowed providers list
-  const connectedIdentities = identities;
+  // Show all connected accounts, even if their provider isn't in the allowed providers list
+  const connectedIdentities = accounts;
 
-  const canLinkEmailAccount = !emailIdentity && props.showEmailOption;
+  const emailAccount = accounts.find((acc) => acc.provider === "email");
+  const canLinkEmailAccount = !emailAccount && props.showEmailOption;
 
   const canLinkPassword =
-    emailIdentity && props.showPasswordOption && !isConnectedWithPassword;
+    emailAccount && props.showPasswordOption && !isConnectedWithPassword;
 
   const shouldDisplayAvailableAccountsSection =
     canLinkEmailAccount || canLinkPassword || availableProviders.length;
 
   /**
    * @name handleUnlinkAccount
-   * @param identity
+   * @param account
    */
-  const handleUnlinkAccount = (identity: UserIdentity) => {
-    const promise = unlinkMutation.mutateAsync(identity);
+  const handleUnlinkAccount = (account: UserAccount) => {
+    const promise = unlinkMutation.mutateAsync({ accountId: account.id });
 
     toast.promise(promise, {
-      loading: <Trans i18nKey={'account:unlinkingAccount'} />,
-      success: <Trans i18nKey={'account:accountUnlinked'} />,
-      error: <Trans i18nKey={'account:unlinkAccountError'} />,
+      loading: <Trans i18nKey={"account:unlinkingAccount"} />,
+      success: <Trans i18nKey={"account:accountUnlinked"} />,
+      error: <Trans i18nKey={"account:unlinkAccountError"} />,
     });
   };
 
@@ -121,9 +121,9 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
     const promise = linkMutation.mutateAsync(provider);
 
     toast.promise(promise, {
-      loading: <Trans i18nKey={'account:linkingAccount'} />,
-      success: <Trans i18nKey={'account:accountLinked'} />,
-      error: <Trans i18nKey={'account:linkAccountError'} />,
+      loading: <Trans i18nKey={"account:linkingAccount"} />,
+      success: <Trans i18nKey={"account:accountLinked"} />,
+      error: <Trans i18nKey={"account:linkAccountError"} />,
     });
   };
 
@@ -140,35 +140,33 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
       <If condition={connectedIdentities.length > 0}>
         <div className="space-y-2.5">
           <div>
-            <h3 className="text-foreground text-sm font-medium">
-              <Trans i18nKey={'account:linkedMethods'} />
+            <h3 className="font-medium text-foreground text-sm">
+              <Trans i18nKey={"account:linkedMethods"} />
             </h3>
 
             <p className="text-muted-foreground text-xs">
-              <Trans i18nKey={'account:alreadyLinkedMethodsDescription'} />
+              <Trans i18nKey={"account:alreadyLinkedMethodsDescription"} />
             </p>
           </div>
 
           <div className="flex flex-col space-y-2">
-            {connectedIdentities.map((identity) => (
-              <Item key={identity.id} variant="muted">
+            {connectedIdentities.map((account) => (
+              <Item key={account.id} variant="muted">
                 <ItemMedia>
-                  <div className="text-muted-foreground flex h-5 w-5 items-center justify-center">
-                    <OauthProviderLogoImage providerId={identity.provider} />
+                  <div className="flex h-5 w-5 items-center justify-center text-muted-foreground">
+                    <OauthProviderLogoImage providerId={account.provider} />
                   </div>
                 </ItemMedia>
 
                 <ItemContent>
                   <ItemHeader>
                     <div className="flex flex-col">
-                      <ItemTitle className="text-sm font-medium capitalize">
-                        <span>{identity.provider}</span>
+                      <ItemTitle className="font-medium text-sm capitalize">
+                        <span>{account.provider}</span>
                       </ItemTitle>
 
-                      <If condition={identity.identity_data?.email}>
-                        <ItemDescription>
-                          {identity.identity_data?.email as string}
-                        </ItemDescription>
+                      <If condition={userEmail && account.provider === "email"}>
+                        <ItemDescription>{userEmail}</ItemDescription>
                       </If>
                     </div>
                   </ItemHeader>
@@ -179,41 +177,41 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
-                          variant="outline"
-                          size="sm"
                           disabled={unlinkMutation.isPending}
+                          size="sm"
+                          variant="outline"
                         >
                           <If condition={unlinkMutation.isPending}>
                             <Spinner className="mr-2 h-3 w-3" />
                           </If>
-                          <Trans i18nKey={'account:unlinkAccount'} />
+                          <Trans i18nKey={"account:unlinkAccount"} />
                         </Button>
                       </AlertDialogTrigger>
 
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            <Trans i18nKey={'account:confirmUnlinkAccount'} />
+                            <Trans i18nKey={"account:confirmUnlinkAccount"} />
                           </AlertDialogTitle>
 
                           <AlertDialogDescription>
                             <Trans
-                              i18nKey={'account:unlinkAccountConfirmation'}
-                              values={{ provider: identity.provider }}
+                              i18nKey={"account:unlinkAccountConfirmation"}
+                              values={{ provider: account.provider }}
                             />
                           </AlertDialogDescription>
                         </AlertDialogHeader>
 
                         <AlertDialogFooter>
                           <AlertDialogCancel>
-                            <Trans i18nKey={'common:cancel'} />
+                            <Trans i18nKey={"common:cancel"} />
                           </AlertDialogCancel>
 
                           <AlertDialogAction
-                            onClick={() => handleUnlinkAccount(identity)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={() => handleUnlinkAccount(account)}
                           >
-                            <Trans i18nKey={'account:unlinkAccount'} />
+                            <Trans i18nKey={"account:unlinkAccount"} />
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -234,12 +232,12 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
 
         <div className="space-y-2.5">
           <div>
-            <h3 className="text-foreground text-sm font-medium">
-              <Trans i18nKey={'account:availableMethods'} />
+            <h3 className="font-medium text-foreground text-sm">
+              <Trans i18nKey={"account:availableMethods"} />
             </h3>
 
             <p className="text-muted-foreground text-xs">
-              <Trans i18nKey={'account:availableMethodsDescription'} />
+              <Trans i18nKey={"account:availableMethodsDescription"} />
             </p>
           </div>
 
@@ -250,18 +248,18 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
 
             <If condition={canLinkPassword}>
               <UpdatePasswordDialog
+                redirectTo={props.redirectTo || "/home"}
                 userEmail={userEmail}
-                redirectTo={props.redirectTo || '/home'}
               />
             </If>
 
             {availableProviders.map((provider) => (
               <Item
+                className="hover:bg-muted/50"
                 key={provider}
-                variant="outline"
                 onClick={() => handleLinkAccount(provider)}
                 role="button"
-                className="hover:bg-muted/50"
+                variant="outline"
               >
                 <ItemMedia>
                   <OauthProviderLogoImage providerId={provider} />
@@ -272,7 +270,7 @@ export function LinkAccountsList(props: LinkAccountsListProps) {
 
                   <ItemDescription>
                     <Trans
-                      i18nKey={'account:linkAccountDescription'}
+                      i18nKey={"account:linkAccountDescription"}
                       values={{ provider }}
                     />
                   </ItemDescription>
@@ -290,7 +288,7 @@ function NoAccountsAvailable() {
   return (
     <div>
       <span className="text-muted-foreground text-xs">
-        <Trans i18nKey={'account:noAccountsAvailable'} />
+        <Trans i18nKey={"account:noAccountsAvailable"} />
       </span>
     </div>
   );
@@ -300,24 +298,24 @@ function UpdateEmailDialog(props: { redirectTo: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Item variant="outline" role="button" className="hover:bg-muted/50">
+        <Item className="hover:bg-muted/50" role="button" variant="outline">
           <ItemMedia>
-            <div className="text-muted-foreground flex h-5 w-5 items-center justify-center">
-              <OauthProviderLogoImage providerId={'email'} />
+            <div className="flex h-5 w-5 items-center justify-center text-muted-foreground">
+              <OauthProviderLogoImage providerId={"email"} />
             </div>
           </ItemMedia>
 
           <ItemContent>
             <ItemHeader>
               <div className="flex flex-col">
-                <ItemTitle className="text-sm font-medium">
-                  <Trans i18nKey={'account:setEmailAddress'} />
+                <ItemTitle className="font-medium text-sm">
+                  <Trans i18nKey={"account:setEmailAddress"} />
                 </ItemTitle>
 
                 <ItemDescription>
-                  <Trans i18nKey={'account:setEmailDescription'} />
+                  <Trans i18nKey={"account:setEmailDescription"} />
                 </ItemDescription>
               </div>
             </ItemHeader>
@@ -328,11 +326,11 @@ function UpdateEmailDialog(props: { redirectTo: string }) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans i18nKey={'account:setEmailAddress'} />
+            <Trans i18nKey={"account:setEmailAddress"} />
           </DialogTitle>
 
           <DialogDescription>
-            <Trans i18nKey={'account:setEmailDescription'} />
+            <Trans i18nKey={"account:setEmailDescription"} />
           </DialogDescription>
         </DialogHeader>
 
@@ -362,24 +360,24 @@ function UpdatePasswordDialog(props: {
   const [open, setOpen] = useState(false);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Item variant="outline" role="button" className="hover:bg-muted/50">
+        <Item className="hover:bg-muted/50" role="button" variant="outline">
           <ItemMedia>
-            <div className="text-muted-foreground flex h-5 w-5 items-center justify-center">
-              <OauthProviderLogoImage providerId={'password'} />
+            <div className="flex h-5 w-5 items-center justify-center text-muted-foreground">
+              <OauthProviderLogoImage providerId={"password"} />
             </div>
           </ItemMedia>
 
           <ItemContent>
             <ItemHeader>
               <div className="flex flex-col">
-                <ItemTitle className="text-sm font-medium">
-                  <Trans i18nKey={'account:linkEmailPassword'} />
+                <ItemTitle className="font-medium text-sm">
+                  <Trans i18nKey={"account:linkEmailPassword"} />
                 </ItemTitle>
 
                 <ItemDescription>
-                  <Trans i18nKey={'account:updatePasswordDescription'} />
+                  <Trans i18nKey={"account:updatePasswordDescription"} />
                 </ItemDescription>
               </div>
             </ItemHeader>
@@ -390,7 +388,7 @@ function UpdatePasswordDialog(props: {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            <Trans i18nKey={'account:linkEmailPassword'} />
+            <Trans i18nKey={"account:linkEmailPassword"} />
           </DialogTitle>
         </DialogHeader>
 

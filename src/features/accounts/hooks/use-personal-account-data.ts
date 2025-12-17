@@ -1,9 +1,19 @@
-import { useCallback } from 'react';
+import {
+  type UseQueryResult,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useCallback } from "react";
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import type { Json } from "~/core/auth/better-auth/types";
+import { getPersonalAccountDataAction } from "../server/personal-accounts-server-actions";
 
-import { Json } from '~/core/database/supabase/database.types';
-import { useSupabase } from '~/core/database/supabase/hooks/use-supabase';
+type PersonalAccountData = {
+  id: string;
+  name: string | null;
+  picture_url: string | null;
+  public_data: Record<string, unknown> | null;
+} | null;
 
 export function usePersonalAccountData(
   userId: string,
@@ -12,51 +22,53 @@ export function usePersonalAccountData(
     name: string | null;
     picture_url: string | null;
     public_data?: Json;
-  },
-) {
-  const client = useSupabase();
-  const queryKey = ['account:data', userId];
+  }
+): UseQueryResult<PersonalAccountData, Error> {
+  const queryKey = ["account:data", userId] as const;
 
-  const queryFn = async () => {
+  const queryFn = async (): Promise<PersonalAccountData> => {
     if (!userId) {
       return null;
     }
 
-    const response = await client
-      .from('accounts')
-      .select(
-        `
-        id,
-        name,
-        picture_url,
-        public_data
-    `,
-      )
-      .eq('primary_owner_user_id', userId)
-      .eq('is_personal_account', true)
-      .single();
+    const result = await getPersonalAccountDataAction(userId);
 
-    if (response.error) {
-      throw response.error;
+    if (!result) {
+      return null;
     }
 
-    return response.data;
+    return {
+      id: result.id,
+      name: result.name ?? null,
+      picture_url: result.picture_url ?? null,
+      public_data:
+        (result.public_data as Record<string, unknown> | null) ?? null,
+    };
   };
 
-  return useQuery({
+  return useQuery<
+    PersonalAccountData,
+    Error,
+    PersonalAccountData,
+    typeof queryKey
+  >({
     queryKey,
     queryFn,
     enabled: !!userId,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
+    staleTime: 0, // Always consider data stale to force refetch
+    gcTime: 0, // Don't cache null results
     initialData: partialAccount?.id
       ? {
           id: partialAccount.id,
           name: partialAccount.name,
           picture_url: partialAccount.picture_url,
-          public_data: partialAccount.public_data,
+          public_data:
+            (partialAccount.public_data as Record<string, unknown> | null) ??
+            null,
         }
-      : undefined,
+      : undefined, // Use undefined instead of null to avoid caching null
   });
 }
 
@@ -66,8 +78,8 @@ export function useRevalidatePersonalAccountDataQuery() {
   return useCallback(
     (userId: string) =>
       queryClient.invalidateQueries({
-        queryKey: ['account:data', userId],
+        queryKey: ["account:data", userId],
       }),
-    [queryClient],
+    [queryClient]
   );
 }

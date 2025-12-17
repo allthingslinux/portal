@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const MONITORING_PROVIDERS = [
-  'sentry',
-  '',
+  "sentry",
+  "",
   // Add more providers here
 ] as const;
 

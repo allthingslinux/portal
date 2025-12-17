@@ -1,16 +1,19 @@
-import { Database } from '~/core/database/supabase/database.types';
+export type Tables = Record<
+  string,
+  {
+    Row: Record<string, unknown>;
+  }
+>;
 
-export type Tables = Database['public']['Tables'];
+export type TableChangeType = "INSERT" | "UPDATE" | "DELETE";
 
-export type TableChangeType = 'INSERT' | 'UPDATE' | 'DELETE';
-
-export interface RecordChange<
+export type RecordChange<
   Table extends keyof Tables,
-  Row = Tables[Table]['Row'],
-> {
+  Row = Tables[Table]["Row"],
+> = {
   type: TableChangeType;
   table: Table;
   record: Row;
-  schema: 'public';
+  schema: "public";
   old_record: null | Row;
-}
+};

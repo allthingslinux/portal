@@ -1,18 +1,18 @@
-import { Home, User } from 'lucide-react';
-import { z } from 'zod';
+import { Home, User } from "lucide-react";
+import type { z } from "zod";
 
-import { NavigationConfigSchema } from '~/components/makerkit/navigation-config.schema';
+import { NavigationConfigSchema } from "~/components/portal/navigation-config.schema";
 
-import pathsConfig from '~/config/paths.config';
+import pathsConfig from "~/config/paths.config";
 
-const iconClasses = 'w-4';
+const iconClasses = "w-4";
 
 const routes = [
   {
-    label: 'common:routes.application',
+    label: "common:routes.application",
     children: [
       {
-        label: 'common:routes.home',
+        label: "common:routes.home",
         path: pathsConfig.app.home,
         Icon: <Home className={iconClasses} />,
         end: true,
@@ -20,16 +20,16 @@ const routes = [
     ],
   },
   {
-    label: 'common:routes.settings',
+    label: "common:routes.settings",
     children: [
       {
-        label: 'common:routes.profile',
+        label: "common:routes.profile",
         path: pathsConfig.app.personalAccountSettings,
         Icon: <User className={iconClasses} />,
       },
     ],
   },
-] satisfies z.infer<typeof NavigationConfigSchema>['routes'];
+] satisfies z.infer<typeof NavigationConfigSchema>["routes"];
 
 export const personalAccountNavigationConfig = NavigationConfigSchema.parse({
   routes,

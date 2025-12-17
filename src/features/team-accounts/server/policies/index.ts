@@ -1,7 +1,6 @@
-export { createInvitationsPolicyEvaluator } from './invitation-policies';
+// Type exports
+export type { FeaturePolicyInvitationContext } from "./feature-policy-invitation-context";
 
 // Context building
-export { createInvitationContextBuilder } from './invitation-context-builder';
-
-// Type exports
-export type { FeaturePolicyInvitationContext } from './feature-policy-invitation-context';
+export { createInvitationContextBuilder } from "./invitation-context-builder";
+export { createInvitationsPolicyEvaluator } from "./invitation-policies";

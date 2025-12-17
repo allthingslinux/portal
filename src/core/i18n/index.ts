@@ -1,1 +1,1 @@
-export * from './create-i18n-settings';
+export * from "./create-i18n-settings";

@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
-import { useFormStatus } from 'react-dom';
-
-import { Button } from '~/components/ui/button';
-import { Trans } from '~/components/makerkit/trans';
+import { useFormStatus } from "react-dom";
+import { Trans } from "~/components/portal/trans";
+import { Button } from "~/components/ui/button";
 
 export function InvitationSubmitButton(props: {
   accountName: string;
@@ -12,9 +11,9 @@ export function InvitationSubmitButton(props: {
   const { pending } = useFormStatus();
 
   return (
-    <Button type={'submit'} className={'w-full'} disabled={pending}>
+    <Button className={"w-full"} disabled={pending} type={"submit"}>
       <Trans
-        i18nKey={pending ? 'teams:joiningTeam' : 'teams:continueAs'}
+        i18nKey={pending ? "teams:joiningTeam" : "teams:continueAs"}
         values={{
           accountName: props.accountName,
           email: props.email,

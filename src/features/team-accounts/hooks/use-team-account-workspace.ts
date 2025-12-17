@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
+import { useWorkspaceContext } from "~/shared/hooks/use-workspace-context";
 
-import { TeamAccountWorkspaceContext } from '../components';
+import { TeamAccountWorkspaceContext } from "../components";
 
 /**
  * @name useTeamAccountWorkspace
@@ -10,13 +10,8 @@ import { TeamAccountWorkspaceContext } from '../components';
  * @returns The account workspace data.
  */
 export function useTeamAccountWorkspace() {
-  const ctx = useContext(TeamAccountWorkspaceContext);
-
-  if (!ctx) {
-    throw new Error(
-      'useTeamAccountWorkspace must be used within a TeamAccountWorkspaceContext.Provider. This is only provided within the account workspace /home/[account]',
-    );
-  }
-
-  return ctx;
+  return useWorkspaceContext(
+    TeamAccountWorkspaceContext,
+    "useTeamAccountWorkspace must be used within a TeamAccountWorkspaceContext.Provider. This is only provided within the account workspace /home/[account]"
+  );
 }

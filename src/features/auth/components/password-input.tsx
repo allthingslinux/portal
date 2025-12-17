@@ -1,17 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { Eye, EyeOff, Lock } from "lucide-react";
+import { useState } from "react";
 
-import { Eye, EyeOff, Lock } from 'lucide-react';
-
-import { Button } from '~/components/ui/button';
+import { Button } from "~/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from '~/components/ui/input-group';
+} from "~/components/ui/input-group";
 
-export function PasswordInput(props: React.ComponentProps<'input'>) {
+export function PasswordInput(props: React.ComponentProps<"input">) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -22,17 +21,17 @@ export function PasswordInput(props: React.ComponentProps<'input'>) {
 
       <InputGroupInput
         data-test="password-input"
-        type={showPassword ? 'text' : 'password'}
-        placeholder={'************'}
+        placeholder={"************"}
+        type={showPassword ? "text" : "password"}
         {...props}
       />
 
       <InputGroupAddon align="inline-end">
         <Button
+          onClick={() => setShowPassword(!showPassword)}
+          size="sm"
           type="button"
           variant="ghost"
-          size="sm"
-          onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? (
             <EyeOff className="h-4 w-4" />

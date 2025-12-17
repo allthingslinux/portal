@@ -1,7 +1,10 @@
-import { ChevronDown } from 'lucide-react';
-
-import { Cms } from '~/features/cms/core';
-import { CollapsibleContent, CollapsibleTrigger } from '~/components/ui/collapsible';
+import { ChevronDown } from "lucide-react";
+import { DocsNavLink } from "~/(marketing)/docs/_components/docs-nav-link";
+import { DocsNavigationCollapsible } from "~/(marketing)/docs/_components/docs-navigation-collapsible";
+import {
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/components/ui/collapsible";
 import {
   Sidebar,
   SidebarGroup,
@@ -10,12 +13,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-} from '~/components/ui/sidebar';
+} from "~/components/ui/sidebar";
+import type { Cms } from "~/features/cms/core";
 
-import { DocsNavLink } from '~/(marketing)/docs/_components/docs-nav-link';
-import { DocsNavigationCollapsible } from '~/(marketing)/docs/_components/docs-navigation-collapsible';
-
-import { FloatingDocumentationNavigation } from './floating-docs-navigation';
+import { FloatingDocumentationNavigation } from "./floating-docs-navigation";
 
 function Node({
   node,
@@ -31,10 +32,10 @@ function Node({
 
   return (
     <NodeContainer node={node} prefix={prefix}>
-      <NodeTrigger node={node} label={label} url={url} />
+      <NodeTrigger label={label} node={node} url={url} />
 
       <NodeContentContainer node={node}>
-        <Tree pages={node.children ?? []} level={level + 1} prefix={prefix} />
+        <Tree level={level + 1} pages={node.children ?? []} prefix={prefix} />
       </NodeContentContainer>
     </NodeContainer>
   );
@@ -109,8 +110,8 @@ function Tree({
   prefix: string;
 }) {
   if (level === 0) {
-    return pages.map((treeNode, index) => (
-      <Node key={index} node={treeNode} level={level} prefix={prefix} />
+    return pages.map((treeNode) => (
+      <Node key={treeNode.slug} level={level} node={treeNode} prefix={prefix} />
     ));
   }
 
@@ -120,8 +121,13 @@ function Tree({
 
   return (
     <SidebarMenuSub>
-      {pages.map((treeNode, index) => (
-        <Node key={index} node={treeNode} level={level} prefix={prefix} />
+      {pages.map((treeNode) => (
+        <Node
+          key={treeNode.slug}
+          level={level}
+          node={treeNode}
+          prefix={prefix}
+        />
       ))}
     </SidebarMenuSub>
   );
@@ -129,7 +135,7 @@ function Tree({
 
 export function DocsNavigation({
   pages,
-  prefix = '/docs',
+  prefix = "/docs",
 }: {
   pages: Cms.ContentItem[];
   prefix?: string;
@@ -137,26 +143,26 @@ export function DocsNavigation({
   return (
     <>
       <Sidebar
-        variant={'ghost'}
         className={
-          'border-border/50 sticky z-1 mt-4 max-h-full overflow-y-auto pr-4'
+          "sticky z-1 mt-4 max-h-full overflow-y-auto border-border/50 pr-4"
         }
+        variant={"ghost"}
       >
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
-            <SidebarMenu className={'pb-48'}>
-              <Tree pages={pages} level={0} prefix={prefix} />
+            <SidebarMenu className={"pb-48"}>
+              <Tree level={0} pages={pages} prefix={prefix} />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </Sidebar>
 
-      <div className={'lg:hidden'}>
+      <div className={"lg:hidden"}>
         <FloatingDocumentationNavigation>
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
-                <Tree pages={pages} level={0} prefix={prefix} />
+                <Tree level={0} pages={pages} prefix={prefix} />
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

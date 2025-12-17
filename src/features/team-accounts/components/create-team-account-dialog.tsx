@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { Button } from '~/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
+import { Trans } from "~/components/portal/trans";
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '~/components/ui/dialog';
+} from "~/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -20,35 +20,34 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '~/components/ui/form';
-import { Input } from '~/components/ui/input';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
 
-import { DialogErrorAlert } from '~/shared/components/ui/dialog-error-alert';
-import { useDialogForm } from '~/shared/hooks/use-dialog-form';
+import { DialogErrorAlert } from "~/shared/components/ui/dialog-error-alert";
+import { useDialogForm } from "~/shared/hooks/use-dialog-form";
 
-import { CreateTeamSchema } from '../schema/create-team.schema';
-import { createTeamAccountAction } from '../server/actions/create-team-account-server-actions';
+import { CreateTeamSchema } from "../schema/create-team.schema";
+import { createTeamAccountAction } from "../server/actions/team-account-server-actions";
 
 export function CreateTeamAccountDialog(
   props: React.PropsWithChildren<{
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
-  }>,
+  }>
 ) {
   return (
-    <Dialog open={props.isOpen} onOpenChange={props.setIsOpen}>
+    <Dialog onOpenChange={props.setIsOpen} open={props.isOpen}>
       <DialogContent
         onEscapeKeyDown={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
           <DialogTitle>
-            <Trans i18nKey={'teams:createTeamModalHeading'} />
+            <Trans i18nKey={"teams:createTeamModalHeading"} />
           </DialogTitle>
 
           <DialogDescription>
-            <Trans i18nKey={'teams:createTeamModalDescription'} />
+            <Trans i18nKey={"teams:createTeamModalDescription"} />
           </DialogDescription>
         </DialogHeader>
 
@@ -61,7 +60,7 @@ export function CreateTeamAccountDialog(
 function CreateOrganizationAccountForm(props: { onClose: () => void }) {
   const form = useForm<z.infer<typeof CreateTeamSchema>>({
     defaultValues: {
-      name: '',
+      name: "",
     },
     resolver: zodResolver(CreateTeamSchema),
   });
@@ -76,61 +75,59 @@ function CreateOrganizationAccountForm(props: { onClose: () => void }) {
   return (
     <Form {...form}>
       <form
-        data-test={'create-team-form'}
+        data-test={"create-team-form"}
         onSubmit={form.handleSubmit(handleSubmit)}
       >
-        <div className={'flex flex-col space-y-4'}>
+        <div className={"flex flex-col space-y-4"}>
           <DialogErrorAlert
+            descriptionKey="teams:createTeamErrorMessage"
             error={error}
             titleKey="teams:createTeamErrorHeading"
-            descriptionKey="teams:createTeamErrorMessage"
           />
 
           <FormField
-            name={'name'}
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>
-                    <Trans i18nKey={'teams:teamNameLabel'} />
-                  </FormLabel>
+            name={"name"}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <Trans i18nKey={"teams:teamNameLabel"} />
+                </FormLabel>
 
-                  <FormControl>
-                    <Input
-                      data-test={'create-team-name-input'}
-                      required
-                      minLength={2}
-                      maxLength={50}
-                      placeholder={''}
-                      {...field}
-                    />
-                  </FormControl>
+                <FormControl>
+                  <Input
+                    data-test={"create-team-name-input"}
+                    maxLength={50}
+                    minLength={2}
+                    placeholder={""}
+                    required
+                    {...field}
+                  />
+                </FormControl>
 
-                  <FormDescription>
-                    <Trans i18nKey={'teams:teamNameDescription'} />
-                  </FormDescription>
+                <FormDescription>
+                  <Trans i18nKey={"teams:teamNameDescription"} />
+                </FormDescription>
 
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
-          <div className={'flex justify-end space-x-2'}>
+          <div className={"flex justify-end space-x-2"}>
             <Button
-              variant={'outline'}
-              type={'button'}
               disabled={pending}
               onClick={props.onClose}
+              type={"button"}
+              variant={"outline"}
             >
-              <Trans i18nKey={'common:cancel'} />
+              <Trans i18nKey={"common:cancel"} />
             </Button>
 
-            <Button data-test={'confirm-create-team-button'} disabled={pending}>
+            <Button data-test={"confirm-create-team-button"} disabled={pending}>
               {pending ? (
-                <Trans i18nKey={'teams:creatingTeam'} />
+                <Trans i18nKey={"teams:creatingTeam"} />
               ) : (
-                <Trans i18nKey={'teams:createTeamSubmitLabel'} />
+                <Trans i18nKey={"teams:createTeamSubmitLabel"} />
               )}
             </Button>
           </div>
@@ -139,4 +136,3 @@ function CreateOrganizationAccountForm(props: { onClose: () => void }) {
     </Form>
   );
 }
-

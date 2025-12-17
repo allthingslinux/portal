@@ -1,28 +1,27 @@
-import { createTeamAccountsApi } from '~/features/team-accounts/server/api';
-import { TeamAccountSettingsContainer } from '~/features/team-accounts/components';
-import { AppBreadcrumbs } from '~/components/makerkit/app-breadcrumbs';
-import { PageBody } from '~/components/makerkit/page';
-import { Trans } from '~/components/makerkit/trans';
-
-import featuresFlagConfig from '~/config/feature-flags.config';
-import pathsConfig from '~/config/paths.config';
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
+import { AppBreadcrumbs } from "~/components/portal/app-breadcrumbs";
+import { PageBody } from "~/components/portal/page";
+import { Trans } from "~/components/portal/trans";
+import featuresFlagConfig from "~/config/feature-flags.config";
+import pathsConfig from "~/config/paths.config";
+import { TeamAccountSettingsContainer } from "~/features/team-accounts/components";
+import { createTeamAccountsApi } from "~/features/team-accounts/server/api";
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 
 // local imports
-import { TeamAccountLayoutPageHeader } from '../_components/team-account-layout-page-header';
+import { TeamAccountLayoutPageHeader } from "../_components/team-account-layout-page-header";
 
 export const generateMetadata = async () => {
   const i18n = await createI18nServerInstance();
-  const title = i18n.t('teams:settings:pageTitle');
+  const title = i18n.t("teams:settings:pageTitle");
 
   return {
     title,
   };
 };
 
-interface TeamAccountSettingsPageProps {
+type TeamAccountSettingsPageProps = {
   params: Promise<{ account: string }>;
-}
+};
 
 const paths = {
   teamAccountSettings: pathsConfig.app.accountSettings,
@@ -34,15 +33,15 @@ async function TeamAccountSettingsPage(props: TeamAccountSettingsPageProps) {
   const result = await api.getTeamAccount(slug);
 
   if (result.error || !result.data) {
-    throw new Error(result.error?.message || 'Account not found');
+    throw new Error(result.error?.message || "Account not found");
   }
 
   const data = result.data;
   const account = {
     id: data.id,
     name: data.name,
-    pictureUrl: data.pictureUrl,
-    slug: data.slug as string,
+    pictureUrl: data.pictureUrl ?? null,
+    slug: (data.slug as string | null) ?? "",
     primaryOwnerUserId: data.primaryOwnerUserId,
   };
 
@@ -54,16 +53,16 @@ async function TeamAccountSettingsPage(props: TeamAccountSettingsPageProps) {
     <>
       <TeamAccountLayoutPageHeader
         account={account.slug}
-        title={<Trans i18nKey={'teams:settings.pageTitle'} />}
         description={<AppBreadcrumbs />}
+        title={<Trans i18nKey={"teams:settings.pageTitle"} />}
       />
 
       <PageBody>
-        <div className={'flex max-w-2xl flex-1 flex-col'}>
+        <div className={"flex max-w-2xl flex-1 flex-col"}>
           <TeamAccountSettingsContainer
             account={account}
-            paths={paths}
             features={features}
+            paths={paths}
           />
         </div>
       </PageBody>

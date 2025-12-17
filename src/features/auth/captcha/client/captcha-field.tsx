@@ -1,20 +1,19 @@
-'use client';
-
-import { useRef } from 'react';
+"use client";
 
 import {
   Turnstile,
-  TurnstileInstance,
-  TurnstileProps,
-} from '@marsidev/react-turnstile';
-import type { Control, FieldPath, FieldValues } from 'react-hook-form';
-import { useController } from 'react-hook-form';
+  type TurnstileInstance,
+  type TurnstileProps,
+} from "@marsidev/react-turnstile";
+import { useRef } from "react";
+import type { Control, FieldPath, FieldValues } from "react-hook-form";
+import { useController } from "react-hook-form";
 
-interface BaseCaptchaFieldProps {
+type BaseCaptchaFieldProps = {
   siteKey: string | undefined;
   options?: TurnstileProps;
   nonce?: string;
-}
+};
 
 interface StandaloneCaptchaFieldProps extends BaseCaptchaFieldProps {
   onTokenChange: (token: string) => void;
@@ -68,56 +67,76 @@ export function CaptchaField<
   const { siteKey, options, nonce } = props;
   const instanceRef = useRef<TurnstileInstance | null>(null);
 
+  const control = props.control;
+
+  const defaultOptions: Partial<TurnstileProps> = {
+    options: {
+      size: "invisible",
+    },
+  };
+
+  if (!control) {
+    if (!siteKey) {
+      return null;
+    }
+
+    return (
+      <Turnstile
+        onSuccess={(token) => {
+          props.onTokenChange(token);
+        }}
+        ref={(instance) => {
+          if (instance) {
+            instanceRef.current = instance;
+            props.onInstanceChange?.(instance);
+          }
+        }}
+        scriptOptions={{
+          nonce,
+        }}
+        siteKey={siteKey}
+        {...defaultOptions}
+        {...options}
+      />
+    );
+  }
+
   // React Hook Form integration
-  const controller =
-    'control' in props && props.control
-      ? // eslint-disable-next-line react-hooks/rules-of-hooks
-        useController({
-          control: props.control,
-          name: props.name,
-        })
-      : null;
+  // biome-ignore lint/correctness/useHookAtTopLevel: hook only used in controlled mode
+  const controller = useController({
+    control,
+    name: props.name,
+  });
 
   if (!siteKey) {
     return null;
   }
 
-  const defaultOptions: Partial<TurnstileProps> = {
-    options: {
-      size: 'invisible',
-    },
-  };
-
   const handleSuccess = (token: string) => {
     if (controller) {
       // React Hook Form mode - use setValue from controller
       controller.field.onChange(token);
-    } else if ('onTokenChange' in props && props.onTokenChange) {
-      // Standalone mode
-      props.onTokenChange(token);
     }
   };
 
   const handleInstanceChange = (instance: TurnstileInstance | null) => {
     instanceRef.current = instance;
 
-    if ('onInstanceChange' in props && props.onInstanceChange) {
-      props.onInstanceChange(instance);
-    }
+    // Standalone mode handles onInstanceChange above
   };
 
   return (
     <Turnstile
+      onSuccess={handleSuccess}
       ref={(instance) => {
         if (instance) {
           handleInstanceChange(instance);
         }
       }}
-      siteKey={siteKey}
-      onSuccess={handleSuccess}
       scriptOptions={{
         nonce,
       }}
+      siteKey={siteKey}
       {...defaultOptions}
       {...options}
     />

@@ -1,2 +1,2 @@
-export * from './account-settings-container';
-export * from './link-accounts';
+export * from "./account-settings-container";
+export * from "./link-accounts";

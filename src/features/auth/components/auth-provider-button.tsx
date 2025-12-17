@@ -1,5 +1,5 @@
-import { Button } from '~/components/ui/button';
-import { OauthProviderLogoImage } from '~/components/makerkit/oauth-provider-logo-image';
+import { OauthProviderLogoImage } from "~/components/portal/oauth-provider-logo-image";
+import { Button } from "~/components/ui/button";
 
 export function AuthProviderButton({
   providerId,
@@ -11,11 +11,11 @@ export function AuthProviderButton({
 }>) {
   return (
     <Button
-      className={'flex w-full gap-x-3 text-center'}
+      className={"flex w-full gap-x-3 text-center"}
       data-provider={providerId}
-      data-test={'auth-provider-button'}
-      variant={'outline'}
+      data-test={"auth-provider-button"}
       onClick={onClick}
+      variant={"outline"}
     >
       <OauthProviderLogoImage providerId={providerId} />
 

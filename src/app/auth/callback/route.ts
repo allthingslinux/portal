@@ -1,18 +1,19 @@
-import { redirect } from 'next/navigation';
-import type { NextRequest } from 'next/server';
+import { redirect } from "next/navigation";
+import type { NextRequest } from "next/server";
 
-import { createAuthCallbackService } from '~/core/database/supabase/auth';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
+import pathsConfig from "~/config/paths.config";
 
-import pathsConfig from '~/config/paths.config';
-
+/**
+ * Auth callback route
+ * Better Auth handles OAuth callbacks via the `/api/auth` handler.
+ * This route is kept for backward compatibility (old deep links) and can host
+ * additional redirect logic if needed.
+ */
 export async function GET(request: NextRequest) {
-  const service = createAuthCallbackService(getSupabaseServerClient());
+  // Better Auth processes the callback; we simply land users on the requested
+  // destination (or home) afterward.
+  const searchParams = request.nextUrl.searchParams;
+  const next = searchParams.get("next") || pathsConfig.app.home;
 
-  const { nextPath } = await service.exchangeCodeForSession(request, {
-    joinTeamPath: pathsConfig.app.joinTeam,
-    redirectPath: pathsConfig.app.home,
-  });
-
-  return redirect(nextPath);
+  redirect(next);
 }

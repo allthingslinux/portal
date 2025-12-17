@@ -1,7 +1,6 @@
-import { z } from 'zod';
-
-import { KeystaticStorage } from './keystatic-storage';
-import { keyStaticConfig } from './keystatic.config';
+import { z } from "zod";
+import { keyStaticConfig } from "./keystatic.config";
+import { KeystaticStorage } from "./keystatic-storage";
 
 /**
  * @name createKeystaticReader
@@ -9,33 +8,34 @@ import { keyStaticConfig } from './keystatic.config';
  */
 export async function createKeystaticReader() {
   switch (KeystaticStorage.kind) {
-    case 'local': {
+    case "local": {
       // we need to import this dynamically to avoid parsing the package in edge environments
-      if (process.env.NEXT_RUNTIME === 'nodejs') {
-        const { createReader } = await import('@keystatic/core/reader');
+      if (process.env.NEXT_RUNTIME === "nodejs") {
+        const { createReader } = await import("@keystatic/core/reader");
 
         return createReader(process.cwd(), keyStaticConfig);
-      } else {
-        // we should never get here but the compiler requires the check
-        // to ensure we don't parse the package at build time
-        throw new Error();
       }
+      // we should never get here but the compiler requires the check
+      // to ensure we don't parse the package at build time
+      throw new Error(
+        "Keystatic local storage is only supported in the Node.js runtime"
+      );
     }
 
-    case 'github':
-    case 'cloud': {
+    case "github":
+    case "cloud": {
       const { createGitHubReader } = await import(
-        '@keystatic/core/reader/github'
+        "@keystatic/core/reader/github"
       );
 
       return createGitHubReader(
         keyStaticConfig,
-        getKeystaticGithubConfiguration(),
+        getKeystaticGithubConfiguration()
       );
     }
 
     default:
-      throw new Error(`Unknown storage kind`);
+      throw new Error("Unknown storage kind");
   }
 }
 

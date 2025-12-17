@@ -1,42 +1,48 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import type { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
+import { DataTable } from "~/components/portal/data-table";
+import { ProfileAvatar } from "~/components/portal/profile-avatar";
 
-import { ColumnDef } from '@tanstack/react-table';
+type AdminMember = {
+  id: string;
+  user_id: string;
+  account_id: string;
+  role: string;
+  name: string;
+  email: string;
+  picture_url: string;
+  created_at: string | null;
+  updated_at: string | null;
+};
 
-import { Database } from '~/core/database/supabase/database.types';
-import { DataTable } from '~/components/makerkit/data-table';
-import { ProfileAvatar } from '~/components/makerkit/profile-avatar';
-
-type Memberships =
-  Database['public']['Functions']['get_account_members']['Returns'][number];
-
-export function AdminMembersTable(props: { members: Memberships[] }) {
-  return <DataTable data={props.members} columns={getColumns()} />;
+export function AdminMembersTable(props: { members: AdminMember[] }) {
+  return <DataTable columns={getColumns()} data={props.members} />;
 }
 
-function getColumns(): ColumnDef<Memberships>[] {
+function getColumns(): ColumnDef<AdminMember>[] {
   return [
     {
-      header: 'User ID',
-      accessorKey: 'user_id',
+      header: "User ID",
+      accessorKey: "user_id",
     },
     {
-      header: 'Name',
+      header: "Name",
       cell: ({ row }) => {
         const name = row.original.name ?? row.original.email;
 
         return (
-          <div className={'flex items-center space-x-2'}>
+          <div className={"flex items-center space-x-2"}>
             <div>
               <ProfileAvatar
-                pictureUrl={row.original.picture_url}
                 displayName={name}
+                pictureUrl={row.original.picture_url}
               />
             </div>
 
             <Link
-              className={'hover:underline'}
+              className={"hover:underline"}
               href={`/admin/accounts/${row.original.id}`}
             >
               <span>{name}</span>
@@ -46,22 +52,20 @@ function getColumns(): ColumnDef<Memberships>[] {
       },
     },
     {
-      header: 'Email',
-      accessorKey: 'email',
+      header: "Email",
+      accessorKey: "email",
     },
     {
-      header: 'Role',
-      cell: ({ row }) => {
-        return row.original.role;
-      },
+      header: "Role",
+      cell: ({ row }) => row.original.role,
     },
     {
-      header: 'Created At',
-      accessorKey: 'created_at',
+      header: "Created At",
+      accessorKey: "created_at",
     },
     {
-      header: 'Updated At',
-      accessorKey: 'updated_at',
+      header: "Updated At",
+      accessorKey: "updated_at",
     },
   ];
 }

@@ -1,13 +1,9 @@
-import 'server-only';
+import "server-only";
 
-import { redirect } from 'next/navigation';
-
-import { ZodType, z } from 'zod';
-
-import { verifyCaptchaToken } from '~/features/auth/captcha/server';
-import { requireUser } from '~/core/database/supabase/require-user';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
-import { JWTUserData } from '~/core/database/supabase/types';
+import type { ZodType, z } from "zod";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import { requireUser } from "~/core/database/require-user";
+import { verifyCaptchaToken } from "~/features/auth/captcha/server";
 
 /**
  * @name enhanceAction
@@ -20,21 +16,21 @@ export function enhanceAction<
     auth?: boolean;
     captcha?: boolean;
     schema?: z.ZodType<
-      Config['captcha'] extends true ? Args & { captchaToken: string } : Args,
+      Config["captcha"] extends true ? Args & { captchaToken: string } : Args,
       z.ZodTypeDef
     >;
   },
 >(
   fn: (
-    params: Config['schema'] extends ZodType ? z.infer<Config['schema']> : Args,
-    user: Config['auth'] extends false ? undefined : JWTUserData,
+    params: Config["schema"] extends ZodType ? z.infer<Config["schema"]> : Args,
+    user: Config["auth"] extends false ? undefined : BetterAuthUser
   ) => Response | Promise<Response>,
-  config: Config,
+  config: Config
 ) {
   return async (
-    params: Config['schema'] extends ZodType ? z.infer<Config['schema']> : Args,
+    params: Config["schema"] extends ZodType ? z.infer<Config["schema"]> : Args
   ) => {
-    type UserParam = Config['auth'] extends false ? undefined : JWTUserData;
+    type UserParam = Config["auth"] extends false ? undefined : BetterAuthUser;
 
     const requireAuth = config.auth ?? true;
     let user: UserParam = undefined as UserParam;
@@ -48,7 +44,7 @@ export function enhanceAction<
           return parsed.data;
         }
 
-        throw new Error(parsed.error.message || 'Invalid request body');
+        throw new Error(parsed.error.message || "Invalid request body");
       }
 
       return params;
@@ -59,25 +55,15 @@ export function enhanceAction<
     // by default, the CAPTCHA token is not required
     const verifyCaptcha = config.captcha ?? false;
 
-    // verify the CAPTCHA token. It will throw an error if the token is invalid.
+    // verify the CAPTCHA token if required. It will throw an error if the token is invalid.
     if (verifyCaptcha) {
       const token = (data as Args & { captchaToken: string }).captchaToken;
-
-      // Verify the CAPTCHA token. It will throw an error if the token is invalid.
       await verifyCaptchaToken(token);
     }
 
     // verify the user is authenticated if required
     if (requireAuth) {
-      // verify the user is authenticated if required
-      const auth = await requireUser(getSupabaseServerClient());
-
-      // If the user is not authenticated, redirect to the specified URL.
-      if (!auth.data) {
-        redirect(auth.redirectTo);
-      }
-
-      user = auth.data as UserParam;
+      user = (await requireUser()) as UserParam;
     }
 
     return fn(data, user);

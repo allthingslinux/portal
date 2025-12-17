@@ -1,4 +1,4 @@
-import { Cms } from '~/features/cms/core';
+import type { Cms } from "~/features/cms/core";
 
 /**
  * @name buildDocumentationTree
@@ -8,12 +8,12 @@ import { Cms } from '~/features/cms/core';
 export function buildDocumentationTree(pages: Cms.ContentItem[]) {
   const tree: Cms.ContentItem[] = [];
 
-  pages.forEach((page) => {
+  for (const page of pages) {
     if (page.parentId) {
       const parent = pages.find((item) => item.slug === page.parentId);
 
       if (!parent) {
-        return;
+        continue;
       }
 
       if (!parent.children) {
@@ -27,7 +27,7 @@ export function buildDocumentationTree(pages: Cms.ContentItem[]) {
     } else {
       tree.push(page);
     }
-  });
+  }
 
   return tree.sort((a, b) => a.order - b.order);
 }

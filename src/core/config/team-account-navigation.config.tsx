@@ -1,34 +1,34 @@
-import { LayoutDashboard, Settings, Users } from 'lucide-react';
+import { LayoutDashboard, Settings, Users } from "lucide-react";
 
-import { NavigationConfigSchema } from '~/components/makerkit/navigation-config.schema';
+import { NavigationConfigSchema } from "~/components/portal/navigation-config.schema";
 
-import pathsConfig from '~/config/paths.config';
+import pathsConfig from "~/config/paths.config";
 
-const iconClasses = 'w-4';
+const iconClasses = "w-4";
 
 const getRoutes = (account: string) => [
   {
-    label: 'common:routes.application',
+    label: "common:routes.application",
     children: [
       {
-        label: 'common:routes.dashboard',
-        path: pathsConfig.app.accountHome.replace('[account]', account),
+        label: "common:routes.dashboard",
+        path: pathsConfig.app.accountHome.replace("[account]", account),
         Icon: <LayoutDashboard className={iconClasses} />,
         end: true,
       },
     ],
   },
   {
-    label: 'common:routes.settings',
+    label: "common:routes.settings",
     collapsible: false,
     children: [
       {
-        label: 'common:routes.settings',
+        label: "common:routes.settings",
         path: createPath(pathsConfig.app.accountSettings, account),
         Icon: <Settings className={iconClasses} />,
       },
       {
-        label: 'common:routes.members',
+        label: "common:routes.members",
         path: createPath(pathsConfig.app.accountMembers, account),
         Icon: <Users className={iconClasses} />,
       },
@@ -46,5 +46,5 @@ export function getTeamAccountSidebarConfig(account: string) {
 }
 
 function createPath(path: string, account: string) {
-  return path.replace('[account]', account);
+  return path.replace("[account]", account);
 }

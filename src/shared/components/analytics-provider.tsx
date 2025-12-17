@@ -1,17 +1,16 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useEffectEvent } from 'react';
+import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useEffectEvent } from "react";
 
-import { usePathname, useSearchParams } from 'next/navigation';
-
-import { analytics } from '~/core/monitoring/analytics';
+import { analytics } from "~/core/monitoring/analytics";
 import {
-  AppEvent,
-  AppEventType,
-  ConsumerProvidedEventTypes,
+  type AppEvent,
+  type AppEventType,
+  type ConsumerProvidedEventTypes,
   useAppEvents,
-} from '~/shared/events';
-import { isBrowser } from '~/shared/utils';
+} from "~/shared/events";
+import { isBrowser } from "~/shared/utils";
 
 type AnalyticsMapping<
   T extends ConsumerProvidedEventTypes = NonNullable<unknown>,
@@ -24,26 +23,26 @@ type AnalyticsMapping<
  * @param mapping
  */
 function useAnalyticsMapping<T extends ConsumerProvidedEventTypes>(
-  mapping: AnalyticsMapping<T>,
+  mapping: AnalyticsMapping<T>
 ) {
   const appEvents = useAppEvents<T>();
 
   const subscribeToAppEvent = useEffectEvent(
     (
       eventType: AppEventType<T>,
-      handler: (event: AppEvent<T, AppEventType<T>>) => unknown,
+      handler: (event: AppEvent<T, AppEventType<T>>) => unknown
     ) => {
       appEvents.on(eventType, handler);
-    },
+    }
   );
 
   const unsubscribeFromAppEvent = useEffectEvent(
     (
       eventType: AppEventType<T>,
-      handler: (event: AppEvent<T, AppEventType<T>>) => unknown,
+      handler: (event: AppEvent<T, AppEventType<T>>) => unknown
     ) => {
       appEvents.off(eventType, handler);
-    },
+    }
   );
 
   useEffect(() => {
@@ -53,11 +52,13 @@ function useAnalyticsMapping<T extends ConsumerProvidedEventTypes>(
 
         return () =>
           unsubscribeFromAppEvent(eventType as AppEventType<T>, handler);
-      },
+      }
     );
 
     return () => {
-      subscriptions.forEach((unsubscribe) => unsubscribe());
+      for (const unsubscribe of subscriptions) {
+        unsubscribe();
+      }
     };
   }, [mapping]);
 }
@@ -67,19 +68,15 @@ function useAnalyticsMapping<T extends ConsumerProvidedEventTypes>(
  * Add new mappings here to track new events in the analytics service from app events
  */
 const analyticsMapping: AnalyticsMapping = {
-  'user.signedIn': (event) => {
+  "user.signedIn": (event) => {
     const { userId, ...traits } = event.payload;
 
     if (userId) {
       return analytics.identify(userId, traits);
     }
   },
-  'user.signedUp': (event) => {
-    return analytics.trackEvent(event.type, event.payload);
-  },
-  'user.updated': (event) => {
-    return analytics.trackEvent(event.type, event.payload);
-  },
+  "user.signedUp": (event) => analytics.trackEvent(event.type, event.payload),
+  "user.updated": (event) => analytics.trackEvent(event.type, event.payload),
 };
 
 function AnalyticsProviderBrowser(props: React.PropsWithChildren) {
@@ -113,7 +110,7 @@ function useReportPageView(reportAnalyticsFn: (url: string) => unknown) {
   const searchParams = useSearchParams();
 
   const callAnalyticsOnPathChange = useEffectEvent(() => {
-    const url = [pathname, searchParams.toString()].filter(Boolean).join('?');
+    const url = [pathname, searchParams.toString()].filter(Boolean).join("?");
 
     return reportAnalyticsFn(url);
   });
@@ -121,5 +118,5 @@ function useReportPageView(reportAnalyticsFn: (url: string) => unknown) {
   useEffect(() => {
     callAnalyticsOnPathChange();
     // call whenever the pathname changes
-  }, [pathname]);
+  }, []);
 }

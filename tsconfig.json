@@ -27,7 +27,8 @@
       "~/features/*": ["./src/features/*"],
       "~/shared/*": ["./src/shared/*"],
       "~/tools/*": ["./src/tools/*"]
-    }
+    },
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",

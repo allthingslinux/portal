@@ -1,30 +1,81 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from "react";
 
-import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
-
-import { useMonitoring } from '~/core/monitoring/api/hooks';
-import { useAppEvents } from '~/shared/events';
-import { useAuthChangeListener } from '~/core/database/supabase/hooks/use-auth-change-listener';
+import { authClient } from "~/core/auth/better-auth";
+import { useSyncUserFromKeycloak } from "~/core/auth/better-auth/hooks/use-sync-user-from-keycloak";
+import { useMonitoring } from "~/core/monitoring/api/hooks";
+import { useAppEvents } from "~/shared/events";
 
 export function AuthProvider(props: React.PropsWithChildren) {
+  return <AuthEventDispatcher>{props.children}</AuthEventDispatcher>;
+}
+
+function AuthEventDispatcher({ children }: React.PropsWithChildren) {
+  const { data: session, isPending } = authClient.useSession();
   const dispatchEvent = useDispatchAppEventFromAuthEvent();
+  const syncUser = useSyncUserFromKeycloak();
+  const lastSyncTimeRef = useRef<number>(0);
+  const syncInProgressRef = useRef<boolean>(false);
+  const userIdRef = useRef<string | undefined>(undefined);
 
-  const onEvent = useCallback(
-    (event: AuthChangeEvent, session: Session | null) => {
-      dispatchEvent(event, session?.user.id, {
-        email: session?.user.email ?? '',
-      });
-    },
-    [dispatchEvent],
-  );
+  useEffect(() => {
+    if (!isPending && session?.user) {
+      const userId = session.user.id;
+      const isNewSession = userIdRef.current !== userId;
 
-  useAuthChangeListener({
-    onEvent,
-  });
+      if (isNewSession) {
+        userIdRef.current = userId;
+        dispatchEvent("SIGNED_IN", userId, {
+          email: session.user.email || "",
+        });
+      }
 
-  return props.children;
+      // Sync user data from Keycloak on session load (only once per session)
+      // This ensures user profile changes in Keycloak are reflected without re-login
+      const now = Date.now();
+      const timeSinceLastSync = now - lastSyncTimeRef.current;
+      const shouldSync =
+        isNewSession ||
+        (timeSinceLastSync > 60_000 && !syncInProgressRef.current); // At least 1 minute since last sync
+
+      if (shouldSync) {
+        syncInProgressRef.current = true;
+        lastSyncTimeRef.current = now;
+        syncUser.mutate(undefined, {
+          onSettled: () => {
+            syncInProgressRef.current = false;
+          },
+        });
+      }
+    }
+  }, [isPending, session?.user, dispatchEvent, syncUser.mutate]);
+
+  // Periodic sync every 5 minutes to keep user data fresh
+  useEffect(() => {
+    if (!session?.user) {
+      return;
+    }
+
+    const interval = setInterval(
+      () => {
+        if (!syncInProgressRef.current) {
+          syncInProgressRef.current = true;
+          lastSyncTimeRef.current = Date.now();
+          syncUser.mutate(undefined, {
+            onSettled: () => {
+              syncInProgressRef.current = false;
+            },
+          });
+        }
+      },
+      5 * 60 * 1000
+    ); // 5 minutes
+
+    return () => clearInterval(interval);
+  }, [session?.user, syncUser.mutate]);
+
+  return <>{children}</>;
 }
 
 function useDispatchAppEventFromAuthEvent() {
@@ -33,15 +84,15 @@ function useDispatchAppEventFromAuthEvent() {
 
   return useCallback(
     (
-      type: AuthChangeEvent,
+      type: "SIGNED_IN" | "SIGNED_OUT" | "USER_UPDATED",
       userId: string | undefined,
-      traits: Record<string, string> = {},
+      traits: Record<string, string> = {}
     ) => {
       switch (type) {
-        case 'INITIAL_SESSION':
+        case "SIGNED_IN":
           if (userId) {
             emit({
-              type: 'user.signedIn',
+              type: "user.signedIn",
               payload: { userId, ...traits },
             });
 
@@ -50,27 +101,21 @@ function useDispatchAppEventFromAuthEvent() {
 
           break;
 
-        case 'SIGNED_IN':
+        case "USER_UPDATED":
           if (userId) {
             emit({
-              type: 'user.signedIn',
+              type: "user.updated",
               payload: { userId, ...traits },
             });
-
-            monitoring.identifyUser({ id: userId, ...traits });
           }
 
           break;
 
-        case 'USER_UPDATED':
-          emit({
-            type: 'user.updated',
-            payload: { userId: userId!, ...traits },
-          });
-
+        default:
+          // No action needed for other event types
           break;
       }
     },
-    [emit, monitoring],
+    [emit, monitoring]
   );
 }

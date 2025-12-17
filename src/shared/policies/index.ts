@@ -1,32 +1,30 @@
 // Export core types and interfaces
-export type { PolicyContext, PolicyResult, PolicyStage } from './types';
 
-// Export primary registry-based API
-export { definePolicy } from './declarative';
 export type {
   FeaturePolicyDefinition,
-  PolicyEvaluator,
   PolicyErrorCode,
+  PolicyEvaluator,
   PolicyReason,
-} from './declarative';
+} from "./declarative";
 
-// Export policy registry (primary API)
-export { createPolicyRegistry } from './registry';
-export type { PolicyRegistry } from './registry';
-
-// Export evaluator and bridge functions
-export {
-  createPolicy,
-  createPoliciesEvaluator,
-  createPolicyFromRegistry,
-  createPoliciesFromRegistry,
-} from './evaluator';
-
+// Export primary registry-based API
+export { definePolicy } from "./declarative";
 export type {
+  EvaluationResult,
   PolicyFunction,
   PolicyGroup,
-  EvaluationResult,
-} from './evaluator';
-
+} from "./evaluator";
+// Export evaluator and bridge functions
 // Export helper functions (for policy implementations)
-export { allow, deny } from './evaluator';
+export {
+  allow,
+  createPoliciesEvaluator,
+  createPoliciesFromRegistry,
+  createPolicy,
+  createPolicyFromRegistry,
+  deny,
+} from "./evaluator";
+export type { PolicyRegistry } from "./registry";
+// Export policy registry (primary API)
+export { createPolicyRegistry } from "./registry";
+export type { PolicyContext, PolicyResult, PolicyStage } from "./types";

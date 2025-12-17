@@ -1,31 +1,39 @@
-import { ServerDataLoader } from '@makerkit/data-loader-supabase-nextjs';
+import type { Metadata } from "next";
 
-import { AdminAccountsTable } from '~/features/admin/components/admin-accounts-table';
-import { AdminCreateUserDialog } from '~/features/admin/components/admin-create-user-dialog';
-import { AdminGuard } from '~/features/admin/components/admin-guard';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
-import { AppBreadcrumbs } from '~/components/makerkit/app-breadcrumbs';
-import { Button } from '~/components/ui/button';
-import { PageBody, PageHeader } from '~/components/makerkit/page';
+import { AppBreadcrumbs } from "~/components/portal/app-breadcrumbs";
+import { PageBody, PageHeader } from "~/components/portal/page";
+import { Button } from "~/components/ui/button";
+import { AdminAccountsTable } from "~/features/admin/components/admin-accounts-table";
+import { AdminCreateUserDialog } from "~/features/admin/components/admin-create-user-dialog";
+import { AdminGuard } from "~/features/admin/components/admin-guard";
+import { loadAdminAccounts } from "~/features/admin/lib/server/loaders/admin-accounts.loader";
+import { DEFAULT_PAGE_SIZE } from "~/shared/constants";
 
-interface SearchParams {
+type SearchParams = {
   page?: string;
-  account_type?: 'all' | 'team' | 'personal';
+  account_type?: "all" | "team" | "personal";
   query?: string;
-}
+};
 
-interface AdminAccountsPageProps {
+type AdminAccountsPageProps = {
   searchParams: Promise<SearchParams>;
-}
+};
 
-export const metadata = {
-  title: `Accounts`,
+export const metadata: Metadata = {
+  title: "Accounts",
 };
 
 async function AccountsPage(props: AdminAccountsPageProps) {
-  const client = getSupabaseServerClient();
   const searchParams = await props.searchParams;
-  const page = searchParams.page ? parseInt(searchParams.page) : 1;
+  const page = searchParams.page ? Number.parseInt(searchParams.page, 10) : 1;
+  const pageSize = DEFAULT_PAGE_SIZE;
+
+  const { data, pageCount } = await loadAdminAccounts({
+    page,
+    pageSize,
+    type: searchParams.account_type ?? "all",
+    query: searchParams.query,
+  });
 
   return (
     <>
@@ -38,39 +46,16 @@ async function AccountsPage(props: AdminAccountsPageProps) {
       </PageHeader>
 
       <PageBody>
-        <ServerDataLoader
-          table={'accounts'}
-          client={client}
+        <AdminAccountsTable
+          data={data}
+          filters={{
+            type: searchParams.account_type ?? "all",
+            query: searchParams.query ?? "",
+          }}
           page={page}
-          where={(queryBuilder) => {
-            const { account_type: type, query } = searchParams;
-
-            if (type && type !== 'all') {
-              queryBuilder.eq('is_personal_account', type === 'personal');
-            }
-
-            if (query) {
-              queryBuilder.or(`name.ilike.%${query}%,email.ilike.%${query}%`);
-            }
-
-            return queryBuilder;
-          }}
-        >
-          {({ data, page, pageSize, pageCount }) => {
-            return (
-              <AdminAccountsTable
-                page={page}
-                pageSize={pageSize}
-                pageCount={pageCount}
-                data={data}
-                filters={{
-                  type: searchParams.account_type ?? 'all',
-                  query: searchParams.query ?? '',
-                }}
-              />
-            );
-          }}
-        </ServerDataLoader>
+          pageCount={pageCount}
+          pageSize={pageSize}
+        />
       </PageBody>
     </>
   );

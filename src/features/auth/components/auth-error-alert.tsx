@@ -1,14 +1,12 @@
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
-import { Trans } from '~/components/makerkit/trans';
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { Trans } from "~/components/portal/trans";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 /**
  * @name AuthErrorAlert
- * @param error This error comes from Supabase as the code returned on errors
+ * @param error Authentication error code
  * This error is mapped from the translation auth:errors.{error}
  * To update the error messages, please update the translation file
- * https://github.com/supabase/gotrue-js/blob/master/lib/errors.ts
  * @constructor
  */
 export function AuthErrorAlert({
@@ -24,18 +22,18 @@ export function AuthErrorAlert({
   const errorCode = error instanceof Error ? error.message : error;
 
   return (
-    <Alert variant={'destructive'}>
-      <ExclamationTriangleIcon className={'w-4'} />
+    <Alert variant={"destructive"}>
+      <ExclamationTriangleIcon className={"w-4"} />
 
       <AlertTitle>
-        <Trans i18nKey={`auth:errorAlertHeading`} />
+        <Trans i18nKey={"auth:errorAlertHeading"} />
       </AlertTitle>
 
-      <AlertDescription data-test={'auth-error-message'}>
+      <AlertDescription data-test={"auth-error-message"}>
         <Trans
-          i18nKey={`auth:errors.${errorCode}`}
-          defaults={'<DefaultError />'}
           components={{ DefaultError }}
+          defaults={"<DefaultError />"}
+          i18nKey={`auth:errors.${errorCode}`}
         />
       </AlertDescription>
     </Alert>

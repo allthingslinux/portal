@@ -1,8 +1,11 @@
-import { Cms, CmsClient } from '~/features/cms/types';
+import type { Cms, CmsClient } from "~/features/cms/types";
 
-import { createKeystaticReader } from './create-reader';
-import { DocumentationEntryProps, PostEntryProps } from './keystatic.config';
-import { renderMarkdoc } from './markdoc';
+import { createKeystaticReader } from "./create-reader";
+import type {
+  DocumentationEntryProps,
+  PostEntryProps,
+} from "./keystatic.config";
+import { renderMarkdoc } from "./markdoc";
 
 export function createKeystaticClient() {
   return new KeystaticClient();
@@ -13,7 +16,7 @@ class KeystaticClient implements CmsClient {
     const reader = await createKeystaticReader();
 
     const collection =
-      options.collection as keyof (typeof reader)['collections'];
+      options.collection as keyof (typeof reader)["collections"];
 
     if (!reader.collections[collection]) {
       throw new Error(`Collection ${collection} not found`);
@@ -28,7 +31,7 @@ class KeystaticClient implements CmsClient {
 
     const filtered = docs
       .filter((item) => {
-        const status = options?.status ?? 'published';
+        const status = options?.status ?? "published";
 
         if (item.entry.status !== status) {
           return false;
@@ -36,7 +39,7 @@ class KeystaticClient implements CmsClient {
 
         const categoryMatch = options?.categories?.length
           ? options.categories.find((category) =>
-              item.entry.categories.includes(category),
+              item.entry.categories.includes(category)
             )
           : true;
 
@@ -44,10 +47,12 @@ class KeystaticClient implements CmsClient {
           return false;
         }
 
-        if (options.language) {
-          if (item.entry.language && item.entry.language !== options.language) {
-            return false;
-          }
+        if (
+          options.language &&
+          item.entry.language &&
+          item.entry.language !== options.language
+        ) {
+          return false;
         }
 
         const tagMatch = options?.tags?.length
@@ -61,11 +66,11 @@ class KeystaticClient implements CmsClient {
         return true;
       })
       .sort((a, b) => {
-        const direction = options.sortDirection ?? 'asc';
-        const sortBy = options.sortBy ?? 'publishedAt';
+        const direction = options.sortDirection ?? "asc";
+        const sortBy = options.sortBy ?? "publishedAt";
 
         const transform = (value: string | number | undefined | null) => {
-          if (typeof value === 'string') {
+          if (typeof value === "string") {
             return new Date(value).getTime();
           }
 
@@ -75,57 +80,56 @@ class KeystaticClient implements CmsClient {
         const left = transform(a.entry[sortBy]);
         const right = transform(b.entry[sortBy]);
 
-        if (direction === 'asc') {
+        if (direction === "asc") {
           return left - right;
         }
 
         return right - left;
       });
 
-    function processItems(items: typeof filtered) {
-      const slugSet = new Set(items.map((item) => item.slug));
+    function processItems(processedItems: typeof filtered) {
+      const slugSet = new Set(processedItems.map((item) => item.slug));
       const indexFileCache = new Map<string, boolean>();
       const parentCache = new Map<string, string | null>();
 
       const isIndexFile = (slug: string): boolean => {
         if (indexFileCache.has(slug)) {
-          return indexFileCache.get(slug)!;
+          return indexFileCache.get(slug) ?? false;
         }
 
-        const parts = slug.split('/');
+        const parts = slug.split("/");
 
         const result =
           parts.length === 1 ||
-          (parts.length >= 2 &&
-            parts[parts.length - 1] === parts[parts.length - 2]);
+          (parts.length >= 2 && parts.at(-1) === parts.at(-2));
 
         indexFileCache.set(slug, result);
         return result;
       };
 
       const findClosestValidParent = (pathParts: string[]): string | null => {
-        const path = pathParts.join('/');
+        const path = pathParts.join("/");
 
         if (parentCache.has(path)) {
-          return parentCache.get(path)!;
+          return parentCache.get(path) ?? null;
         }
 
         for (let i = pathParts.length - 1; i > 0; i--) {
           const parentParts = pathParts.slice(0, i);
-          const lastPart = parentParts[parentParts.length - 1];
+          const lastPart = parentParts.at(-1);
 
           if (!lastPart) {
             continue;
           }
 
-          const possibleIndexParent = parentParts.concat(lastPart).join('/');
+          const possibleIndexParent = parentParts.concat(lastPart).join("/");
 
           if (slugSet.has(possibleIndexParent)) {
             parentCache.set(path, possibleIndexParent);
             return possibleIndexParent;
           }
 
-          const regularParent = parentParts.join('/');
+          const regularParent = parentParts.join("/");
 
           if (slugSet.has(regularParent)) {
             parentCache.set(path, regularParent);
@@ -137,10 +141,10 @@ class KeystaticClient implements CmsClient {
         return null;
       };
 
-      const results = new Array(items.length) as typeof items;
+      const results = new Array(processedItems.length) as typeof processedItems;
 
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
+      for (let i = 0; i < processedItems.length; i++) {
+        const item = processedItems[i];
 
         if (!item) {
           continue;
@@ -157,15 +161,20 @@ class KeystaticClient implements CmsClient {
           continue;
         }
 
-        const pathParts = item.slug.split('/');
+        const pathParts = item.slug.split("/");
         const parentParts = pathParts.slice(0, -1);
-        const lastPart = parentParts[parentParts.length - 1]!;
-        const possibleIndexParent = parentParts.concat(lastPart).join('/');
+        const lastPart = parentParts.at(-1);
+
+        if (!lastPart) {
+          results[i] = item;
+          continue;
+        }
+        const possibleIndexParent = parentParts.concat(lastPart).join("/");
 
         if (slugSet.has(possibleIndexParent)) {
           item.entry.parent = possibleIndexParent;
         } else {
-          const regularParent = parentParts.join('/');
+          const regularParent = parentParts.join("/");
           if (slugSet.has(regularParent)) {
             item.entry.parent = regularParent;
           } else {
@@ -184,17 +193,15 @@ class KeystaticClient implements CmsClient {
     const items = await Promise.all(
       itemsWithParents
         .slice(startOffset, endOffset)
-        .sort((a, b) => {
-          return (a.entry.order ?? 0) - (b.entry.order ?? 0);
-        })
+        .sort((a, b) => (a.entry.order ?? 0) - (b.entry.order ?? 0))
         .map((item) => {
-          if (collection === 'documentation') {
+          if (collection === "documentation") {
             return this.mapDocumentationPost(
               item as {
                 entry: DocumentationEntryProps;
                 slug: string;
               },
-              { fetchContent },
+              { fetchContent }
             );
           }
 
@@ -203,9 +210,9 @@ class KeystaticClient implements CmsClient {
               entry: PostEntryProps;
               slug: string;
             },
-            { fetchContent },
+            { fetchContent }
           );
-        }),
+        })
     );
 
     return {
@@ -222,14 +229,14 @@ class KeystaticClient implements CmsClient {
     const reader = await createKeystaticReader();
 
     const collection =
-      params.collection as keyof (typeof reader)['collections'];
+      params.collection as keyof (typeof reader)["collections"];
 
     if (!reader.collections[collection]) {
       throw new Error(`Collection ${collection} not found`);
     }
 
     const doc = await reader.collections[collection].read(params.slug);
-    const status = params.status ?? 'published';
+    const status = params.status ?? "published";
 
     // verify that the document exists
     if (!doc) {
@@ -271,7 +278,7 @@ class KeystaticClient implements CmsClient {
       fetchContent: boolean;
     } = {
       fetchContent: true,
-    },
+    }
   ): Promise<Cms.ContentItem> {
     const publishedAt = item.entry.publishedAt
       ? new Date(item.entry.publishedAt)
@@ -294,20 +301,16 @@ class KeystaticClient implements CmsClient {
       collapsible: item.entry.collapsible,
       collapsed: item.entry.collapsed,
       categories:
-        (item.entry.categories ?? []).map((item) => {
-          return {
-            id: item,
-            name: item,
-            slug: item,
-          };
-        }) ?? [],
-      tags: (item.entry.tags ?? []).map((item) => {
-        return {
-          id: item,
-          name: item,
-          slug: item,
-        };
-      }),
+        (item.entry.categories ?? []).map((category) => ({
+          id: category,
+          name: category,
+          slug: category,
+        })) ?? [],
+      tags: (item.entry.tags ?? []).map((tag) => ({
+        id: tag,
+        name: tag,
+        slug: tag,
+      })),
       parentId: item.entry.parent ?? undefined,
       order: item.entry.order ?? 1,
       children: [],
@@ -325,7 +328,7 @@ class KeystaticClient implements CmsClient {
       fetchContent: boolean;
     } = {
       fetchContent: true,
-    },
+    }
   ): Promise<Cms.ContentItem> {
     const publishedAt = item.entry.publishedAt
       ? new Date(item.entry.publishedAt)
@@ -346,20 +349,16 @@ class KeystaticClient implements CmsClient {
       image: item.entry.image ?? undefined,
       status: item.entry.status as Cms.ContentItemStatus,
       categories:
-        (item.entry.categories ?? []).map((item) => {
-          return {
-            id: item,
-            name: item,
-            slug: item,
-          };
-        }) ?? [],
-      tags: (item.entry.tags ?? []).map((item) => {
-        return {
-          id: item,
-          name: item,
-          slug: item,
-        };
-      }),
+        (item.entry.categories ?? []).map((category) => ({
+          id: category,
+          name: category,
+          slug: category,
+        })) ?? [],
+      tags: (item.entry.tags ?? []).map((tag) => ({
+        id: tag,
+        name: tag,
+        slug: tag,
+      })),
       parentId: item.entry.parent ?? undefined,
       order: item.entry.order ?? 1,
       children: [],

@@ -3,9 +3,10 @@ import type {
   WP_REST_API_Category,
   WP_REST_API_Post,
   WP_REST_API_Tag,
-} from 'wp-types';
+} from "wp-types";
 
-import { Cms, CmsClient } from '~/features/cms/types';
+import { Cms, type CmsClient } from "~/features/cms/types";
+import { getLogger } from "~/shared/logger";
 
 import GetTagsOptions = Cms.GetTagsOptions;
 
@@ -16,7 +17,7 @@ import GetTagsOptions = Cms.GetTagsOptions;
  * @returns {WordpressClient} A new WordpressClient instance.
  */
 export function createWordpressClient(
-  apiUrl = process.env.WORDPRESS_API_URL as string,
+  apiUrl = process.env.WORDPRESS_API_URL as string
 ) {
   return new WordpressClient(apiUrl);
 }
@@ -27,7 +28,11 @@ export function createWordpressClient(
  * Implements the CmsClient interface.
  */
 class WordpressClient implements CmsClient {
-  constructor(private readonly apiUrl: string) {}
+  private readonly apiUrl: string;
+
+  constructor(apiUrl: string) {
+    this.apiUrl = apiUrl;
+  }
 
   /**
    * Retrieves content items from a CMS based on the provided options.
@@ -36,27 +41,27 @@ class WordpressClient implements CmsClient {
    */
   async getContentItems(options: Cms.GetContentItemsOptions) {
     const queryParams = new URLSearchParams({
-      _embed: 'true',
+      _embed: "true",
     });
 
-    if (options?.limit && options.limit !== Infinity) {
-      queryParams.append('per_page', options.limit.toString());
+    if (options?.limit && options.limit !== Number.POSITIVE_INFINITY) {
+      queryParams.append("per_page", options.limit.toString());
     }
 
     if (options?.offset) {
-      queryParams.append('offset', options.offset.toString());
+      queryParams.append("offset", options.offset.toString());
     }
 
     if (options.sortBy) {
       const sortBy = mapSortByParam(options.sortBy);
 
       if (sortBy) {
-        queryParams.append('orderby', sortBy);
+        queryParams.append("orderby", sortBy);
       }
     }
 
     if (options.sortDirection) {
-      queryParams.append('order', options.sortDirection);
+      queryParams.append("order", options.sortDirection);
     }
 
     if (options?.categories) {
@@ -65,31 +70,40 @@ class WordpressClient implements CmsClient {
       }).then((categories) => categories.map((category) => category.id));
 
       if (ids.length) {
-        queryParams.append('categories', ids.join(','));
+        queryParams.append("categories", ids.join(","));
       } else {
-        console.warn(
-          'No categories found for the provided slugs',
-          options.categories,
+        const logger = await getLogger();
+        logger.warn(
+          {
+            categories: options.categories,
+          },
+          "No categories found for the provided slugs"
         );
       }
     }
 
     if (options?.tags) {
-      const allTags = [...options.tags, options.language ?? ''].filter(Boolean);
+      const allTags = [...options.tags, options.language ?? ""].filter(Boolean);
 
       const ids = await this.getTags({
         slugs: allTags,
       }).then((tags) => tags.map((tag) => tag.id));
 
       if (ids.length) {
-        queryParams.append('tags', ids.join(','));
+        queryParams.append("tags", ids.join(","));
       } else {
-        console.warn('No tags found for the provided slugs', options.tags);
+        const logger = await getLogger();
+        logger.warn(
+          {
+            tags: options.tags,
+          },
+          "No tags found for the provided slugs"
+        );
       }
     }
 
     if (options?.parentIds && options.parentIds.length > 0) {
-      queryParams.append('parent', options.parentIds.join(','));
+      queryParams.append("parent", options.parentIds.join(","));
     }
 
     const endpoints = [
@@ -98,24 +112,24 @@ class WordpressClient implements CmsClient {
     ];
 
     const endpoint =
-      options.collection === 'posts' ? endpoints[0] : endpoints[1];
+      options.collection === "posts" ? endpoints[0] : endpoints[1];
 
     const url = `${this.apiUrl}${endpoint}`;
 
     const response = await fetch(url);
-    const totalHeader = response.headers.get('X-WP-Total');
+    const totalHeader = response.headers.get("X-WP-Total");
 
     const total = totalHeader ? Number(totalHeader) : 0;
     const results = (await response.json()) as WP_REST_API_Post[];
 
-    const status = options.status ?? 'published';
+    const status = options.status ?? "published";
 
     const postsResults = await Promise.allSettled(
       results.map(async (item: WP_REST_API_Post) => {
         let parentId: string | undefined;
 
         if (!item) {
-          throw new Error('Failed to fetch content items');
+          throw new Error("Failed to fetch content items");
         }
 
         if (item.parent) {
@@ -125,12 +139,12 @@ class WordpressClient implements CmsClient {
         const mappedStatus = mapToStatus(item.status as WP_Post_Status_Name);
 
         if (mappedStatus !== status) {
-          throw new Error('Status does not match');
+          throw new Error("Status does not match");
         }
 
         const categories = await this.getCategoriesByIds(item.categories ?? []);
         const tags = await this.getTagsByIds(item.tags ?? []);
-        const image = item.featured_media ? this.getFeaturedMedia(item) : '';
+        const image = item.featured_media ? this.getFeaturedMedia(item) : "";
         const order = item.menu_order ?? 0;
 
         return {
@@ -143,18 +157,18 @@ class WordpressClient implements CmsClient {
           url: item.link,
           slug: item.slug,
           publishedAt: item.date,
-          status: mappedStatus ?? 'draft',
-          categories: categories,
-          tags: tags,
+          status: mappedStatus ?? "draft",
+          categories,
+          tags,
           parentId,
           order,
           children: [],
         };
-      }),
+      })
     );
 
     const posts = postsResults
-      .filter((item) => item.status === 'fulfilled')
+      .filter((item) => item.status === "fulfilled")
       .map((item) => item.value);
 
     return {
@@ -173,7 +187,7 @@ class WordpressClient implements CmsClient {
     status?: Cms.ContentItemStatus;
   }) {
     const searchParams = new URLSearchParams({
-      _embed: 'true',
+      _embed: "true",
       slug,
     });
 
@@ -182,10 +196,10 @@ class WordpressClient implements CmsClient {
       `/wp-json/wp/v2/pages?${searchParams.toString()}`,
     ];
 
-    const endpoint = collection === 'posts' ? endpoints[0] : endpoints[1];
+    const endpoint = collection === "posts" ? endpoints[0] : endpoints[1];
 
     const responses = await fetch(this.apiUrl + endpoint).then(
-      (res) => res.json() as Promise<WP_REST_API_Post[]>,
+      (res) => res.json() as Promise<WP_REST_API_Post[]>
     );
 
     const item = responses[0];
@@ -205,7 +219,7 @@ class WordpressClient implements CmsClient {
 
     const categories = await this.getCategoriesByIds(item.categories ?? []);
     const tags = await this.getTagsByIds(item.tags ?? []);
-    const image = item.featured_media ? this.getFeaturedMedia(item) : '';
+    const image = item.featured_media ? this.getFeaturedMedia(item) : "";
 
     return {
       id: item.id.toString(),
@@ -219,7 +233,7 @@ class WordpressClient implements CmsClient {
       content: item.content.rendered,
       slug: item.slug,
       publishedAt: item.date,
-      status: mappedStatus ?? 'draft',
+      status: mappedStatus ?? "draft",
       categories,
       tags,
       parentId: item.parent?.toString(),
@@ -266,27 +280,34 @@ class WordpressClient implements CmsClient {
     const queryParams = new URLSearchParams();
 
     if (options?.limit) {
-      queryParams.append('per_page', options.limit.toString());
+      queryParams.append("per_page", options.limit.toString());
     }
 
     if (options?.offset) {
-      queryParams.append('offset', options.offset.toString());
+      queryParams.append("offset", options.offset.toString());
     }
 
     if (options?.slugs) {
-      const slugs = options.slugs.join(',');
+      const slugs = options.slugs.join(",");
 
-      queryParams.append('slug', slugs);
+      queryParams.append("slug", slugs);
     }
 
     const response = await fetch(
-      `${this.apiUrl}/wp-json/wp/v2/categories?${queryParams.toString()}`,
+      `${this.apiUrl}/wp-json/wp/v2/categories?${queryParams.toString()}`
     );
 
     if (!response.ok) {
-      console.error('Failed to fetch categories', await response.json());
+      const errorData = await response.json();
+      const logger = await getLogger();
+      logger.error(
+        {
+          error: errorData,
+        },
+        "Failed to fetch categories"
+      );
 
-      throw new Error('Failed to fetch categories');
+      throw new Error("Failed to fetch categories");
     }
 
     const data = (await response.json()) as WP_REST_API_Category[];
@@ -302,26 +323,33 @@ class WordpressClient implements CmsClient {
     const queryParams = new URLSearchParams();
 
     if (options?.limit) {
-      queryParams.append('per_page', options.limit.toString());
+      queryParams.append("per_page", options.limit.toString());
     }
 
     if (options?.offset) {
-      queryParams.append('offset', options.offset.toString());
+      queryParams.append("offset", options.offset.toString());
     }
 
     if (options?.slugs) {
-      const slugs = options.slugs.join(',');
-      queryParams.append('slug', slugs);
+      const slugs = options.slugs.join(",");
+      queryParams.append("slug", slugs);
     }
 
     const response = await fetch(
-      `${this.apiUrl}/wp-json/wp/v2/tags?${queryParams.toString()}`,
+      `${this.apiUrl}/wp-json/wp/v2/tags?${queryParams.toString()}`
     );
 
     if (!response.ok) {
-      console.error('Failed to fetch tags', await response.json());
+      const errorData = await response.json();
+      const logger = await getLogger();
+      logger.error(
+        {
+          error: errorData,
+        },
+        "Failed to fetch tags"
+      );
 
-      throw new Error('Failed to fetch tags');
+      throw new Error("Failed to fetch tags");
     }
 
     const data = (await response.json()) as WP_REST_API_Tag[];
@@ -335,13 +363,13 @@ class WordpressClient implements CmsClient {
 
   private async getTagsByIds(ids: number[]) {
     const promises = ids.map((id) =>
-      fetch(`${this.apiUrl}/wp-json/wp/v2/tags/${id}`),
+      fetch(`${this.apiUrl}/wp-json/wp/v2/tags/${id}`)
     );
 
     const responses = await Promise.all(promises);
 
     const data = (await Promise.all(
-      responses.map((response) => response.json()),
+      responses.map((response) => response.json())
     )) as WP_REST_API_Tag[];
 
     return data.map((item) => ({
@@ -353,13 +381,13 @@ class WordpressClient implements CmsClient {
 
   private async getCategoriesByIds(ids: number[]) {
     const promises = ids.map((id) =>
-      fetch(`${this.apiUrl}/wp-json/wp/v2/categories/${id}`),
+      fetch(`${this.apiUrl}/wp-json/wp/v2/categories/${id}`)
     );
 
     const responses = await Promise.all(promises);
 
     const data = (await Promise.all(
-      responses.map((response) => response.json()),
+      responses.map((response) => response.json())
     )) as WP_REST_API_Category[];
 
     return data.map((item) => ({
@@ -371,10 +399,10 @@ class WordpressClient implements CmsClient {
 
   private getFeaturedMedia(post: WP_REST_API_Post) {
     const embedded = post._embedded ?? {
-      'wp:featuredmedia': [],
+      "wp:featuredmedia": [],
     };
 
-    const media = embedded['wp:featuredmedia'] ?? [];
+    const media = embedded["wp:featuredmedia"] ?? [];
     const item = media?.length > 0 ? media[0] : null;
 
     return item
@@ -383,41 +411,41 @@ class WordpressClient implements CmsClient {
             source_url: string;
           }
         ).source_url
-      : '';
+      : "";
   }
 }
 
 function mapSortByParam(sortBy: string) {
   switch (sortBy) {
-    case 'publishedAt':
-      return 'date';
-    case 'title':
-      return 'title';
-    case 'slug':
-      return 'slug';
-    case 'order':
-      return 'menu_order';
+    case "publishedAt":
+      return "date";
+    case "title":
+      return "title";
+    case "slug":
+      return "slug";
+    case "order":
+      return "menu_order";
     default:
       return;
   }
 }
 
 function mapToStatus(status: WP_Post_Status_Name): Cms.ContentItemStatus {
-  const Draft = 'draft' as WP_Post_Status_Name;
-  const Publish = 'publish' as WP_Post_Status_Name;
-  const Pending = 'pending' as WP_Post_Status_Name;
+  const Draft = "draft" as WP_Post_Status_Name;
+  const Publish = "publish" as WP_Post_Status_Name;
+  const Pending = "pending" as WP_Post_Status_Name;
 
   switch (status) {
     case Draft:
-      return 'draft';
+      return "draft";
 
     case Publish:
-      return 'published';
+      return "published";
 
     case Pending:
-      return 'pending';
+      return "pending";
 
     default:
-      return 'draft';
+      return "draft";
   }
 }

@@ -1,22 +1,16 @@
-'use client';
+"use client";
 
-import { createContext } from 'react';
+import { createContext } from "react";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import type { TeamAccountWorkspace } from "~/home/[account]/_lib/server/team-account-workspace.loader";
 
-import { Database } from '~/core/database/supabase/database.types';
-import { JWTUserData } from '~/core/database/supabase/types';
+type AccountWorkspace = TeamAccountWorkspace & { user: BetterAuthUser };
 
-interface AccountWorkspace {
-  accounts: Database['public']['Views']['user_accounts']['Row'][];
-  account: Database['public']['Functions']['team_account_workspace']['Returns'][0];
-  user: JWTUserData;
-}
-
-export const TeamAccountWorkspaceContext = createContext<AccountWorkspace>(
-  {} as AccountWorkspace,
-);
+export const TeamAccountWorkspaceContext =
+  createContext<AccountWorkspace | null>(null);
 
 export function TeamAccountWorkspaceContextProvider(
-  props: React.PropsWithChildren<{ value: AccountWorkspace }>,
+  props: React.PropsWithChildren<{ value: AccountWorkspace }>
 ) {
   return (
     <TeamAccountWorkspaceContext.Provider value={props.value}>

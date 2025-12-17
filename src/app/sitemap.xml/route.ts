@@ -1,8 +1,6 @@
-import { getServerSideSitemap } from 'next-sitemap';
-
-import { createCmsClient } from '~/features/cms/core';
-
-import appConfig from '~/config/app.config';
+import { getServerSideSitemap } from "next-sitemap";
+import appConfig from "~/config/app.config";
+import { createCmsClient } from "~/features/cms/core";
 
 /**
  * @description The maximum age of the sitemap in seconds.
@@ -18,7 +16,7 @@ export async function GET() {
   const contentItems = await getContentItems();
 
   const headers = {
-    'Cache-Control': `public, max-age=${MAX_AGE}, s-maxage=${S_MAX_AGE}`,
+    "Cache-Control": `public, max-age=${MAX_AGE}, s-maxage=${S_MAX_AGE}`,
   };
 
   return getServerSideSitemap([...paths, ...contentItems], headers);
@@ -26,61 +24,59 @@ export async function GET() {
 
 function getPaths() {
   const paths = [
-    '/',
-    '/faq',
-    '/blog',
-    '/docs',
-    '/pricing',
-    '/contact',
-    '/cookie-policy',
-    '/terms-of-service',
-    '/privacy-policy',
+    "/",
+    "/faq",
+    "/blog",
+    "/docs",
+    "/pricing",
+    "/contact",
+    "/cookie-policy",
+    "/terms-of-service",
+    "/privacy-policy",
     // add more paths here
   ];
 
-  return paths.map((path) => {
-    return {
-      loc: new URL(path, appConfig.url).href,
-      lastmod: new Date().toISOString(),
-    };
-  });
+  return paths.map((path) => ({
+    loc: new URL(path, appConfig.url).href,
+    lastmod: new Date().toISOString(),
+  }));
 }
 
 async function getContentItems() {
   const client = await createCmsClient();
 
   // do not paginate the content items
-  const limit = Infinity;
+  const limit = Number.POSITIVE_INFINITY;
   const posts = client
     .getContentItems({
-      collection: 'posts',
+      collection: "posts",
       content: false,
       limit,
     })
     .then((response) => response.items)
-    .then((posts) =>
-      posts.map((post) => ({
+    .then((blogPosts) =>
+      blogPosts.map((post) => ({
         loc: new URL(`/blog/${post.slug}`, appConfig.url).href,
         lastmod: post.publishedAt
           ? new Date(post.publishedAt).toISOString()
           : new Date().toISOString(),
-      })),
+      }))
     );
 
   const docs = client
     .getContentItems({
-      collection: 'documentation',
+      collection: "documentation",
       content: false,
       limit,
     })
     .then((response) => response.items)
-    .then((docs) =>
-      docs.map((doc) => ({
+    .then((docItems) =>
+      docItems.map((doc) => ({
         loc: new URL(`/docs/${doc.slug}`, appConfig.url).href,
         lastmod: doc.publishedAt
           ? new Date(doc.publishedAt).toISOString()
           : new Date().toISOString(),
-      })),
+      }))
     );
 
   return Promise.all([posts, docs]).then((items) => items.flat());

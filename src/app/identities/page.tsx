@@ -1,29 +1,24 @@
-import { Metadata } from 'next';
+import type { Metadata } from "next";
 
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-
-import type { Provider } from '@supabase/supabase-js';
-
-import { LinkAccountsList } from '~/features/accounts/components/personal-account-settings';
-import { AuthLayoutShell } from '~/features/auth/shared';
-import { requireUser } from '~/core/database/supabase/require-user';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
-import { Button } from '~/components/ui/button';
-import { Heading } from '~/components/ui/heading';
-import { Trans } from '~/components/makerkit/trans';
-
-import { AppLogo } from '~/components/app-logo';
-import authConfig from '~/config/auth.config';
-import pathsConfig from '~/config/paths.config';
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
+import Link from "next/link";
+import { AppLogo } from "~/components/app-logo";
+import { Trans } from "~/components/portal/trans";
+import { Button } from "~/components/ui/button";
+import { Heading } from "~/components/ui/heading";
+import authConfig from "~/config/auth.config";
+import pathsConfig from "~/config/paths.config";
+import type { Provider } from "~/core/auth/better-auth/types";
+import { requireUser } from "~/core/database/require-user";
+import { LinkAccountsList } from "~/features/accounts/components/personal-account-settings";
+import { AuthLayoutShell } from "~/features/auth/shared";
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
 export const meta = async (): Promise<Metadata> => {
   const i18n = await createI18nServerInstance();
 
   return {
-    title: i18n.t('auth:setupAccount'),
+    title: i18n.t("auth:setupAccount"),
   };
 };
 
@@ -46,33 +41,33 @@ async function IdentitiesPage(props: IdentitiesPageProps) {
 
   return (
     <AuthLayoutShell
-      Logo={AppLogo}
       contentClassName="max-w-md overflow-y-hidden"
+      Logo={AppLogo}
     >
       <div
         className={
-          'flex max-h-[70vh] w-full flex-col items-center space-y-6 overflow-y-auto'
+          "flex max-h-[70vh] w-full flex-col items-center space-y-6 overflow-y-auto"
         }
       >
-        <div className={'flex flex-col items-center gap-1'}>
-          <Heading level={4} className="text-center">
-            <Trans i18nKey={'auth:linkAccountToSignIn'} />
+        <div className={"flex flex-col items-center gap-1"}>
+          <Heading className="text-center" level={4}>
+            <Trans i18nKey={"auth:linkAccountToSignIn"} />
           </Heading>
 
           <Heading
+            className={"text-center text-muted-foreground text-sm"}
             level={6}
-            className={'text-muted-foreground text-center text-sm'}
           >
-            <Trans i18nKey={'auth:linkAccountToSignInDescription'} />
+            <Trans i18nKey={"auth:linkAccountToSignInDescription"} />
           </Heading>
         </div>
 
         <IdentitiesStep
-          nextPath={nextPath}
-          showPasswordOption={showPasswordOption}
-          showEmailOption={showEmailOption}
-          oAuthProviders={oAuthProviders}
           enableIdentityLinking={enableIdentityLinking}
+          nextPath={nextPath}
+          oAuthProviders={oAuthProviders}
+          showEmailOption={showEmailOption}
+          showPasswordOption={showPasswordOption}
         />
       </div>
     </AuthLayoutShell>
@@ -96,21 +91,21 @@ function IdentitiesStep(props: {
   return (
     <div
       className={
-        'animate-in fade-in slide-in-from-bottom-4 mx-auto flex w-full max-w-md flex-col space-y-4 duration-500'
+        "fade-in slide-in-from-bottom-4 mx-auto flex w-full max-w-md animate-in flex-col space-y-4 duration-500"
       }
       data-test="join-step-two"
     >
       <LinkAccountsList
-        providers={props.oAuthProviders}
-        showPasswordOption={props.showPasswordOption}
-        showEmailOption={props.showEmailOption}
-        redirectTo={props.nextPath}
         enabled={props.enableIdentityLinking}
+        providers={props.oAuthProviders}
+        redirectTo={props.nextPath}
+        showEmailOption={props.showEmailOption}
+        showPasswordOption={props.showPasswordOption}
       />
 
       <Button asChild data-test="skip-identities-button">
         <Link href={props.nextPath}>
-          <Trans i18nKey={'common:continueKey'} />
+          <Trans i18nKey={"common:continueKey"} />
         </Link>
       </Button>
     </div>
@@ -119,13 +114,7 @@ function IdentitiesStep(props: {
 
 async function fetchData(props: IdentitiesPageProps) {
   const searchParams = await props.searchParams;
-  const client = getSupabaseServerClient();
-  const auth = await requireUser(client);
-
-  // If not authenticated, redirect to sign in
-  if (!auth.data) {
-    throw redirect(pathsConfig.auth.signIn);
-  }
+  await requireUser(); // Ensure user is authenticated
 
   // Get the next path from URL params (where to redirect after setup)
   const nextPath = searchParams.next || pathsConfig.app.home;
@@ -133,13 +122,10 @@ async function fetchData(props: IdentitiesPageProps) {
   // Available auth methods to add
   const showPasswordOption = authConfig.providers.password;
 
-  // Show email option if password, magic link, or OTP is enabled
-  const showEmailOption =
-    authConfig.providers.password ||
-    authConfig.providers.magicLink ||
-    authConfig.providers.otp;
+  // Show email option if password sign-in is enabled
+  const showEmailOption = authConfig.providers.password;
 
-  const oAuthProviders = authConfig.providers.oAuth;
+  const oAuthProviders = authConfig.providers.oAuth as Provider[];
   const enableIdentityLinking = authConfig.enableIdentityLinking;
 
   return {

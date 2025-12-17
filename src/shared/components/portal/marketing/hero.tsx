@@ -1,0 +1,90 @@
+import type React from "react";
+
+import { cn } from "~/components/lib/utils";
+import { HeroTitle } from "./hero-title";
+
+type HeroProps = {
+  pill?: React.ReactNode;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  cta?: React.ReactNode;
+  image?: React.ReactNode;
+  className?: string;
+  animate?: boolean;
+};
+
+export function Hero({
+  pill,
+  title,
+  subtitle,
+  cta,
+  image,
+  className,
+  animate = true,
+}: HeroProps) {
+  return (
+    <div className={cn("mx-auto flex flex-col space-y-14", className)}>
+      <div
+        className={cn(
+          "mx-auto flex flex-1 flex-col items-center justify-center duration-800 md:flex-row",
+          {
+            "fade-in zoom-in-90 slide-in-from-top-24 animate-in": animate,
+          }
+        )}
+        style={{
+          MozAnimationDuration: "100ms",
+        }}
+      >
+        <div className="flex w-full flex-1 flex-col items-center gap-y-6 xl:gap-y-8">
+          {pill && (
+            <div
+              className={cn({
+                "fade-in animate-in fill-mode-both delay-300 duration-700":
+                  animate,
+              })}
+            >
+              {pill}
+            </div>
+          )}
+
+          <div className="flex flex-col items-center gap-y-6">
+            <HeroTitle>{title}</HeroTitle>
+
+            {subtitle && (
+              <div className="flex max-w-3xl">
+                <h3 className="p-0 text-center font-medium font-sans text-secondary-foreground/70 text-xl tracking-tight">
+                  {subtitle}
+                </h3>
+              </div>
+            )}
+          </div>
+
+          {cta && (
+            <div
+              className={cn({
+                "fade-in animate-in fill-mode-both delay-500 duration-1000":
+                  animate,
+              })}
+            >
+              {cta}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {image && (
+        <div
+          className={cn("container mx-auto flex justify-center py-8", {
+            "fade-in zoom-in-90 slide-in-from-top-32 animate-in fill-mode-both delay-600 duration-1000":
+              animate,
+          })}
+          style={{
+            MozAnimationDuration: "100ms",
+          }}
+        >
+          {image}
+        </div>
+      )}
+    </div>
+  );
+}

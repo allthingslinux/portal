@@ -1,9 +1,9 @@
-import type { NextConfig } from 'next';
-import withBundleAnalyzer from '@next/bundle-analyzer';
+import withBundleAnalyzer from "@next/bundle-analyzer";
+import type { NextConfig } from "next";
 
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === 'true';
+const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === "true";
 
 const config: NextConfig = {
   reactStrictMode: true,
@@ -15,35 +15,35 @@ const config: NextConfig = {
   },
   // needed for supporting dynamic imports for local content
   outputFileTracingIncludes: {
-    '/*': ['./content/**/*'],
+    "/*": ["./content/**/*"],
   },
   redirects: getRedirects,
   turbopack: {
-    resolveExtensions: ['.ts', '.tsx', '.js', '.jsx'],
+    resolveExtensions: [".ts", ".tsx", ".js", ".jsx"],
     resolveAlias: getModulesAliases(),
   },
   devIndicators:
-    process.env.NEXT_PUBLIC_CI === 'true'
+    process.env.NEXT_PUBLIC_CI === "true"
       ? false
       : {
-          position: 'bottom-right',
+          position: "bottom-right",
         },
   reactCompiler: ENABLE_REACT_COMPILER,
   experimental: {
     mdxRs: true,
     turbopackFileSystemCacheForDev: true,
     optimizePackageImports: [
-      'recharts',
-      'lucide-react',
-      '@radix-ui/react-icons',
-      '@radix-ui/react-avatar',
-      '@radix-ui/react-select',
-      'date-fns',
+      "recharts",
+      "lucide-react",
+      "@radix-ui/react-icons",
+      "@radix-ui/react-avatar",
+      "@radix-ui/react-select",
+      "date-fns",
     ],
   },
   modularizeImports: {
     lodash: {
-      transform: 'lodash/{{member}}',
+      transform: "lodash/{{member}}",
     },
   },
   /** We already do linting and typechecking as separate tasks in CI */
@@ -51,12 +51,12 @@ const config: NextConfig = {
 };
 
 export default withBundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
+  enabled: process.env.ANALYZE === "true",
 })(config);
 
-function getImagesConfig(): NextConfig['images'] {
+function getImagesConfig(): NextConfig["images"] {
   const remotePatterns: Array<{
-    protocol: 'http' | 'https';
+    protocol: "http" | "https";
     hostname: string;
   }> = [];
 
@@ -64,7 +64,7 @@ function getImagesConfig(): NextConfig['images'] {
     const hostname = new URL(SUPABASE_URL).hostname;
 
     remotePatterns.push({
-      protocol: 'https' as const,
+      protocol: "https" as const,
       hostname,
     });
   }
@@ -77,13 +77,13 @@ function getImagesConfig(): NextConfig['images'] {
 
   remotePatterns.push(
     {
-      protocol: 'http' as const,
-      hostname: '127.0.0.1',
+      protocol: "http" as const,
+      hostname: "127.0.0.1",
     },
     {
-      protocol: 'http' as const,
-      hostname: 'localhost',
-    },
+      protocol: "http" as const,
+      hostname: "localhost",
+    }
   );
 
   return {
@@ -94,8 +94,8 @@ function getImagesConfig(): NextConfig['images'] {
 async function getRedirects() {
   return [
     {
-      source: '/server-sitemap.xml',
-      destination: '/sitemap.xml',
+      source: "/server-sitemap.xml",
+      destination: "/sitemap.xml",
       permanent: true,
     },
   ];
@@ -106,7 +106,7 @@ async function getRedirects() {
  * This will speed up the development server by not loading the modules that are not needed.
  */
 function getModulesAliases(): Record<string, string> {
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env.NODE_ENV !== "development") {
     return {};
   }
 
@@ -115,25 +115,25 @@ function getModulesAliases(): Record<string, string> {
   const captchaProvider = process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY;
 
   // exclude the modules that are not needed
-  const excludeSentry = monitoringProvider !== 'sentry';
-  const excludeNodemailer = mailerProvider !== 'nodemailer';
+  const excludeSentry = monitoringProvider !== "sentry";
+  const excludeNodemailer = mailerProvider !== "nodemailer";
   const excludeTurnstile = !captchaProvider;
 
   const aliases: Record<string, string> = {};
 
   // the path to the noop module
-  const noopPath = '~/shared/lib/dev-mock-modules';
+  const noopPath = "~/shared/lib/dev-mock-modules";
 
   if (excludeSentry) {
-    aliases['@sentry/nextjs'] = noopPath;
+    aliases["@sentry/nextjs"] = noopPath;
   }
 
   if (excludeNodemailer) {
-    aliases['nodemailer'] = noopPath;
+    aliases.nodemailer = noopPath;
   }
 
   if (excludeTurnstile) {
-    aliases['@marsidev/react-turnstile'] = noopPath;
+    aliases["@marsidev/react-turnstile"] = noopPath;
   }
 
   return aliases;

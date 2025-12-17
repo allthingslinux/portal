@@ -9,7 +9,7 @@
 @theme inline {
   --color-tokyonight-night-bg: oklch(from #1a1b26 l c h);
   --color-tokyonight-night-bg-dark: oklch(from #16161e l c h);
-  --color-tokyonight-night-bg-dark1: oklch(from #0C0E14 l c h);
+  --color-tokyonight-night-bg-dark1: oklch(from #0c0e14 l c h);
   --color-tokyonight-night-bg-float: var(--color-tokyonight-night-bg-dark);
   --color-tokyonight-night-bg-highlight: oklch(from #292e42 l c h);
   --color-tokyonight-night-bg-popup: var(--color-tokyonight-night-bg-dark);

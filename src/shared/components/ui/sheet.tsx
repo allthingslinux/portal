@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import { Cross2Icon } from "@radix-ui/react-icons";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Dialog as SheetPrimitive } from "radix-ui";
+import type * as React from "react";
 
-import { Cross2Icon } from '@radix-ui/react-icons';
-import { type VariantProps, cva } from 'class-variance-authority';
-import { Dialog as SheetPrimitive } from 'radix-ui';
-
-import { cn } from '../lib/utils';
+import { cn } from "../lib/utils";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -21,8 +20,8 @@ const SheetOverlay: React.FC<
 > = ({ className, ...props }) => (
   <SheetPrimitive.Overlay
     className={cn(
-      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80',
-      className,
+      "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80 data-[state=closed]:animate-out data-[state=open]:animate-in",
+      className
     )}
     {...props}
   />
@@ -30,22 +29,22 @@ const SheetOverlay: React.FC<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 gap-4 p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+  "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:duration-300 data-[state=open]:duration-500",
   {
     variants: {
       side: {
-        top: 'data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 border-b',
+        top: "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 border-b",
         bottom:
-          'data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 border-t',
-        left: 'data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm',
+          "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 border-t",
+        left: "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
         right:
-          'data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm',
+          "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
       },
     },
     defaultVariants: {
-      side: 'right',
+      side: "right",
     },
-  },
+  }
 );
 
 interface SheetContentProps
@@ -53,7 +52,7 @@ interface SheetContentProps
     VariantProps<typeof sheetVariants> {}
 
 const SheetContent: React.FC<SheetContentProps> = ({
-  side = 'right',
+  side = "right",
   className,
   children,
   ...props
@@ -64,7 +63,7 @@ const SheetContent: React.FC<SheetContentProps> = ({
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
-      <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
+      <SheetPrimitive.Close className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
         <Cross2Icon className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
@@ -79,11 +78,11 @@ const SheetHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('flex flex-col gap-y-3 text-center sm:text-left', className)}
+    className={cn("flex flex-col gap-y-3 text-center sm:text-left", className)}
     {...props}
   />
 );
-SheetHeader.displayName = 'SheetHeader';
+SheetHeader.displayName = "SheetHeader";
 
 const SheetFooter = ({
   className,
@@ -91,19 +90,19 @@ const SheetFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-      className,
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      className
     )}
     {...props}
   />
 );
-SheetFooter.displayName = 'SheetFooter';
+SheetFooter.displayName = "SheetFooter";
 
 const SheetTitle: React.FC<
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
 > = ({ className, ...props }) => (
   <SheetPrimitive.Title
-    className={cn('text-foreground text-lg font-semibold', className)}
+    className={cn("font-semibold text-foreground text-lg", className)}
     {...props}
   />
 );
@@ -113,7 +112,7 @@ const SheetDescription: React.FC<
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
 > = ({ className, ...props }) => (
   <SheetPrimitive.Description
-    className={cn('text-muted-foreground text-sm', className)}
+    className={cn("text-muted-foreground text-sm", className)}
     {...props}
   />
 );

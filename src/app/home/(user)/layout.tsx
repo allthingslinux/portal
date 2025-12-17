@@ -1,27 +1,28 @@
-import { use } from 'react';
+import { cookies } from "next/headers";
+import { use } from "react";
 
-import { cookies } from 'next/headers';
-
-import { z } from 'zod';
-
-import { UserWorkspaceContextProvider } from '~/features/accounts/components';
-import { Page, PageMobileNavigation, PageNavigation } from '~/components/makerkit/page';
-import { SidebarProvider } from '~/components/ui/sidebar';
-
-import { AppLogo } from '~/components/app-logo';
-import { personalAccountNavigationConfig } from '~/config/personal-account-navigation.config';
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
+import { z } from "zod";
+import { AppLogo } from "~/components/app-logo";
+import {
+  Page,
+  PageMobileNavigation,
+  PageNavigation,
+} from "~/components/portal/page";
+import { SidebarProvider } from "~/components/ui/sidebar";
+import { personalAccountNavigationConfig } from "~/config/personal-account-navigation.config";
+import { UserWorkspaceContextProvider } from "~/features/accounts/components";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
 // home imports
-import { HomeMenuNavigation } from './_components/home-menu-navigation';
-import { HomeMobileNavigation } from './_components/home-mobile-navigation';
-import { HomeSidebar } from './_components/home-sidebar';
-import { loadUserWorkspace } from './_lib/server/load-user-workspace';
+import { HomeMenuNavigation } from "./_components/home-menu-navigation";
+import { HomeMobileNavigation } from "./_components/home-mobile-navigation";
+import { HomeSidebar } from "./_components/home-sidebar";
+import { loadUserWorkspace } from "./_lib/server/load-user-workspace";
 
 function UserHomeLayout({ children }: React.PropsWithChildren) {
   const state = use(getLayoutState());
 
-  if (state.style === 'sidebar') {
+  if (state.style === "sidebar") {
     return <SidebarLayout>{children}</SidebarLayout>;
   }
 
@@ -37,12 +38,12 @@ function SidebarLayout({ children }: React.PropsWithChildren) {
   return (
     <UserWorkspaceContextProvider value={workspace}>
       <SidebarProvider defaultOpen={state.open}>
-        <Page style={'sidebar'}>
+        <Page style={"sidebar"}>
           <PageNavigation>
             <HomeSidebar workspace={workspace} />
           </PageNavigation>
 
-          <PageMobileNavigation className={'flex items-center justify-between'}>
+          <PageMobileNavigation className={"flex items-center justify-between"}>
             <MobileNavigation workspace={workspace} />
           </PageMobileNavigation>
 
@@ -58,12 +59,12 @@ function HeaderLayout({ children }: React.PropsWithChildren) {
 
   return (
     <UserWorkspaceContextProvider value={workspace}>
-      <Page style={'header'}>
+      <Page style={"header"}>
         <PageNavigation>
           <HomeMenuNavigation workspace={workspace} />
         </PageNavigation>
 
-        <PageMobileNavigation className={'flex items-center justify-between'}>
+        <PageMobileNavigation className={"flex items-center justify-between"}>
           <MobileNavigation workspace={workspace} />
         </PageMobileNavigation>
 
@@ -90,13 +91,13 @@ function MobileNavigation({
 async function getLayoutState() {
   const cookieStore = await cookies();
 
-  const LayoutStyleSchema = z.enum(['sidebar', 'header', 'custom']);
+  const LayoutStyleSchema = z.enum(["sidebar", "header", "custom"]);
 
-  const layoutStyleCookie = cookieStore.get('layout-style');
-  const sidebarOpenCookie = cookieStore.get('sidebar:state');
+  const layoutStyleCookie = cookieStore.get("layout-style");
+  const sidebarOpenCookie = cookieStore.get("sidebar:state");
 
   const sidebarOpen = sidebarOpenCookie
-    ? sidebarOpenCookie.value === 'false'
+    ? sidebarOpenCookie.value === "false"
     : !personalAccountNavigationConfig.sidebarCollapsed;
 
   const parsedStyle = LayoutStyleSchema.safeParse(layoutStyleCookie?.value);

@@ -1,13 +1,13 @@
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
 
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * @name Theme
  * @description The theme mode enum.
  */
-const Theme = z.enum(['light', 'dark', 'system'], {
-  description: 'The theme mode',
+const Theme = z.enum(["light", "dark", "system"], {
+  description: "The theme mode",
 });
 
 /**
@@ -15,14 +15,14 @@ const Theme = z.enum(['light', 'dark', 'system'], {
  * @description The default theme mode set by the application.
  */
 const appDefaultThemeMode = Theme.safeParse(
-  process.env.NEXT_PUBLIC_DEFAULT_THEME_MODE,
+  process.env.NEXT_PUBLIC_DEFAULT_THEME_MODE
 );
 
 /**
  * @name fallbackThemeMode
  * @description The fallback theme mode if none of the other options are available.
  */
-const fallbackThemeMode = `light`;
+const fallbackThemeMode = "light";
 
 /**
  * @name getRootTheme
@@ -31,7 +31,7 @@ const fallbackThemeMode = `light`;
  */
 export async function getRootTheme() {
   const cookiesStore = await cookies();
-  const themeCookieValue = cookiesStore.get('theme')?.value;
+  const themeCookieValue = cookiesStore.get("theme")?.value;
   const theme = Theme.safeParse(themeCookieValue);
 
   // pass the theme from the cookie if it exists

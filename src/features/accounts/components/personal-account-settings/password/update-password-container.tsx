@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useUser } from '~/core/database/supabase/hooks/use-user';
-import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
+import { LoadingOverlay } from "~/components/portal/loading-overlay";
+import { useSession } from "~/core/auth/better-auth/hooks";
 
-import { UpdatePasswordForm } from './update-password-form';
+import { UpdatePasswordForm } from "./update-password-form";
 
 export function UpdatePasswordFormContainer(
   props: React.PropsWithChildren<{
     callbackPath: string;
-  }>,
+  }>
 ) {
-  const { data: user, isPending } = useUser();
+  const { data: user, isLoading: isPending } = useSession();
 
   if (isPending) {
     return <LoadingOverlay fullPage={false} />;

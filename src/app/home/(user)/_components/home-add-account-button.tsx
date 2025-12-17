@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-
-import { CreateTeamAccountDialog } from '~/features/team-accounts/components';
-import { Button } from '~/components/ui/button';
-import { Trans } from '~/components/makerkit/trans';
+import { useState } from "react";
+import { Trans } from "~/components/portal/trans";
+import { Button } from "~/components/ui/button";
+import { CreateTeamAccountDialog } from "~/features/team-accounts/components";
 
 export function HomeAddAccountButton(props: { className?: string }) {
   const [isAddingAccount, setIsAddingAccount] = useState(false);
@@ -15,7 +14,7 @@ export function HomeAddAccountButton(props: { className?: string }) {
         className={props.className}
         onClick={() => setIsAddingAccount(true)}
       >
-        <Trans i18nKey={'account:createTeamButtonLabel'} />
+        <Trans i18nKey={"account:createTeamButtonLabel"} />
       </Button>
 
       <CreateTeamAccountDialog

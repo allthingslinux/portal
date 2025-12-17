@@ -1,22 +1,21 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
-import { z } from 'zod';
+import { z } from "zod";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import { getLogger } from "~/shared/logger";
+import { enhanceAction } from "~/shared/next/actions";
+import { revalidateAccountMembers } from "~/shared/next/actions/revalidate-account-paths";
 
-import { enhanceAction } from '~/shared/next/actions';
-import { getLogger } from '~/shared/logger';
-import { JWTUserData } from '~/core/database/supabase/types';
-
-import { AcceptInvitationSchema } from '../../schema/accept-invitation.schema';
-import { DeleteInvitationSchema } from '../../schema/delete-invitation.schema';
-import { InviteMembersSchema } from '../../schema/invite-members.schema';
-import { RenewInvitationSchema } from '../../schema/renew-invitation.schema';
-import { UpdateInvitationSchema } from '../../schema/update-invitation.schema';
-import { createInvitationContextBuilder } from '../policies/invitation-context-builder';
-import { createInvitationsPolicyEvaluator } from '../policies/invitation-policies';
-import { createAccountInvitationsService } from '../services/account-invitations.service';
+import { AcceptInvitationSchema } from "../../schema/accept-invitation.schema";
+import { DeleteInvitationSchema } from "../../schema/delete-invitation.schema";
+import { InviteMembersSchema } from "../../schema/invite-members.schema";
+import { RenewInvitationSchema } from "../../schema/renew-invitation.schema";
+import { UpdateInvitationSchema } from "../../schema/update-invitation.schema";
+import { createInvitationContextBuilder } from "../policies/invitation-context-builder";
+import { createInvitationsPolicyEvaluator } from "../policies/invitation-policies";
+import { createAccountInvitationsService } from "../services/account-invitations.service";
 
 /**
  * @name createInvitationsAction
@@ -28,7 +27,7 @@ export const createInvitationsAction = enhanceAction(
 
     logger.info(
       { params, userId: user.id },
-      'User requested to send invitations',
+      "User requested to send invitations"
     );
 
     // Evaluate invitation policies
@@ -38,7 +37,7 @@ export const createInvitationsAction = enhanceAction(
     if (!policiesResult.allowed) {
       logger.info(
         { reasons: policiesResult?.reasons, userId: user.id },
-        'Invitations blocked by policies',
+        "Invitations blocked by policies"
       );
 
       return {
@@ -68,9 +67,9 @@ export const createInvitationsAction = enhanceAction(
     schema: InviteMembersSchema.and(
       z.object({
         accountSlug: z.string().min(1),
-      }),
+      })
     ),
-  },
+  }
 );
 
 /**
@@ -92,7 +91,7 @@ export const deleteInvitationAction = enhanceAction(
   },
   {
     schema: DeleteInvitationSchema,
-  },
+  }
 );
 
 /**
@@ -113,7 +112,7 @@ export const updateInvitationAction = enhanceAction(
   },
   {
     schema: UpdateInvitationSchema,
-  },
+  }
 );
 
 /**
@@ -123,7 +122,7 @@ export const updateInvitationAction = enhanceAction(
 export const acceptInvitationAction = enhanceAction(
   async (data: FormData, user) => {
     const { inviteToken, nextPath } = AcceptInvitationSchema.parse(
-      Object.fromEntries(data),
+      Object.fromEntries(data)
     );
 
     // create the services
@@ -136,16 +135,16 @@ export const acceptInvitationAction = enhanceAction(
       userEmail: user.email,
     });
 
-    const accountId = result.success ? 'placeholder' : null;
+    const accountId = result.success ? "placeholder" : null;
 
     // If the account ID is not present, throw an error
     if (!accountId) {
-      throw new Error('Failed to accept invitation');
+      throw new Error("Failed to accept invitation");
     }
 
     return redirect(nextPath);
   },
-  {},
+  {}
 );
 
 /**
@@ -169,11 +168,11 @@ export const renewInvitationAction = enhanceAction(
   },
   {
     schema: RenewInvitationSchema,
-  },
+  }
 );
 
 function revalidateMemberPage() {
-  revalidatePath('/home/[account]/members', 'page');
+  revalidateAccountMembers();
 }
 
 /**
@@ -183,10 +182,10 @@ function revalidateMemberPage() {
  */
 async function evaluateInvitationsPolicies(
   params: z.infer<typeof InviteMembersSchema> & { accountSlug: string },
-  user: JWTUserData,
+  user: BetterAuthUser
 ) {
   const evaluator = createInvitationsPolicyEvaluator();
-  const hasPolicies = await evaluator.hasPoliciesForStage('submission');
+  const hasPolicies = await evaluator.hasPoliciesForStage("submission");
 
   // No policies to evaluate, skip
   if (!hasPolicies) {
@@ -196,9 +195,8 @@ async function evaluateInvitationsPolicies(
     };
   }
 
-  const client = getSupabaseServerClient();
-  const builder = createInvitationContextBuilder(client);
+  const builder = createInvitationContextBuilder();
   const context = await builder.buildContext(params, user);
 
-  return evaluator.canInvite(context, 'submission');
+  return evaluator.canInvite(context, "submission");
 }

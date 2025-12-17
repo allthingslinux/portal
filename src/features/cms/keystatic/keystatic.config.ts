@@ -1,15 +1,15 @@
-import { collection, config, fields } from '@keystatic/core';
-import { Entry } from '@keystatic/core/reader';
+import { collection, config, fields } from "@keystatic/core";
+import type { Entry } from "@keystatic/core/reader";
 
-import { KeystaticStorage } from './keystatic-storage';
+import { KeystaticStorage } from "./keystatic-storage";
 
 export const keyStaticConfig = createKeyStaticConfig(
-  process.env.NEXT_PUBLIC_KEYSTATIC_CONTENT_PATH ?? '',
+  process.env.NEXT_PUBLIC_KEYSTATIC_CONTENT_PATH ?? ""
 );
 
 function getContentField() {
   return fields.markdoc({
-    label: 'Content',
+    label: "Content",
     options: {
       link: true,
       blockquote: true,
@@ -22,12 +22,12 @@ function getContentField() {
       code: true,
       italic: true,
       image: {
-        directory: 'public/site/images',
-        publicPath: '/site/images',
+        directory: "public/site/images",
+        publicPath: "/site/images",
         schema: {
           title: fields.text({
-            label: 'Caption',
-            description: 'The text to display under the image in a caption.',
+            label: "Caption",
+            description: "The text to display under the image in a caption.",
           }),
         },
       },
@@ -36,27 +36,25 @@ function getContentField() {
 }
 
 export type PostEntryProps = Entry<
-  (typeof keyStaticConfig)['collections']['posts']
+  (typeof keyStaticConfig)["collections"]["posts"]
 >;
 
 export type DocumentationEntryProps = Entry<
-  (typeof keyStaticConfig)['collections']['documentation']
+  (typeof keyStaticConfig)["collections"]["documentation"]
 >;
 
 export type ChangelogEntryProps = Entry<
-  (typeof keyStaticConfig)['collections']['changelog']
+  (typeof keyStaticConfig)["collections"]["changelog"]
 >;
 
-function createKeyStaticConfig(path = '') {
-  if (path && !path.endsWith('/')) {
-    path += '/';
-  }
+function createKeyStaticConfig(path = "") {
+  const normalizedPath = path && !path.endsWith("/") ? `${path}/` : path;
 
   const cloud = {
-    project: KeystaticStorage.kind === 'cloud' ? KeystaticStorage.project : '',
+    project: KeystaticStorage.kind === "cloud" ? KeystaticStorage.project : "",
   };
 
-  const collections = getKeystaticCollections(path);
+  const collections = getKeystaticCollections(normalizedPath);
 
   return config({
     storage: KeystaticStorage,
@@ -67,112 +65,112 @@ function createKeyStaticConfig(path = '') {
 
 function getKeystaticCollections(path: string) {
   const statusOptions = [
-    { label: 'Draft', value: 'draft' },
-    { label: 'Published', value: 'published' },
-    { label: 'Review', value: 'review' },
-    { label: 'Pending', value: 'pending' },
+    { label: "Draft", value: "draft" },
+    { label: "Published", value: "published" },
+    { label: "Review", value: "review" },
+    { label: "Pending", value: "pending" },
   ];
 
   const imageField = fields.image({
-    label: 'Image',
-    directory: 'public/site/images',
-    publicPath: '/site/images',
+    label: "Image",
+    directory: "public/site/images",
+    publicPath: "/site/images",
   });
 
   return {
     posts: collection({
-      label: 'Posts',
-      slugField: 'title',
+      label: "Posts",
+      slugField: "title",
       path: `${path}posts/*`,
-      format: { contentField: 'content' },
+      format: { contentField: "content" },
       schema: {
-        title: fields.slug({ name: { label: 'Title' } }),
+        title: fields.slug({ name: { label: "Title" } }),
         label: fields.text({
-          label: 'Label',
+          label: "Label",
           validation: { isRequired: false },
         }),
         image: imageField,
-        categories: fields.array(fields.text({ label: 'Category' })),
-        tags: fields.array(fields.text({ label: 'Tag' })),
-        description: fields.text({ label: 'Description' }),
-        publishedAt: fields.date({ label: 'Published At' }),
+        categories: fields.array(fields.text({ label: "Category" })),
+        tags: fields.array(fields.text({ label: "Tag" })),
+        description: fields.text({ label: "Description" }),
+        publishedAt: fields.date({ label: "Published At" }),
         parent: fields.relationship({
-          label: 'Parent',
-          collection: 'posts',
+          label: "Parent",
+          collection: "posts",
         }),
-        language: fields.text({ label: 'Language' }),
-        order: fields.number({ label: 'Order' }),
+        language: fields.text({ label: "Language" }),
+        order: fields.number({ label: "Order" }),
         content: getContentField(),
         status: fields.select({
-          defaultValue: 'draft',
-          label: 'Status',
+          defaultValue: "draft",
+          label: "Status",
           options: statusOptions,
         }),
       },
     }),
     documentation: collection({
-      label: 'Documentation',
-      slugField: 'title',
+      label: "Documentation",
+      slugField: "title",
       path: `${path}documentation/**`,
-      format: { contentField: 'content' },
+      format: { contentField: "content" },
       schema: {
-        title: fields.slug({ name: { label: 'Title' } }),
+        title: fields.slug({ name: { label: "Title" } }),
         label: fields.text({
-          label: 'Label',
+          label: "Label",
           validation: { isRequired: false },
         }),
         content: getContentField(),
         image: imageField,
-        description: fields.text({ label: 'Description' }),
-        publishedAt: fields.date({ label: 'Published At' }),
-        order: fields.number({ label: 'Order' }),
-        language: fields.text({ label: 'Language' }),
+        description: fields.text({ label: "Description" }),
+        publishedAt: fields.date({ label: "Published At" }),
+        order: fields.number({ label: "Order" }),
+        language: fields.text({ label: "Language" }),
         parent: fields.relationship({
-          label: 'Parent',
-          collection: 'documentation',
+          label: "Parent",
+          collection: "documentation",
         }),
-        categories: fields.array(fields.text({ label: 'Category' })),
-        tags: fields.array(fields.text({ label: 'Tag' })),
+        categories: fields.array(fields.text({ label: "Category" })),
+        tags: fields.array(fields.text({ label: "Tag" })),
         status: fields.select({
-          defaultValue: 'draft',
-          label: 'Status',
+          defaultValue: "draft",
+          label: "Status",
           options: statusOptions,
         }),
         collapsible: fields.checkbox({
-          label: 'Collapsible',
+          label: "Collapsible",
           defaultValue: false,
         }),
         collapsed: fields.checkbox({
-          label: 'Collapsed',
+          label: "Collapsed",
           defaultValue: false,
         }),
       },
     }),
     changelog: collection({
-      label: 'Changelog',
-      slugField: 'title',
+      label: "Changelog",
+      slugField: "title",
       path: `${path}changelog/*`,
-      format: { contentField: 'content' },
+      format: { contentField: "content" },
       schema: {
-        title: fields.slug({ name: { label: 'Title' } }),
+        title: fields.slug({ name: { label: "Title" } }),
         description: fields.text({
-          label: 'Description',
+          label: "Description",
           multiline: true,
         }),
         image: imageField,
-        categories: fields.array(fields.text({ label: 'Category' })),
-        tags: fields.array(fields.text({ label: 'Tag' })),
-        publishedAt: fields.date({ label: 'Published At' }),
+        categories: fields.array(fields.text({ label: "Category" })),
+        tags: fields.array(fields.text({ label: "Tag" })),
+        publishedAt: fields.date({ label: "Published At" }),
         parent: fields.relationship({
-          label: 'Parent',
-          collection: 'changelog',
+          label: "Parent",
+          collection: "changelog",
         }),
-        language: fields.text({ label: 'Language' }),
-        order: fields.number({ label: 'Order' }),
+        language: fields.text({ label: "Language" }),
+        order: fields.number({ label: "Order" }),
         content: getContentField(),
         status: fields.select({
-          defaultValue: 'draft',
-          label: 'Status',
+          defaultValue: "draft",
+          label: "Status",
           options: statusOptions,
         }),
       },

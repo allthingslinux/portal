@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useUser } from '~/core/database/supabase/hooks/use-user';
-import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
+import { LoadingOverlay } from "~/components/portal/loading-overlay";
+import { useSession } from "~/core/auth/better-auth/hooks";
 
-import { UpdateEmailForm } from './update-email-form';
+import { UpdateEmailForm } from "./update-email-form";
 
 export function UpdateEmailFormContainer(props: { callbackPath: string }) {
-  const { data: user, isPending } = useUser();
+  const { data: user, isLoading: isPending } = useSession();
 
   if (isPending) {
     return <LoadingOverlay fullPage={false} />;
   }
 
-  if (!user || !user.email) {
+  if (!user?.email) {
     return null;
   }
 

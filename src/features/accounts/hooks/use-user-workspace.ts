@@ -1,17 +1,12 @@
-'use client';
+"use client";
 
-import { useContext } from 'react';
+import { useWorkspaceContext } from "~/shared/hooks/use-workspace-context";
 
-import { UserWorkspaceContext } from '../components';
+import { UserWorkspaceContext } from "../components";
 
 export function useUserWorkspace() {
-  const ctx = useContext(UserWorkspaceContext);
-
-  if (!ctx) {
-    throw new Error(
-      'useUserWorkspace must be used within a UserWorkspaceProvider. This is only provided within the user workspace /home',
-    );
-  }
-
-  return ctx;
+  return useWorkspaceContext(
+    UserWorkspaceContext,
+    "useUserWorkspace must be used within a UserWorkspaceProvider. This is only provided within the user workspace /home"
+  );
 }

@@ -1,9 +1,9 @@
-import { createRegistry } from '~/shared/registry';
+import { createRegistry } from "~/shared/registry";
 
 import {
-  MonitoringProvider,
   getMonitoringProvider,
-} from './get-monitoring-provider';
+  type MonitoringProvider,
+} from "./get-monitoring-provider";
 
 // Define a type for the instrumentation registration implementation
 type InstrumentationRegistration = {
@@ -17,13 +17,11 @@ const instrumentationRegistry = createRegistry<
 >();
 
 // Register the 'sentry' instrumentation provider with a no-op registration, since Sentry v8 sets up automatically
-instrumentationRegistry.register('sentry', () => {
-  return {
-    register: () => {
-      return;
-    },
-  };
-});
+instrumentationRegistry.register("sentry", () => ({
+  register: () => {
+    return;
+  },
+}));
 
 /**
  * @name registerMonitoringInstrumentation

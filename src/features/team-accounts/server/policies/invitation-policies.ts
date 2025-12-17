@@ -1,7 +1,7 @@
-import { createPoliciesEvaluator } from '~/shared/policies';
+import { createPoliciesEvaluator } from "~/shared/policies";
 
-import type { FeaturePolicyInvitationContext } from './feature-policy-invitation-context';
-import { invitationPolicyRegistry } from './policies';
+import type { FeaturePolicyInvitationContext } from "./feature-policy-invitation-context";
+import { invitationPolicyRegistry } from "./policies";
 
 /**
  * Creates an invitation evaluator
@@ -14,7 +14,7 @@ export function createInvitationsPolicyEvaluator() {
      * Checks if there are any invitation policies for the given stage
      * @param stage - The stage to check if there are any invitation policies for
      */
-    async hasPoliciesForStage(stage: 'preliminary' | 'submission') {
+    async hasPoliciesForStage(stage: "preliminary" | "submission") {
       return evaluator.hasPoliciesForStage(invitationPolicyRegistry, stage);
     },
 
@@ -26,13 +26,13 @@ export function createInvitationsPolicyEvaluator() {
      */
     async canInvite(
       context: FeaturePolicyInvitationContext,
-      stage: 'preliminary' | 'submission',
+      stage: "preliminary" | "submission"
     ) {
       return evaluator.evaluate(
         invitationPolicyRegistry,
         context,
-        'ALL',
-        stage,
+        "ALL",
+        stage
       );
     },
   };

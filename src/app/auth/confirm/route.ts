@@ -1,17 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from "next/server";
 
-import { createAuthCallbackService } from '~/core/database/supabase/auth';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
+import pathsConfig from "~/config/paths.config";
 
-import pathsConfig from '~/config/paths.config';
-
+/**
+ * Auth confirm route
+ * Better Auth handles email verification automatically via its `/api/auth` handler.
+ * This route is kept for backward compatibility and simple redirects.
+ */
 export async function GET(request: NextRequest) {
-  const service = createAuthCallbackService(getSupabaseServerClient());
+  const url = new URL(request.url);
+  const searchParams = url.searchParams;
+  const next = searchParams.get("next") || pathsConfig.app.home;
 
-  const url = await service.verifyTokenHash(request, {
-    joinTeamPath: pathsConfig.app.joinTeam,
-    redirectPath: pathsConfig.app.home,
-  });
+  url.pathname = next;
+  url.search = "";
 
   return NextResponse.redirect(url);
 }

@@ -1,8 +1,6 @@
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
-
-import { isSuperAdmin } from './is-super-admin';
+import { isSuperAdmin } from "./is-super-admin";
 
 /**
  * @name adminAction
@@ -11,7 +9,7 @@ import { isSuperAdmin } from './is-super-admin';
  */
 export function adminAction<Args, Response>(fn: (params: Args) => Response) {
   return async (params: Args) => {
-    const isAdmin = await isSuperAdmin(getSupabaseServerClient());
+    const isAdmin = await isSuperAdmin();
 
     if (!isAdmin) {
       notFound();

@@ -1,15 +1,11 @@
-'use client';
+"use client";
 
-import { useFormStatus } from 'react-dom';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { useForm, useWatch } from 'react-hook-form';
-
-import { ErrorBoundary } from '~/core/monitoring/api/components/error-boundary';
-import { VerifyOtpForm } from '~/core/auth/otp/components';
-import { useUser } from '~/core/database/supabase/hooks/use-user';
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { useFormStatus } from "react-dom";
+import { useForm } from "react-hook-form";
+import { Trans } from "~/components/portal/trans";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -18,24 +14,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '~/components/ui/alert-dialog';
-import { Button } from '~/components/ui/button';
-import { Form } from '~/components/ui/form';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
+import { Form } from "~/components/ui/form";
+import { useSession } from "~/core/auth/better-auth/hooks";
+import { ErrorBoundary } from "~/core/monitoring/api/components/error-boundary";
 
-import { DeletePersonalAccountSchema } from '../../schema/delete-personal-account.schema';
-import { deletePersonalAccountAction } from '../../server/personal-accounts-server-actions';
+import { DeletePersonalAccountSchema } from "../../schema/delete-personal-account.schema";
+import { deletePersonalAccountAction } from "../../server/personal-accounts-server-actions";
 
 export function AccountDangerZone() {
   return (
-    <div className={'flex flex-col space-y-4'}>
-      <div className={'flex flex-col space-y-1'}>
-        <span className={'text-sm font-medium'}>
-          <Trans i18nKey={'account:deleteAccount'} />
+    <div className={"flex flex-col space-y-4"}>
+      <div className={"flex flex-col space-y-1"}>
+        <span className={"font-medium text-sm"}>
+          <Trans i18nKey={"account:deleteAccount"} />
         </span>
 
-        <p className={'text-muted-foreground text-sm'}>
-          <Trans i18nKey={'account:deleteAccountDescription'} />
+        <p className={"text-muted-foreground text-sm"}>
+          <Trans i18nKey={"account:deleteAccountDescription"} />
         </p>
       </div>
 
@@ -47,7 +44,7 @@ export function AccountDangerZone() {
 }
 
 function DeleteAccountModal() {
-  const { data: user } = useUser();
+  const { data: user } = useSession();
 
   if (!user?.email) {
     return null;
@@ -56,15 +53,15 @@ function DeleteAccountModal() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button data-test={'delete-account-button'} variant={'destructive'}>
-          <Trans i18nKey={'account:deleteAccount'} />
+        <Button data-test={"delete-account-button"} variant={"destructive"}>
+          <Trans i18nKey={"account:deleteAccount"} />
         </Button>
       </AlertDialogTrigger>
 
       <AlertDialogContent onEscapeKeyDown={(e) => e.preventDefault()}>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            <Trans i18nKey={'account:deleteAccount'} />
+            <Trans i18nKey={"account:deleteAccount"} />
           </AlertDialogTitle>
         </AlertDialogHeader>
 
@@ -76,53 +73,34 @@ function DeleteAccountModal() {
   );
 }
 
-function DeleteAccountForm(props: { email: string }) {
+function DeleteAccountForm(_props: { email: string }) {
   const form = useForm({
     resolver: zodResolver(DeletePersonalAccountSchema),
-    defaultValues: {
-      otp: '',
-    },
+    defaultValues: {},
   });
-
-  const { otp } = useWatch({ control: form.control });
-
-  if (!otp) {
-    return (
-      <VerifyOtpForm
-        purpose={'delete-personal-account'}
-        email={props.email}
-        onSuccess={(otp) => form.setValue('otp', otp, { shouldValidate: true })}
-        CancelButton={
-          <AlertDialogCancel>
-            <Trans i18nKey={'common:cancel'} />
-          </AlertDialogCancel>
-        }
-      />
-    );
-  }
 
   return (
     <Form {...form}>
       <form
-        data-test={'delete-account-form'}
         action={deletePersonalAccountAction}
-        className={'flex flex-col space-y-4'}
+        className={"flex flex-col space-y-4"}
+        data-test={"delete-account-form"}
       >
-        <input type="hidden" name="otp" value={otp} />
+        <input name="otp" type="hidden" value="" />
 
-        <div className={'flex flex-col space-y-6'}>
+        <div className={"flex flex-col space-y-6"}>
           <div
             className={
-              'border-destructive text-destructive rounded-md border p-4 text-sm'
+              "rounded-md border border-destructive p-4 text-destructive text-sm"
             }
           >
-            <div className={'flex flex-col space-y-2'}>
+            <div className={"flex flex-col space-y-2"}>
               <div>
-                <Trans i18nKey={'account:deleteAccountDescription'} />
+                <Trans i18nKey={"account:deleteAccountDescription"} />
               </div>
 
               <div>
-                <Trans i18nKey={'common:modalConfirmationQuestion'} />
+                <Trans i18nKey={"common:modalConfirmationQuestion"} />
               </div>
             </div>
           </div>
@@ -130,7 +108,7 @@ function DeleteAccountForm(props: { email: string }) {
 
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Trans i18nKey={'common:cancel'} />
+            <Trans i18nKey={"common:cancel"} />
           </AlertDialogCancel>
 
           <DeleteAccountSubmitButton disabled={!form.formState.isValid} />
@@ -145,16 +123,16 @@ function DeleteAccountSubmitButton(props: { disabled: boolean }) {
 
   return (
     <Button
-      data-test={'confirm-delete-account-button'}
-      type={'submit'}
+      data-test={"confirm-delete-account-button"}
       disabled={pending || props.disabled}
-      name={'action'}
-      variant={'destructive'}
+      name={"action"}
+      type={"submit"}
+      variant={"destructive"}
     >
       {pending ? (
-        <Trans i18nKey={'account:deletingAccount'} />
+        <Trans i18nKey={"account:deletingAccount"} />
       ) : (
-        <Trans i18nKey={'account:deleteAccount'} />
+        <Trans i18nKey={"account:deleteAccount"} />
       )}
     </Button>
   );
@@ -167,7 +145,7 @@ function DeleteAccountErrorContainer() {
 
       <div>
         <AlertDialogCancel>
-          <Trans i18nKey={'common:cancel'} />
+          <Trans i18nKey={"common:cancel"} />
         </AlertDialogCancel>
       </div>
     </div>
@@ -176,15 +154,15 @@ function DeleteAccountErrorContainer() {
 
 function DeleteAccountErrorAlert() {
   return (
-    <Alert variant={'destructive'}>
-      <ExclamationTriangleIcon className={'h-4'} />
+    <Alert variant={"destructive"}>
+      <ExclamationTriangleIcon className={"h-4"} />
 
       <AlertTitle>
-        <Trans i18nKey={'account:deleteAccountErrorHeading'} />
+        <Trans i18nKey={"account:deleteAccountErrorHeading"} />
       </AlertTitle>
 
       <AlertDescription>
-        <Trans i18nKey={'common:genericError'} />
+        <Trans i18nKey={"common:genericError"} />
       </AlertDescription>
     </Alert>
   );

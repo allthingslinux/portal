@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
-import { Button } from '~/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { ContactEmailSchema } from "~/(marketing)/contact/_lib/contact-email.schema";
+import { sendContactEmail } from "~/(marketing)/contact/_lib/server/server-actions";
+import { Trans } from "~/components/portal/trans";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,13 +15,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '~/components/ui/form';
-import { Input } from '~/components/ui/input';
-import { Textarea } from '~/components/ui/textarea';
-import { Trans } from '~/components/makerkit/trans';
-
-import { ContactEmailSchema } from '~/(marketing)/contact/_lib/contact-email.schema';
-import { sendContactEmail } from '~/(marketing)/contact/_lib/server/server-actions';
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
 
 export function ContactForm() {
   const [pending, startTransition] = useTransition();
@@ -33,9 +30,9 @@ export function ContactForm() {
   const form = useForm({
     resolver: zodResolver(ContactEmailSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      message: '',
+      name: "",
+      email: "",
+      message: "",
     },
   });
 
@@ -50,7 +47,7 @@ export function ContactForm() {
   return (
     <Form {...form}>
       <form
-        className={'flex flex-col space-y-4'}
+        className={"flex flex-col space-y-4"}
         onSubmit={form.handleSubmit((data) => {
           startTransition(async () => {
             try {
@@ -64,68 +61,58 @@ export function ContactForm() {
         })}
       >
         <FormField
-          name={'name'}
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>
-                  <Trans i18nKey={'marketing:contactName'} />
-                </FormLabel>
+          name={"name"}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                <Trans i18nKey={"marketing:contactName"} />
+              </FormLabel>
 
-                <FormControl>
-                  <Input maxLength={200} {...field} />
-                </FormControl>
+              <FormControl>
+                <Input maxLength={200} {...field} />
+              </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            );
-          }}
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
         <FormField
-          name={'email'}
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>
-                  <Trans i18nKey={'marketing:contactEmail'} />
-                </FormLabel>
+          name={"email"}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                <Trans i18nKey={"marketing:contactEmail"} />
+              </FormLabel>
 
-                <FormControl>
-                  <Input type={'email'} {...field} />
-                </FormControl>
+              <FormControl>
+                <Input type={"email"} {...field} />
+              </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            );
-          }}
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
         <FormField
-          name={'message'}
-          render={({ field }) => {
-            return (
-              <FormItem>
-                <FormLabel>
-                  <Trans i18nKey={'marketing:contactMessage'} />
-                </FormLabel>
+          name={"message"}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                <Trans i18nKey={"marketing:contactMessage"} />
+              </FormLabel>
 
-                <FormControl>
-                  <Textarea
-                    className={'min-h-36'}
-                    maxLength={5000}
-                    {...field}
-                  />
-                </FormControl>
+              <FormControl>
+                <Textarea className={"min-h-36"} maxLength={5000} {...field} />
+              </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            );
-          }}
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        <Button disabled={pending} type={'submit'}>
-          <Trans i18nKey={'marketing:sendMessage'} />
+        <Button disabled={pending} type={"submit"}>
+          <Trans i18nKey={"marketing:sendMessage"} />
         </Button>
       </form>
     </Form>
@@ -134,13 +121,13 @@ export function ContactForm() {
 
 function SuccessAlert() {
   return (
-    <Alert variant={'success'}>
+    <Alert variant={"success"}>
       <AlertTitle>
-        <Trans i18nKey={'marketing:contactSuccess'} />
+        <Trans i18nKey={"marketing:contactSuccess"} />
       </AlertTitle>
 
       <AlertDescription>
-        <Trans i18nKey={'marketing:contactSuccessDescription'} />
+        <Trans i18nKey={"marketing:contactSuccessDescription"} />
       </AlertDescription>
     </Alert>
   );
@@ -148,13 +135,13 @@ function SuccessAlert() {
 
 function ErrorAlert() {
   return (
-    <Alert variant={'destructive'}>
+    <Alert variant={"destructive"}>
       <AlertTitle>
-        <Trans i18nKey={'marketing:contactError'} />
+        <Trans i18nKey={"marketing:contactError"} />
       </AlertTitle>
 
       <AlertDescription>
-        <Trans i18nKey={'marketing:contactErrorDescription'} />
+        <Trans i18nKey={"marketing:contactErrorDescription"} />
       </AlertDescription>
     </Alert>
   );

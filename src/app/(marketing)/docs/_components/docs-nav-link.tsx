@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-import { SidebarMenuButton, SidebarMenuItem } from '~/components/ui/sidebar';
-import { cn, isRouteActive } from '~/components/lib/utils';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn, isRouteActive } from "~/components/lib/utils";
+import { SidebarMenuButton, SidebarMenuItem } from "~/components/ui/sidebar";
 
 export function DocsNavLink({
   label,
@@ -18,8 +17,8 @@ export function DocsNavLink({
     <SidebarMenuItem>
       <SidebarMenuButton
         asChild
+        className={cn("text-secondary-foreground transition-all")}
         isActive={isCurrent}
-        className={cn('text-secondary-foreground transition-all')}
       >
         <Link href={url}>
           <span className="block max-w-full truncate">{label}</span>

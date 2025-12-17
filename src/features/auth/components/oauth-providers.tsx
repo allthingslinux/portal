@@ -1,20 +1,15 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
+import { useCallback } from "react";
+import { If } from "~/components/portal/if";
+import { LoadingOverlay } from "~/components/portal/loading-overlay";
+import { Trans } from "~/components/portal/trans";
+import { useSignInWithProvider } from "~/core/auth/better-auth/hooks";
+import type { Provider } from "~/core/auth/better-auth/types";
 
-import type {
-  Provider,
-  SignInWithOAuthCredentials,
-} from '@supabase/supabase-js';
-
-import { useSignInWithProvider } from '~/core/database/supabase/hooks/use-sign-in-with-provider';
-import { If } from '~/components/makerkit/if';
-import { LoadingOverlay } from '~/components/makerkit/loading-overlay';
-import { Trans } from '~/components/makerkit/trans';
-
-import { useLastAuthMethod } from '../hooks/use-last-auth-method';
-import { AuthErrorAlert } from './auth-error-alert';
-import { AuthProviderButton } from './auth-provider-button';
+import { useLastAuthMethod } from "../hooks/use-last-auth-method";
+import { AuthErrorAlert } from "./auth-error-alert";
+import { AuthProviderButton } from "./auth-provider-button";
 
 /**
  * @name OAUTH_SCOPES
@@ -23,11 +18,11 @@ import { AuthProviderButton } from './auth-provider-button';
  *
  * Please add your OAuth providers here and the scopes you want to use.
  *
- * @see https://supabase.com/docs/guides/auth/social-login
+ * OAuth provider configuration for Better Auth
  */
-const OAUTH_SCOPES: Partial<Record<Provider, string>> = {
-  azure: 'email',
-  keycloak: 'openid',
+const _OAUTH_SCOPES: Partial<Record<Provider, string>> = {
+  azure: "email",
+  keycloak: "openid",
   // add your OAuth providers here
 };
 
@@ -52,10 +47,10 @@ export const OauthProviders: React.FC<{
       const credential = await signInRequest();
 
       if (!credential) {
-        return Promise.reject(new Error(`No credential returned`));
+        return Promise.reject(new Error("No credential returned"));
       }
     },
-    [],
+    []
   );
 
   const enabledProviders = props.enabledProviders;
@@ -70,51 +65,56 @@ export const OauthProviders: React.FC<{
         <LoadingOverlay />
       </If>
 
-      <div className={'flex w-full flex-1 flex-col space-y-3'}>
-        <div className={'flex-col space-y-2'}>
+      <div className={"flex w-full flex-1 flex-col space-y-3"}>
+        <div className={"flex-col space-y-2"}>
           {enabledProviders.map((provider) => {
             return (
               <AuthProviderButton
                 key={provider}
-                providerId={provider}
                 onClick={() => {
-                  const origin = window.location.origin;
+                  // Build callback URL with return path
                   const queryParams = new URLSearchParams();
 
                   if (props.paths.returnPath) {
-                    queryParams.set('next', props.paths.returnPath);
+                    queryParams.set("next", props.paths.returnPath);
                   }
 
-                  const redirectPath = [
-                    props.paths.callback,
-                    queryParams.toString(),
-                  ].join('?');
+                  // NextAuth handles OAuth callbacks automatically at /api/auth/callback/[provider]
+                  // So we just need to set the callbackUrl to where we want to redirect after auth
+                  const callbackUrl = props.paths.returnPath || "/home";
 
-                  const redirectTo = [origin, redirectPath].join('');
-                  const scopes = OAUTH_SCOPES[provider] ?? undefined;
+                  // Map provider names to Better Auth provider names
+                  const providerMap: Record<string, string> = {
+                    google: "google",
+                    github: "github",
+                    apple: "apple",
+                    microsoft: "microsoft",
+                    facebook: "facebook",
+                    keycloak: "keycloak",
+                  };
 
-                  const credentials = {
-                    provider,
-                    options: {
-                      redirectTo,
-                      queryParams: props.queryParams,
-                      scopes,
-                    },
-                  } satisfies SignInWithOAuthCredentials;
+                  const nextAuthProvider = providerMap[provider] || provider;
 
                   return onSignInWithProvider(async () => {
-                    const result =
-                      await signInWithProviderMutation.mutateAsync(credentials);
+                    await signInWithProviderMutation.mutateAsync({
+                      provider: nextAuthProvider as
+                        | "google"
+                        | "github"
+                        | "apple"
+                        | "microsoft"
+                        | "facebook"
+                        | "keycloak",
+                      redirectTo: callbackUrl,
+                    });
 
                     // Record successful OAuth sign-in
-                    recordAuthMethod('oauth', { provider });
-
-                    return result;
+                    recordAuthMethod("oauth", { provider });
                   });
                 }}
+                providerId={provider}
               >
                 <Trans
-                  i18nKey={'auth:signInWithProvider'}
+                  i18nKey={"auth:signInWithProvider"}
                   values={{
                     provider: getProviderName(provider),
                   }}
@@ -134,8 +134,9 @@ function getProviderName(providerId: string) {
   const capitalize = (value: string) =>
     value.slice(0, 1).toUpperCase() + value.slice(1);
 
-  if (providerId.endsWith('.com')) {
-    return capitalize(providerId.split('.com')[0]!);
+  if (providerId.endsWith(".com")) {
+    const [name] = providerId.split(".com");
+    return capitalize(name || providerId);
   }
 
   return capitalize(providerId);

@@ -1,10 +1,9 @@
-import 'server-only';
+import "server-only";
 
-import { eq } from 'drizzle-orm';
-
-import { getLogger } from '~/shared/logger';
-import { getDrizzleSupabaseAdminClient } from '~/core/database/supabase/clients/drizzle-client';
-import { accounts } from '~/core/database/supabase/drizzle/schema';
+import { eq } from "drizzle-orm";
+import { db } from "~/core/database/client";
+import { accounts } from "~/core/database/schema";
+import { getLogger } from "~/shared/logger";
 
 export function createAdminAccountsService() {
   return new AdminAccountsService();
@@ -13,25 +12,25 @@ export function createAdminAccountsService() {
 class AdminAccountsService {
   async deleteAccount(accountId: string) {
     const logger = await getLogger();
-    const adminClient = getDrizzleSupabaseAdminClient();
+    const adminClient = db;
 
     const ctx = {
-      name: 'admin.accounts.delete',
+      name: "admin.accounts.delete",
       accountId,
     };
 
-    logger.info(ctx, 'Admin deleting account');
+    logger.info(ctx, "Admin deleting account");
 
     try {
       const result = await adminClient
         .delete(accounts)
         .where(eq(accounts.id, accountId));
 
-      logger.info(ctx, 'Account successfully deleted by admin');
+      logger.info(ctx, "Account successfully deleted by admin");
 
       return result;
     } catch (error) {
-      logger.error({ ...ctx, error }, 'Failed to delete account');
+      logger.error({ ...ctx, error }, "Failed to delete account");
       throw error;
     }
   }

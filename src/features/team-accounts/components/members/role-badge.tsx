@@ -1,17 +1,16 @@
-import { cva } from 'class-variance-authority';
-
-import { Badge } from '~/components/ui/badge';
-import { Trans } from '~/components/makerkit/trans';
+import { cva } from "class-variance-authority";
+import { Trans } from "~/components/portal/trans";
+import { Badge } from "~/components/ui/badge";
 
 type Role = string;
 
 const roles = {
-  owner: '',
+  owner: "",
   member:
-    'bg-blue-50 hover:bg-blue-50 text-blue-500 dark:bg-blue-500/10 dark:hover:bg-blue-500/10',
+    "bg-blue-50 hover:bg-blue-50 text-blue-500 dark:bg-blue-500/10 dark:hover:bg-blue-500/10",
 };
 
-const roleClassNameBuilder = cva('font-medium capitalize shadow-none', {
+const roleClassNameBuilder = cva("font-medium capitalize shadow-none", {
   variants: {
     role: roles,
   },
@@ -23,9 +22,9 @@ export function RoleBadge({ role }: { role: Role }) {
   const isCustom = !(role in roles);
 
   return (
-    <Badge className={className} variant={isCustom ? 'outline' : 'default'}>
-      <span data-test={'member-role-badge'}>
-        <Trans i18nKey={`common:roles.${role}.label`} defaults={role} />
+    <Badge className={className} variant={isCustom ? "outline" : "default"}>
+      <span data-test={"member-role-badge"}>
+        <Trans defaults={role} i18nKey={`common:roles.${role}.label`} />
       </span>
     </Badge>
   );

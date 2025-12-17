@@ -1,31 +1,29 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight, Mail } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import type { z } from 'zod';
-
-import { Button } from '~/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight, Mail } from "lucide-react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import type { z } from "zod";
+import { If } from "~/components/portal/if";
+import { Trans } from "~/components/portal/trans";
+import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '~/components/ui/form';
-import { If } from '~/components/makerkit/if';
+} from "~/components/ui/form";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from '~/components/ui/input-group';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/input-group";
 
-import { PasswordSignInSchema } from '../schemas/password-sign-in.schema';
-import { PasswordInput } from './password-input';
+import { PasswordSignInSchema } from "../schemas/password-sign-in.schema";
+import { PasswordInput } from "./password-input";
 
 export function PasswordSignInForm({
   onSubmit,
@@ -36,26 +34,26 @@ export function PasswordSignInForm({
   loading: boolean;
   redirecting: boolean;
 }) {
-  const { t } = useTranslation('auth');
+  const { t } = useTranslation("auth");
 
   const form = useForm<z.infer<typeof PasswordSignInSchema>>({
     resolver: zodResolver(PasswordSignInSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
   return (
     <Form {...form}>
       <form
-        className={'flex w-full flex-col gap-y-4'}
+        className={"flex w-full flex-col gap-y-4"}
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <div className={'flex flex-col space-y-2.5'}>
+        <div className={"flex flex-col space-y-2.5"}>
           <FormField
             control={form.control}
-            name={'email'}
+            name={"email"}
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -65,10 +63,10 @@ export function PasswordSignInForm({
                     </InputGroupAddon>
 
                     <InputGroupInput
-                      data-test={'email-input'}
+                      data-test={"email-input"}
+                      placeholder={t("emailPlaceholder")}
                       required
                       type="email"
-                      placeholder={t('emailPlaceholder')}
                       {...field}
                     />
                   </InputGroup>
@@ -81,7 +79,7 @@ export function PasswordSignInForm({
 
           <FormField
             control={form.control}
-            name={'password'}
+            name={"password"}
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -93,13 +91,13 @@ export function PasswordSignInForm({
                 <div>
                   <Button
                     asChild
-                    type={'button'}
-                    size={'sm'}
-                    variant={'link'}
-                    className={'text-xs'}
+                    className={"text-xs"}
+                    size={"sm"}
+                    type={"button"}
+                    variant={"link"}
                   >
-                    <Link href={'/auth/password-reset'}>
-                      <Trans i18nKey={'auth:passwordForgottenQuestion'} />
+                    <Link href={"/auth/password-reset"}>
+                      <Trans i18nKey={"auth:passwordForgottenQuestion"} />
                     </Link>
                   </Button>
                 </div>
@@ -109,30 +107,30 @@ export function PasswordSignInForm({
         </div>
 
         <Button
+          className={"group w-full"}
           data-test="auth-submit-button"
-          className={'group w-full'}
-          type="submit"
           disabled={loading || redirecting}
+          type="submit"
         >
           <If condition={redirecting}>
-            <span className={'animate-in fade-in slide-in-from-bottom-24'}>
-              <Trans i18nKey={'auth:redirecting'} />
+            <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
+              <Trans i18nKey={"auth:redirecting"} />
             </span>
           </If>
 
           <If condition={loading}>
-            <span className={'animate-in fade-in slide-in-from-bottom-24'}>
-              <Trans i18nKey={'auth:signingIn'} />
+            <span className={"fade-in slide-in-from-bottom-24 animate-in"}>
+              <Trans i18nKey={"auth:signingIn"} />
             </span>
           </If>
 
-          <If condition={!redirecting && !loading}>
-            <span className={'animate-out fade-out flex items-center'}>
-              <Trans i18nKey={'auth:signInWithEmail'} />
+          <If condition={!(redirecting || loading)}>
+            <span className={"fade-out flex animate-out items-center"}>
+              <Trans i18nKey={"auth:signInWithEmail"} />
 
               <ArrowRight
                 className={
-                  'zoom-in animate-in slide-in-from-left-2 fill-mode-both h-4 delay-500 duration-500'
+                  "zoom-in slide-in-from-left-2 h-4 animate-in fill-mode-both delay-500 duration-500"
                 }
               />
             </span>

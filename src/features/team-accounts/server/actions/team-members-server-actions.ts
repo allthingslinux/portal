@@ -1,19 +1,16 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
+import { and, eq } from "drizzle-orm";
+import { db } from "~/core/database/client";
+import { accounts } from "~/core/database/schema";
+import { getLogger } from "~/shared/logger";
+import { enhanceAction } from "~/shared/next/actions";
+import { revalidateAccountLayout } from "~/shared/next/actions/revalidate-account-paths";
 
-import { eq } from 'drizzle-orm';
-
-import { enhanceAction } from '~/shared/next/actions';
-import { createOtpApi } from '~/core/auth/otp/api';
-import { getLogger } from '~/shared/logger';
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
-import { accounts } from '~/core/database/supabase/drizzle/schema';
-
-import { RemoveMemberSchema } from '../../schema/remove-member.schema';
-import { TransferOwnershipConfirmationSchema } from '../../schema/transfer-ownership-confirmation.schema';
-import { UpdateMemberRoleSchema } from '../../schema/update-member-role.schema';
-import { createAccountMembersService } from '../services/account-members.service';
+import { RemoveMemberSchema } from "../../schema/remove-member.schema";
+import { TransferOwnershipConfirmationSchema } from "../../schema/transfer-ownership-confirmation.schema";
+import { UpdateMemberRoleSchema } from "../../schema/update-member-role.schema";
+import { createAccountMembersService } from "../services/account-members.service";
 
 /**
  * @name removeMemberFromAccountAction
@@ -29,13 +26,13 @@ export const removeMemberFromAccountAction = enhanceAction(
     });
 
     // revalidate all pages that depend on the account
-    revalidatePath('/home/[account]', 'layout');
+    revalidateAccountLayout();
 
     return { success: true };
   },
   {
     schema: RemoveMemberSchema,
-  },
+  }
 );
 
 /**
@@ -50,13 +47,13 @@ export const updateMemberRoleAction = enhanceAction(
     await service.updateMemberRole(data);
 
     // revalidate all pages that depend on the account
-    revalidatePath('/home/[account]', 'layout');
+    revalidateAccountLayout();
 
     return { success: true };
   },
   {
     schema: UpdateMemberRoleSchema,
-  },
+  }
 );
 
 /**
@@ -66,64 +63,42 @@ export const updateMemberRoleAction = enhanceAction(
  */
 export const transferOwnershipAction = enhanceAction(
   async (data, user) => {
-    const client = getSupabaseServerClient();
     const logger = await getLogger();
 
     const ctx = {
-      name: 'teams.transferOwnership',
+      name: "teams.transferOwnership",
       userId: user.id,
       accountId: data.accountId,
     };
 
-    logger.info(ctx, 'Processing team ownership transfer request...');
+    logger.info(ctx, "Processing team ownership transfer request...");
 
     // assert that the user is the owner of the account
-    const drizzleClient = await getDrizzleSupabaseClient();
-    const ownerCheck = await drizzleClient.runTransaction(async (tx) => {
-      return tx
-        .select({ count: true })
-        .from(accounts)
-        .where(eq(accounts.id, data.accountId))
-        .where(eq(accounts.primaryOwnerUserId, user.id));
-    });
+    const ownerCheck = await db
+      .select({ id: accounts.id })
+      .from(accounts)
+      .where(
+        and(
+          eq(accounts.id, data.accountId),
+          eq(accounts.primaryOwnerUserId, user.id)
+        )
+      )
+      .limit(1);
 
     const isOwner = ownerCheck.length > 0;
 
     if (!isOwner) {
-      logger.error(ctx, 'User is not the owner of this account');
+      logger.error(ctx, "User is not the owner of this account");
 
       throw new Error(
-        `You must be the owner of the account to transfer ownership`,
+        "You must be the owner of the account to transfer ownership"
       );
     }
 
-    // Verify the OTP
-    const otpApi = createOtpApi(client);
-
-    const otpResult = await otpApi.verifyToken({
-      token: data.otp,
-      userId: user.id,
-      purpose: `transfer-team-ownership-${data.accountId}`,
-    });
-
-    if (!otpResult.valid) {
-      logger.error(ctx, 'Invalid OTP provided');
-      throw new Error('Invalid OTP');
-    }
-
-    // validate the user ID matches the nonce's user ID
-    if (otpResult.user_id !== user.id) {
-      logger.error(
-        ctx,
-        `This token was meant to be used by a different user. Exiting.`,
-      );
-
-      throw new Error('Nonce mismatch');
-    }
-
+    // OTP verification removed - ownership transfer now requires only owner authentication
     logger.info(
       ctx,
-      'OTP verification successful. Proceeding with ownership transfer...',
+      "Proceeding with ownership transfer (OTP verification removed)..."
     );
 
     const service = createAccountMembersService();
@@ -135,9 +110,9 @@ export const transferOwnershipAction = enhanceAction(
     await service.transferOwnership(data);
 
     // revalidate all pages that depend on the account
-    revalidatePath('/home/[account]', 'layout');
+    revalidateAccountLayout();
 
-    logger.info(ctx, 'Team ownership transferred successfully');
+    logger.info(ctx, "Team ownership transferred successfully");
 
     return {
       success: true,
@@ -145,5 +120,5 @@ export const transferOwnershipAction = enhanceAction(
   },
   {
     schema: TransferOwnershipConfirmationSchema,
-  },
+  }
 );

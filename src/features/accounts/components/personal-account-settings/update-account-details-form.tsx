@@ -1,29 +1,29 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { User } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { Database } from '~/core/database/supabase/database.types';
-import { Button } from '~/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { Trans } from "~/components/portal/trans";
+import { Button } from "~/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '~/components/ui/form';
+} from "~/components/ui/form";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from '~/components/ui/input-group';
-import { toast } from '~/components/ui/sonner';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/input-group";
+import { useToastAction } from "~/shared/hooks/use-toast-action";
 
-import { useUpdateAccountData } from '../../hooks/use-update-account';
-import { AccountDetailsSchema } from '../../schema/account-details.schema';
+import { useUpdateAccountData } from "../../hooks/use-update-account";
+import { AccountDetailsSchema } from "../../schema/account-details.schema";
 
-type UpdateUserDataParams = Database['public']['Tables']['accounts']['Update'];
+type UpdateUserDataParams = {
+  name?: string | null;
+};
 
 export function UpdateAccountDetailsForm({
   displayName,
@@ -35,7 +35,12 @@ export function UpdateAccountDetailsForm({
   onUpdate: (user: Partial<UpdateUserDataParams>) => void;
 }) {
   const updateAccountMutation = useUpdateAccountData(userId);
-  const { t } = useTranslation('account');
+  const { t } = useTranslation("account");
+  const { execute } = useToastAction({
+    success: t("updateProfileSuccess"),
+    error: t("updateProfileError"),
+    loading: t("updateProfileLoading"),
+  });
 
   const form = useForm({
     resolver: zodResolver(AccountDetailsSchema),
@@ -44,30 +49,29 @@ export function UpdateAccountDetailsForm({
     },
   });
 
-  const onSubmit = ({ displayName }: { displayName: string }) => {
-    const data = { name: displayName };
+  const onSubmit = ({
+    displayName: newDisplayName,
+  }: {
+    displayName: string;
+  }) => {
+    const data = { name: newDisplayName };
 
-    const promise = updateAccountMutation.mutateAsync(data).then(() => {
+    execute(async () => {
+      await updateAccountMutation.mutateAsync(data);
       onUpdate(data);
-    });
-
-    return toast.promise(() => promise, {
-      success: t(`updateProfileSuccess`),
-      error: t(`updateProfileError`),
-      loading: t(`updateProfileLoading`),
     });
   };
 
   return (
-    <div className={'flex flex-col space-y-8'}>
+    <div className={"flex flex-col space-y-8"}>
       <Form {...form}>
         <form
-          data-test={'update-account-name-form'}
-          className={'flex flex-col space-y-4'}
+          className={"flex flex-col space-y-4"}
+          data-test={"update-account-name-form"}
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <FormField
-            name={'displayName'}
+            name={"displayName"}
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -77,10 +81,10 @@ export function UpdateAccountDetailsForm({
                     </InputGroupAddon>
 
                     <InputGroupInput
-                      data-test={'account-display-name'}
-                      minLength={2}
-                      placeholder={t('account:name')}
+                      data-test={"account-display-name"}
                       maxLength={100}
+                      minLength={2}
+                      placeholder={t("account:name")}
                       {...field}
                     />
                   </InputGroup>
@@ -93,7 +97,7 @@ export function UpdateAccountDetailsForm({
 
           <div>
             <Button disabled={updateAccountMutation.isPending}>
-              <Trans i18nKey={'account:updateProfileSubmitLabel'} />
+              <Trans i18nKey={"account:updateProfileSubmitLabel"} />
             </Button>
           </div>
         </form>

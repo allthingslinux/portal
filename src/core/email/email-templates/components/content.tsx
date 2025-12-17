@@ -1,4 +1,4 @@
-import { Container } from '@react-email/components';
+import { Container } from "@react-email/components";
 
 export function EmailContent({
   children,
@@ -9,9 +9,7 @@ export function EmailContent({
 }>) {
   return (
     <Container
-      className={
-        'mx-auto rounded-xl bg-white px-[48px] py-[36px] ' + className || ''
-      }
+      className={`mx-auto rounded-xl bg-white px-[48px] py-[36px]${className || ""}`}
     >
       {children}
     </Container>

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-import { LayoutDashboard, Users } from 'lucide-react';
-
+import { LayoutDashboard, Users } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { AppLogo } from "~/components/app-logo";
+import { ProfileAccountDropdownContainer } from "~/components/personal-account-dropdown-container";
 import {
   Sidebar,
   SidebarContent,
@@ -15,18 +15,15 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-} from '~/components/ui/sidebar';
-
-import { AppLogo } from '~/components/app-logo';
-import { ProfileAccountDropdownContainer } from '~/components/personal-account-dropdown-container';
+} from "~/components/ui/sidebar";
 
 export function AdminSidebar() {
   const path = usePathname();
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className={'m-2'}>
-        <AppLogo href={'/admin'} className="max-w-full" />
+      <SidebarHeader className={"m-2"}>
+        <AppLogo className="max-w-full" href={"/admin"} />
       </SidebarHeader>
 
       <SidebarContent>
@@ -35,22 +32,22 @@ export function AdminSidebar() {
 
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuButton isActive={path === '/admin'} asChild>
-                <Link className={'flex gap-2.5'} href={'/admin'}>
-                  <LayoutDashboard className={'h-4'} />
+              <SidebarMenuButton asChild isActive={path === "/admin"}>
+                <Link className={"flex gap-2.5"} href={"/admin"}>
+                  <LayoutDashboard className={"h-4"} />
                   <span>Dashboard</span>
                 </Link>
               </SidebarMenuButton>
 
               <SidebarMenuButton
-                isActive={path.includes('/admin/accounts')}
                 asChild
+                isActive={path.includes("/admin/accounts")}
               >
                 <Link
-                  className={'flex size-full gap-2.5'}
-                  href={'/admin/accounts'}
+                  className={"flex size-full gap-2.5"}
+                  href={"/admin/accounts"}
                 >
-                  <Users className={'h-4'} />
+                  <Users className={"h-4"} />
                   <span>Accounts</span>
                 </Link>
               </SidebarMenuButton>

@@ -1,30 +1,29 @@
-import 'server-only';
+import "server-only";
 
-import { redirect } from 'next/navigation';
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from "next/server";
 
-import { z } from 'zod';
+import type { z } from "zod";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import { requireUser } from "~/core/database/require-user";
+import { verifyCaptchaToken } from "~/features/auth/captcha/server";
+import { HTTP_STATUS } from "~/shared/constants";
+import { API_ERRORS } from "~/shared/constants/errors";
 
-import { verifyCaptchaToken } from '~/features/auth/captcha/server';
-import { requireUser } from '~/core/database/supabase/require-user';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
-import { JWTUserData } from '~/core/database/supabase/types';
-
-interface Config<Schema> {
+type Config<Schema> = {
   auth?: boolean;
   captcha?: boolean;
   schema?: Schema;
-}
+};
 
-interface HandlerParams<
+type HandlerParams<
   Schema extends z.ZodType | undefined,
   RequireAuth extends boolean | undefined,
-> {
+> = {
   request: NextRequest;
-  user: RequireAuth extends false ? undefined : JWTUserData;
+  user: RequireAuth extends false ? undefined : BetterAuthUser;
   body: Schema extends z.ZodType ? z.infer<Schema> : undefined;
   params: Record<string, string>;
-}
+};
 
 /**
  * Enhanced route handler function.
@@ -53,13 +52,13 @@ export const enhanceRouteHandler = <
   // Route handler function
   handler:
     | ((
-        params: HandlerParams<Params['schema'], Params['auth']>,
+        context: HandlerParams<Params["schema"], Params["auth"]>
       ) => NextResponse | Response)
     | ((
-        params: HandlerParams<Params['schema'], Params['auth']>,
+        context: HandlerParams<Params["schema"], Params["auth"]>
       ) => Promise<NextResponse | Response>),
   // Parameters object
-  params?: Params,
+  params?: Params
 ) => {
   /**
    * Route handler function.
@@ -70,9 +69,9 @@ export const enhanceRouteHandler = <
     request: NextRequest,
     routeParams: {
       params: Promise<Record<string, string>>;
-    },
+    }
   ) {
-    type UserParam = Params['auth'] extends false ? undefined : JWTUserData;
+    type UserParam = Params["auth"] extends false ? undefined : BetterAuthUser;
 
     let user: UserParam = undefined as UserParam;
 
@@ -87,29 +86,22 @@ export const enhanceRouteHandler = <
       if (token) {
         await verifyCaptchaToken(token);
       } else {
-        return new Response('Captcha token is required', { status: 400 });
+        return new Response(API_ERRORS.CAPTCHA_TOKEN_REQUIRED, {
+          status: HTTP_STATUS.BAD_REQUEST,
+        });
       }
     }
-
-    const client = getSupabaseServerClient();
 
     const shouldVerifyAuth = params?.auth ?? true;
 
     // Check if the user should be authenticated
     if (shouldVerifyAuth) {
-      // Get the authenticated user
-      const auth = await requireUser(client);
-
-      // If the user is not authenticated, redirect to the specified URL.
-      if (auth.error) {
-        return redirect(auth.redirectTo);
-      }
-
-      user = auth.data as UserParam;
+      user = (await requireUser()) as UserParam;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let body: any;
+    let body: Params["schema"] extends z.ZodType
+      ? z.infer<Params["schema"]>
+      : undefined;
 
     if (params?.schema) {
       // clone the request to read the body
@@ -118,13 +110,19 @@ export const enhanceRouteHandler = <
       const parsedBody = await params.schema.safeParseAsync(json);
 
       if (parsedBody.success) {
-        body = parsedBody.data;
+        body = parsedBody.data as Params["schema"] extends z.ZodType
+          ? z.infer<Params["schema"]>
+          : undefined;
       } else {
         return NextResponse.json(
-          { error: parsedBody.error.message || 'Invalid request body' },
-          { status: 400 },
+          {
+            error: parsedBody.error.message || API_ERRORS.INVALID_REQUEST_BODY,
+          },
+          { status: HTTP_STATUS.BAD_REQUEST }
         );
       }
+    } else {
+      body = undefined;
     }
 
     return handler({
@@ -141,5 +139,5 @@ export const enhanceRouteHandler = <
  * @param request
  */
 function captchaTokenGetter(request: NextRequest) {
-  return request.headers.get('x-captcha-token');
+  return request.headers.get("x-captcha-token");
 }

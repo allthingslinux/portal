@@ -1,33 +1,44 @@
-import { getLogger } from '~/shared/logger';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
+import { sql } from "drizzle-orm";
+import { getServerSession } from "~/core/auth/better-auth/session";
+import { db } from "~/core/database/client";
+import { getLogger } from "~/shared/logger";
 
 /**
  * @name isSuperAdmin
  * @description Check if the current user is a super admin.
- * Migrated from RPC to direct JWT token checking for better performance.
- * @param client - Not needed in Drizzle version, kept for compatibility
+ * Uses NextAuth session and queries the database for super admin status.
  */
-export async function isSuperAdmin(client?: any): Promise<boolean> {
+export async function isSuperAdmin(): Promise<boolean> {
   try {
-    // Get the current session to access JWT token
-    const supabaseClient = getSupabaseServerClient();
-    const { data: session } = await supabaseClient.auth.getSession();
+    const session = await getServerSession();
 
-    if (!session?.session?.access_token) {
+    if (!session?.user?.id) {
       return false;
     }
 
-    // Decode JWT token to check app_metadata.role
-    const payload = JSON.parse(
-      atob(session.session.access_token.split('.')[1]),
+    // Query the database to check if user is a super admin
+    // This checks the app_metadata.role field in auth.users
+    const result = await db.execute<{ role: string }>(
+      sql`
+        SELECT 
+          COALESCE(
+            (raw_app_meta_data->>'role')::text,
+            'user'
+          ) as role
+        FROM auth.users
+        WHERE id = ${session.user.id}
+        LIMIT 1
+      `
     );
-    const appMetadata = payload.app_metadata || {};
-    const role = appMetadata.role;
 
-    return role === 'super-admin';
+    if (result.length === 0) {
+      return false;
+    }
+
+    return result[0].role === "super-admin";
   } catch (error) {
     const logger = await getLogger();
-    logger.error({ error }, 'Error checking super admin status');
+    logger.error({ error }, "Error checking super admin status");
     return false;
   }
 }

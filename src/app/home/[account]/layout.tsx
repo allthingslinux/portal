@@ -1,22 +1,23 @@
-import { use } from 'react';
+import { cookies } from "next/headers";
+import { use } from "react";
 
-import { cookies } from 'next/headers';
-
-import { z } from 'zod';
-
-import { TeamAccountWorkspaceContextProvider } from '~/features/team-accounts/components';
-import { Page, PageMobileNavigation, PageNavigation } from '~/components/makerkit/page';
-import { SidebarProvider } from '~/components/ui/sidebar';
-
-import { AppLogo } from '~/components/app-logo';
-import { getTeamAccountSidebarConfig } from '~/config/team-account-navigation.config';
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
+import { z } from "zod";
+import { AppLogo } from "~/components/app-logo";
+import {
+  Page,
+  PageMobileNavigation,
+  PageNavigation,
+} from "~/components/portal/page";
+import { SidebarProvider } from "~/components/ui/sidebar";
+import { getTeamAccountSidebarConfig } from "~/config/team-account-navigation.config";
+import { TeamAccountWorkspaceContextProvider } from "~/features/team-accounts/components";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
 // local imports
-import { TeamAccountLayoutMobileNavigation } from './_components/team-account-layout-mobile-navigation';
-import { TeamAccountLayoutSidebar } from './_components/team-account-layout-sidebar';
-import { TeamAccountNavigationMenu } from './_components/team-account-navigation-menu';
-import { loadTeamWorkspace } from './_lib/server/team-account-workspace.loader';
+import { TeamAccountLayoutMobileNavigation } from "./_components/team-account-layout-mobile-navigation";
+import { TeamAccountLayoutSidebar } from "./_components/team-account-layout-sidebar";
+import { TeamAccountNavigationMenu } from "./_components/team-account-navigation-menu";
+import { loadTeamWorkspace } from "./_lib/server/team-account-workspace.loader";
 
 type TeamWorkspaceLayoutProps = React.PropsWithChildren<{
   params: Promise<{ account: string }>;
@@ -26,7 +27,7 @@ function TeamWorkspaceLayout({ children, params }: TeamWorkspaceLayoutProps) {
   const account = use(params).account;
   const state = use(getLayoutState(account));
 
-  if (state.style === 'sidebar') {
+  if (state.style === "sidebar") {
     return <SidebarLayout account={account}>{children}</SidebarLayout>;
   }
 
@@ -40,31 +41,64 @@ function SidebarLayout({
   account: string;
 }>) {
   const data = use(loadTeamWorkspace(account));
+  const permissions = data.account.permissions.filter(
+    (
+      p
+    ): p is
+      | "roles.manage"
+      | "settings.manage"
+      | "members.manage"
+      | "invites.manage" =>
+      [
+        "roles.manage",
+        "settings.manage",
+        "members.manage",
+        "invites.manage",
+      ].includes(p as string)
+  );
+  const workspaceValue = {
+    ...data,
+    account: {
+      ...data.account,
+      permissions,
+      picture_url: data.account.picture_url ?? "",
+      slug: data.account.slug ?? "",
+    },
+    accounts: data.accounts.map((acc) => ({
+      ...acc,
+      picture_url: acc.picture_url ?? "",
+      slug: acc.slug ?? "",
+    })),
+  };
   const state = use(getLayoutState(account));
 
-  const accounts = data.accounts;
+  const accountsForSelector = data.accounts.map((acc) => ({
+    label: acc.name,
+    value: acc.slug,
+    image: acc.picture_url,
+  }));
 
   return (
-    <TeamAccountWorkspaceContextProvider value={data}>
+    <TeamAccountWorkspaceContextProvider value={workspaceValue}>
       <SidebarProvider defaultOpen={state.open}>
-        <Page style={'sidebar'}>
+        <Page style={"sidebar"}>
           <PageNavigation>
             <TeamAccountLayoutSidebar
               account={account}
               accountId={data.account.id}
-              accounts={accounts}
+              accounts={accountsForSelector}
               user={data.user}
             />
           </PageNavigation>
 
-          <PageMobileNavigation className={'flex items-center justify-between'}>
+          <PageMobileNavigation className={"flex items-center justify-between"}>
             <AppLogo />
 
-            <div className={'flex space-x-4'}>
+            <div className={"flex space-x-4"}>
               <TeamAccountLayoutMobileNavigation
-                userId={data.user.id}
-                accounts={accounts}
                 account={account}
+                accounts={accountsForSelector}
+                userId={data.user.id}
               />
             </div>
           </PageMobileNavigation>
@@ -83,24 +117,57 @@ function HeaderLayout({
   account: string;
 }>) {
   const data = use(loadTeamWorkspace(account));
+  const permissions = data.account.permissions.filter(
+    (
+      p
+    ): p is
+      | "roles.manage"
+      | "settings.manage"
+      | "members.manage"
+      | "invites.manage" =>
+      [
+        "roles.manage",
+        "settings.manage",
+        "members.manage",
+        "invites.manage",
+      ].includes(p as string)
+  );
+  const workspaceValue = {
+    ...data,
+    account: {
+      ...data.account,
+      permissions,
+      picture_url: data.account.picture_url ?? "",
+      slug: data.account.slug ?? "",
+    },
+    accounts: data.accounts.map((acc) => ({
+      ...acc,
+      picture_url: acc.picture_url ?? "",
+      slug: acc.slug ?? "",
+    })),
+  };
 
-  const accounts = data.accounts;
+  const accountsForSelector = data.accounts.map((acc) => ({
+    label: acc.name,
+    value: acc.slug,
+    image: acc.picture_url,
+  }));
 
   return (
-    <TeamAccountWorkspaceContextProvider value={data}>
-      <Page style={'header'}>
+    <TeamAccountWorkspaceContextProvider value={workspaceValue}>
+      <Page style={"header"}>
         <PageNavigation>
-          <TeamAccountNavigationMenu workspace={data} />
+          <TeamAccountNavigationMenu workspace={workspaceValue} />
         </PageNavigation>
 
-        <PageMobileNavigation className={'flex items-center justify-between'}>
+        <PageMobileNavigation className={"flex items-center justify-between"}>
           <AppLogo />
 
-          <div className={'group-data-[mobile:hidden]'}>
+          <div className={"group-data-[mobile:hidden]"}>
             <TeamAccountLayoutMobileNavigation
-              userId={data.user.id}
-              accounts={accounts}
               account={account}
+              accounts={accountsForSelector}
+              userId={data.user.id}
             />
           </div>
         </PageMobileNavigation>
@@ -116,16 +183,16 @@ async function getLayoutState(account: string) {
   const config = getTeamAccountSidebarConfig(account);
 
   const LayoutStyleSchema = z
-    .enum(['sidebar', 'header', 'custom'])
+    .enum(["sidebar", "header", "custom"])
     .default(config.style);
 
-  const sidebarOpenCookie = cookieStore.get('sidebar:state');
-  const layoutCookie = cookieStore.get('layout-style');
+  const sidebarOpenCookie = cookieStore.get("sidebar:state");
+  const layoutCookie = cookieStore.get("layout-style");
 
   const layoutStyle = LayoutStyleSchema.safeParse(layoutCookie?.value);
 
   const sidebarOpenCookieValue = sidebarOpenCookie
-    ? sidebarOpenCookie.value === 'false'
+    ? sidebarOpenCookie.value === "false"
     : !config.sidebarCollapsed;
 
   const style = layoutStyle.success ? layoutStyle.data : config.style;

@@ -1,16 +1,15 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ColumnDef } from '@tanstack/react-table';
-import { EllipsisVertical } from 'lucide-react';
-import { useForm, useWatch } from 'react-hook-form';
-import { z } from 'zod';
-
-import { Tables } from '~/core/database/supabase/database.types';
-import { Button } from '~/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { ColumnDef } from "@tanstack/react-table";
+import { EllipsisVertical } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
+import { DataTable } from "~/components/portal/data-table";
+import { If } from "~/components/portal/if";
+import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,11 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { DataTable } from '~/components/makerkit/data-table';
-import { Form, FormControl, FormField, FormItem } from '~/components/ui/form';
-import { If } from '~/components/makerkit/if';
-import { Input } from '~/components/ui/input';
+} from "~/components/ui/dropdown-menu";
+import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -31,17 +28,18 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '~/components/ui/select';
+} from "~/components/ui/select";
+import type { AdminAccountRow } from "~/features/admin/lib/server/loaders/admin-accounts.loader";
 
-import { AdminDeleteAccountDialog } from './admin-delete-account-dialog';
-import { AdminDeleteUserDialog } from './admin-delete-user-dialog';
-import { AdminImpersonateUserDialog } from './admin-impersonate-user-dialog';
-import { AdminResetPasswordDialog } from './admin-reset-password-dialog';
+import { AdminDeleteAccountDialog } from "./admin-delete-account-dialog";
+import { AdminDeleteUserDialog } from "./admin-delete-user-dialog";
+import { AdminImpersonateUserDialog } from "./admin-impersonate-user-dialog";
+import { AdminResetPasswordDialog } from "./admin-reset-password-dialog";
 
-type Account = Tables<'accounts'>;
+type Account = AdminAccountRow;
 
 const FiltersSchema = z.object({
-  type: z.enum(['all', 'team', 'personal']),
+  type: z.enum(["all", "team", "personal"]),
   query: z.string().optional(),
 });
 
@@ -52,24 +50,24 @@ export function AdminAccountsTable(
     pageSize: number;
     page: number;
     filters: {
-      type: 'all' | 'team' | 'personal';
+      type: "all" | "team" | "personal";
       query: string;
     };
-  }>,
+  }>
 ) {
   return (
-    <div className={'flex flex-col space-y-4'}>
-      <div className={'flex justify-end'}>
+    <div className={"flex flex-col space-y-4"}>
+      <div className={"flex justify-end"}>
         <AccountsTableFilters filters={props.filters} />
       </div>
 
-      <div className={'rounded-lg border p-2'}>
+      <div className={"rounded-lg border p-2"}>
         <DataTable
-          pageSize={props.pageSize}
-          pageIndex={props.page - 1}
-          pageCount={props.pageCount}
-          data={props.data}
           columns={getColumns()}
+          data={props.data}
+          pageCount={props.pageCount}
+          pageIndex={props.page - 1}
+          pageSize={props.pageSize}
         />
       </div>
     </div>
@@ -82,20 +80,23 @@ function AccountsTableFilters(props: {
   const form = useForm({
     resolver: zodResolver(FiltersSchema),
     defaultValues: {
-      type: props.filters?.type ?? 'all',
-      query: props.filters?.query ?? '',
+      type: props.filters?.type ?? "all",
+      query: props.filters?.query ?? "",
     },
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
   const router = useRouter();
   const pathName = usePathname();
 
-  const onSubmit = ({ type, query }: z.infer<typeof FiltersSchema>) => {
+  const onSubmit = ({
+    type: filterType,
+    query: searchQuery,
+  }: z.infer<typeof FiltersSchema>) => {
     const params = new URLSearchParams({
-      account_type: type,
-      query: query ?? '',
+      account_type: filterType,
+      query: searchQuery ?? "",
     });
 
     const url = `${pathName}?${params.toString()}`;
@@ -103,54 +104,54 @@ function AccountsTableFilters(props: {
     router.push(url);
   };
 
-  const type = useWatch({ control: form.control, name: 'type' });
+  const type = useWatch({ control: form.control, name: "type" });
 
   return (
     <Form {...form}>
       <form
-        className={'flex gap-2.5'}
+        className={"flex gap-2.5"}
         onSubmit={form.handleSubmit((data) => onSubmit(data))}
       >
         <Select
-          value={type}
           onValueChange={(value) => {
             form.setValue(
-              'type',
-              value as z.infer<typeof FiltersSchema>['type'],
+              "type",
+              value as z.infer<typeof FiltersSchema>["type"],
               {
                 shouldValidate: true,
                 shouldDirty: true,
                 shouldTouch: true,
-              },
+              }
             );
 
             return onSubmit(form.getValues());
           }}
+          value={type}
         >
           <SelectTrigger>
-            <SelectValue placeholder={'Account Type'} />
+            <SelectValue placeholder={"Account Type"} />
           </SelectTrigger>
 
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Account Type</SelectLabel>
 
-              <SelectItem value={'all'}>All accounts</SelectItem>
-              <SelectItem value={'team'}>Team</SelectItem>
-              <SelectItem value={'personal'}>Personal</SelectItem>
+              <SelectItem value={"all"}>All accounts</SelectItem>
+              <SelectItem value={"team"}>Team</SelectItem>
+              <SelectItem value={"personal"}>Personal</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
 
         <FormField
-          name={'query'}
+          name={"query"}
           render={({ field }) => (
             <FormItem>
-              <FormControl className={'w-full min-w-36 md:min-w-80'}>
+              <FormControl className={"w-full min-w-36 md:min-w-80"}>
                 <Input
-                  data-test={'admin-accounts-table-filter-input'}
-                  className={'w-full'}
-                  placeholder={`Search account...`}
+                  className={"w-full"}
+                  data-test={"admin-accounts-table-filter-input"}
+                  placeholder={"Search account..."}
                   {...field}
                 />
               </FormControl>
@@ -165,65 +166,61 @@ function AccountsTableFilters(props: {
 function getColumns(): ColumnDef<Account>[] {
   return [
     {
-      id: 'name',
-      header: 'Name',
+      id: "name",
+      header: "Name",
+      cell: ({ row }) => (
+        <Link
+          className={"hover:underline"}
+          href={`/admin/accounts/${row.original.id}`}
+          prefetch={false}
+        >
+          {row.original.name}
+        </Link>
+      ),
+    },
+    {
+      id: "email",
+      header: "Email",
+      accessorKey: "email",
+    },
+    {
+      id: "type",
+      header: "Type",
+      cell: ({ row }) => (row.original.isPersonalAccount ? "Personal" : "Team"),
+    },
+    {
+      id: "created_at",
+      header: "Created At",
+      accessorKey: "createdAt",
+    },
+    {
+      id: "updated_at",
+      header: "Updated At",
+      accessorKey: "updatedAt",
+    },
+    {
+      id: "actions",
+      header: "",
       cell: ({ row }) => {
-        return (
-          <Link
-            prefetch={false}
-            className={'hover:underline'}
-            href={`/admin/accounts/${row.original.id}`}
-          >
-            {row.original.name}
-          </Link>
-        );
-      },
-    },
-    {
-      id: 'email',
-      header: 'Email',
-      accessorKey: 'email',
-    },
-    {
-      id: 'type',
-      header: 'Type',
-      cell: ({ row }) => {
-        return row.original.is_personal_account ? 'Personal' : 'Team';
-      },
-    },
-    {
-      id: 'created_at',
-      header: 'Created At',
-      accessorKey: 'created_at',
-    },
-    {
-      id: 'updated_at',
-      header: 'Updated At',
-      accessorKey: 'updated_at',
-    },
-    {
-      id: 'actions',
-      header: '',
-      cell: ({ row }) => {
-        const isPersonalAccount = row.original.is_personal_account;
+        const isPersonalAccount = row.original.isPersonalAccount;
         const userId = row.original.id;
 
         return (
-          <div className={'flex justify-end'}>
+          <div className={"flex justify-end"}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant={'outline'} size={'icon'}>
-                  <EllipsisVertical className={'h-4'} />
+                <Button size={"icon"} variant={"outline"}>
+                  <EllipsisVertical className={"h-4"} />
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align={'end'}>
+              <DropdownMenuContent align={"end"}>
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
                   <DropdownMenuItem>
                     <Link
-                      className={'h-full w-full'}
+                      className={"h-full w-full"}
                       href={`/admin/accounts/${userId}`}
                     >
                       View

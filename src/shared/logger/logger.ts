@@ -6,12 +6,12 @@ type LogFn = {
 
 /**
  * @name Logger
- * @description Logger interface for logging messages
+ * @description Logger type for logging messages
  */
-export interface Logger {
+export type Logger = {
   info: LogFn;
   error: LogFn;
   warn: LogFn;
   debug: LogFn;
   fatal: LogFn;
-}
+};

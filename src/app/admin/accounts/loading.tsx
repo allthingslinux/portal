@@ -1,3 +1,5 @@
-import { GlobalLoader } from '~/components/makerkit/global-loader';
+import { GlobalLoader } from "~/components/portal/global-loader";
 
-export default GlobalLoader;
+const AdminAccountsLoading = GlobalLoader;
+
+export default AdminAccountsLoading;

@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
+import type * as React from "react";
 
-import { AlertDialog as AlertDialogPrimitive } from 'radix-ui';
-
-import { cn } from '../lib/utils';
-import { buttonVariants } from './button';
+import { cn } from "../lib/utils";
+import { buttonVariants } from "./button";
 
 const AlertDialog = AlertDialogPrimitive.Root;
 
@@ -18,8 +17,8 @@ const AlertDialogOverlay: React.FC<
 > = ({ className, ...props }) => (
   <AlertDialogPrimitive.Overlay
     className={cn(
-      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80',
-      className,
+      "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80 data-[state=closed]:animate-out data-[state=open]:animate-in",
+      className
     )}
     {...props}
   />
@@ -33,8 +32,8 @@ const AlertDialogContent: React.FC<
     <AlertDialogOverlay />
     <AlertDialogPrimitive.Content
       className={cn(
-        'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 shadow-lg duration-200 sm:rounded-lg',
-        className,
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:rounded-lg",
+        className
       )}
       {...props}
     />
@@ -47,11 +46,11 @@ const AlertDialogHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('flex flex-col gap-y-3 text-center sm:text-left', className)}
+    className={cn("flex flex-col gap-y-3 text-center sm:text-left", className)}
     {...props}
   />
 );
-AlertDialogHeader.displayName = 'AlertDialogHeader';
+AlertDialogHeader.displayName = "AlertDialogHeader";
 
 const AlertDialogFooter = ({
   className,
@@ -59,19 +58,19 @@ const AlertDialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-      className,
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      className
     )}
     {...props}
   />
 );
-AlertDialogFooter.displayName = 'AlertDialogFooter';
+AlertDialogFooter.displayName = "AlertDialogFooter";
 
 const AlertDialogTitle: React.FC<
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Title>
 > = ({ className, ...props }) => (
   <AlertDialogPrimitive.Title
-    className={cn('text-lg font-semibold', className)}
+    className={cn("font-semibold text-lg", className)}
     {...props}
   />
 );
@@ -81,7 +80,7 @@ const AlertDialogDescription: React.FC<
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Description>
 > = ({ className, ...props }) => (
   <AlertDialogPrimitive.Description
-    className={cn('text-muted-foreground text-sm', className)}
+    className={cn("text-muted-foreground text-sm", className)}
     {...props}
   />
 );
@@ -103,9 +102,9 @@ const AlertDialogCancel: React.FC<
 > = ({ className, ...props }) => (
   <AlertDialogPrimitive.Cancel
     className={cn(
-      buttonVariants({ variant: 'outline' }),
-      'mt-2 sm:mt-0',
-      className,
+      buttonVariants({ variant: "outline" }),
+      "mt-2 sm:mt-0",
+      className
     )}
     {...props}
   />

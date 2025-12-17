@@ -1,39 +1,30 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { eq } from "drizzle-orm";
+import type { z } from "zod";
+import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import { db } from "~/core/database/client";
+import { accounts, accountsMemberships } from "~/core/database/schema";
 
-import { eq } from 'drizzle-orm';
-import { z } from 'zod';
-
-import type { Database } from '~/core/database/supabase/database.types';
-import { getDrizzleSupabaseClient } from '~/core/database/supabase/clients/drizzle-client';
-import { accounts, accountsMemberships } from '~/core/database/supabase/drizzle/schema';
-import { JWTUserData } from '~/core/database/supabase/types';
-
-import { InviteMembersSchema } from '../../schema/invite-members.schema';
-import type { FeaturePolicyInvitationContext } from './feature-policy-invitation-context';
+import type { InviteMembersSchema } from "../../schema/invite-members.schema";
+import type { FeaturePolicyInvitationContext } from "./feature-policy-invitation-context";
 
 /**
  * Creates an invitation context builder
- * @param client - The Supabase client
  * @returns
  */
-export function createInvitationContextBuilder(
-  client: SupabaseClient<Database>,
-) {
-  return new InvitationContextBuilder(client);
+export function createInvitationContextBuilder() {
+  return new InvitationContextBuilder();
 }
 
 /**
  * Invitation context builder
  */
 class InvitationContextBuilder {
-  constructor(private readonly client: SupabaseClient<Database>) {}
-
   /**
    * Build policy context for invitation evaluation with optimized parallel loading
    */
   async buildContext(
     params: z.infer<typeof InviteMembersSchema> & { accountSlug: string },
-    user: JWTUserData,
+    user: BetterAuthUser
   ): Promise<FeaturePolicyInvitationContext> {
     // Fetch all data in parallel for optimal performance
     const account = await this.getAccount(params.accountSlug);
@@ -70,23 +61,18 @@ class InvitationContextBuilder {
    * @returns
    */
   private async getAccount(accountSlug: string) {
-    const drizzleClient = await getDrizzleSupabaseClient();
-
-    const result = await drizzleClient.runTransaction(async (tx) => {
-      return await tx
-        .select({ id: accounts.id })
-        .from(accounts)
-        .where(eq(accounts.slug, accountSlug))
-        .limit(1);
-    });
+    const result = await db
+      .select({ id: accounts.id })
+      .from(accounts)
+      .where(eq(accounts.slug, accountSlug))
+      .limit(1);
 
     if (result.length === 0) {
-      throw new Error('Account not found');
+      throw new Error("Account not found");
     }
 
     return result[0];
   }
-
 
   /**
    * Gets the member count from the database
@@ -94,17 +80,11 @@ class InvitationContextBuilder {
    * @returns
    */
   private async getMemberCount(accountId: string) {
-    const drizzleClient = await getDrizzleSupabaseClient();
+    const result = await db
+      .select({ count: accountsMemberships.userId })
+      .from(accountsMemberships)
+      .where(eq(accountsMemberships.accountId, accountId));
 
-    const result = await drizzleClient.runTransaction(async (tx) => {
-      const countResult = await tx
-        .select({ count: accountsMemberships.userId })
-        .from(accountsMemberships)
-        .where(eq(accountsMemberships.accountId, accountId));
-
-      return countResult.length;
-    });
-
-    return result;
+    return result.length;
   }
 }

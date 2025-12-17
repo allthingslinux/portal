@@ -1,53 +1,37 @@
-import { redirect } from 'next/navigation';
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import pathsConfig from "~/config/paths.config";
+import { getServerSession } from "~/core/auth/better-auth/session";
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
-import { MultiFactorChallengeContainer } from '~/features/auth/mfa';
-import { checkRequiresMultiFactorAuthentication } from '~/core/database/supabase/check-requires-mfa';
-import { getSupabaseServerClient } from '~/core/database/supabase/clients/server-client';
-
-import pathsConfig from '~/config/paths.config';
-import { createI18nServerInstance } from '~/shared/lib/i18n/i18n.server';
-import { withI18n } from '~/shared/lib/i18n/with-i18n';
-
-interface Props {
+type Props = {
   searchParams: Promise<{
     next?: string;
   }>;
-}
+};
 
-export const generateMetadata = async () => {
+export const generateMetadata = async (): Promise<Metadata> => {
   const i18n = await createI18nServerInstance();
 
   return {
-    title: i18n.t('auth:signIn'),
+    title: i18n.t("auth:signIn"),
   };
 };
 
 async function VerifyPage(props: Props) {
-  const client = getSupabaseServerClient();
+  const session = await getServerSession();
 
-  const { data } = await client.auth.getClaims();
-
-  if (!data?.claims) {
+  if (!session?.user) {
     redirect(pathsConfig.auth.signIn);
-  }
-
-  const needsMfa = await checkRequiresMultiFactorAuthentication(client);
-
-  if (!needsMfa) {
-    redirect(pathsConfig.auth.signIn);
+    return null;
   }
 
   const nextPath = (await props.searchParams).next;
   const redirectPath = nextPath ?? pathsConfig.app.home;
 
-  return (
-    <MultiFactorChallengeContainer
-      userId={data.claims.sub}
-      paths={{
-        redirectPath,
-      }}
-    />
-  );
+  redirect(redirectPath);
+  return null;
 }
 
 export default withI18n(VerifyPage);

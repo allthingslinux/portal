@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { Mail, Plus, X } from 'lucide-react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-
-import { Alert, AlertDescription } from '~/components/ui/alert';
-import { Button } from '~/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
+import { Mail, Plus, X } from "lucide-react";
+import { useState, useTransition } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { If } from "~/components/portal/if";
+import { Spinner } from "~/components/portal/spinner";
+import { Trans } from "~/components/portal/trans";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -17,34 +18,31 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '~/components/ui/dialog';
+} from "~/components/ui/dialog";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '~/components/ui/form';
-import { If } from '~/components/makerkit/if';
+} from "~/components/ui/form";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from '~/components/ui/input-group';
-import { toast } from '~/components/ui/sonner';
-import { Spinner } from '~/components/makerkit/spinner';
+} from "~/components/ui/input-group";
+import { toast } from "~/components/ui/sonner";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '~/components/ui/tooltip';
-import { Trans } from '~/components/makerkit/trans';
+} from "~/components/ui/tooltip";
 
-import { InviteMembersSchema } from '../../schema/invite-members.schema';
-import { createInvitationsAction } from '../../server/actions/team-invitations-server-actions';
-import { MembershipRoleSelector } from './membership-role-selector';
-import { RolesDataProvider } from './roles-data-provider';
+import { InviteMembersSchema } from "../../schema/invite-members.schema";
+import { createInvitationsAction } from "../../server/actions/team-invitations-server-actions";
+import { MembershipRoleSelector } from "./membership-role-selector";
+import { RolesDataProvider } from "./roles-data-provider";
 
 type InviteModel = ReturnType<typeof createEmptyInviteModel>;
 
@@ -66,7 +64,7 @@ export function InviteMembersDialogContainer({
 }>) {
   const [pending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
-  const { t } = useTranslation('teams');
+  const { t } = useTranslation("teams");
 
   // Evaluate policies when dialog is open
   const {
@@ -76,17 +74,17 @@ export function InviteMembersDialogContainer({
   } = useFetchInvitationsPolicies({ accountSlug, isOpen });
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen} modal>
+    <Dialog modal onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
-            <Trans i18nKey={'teams:inviteMembersHeading'} />
+            <Trans i18nKey={"teams:inviteMembersHeading"} />
           </DialogTitle>
 
           <DialogDescription>
-            <Trans i18nKey={'teams:inviteMembersDescription'} />
+            <Trans i18nKey={"teams:inviteMembersDescription"} />
           </DialogDescription>
         </DialogHeader>
 
@@ -115,8 +113,8 @@ export function InviteMembersDialogContainer({
           <Alert variant="destructive">
             <AlertDescription>
               <Trans
-                i18nKey={policiesResult?.reasons[0]}
                 defaults={policiesResult?.reasons[0]}
+                i18nKey={policiesResult?.reasons[0]}
               />
             </AlertDescription>
           </Alert>
@@ -126,11 +124,9 @@ export function InviteMembersDialogContainer({
           <RolesDataProvider maxRoleHierarchy={userRoleHierarchy}>
             {(roles) => (
               <InviteMembersForm
-                pending={pending}
-                roles={roles}
                 onSubmit={(data) => {
                   startTransition(async () => {
-                    const toastId = toast.loading(t('invitingMembers'));
+                    const toastId = toast.loading(t("invitingMembers"));
 
                     const result = await createInvitationsAction({
                       accountSlug,
@@ -138,11 +134,11 @@ export function InviteMembersDialogContainer({
                     });
 
                     if (result.success) {
-                      toast.success(t('inviteMembersSuccessMessage'), {
+                      toast.success(t("inviteMembersSuccessMessage"), {
                         id: toastId,
                       });
                     } else {
-                      toast.error(t('inviteMembersErrorMessage'), {
+                      toast.error(t("inviteMembersErrorMessage"), {
                         id: toastId,
                       });
                     }
@@ -150,6 +146,8 @@ export function InviteMembersDialogContainer({
                     setIsOpen(false);
                   });
                 }}
+                pending={pending}
+                roles={roles}
               />
             )}
           </RolesDataProvider>
@@ -168,12 +166,12 @@ function InviteMembersForm({
   pending: boolean;
   roles: string[];
 }) {
-  const { t } = useTranslation('teams');
+  const { t } = useTranslation("teams");
 
   const form = useForm({
     resolver: zodResolver(InviteMembersSchema),
     shouldUseNativeValidation: true,
-    reValidateMode: 'onSubmit',
+    reValidateMode: "onSubmit",
     defaultValues: {
       invitations: [createEmptyInviteModel()],
     },
@@ -181,14 +179,14 @@ function InviteMembersForm({
 
   const fieldArray = useFieldArray({
     control: form.control,
-    name: 'invitations',
+    name: "invitations",
   });
 
   return (
     <Form {...form}>
       <form
-        className={'flex flex-col space-y-8'}
-        data-test={'invite-members-form'}
+        className={"flex flex-col space-y-8"}
+        data-test={"invite-members-form"}
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <div className="flex flex-col gap-y-2.5">
@@ -197,79 +195,75 @@ function InviteMembersForm({
             const roleInputName = `invitations.${index}.role` as const;
 
             return (
-              <div data-test={'invite-member-form-item'} key={field.id}>
-                <div className={'flex items-end gap-x-2'}>
-                  <InputGroup className={'bg-background w-full'}>
+              <div data-test={"invite-member-form-item"} key={field.id}>
+                <div className={"flex items-end gap-x-2"}>
+                  <InputGroup className={"w-full bg-background"}>
                     <InputGroupAddon align="inline-start">
                       <Mail className="h-4 w-4" />
                     </InputGroupAddon>
 
                     <FormField
                       name={emailInputName}
-                      render={({ field }) => {
-                        return (
-                          <FormItem className="w-full">
-                            <FormControl>
-                              <InputGroupInput
-                                data-test={'invite-email-input'}
-                                placeholder={t('emailPlaceholder')}
-                                type="email"
-                                required
-                                {...field}
-                              />
-                            </FormControl>
-
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  </InputGroup>
-
-                  <FormField
-                    name={roleInputName}
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
+                      render={({ field: emailField }) => (
+                        <FormItem className="w-full">
                           <FormControl>
-                            <MembershipRoleSelector
-                              triggerClassName={'m-0 bg-muted'}
-                              roles={roles}
-                              value={field.value}
-                              onChange={(role) => {
-                                form.setValue(field.name, role);
-                              }}
+                            <InputGroupInput
+                              data-test={"invite-email-input"}
+                              placeholder={t("emailPlaceholder")}
+                              required
+                              type="email"
+                              {...emailField}
                             />
                           </FormControl>
 
                           <FormMessage />
                         </FormItem>
-                      );
-                    }}
+                      )}
+                    />
+                  </InputGroup>
+
+                  <FormField
+                    name={roleInputName}
+                    render={({ field: roleField }) => (
+                      <FormItem>
+                        <FormControl>
+                          <MembershipRoleSelector
+                            onChange={(role) => {
+                              form.setValue(roleField.name, role);
+                            }}
+                            roles={roles}
+                            triggerClassName={"m-0 bg-muted"}
+                            value={roleField.value}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
 
-                  <div className={'flex items-end justify-end'}>
+                  <div className={"flex items-end justify-end"}>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant={'ghost'}
-                            size={'icon'}
-                            type={'button'}
+                            aria-label={t("removeInviteButtonLabel")}
+                            data-test={"remove-invite-button"}
                             disabled={fieldArray.fields.length <= 1}
-                            data-test={'remove-invite-button'}
-                            aria-label={t('removeInviteButtonLabel')}
                             onClick={() => {
                               fieldArray.remove(index);
                               form.clearErrors(emailInputName);
                             }}
+                            size={"icon"}
+                            type={"button"}
+                            variant={"ghost"}
                           >
-                            <X className={'h-4'} />
+                            <X className={"h-4"} />
                           </Button>
                         </TooltipTrigger>
 
                         <TooltipContent>
-                          {t('removeInviteButtonLabel')}
+                          {t("removeInviteButtonLabel")}
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -282,31 +276,31 @@ function InviteMembersForm({
           <If condition={fieldArray.fields.length < MAX_INVITES}>
             <div>
               <Button
-                data-test={'add-new-invite-button'}
-                type={'button'}
-                variant={'link'}
-                size={'sm'}
+                data-test={"add-new-invite-button"}
                 disabled={pending}
                 onClick={() => {
                   fieldArray.append(createEmptyInviteModel());
                 }}
+                size={"sm"}
+                type={"button"}
+                variant={"link"}
               >
-                <Plus className={'mr-1 h-3'} />
+                <Plus className={"mr-1 h-3"} />
 
                 <span>
-                  <Trans i18nKey={'teams:addAnotherMemberButtonLabel'} />
+                  <Trans i18nKey={"teams:addAnotherMemberButtonLabel"} />
                 </span>
               </Button>
             </div>
           </If>
         </div>
 
-        <Button type={'submit'} disabled={pending}>
+        <Button disabled={pending} type={"submit"}>
           <Trans
             i18nKey={
               pending
-                ? 'teams:invitingMembers'
-                : 'teams:inviteMembersButtonLabel'
+                ? "teams:invitingMembers"
+                : "teams:inviteMembersButtonLabel"
             }
           />
         </Button>
@@ -316,7 +310,7 @@ function InviteMembersForm({
 }
 
 function createEmptyInviteModel() {
-  return { email: '', role: 'member' as Role };
+  return { email: "", role: "member" as Role };
 }
 
 function useFetchInvitationsPolicies({
@@ -327,9 +321,9 @@ function useFetchInvitationsPolicies({
   isOpen: boolean;
 }) {
   return useQuery({
-    queryKey: ['invitation-policies', accountSlug],
+    queryKey: ["invitation-policies", accountSlug],
     queryFn: async () => {
-      const response = await fetch(`./members/policies`);
+      const response = await fetch("./members/policies");
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

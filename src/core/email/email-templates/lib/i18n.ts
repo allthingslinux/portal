@@ -1,10 +1,10 @@
-import { initializeServerI18n } from '~/core/i18n/i18n.server';
+import { initializeServerI18n } from "~/core/i18n/i18n.server";
 
 export function initializeEmailI18n(params: {
   language: string | undefined;
   namespace: string;
 }) {
-  const language = params.language ?? 'en';
+  const language = params.language ?? "en";
 
   return initializeServerI18n(
     {
@@ -12,19 +12,19 @@ export function initializeEmailI18n(params: {
       lng: language,
       ns: params.namespace,
     },
-    async (language, namespace) => {
+    async (lang, ns) => {
       try {
-        const data = await import(`../locales/${language}/${namespace}.json`);
+        const data = await import(`../locales/${lang}/${ns}.json`);
 
         return data as Record<string, string>;
       } catch (error) {
         console.log(
-          `Error loading i18n file: locales/${language}/${namespace}.json`,
-          error,
+          `Error loading i18n file: locales/${lang}/${ns}.json`,
+          error
         );
 
         return {};
       }
-    },
+    }
   );
 }

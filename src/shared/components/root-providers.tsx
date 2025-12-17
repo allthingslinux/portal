@@ -1,23 +1,20 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
+import { ThemeProvider } from "next-themes";
+import { useMemo } from "react";
+import { AnalyticsProvider } from "~/components/analytics-provider";
+import { AuthProvider } from "~/components/auth-provider";
+import { If } from "~/components/portal/if";
+import { VersionUpdater } from "~/components/portal/version-updater";
+import appConfig from "~/config/app.config";
+import featuresFlagConfig from "~/config/feature-flags.config";
+import { I18nProvider } from "~/core/i18n/i18n-provider";
+import { MonitoringProvider } from "~/core/monitoring/api/components";
+import { AppEventsProvider } from "~/shared/events";
+import { i18nResolver } from "~/shared/lib/i18n/i18n.resolver";
+import { getI18nSettings } from "~/shared/lib/i18n/i18n.settings";
 
-import { ThemeProvider } from 'next-themes';
-
-import { I18nProvider } from '~/core/i18n/i18n-provider';
-import { MonitoringProvider } from '~/core/monitoring/api/components';
-import { AppEventsProvider } from '~/shared/events';
-import { If } from '~/components/makerkit/if';
-import { VersionUpdater } from '~/components/makerkit/version-updater';
-
-import { AnalyticsProvider } from '~/components/analytics-provider';
-import { AuthProvider } from '~/components/auth-provider';
-import appConfig from '~/config/app.config';
-import featuresFlagConfig from '~/config/feature-flags.config';
-import { i18nResolver } from '~/shared/lib/i18n/i18n.resolver';
-import { getI18nSettings } from '~/shared/lib/i18n/i18n.settings';
-
-import { ReactQueryProvider } from './react-query-provider';
+import { ReactQueryProvider } from "./react-query-provider";
 
 type RootProvidersProps = React.PropsWithChildren<{
   // The language to use for the app (optional)
@@ -41,14 +38,14 @@ export function RootProviders({
       <AppEventsProvider>
         <AnalyticsProvider>
           <ReactQueryProvider>
-            <I18nProvider settings={i18nSettings} resolver={i18nResolver}>
+            <I18nProvider resolver={i18nResolver} settings={i18nSettings}>
               <AuthProvider>
                 <ThemeProvider
                   attribute="class"
-                  enableSystem
-                  disableTransitionOnChange
                   defaultTheme={theme}
+                  disableTransitionOnChange
                   enableColorScheme={false}
+                  enableSystem
                   nonce={nonce}
                 >
                   {children}
