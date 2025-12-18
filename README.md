@@ -173,3 +173,10 @@ When making schema changes:
 
 See [LICENSE](./LICENSE) file.
 
+## Activity
+
+![Alt](https://repobeats.axiom.co/api/embed/f2d47742006e4782ae32e10787f2cf8f1fb7d454.svg "Repobeats analytics image")
+
+# Contributors
+
+![Alt](https://contrib.rocks/image?repo=allthingslinux/portal "Contrib.rocks contributors image")
