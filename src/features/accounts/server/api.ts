@@ -1,5 +1,6 @@
 import type { InferSelectModel } from "drizzle-orm";
 import { eq } from "drizzle-orm";
+import { asc } from "drizzle-orm";
 
 import { db } from "~/core/database/client";
 import {
@@ -68,7 +69,8 @@ class _AccountsApi {
         accountsMemberships,
         eq(accounts.id, accountsMemberships.accountId)
       )
-      .where(eq(accountsMemberships.userId, userId));
+      .where(eq(accountsMemberships.userId, userId))
+      .orderBy(asc(accounts.name));
 
     return accountResults.map(({ name, slug, pictureUrl, id }) => ({
       label: name ?? "",

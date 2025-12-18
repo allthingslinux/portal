@@ -17,11 +17,17 @@ export async function updateAccountPictureInDatabase(
   accountId: string,
   pictureUrl: string | null,
   userId?: string
-) {
+): Promise<boolean> {
   // Use raw userId instead of converting to UUID for database lookup
   const whereCondition = userId
     ? and(eq(accounts.id, accountId), eq(accounts.primaryOwnerUserId, userId))
     : eq(accounts.id, accountId);
 
-  await db.update(accounts).set({ pictureUrl }).where(whereCondition);
+  const result = await db
+    .update(accounts)
+    .set({ pictureUrl })
+    .where(whereCondition)
+    .returning({ id: accounts.id });
+
+  return result.length > 0;
 }
