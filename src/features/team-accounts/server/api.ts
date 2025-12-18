@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, gte } from "drizzle-orm";
+import { and, eq, gte, ne } from "drizzle-orm";
 import { db } from "~/core/database/client";
 import {
   accounts,
@@ -134,6 +134,16 @@ class _TeamAccountsApi {
           )
       );
 
+      if (accountResult.length === 0) {
+        return {
+          error: { message: "Account not found or access denied" },
+          workspace: null,
+        };
+      }
+
+      // Group permissions by account (similar to the RPC)
+      const accountRow = accountResult[0];
+
       const teamAccounts = await db.transaction(async (tx) =>
         tx
           .select({
@@ -151,20 +161,11 @@ class _TeamAccountsApi {
           .where(
             and(
               eq(accountsMemberships.userId, userId),
-              eq(accounts.isPersonalAccount, false)
+              eq(accounts.isPersonalAccount, false),
+              ne(accounts.id, accountRow.id)
             )
           )
       );
-
-      if (accountResult.length === 0) {
-        return {
-          error: { message: "Account not found or access denied" },
-          workspace: null,
-        };
-      }
-
-      // Group permissions by account (similar to the RPC)
-      const accountRow = accountResult[0];
       const permissions = accountResult
         .map((row) => row.permissions)
         .filter((p): p is AppPermission => p !== null);

@@ -36,6 +36,7 @@ export function HomeAccountSelector(props: {
           router.replace(path);
         }
       }}
+      selectedAccount={undefined}
       userId={props.userId}
     />
   );

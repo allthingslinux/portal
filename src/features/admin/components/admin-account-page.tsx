@@ -292,7 +292,7 @@ async function getMembers(accountSlug: string): Promise<AdminMember[]> {
         primaryOwnerUserId: accounts.primaryOwnerUserId,
         name: betterAuthUser.name,
         email: betterAuthUser.email,
-        pictureUrl: accounts.pictureUrl,
+        pictureUrl: betterAuthUser.image,
         createdAt: accountsMemberships.createdAt,
         updatedAt: accountsMemberships.updatedAt,
       })

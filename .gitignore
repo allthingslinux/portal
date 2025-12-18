@@ -60,3 +60,5 @@ node-compile-cache/
 .env.development
 .env.test
 .env
+
+uploads/

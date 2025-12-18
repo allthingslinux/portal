@@ -71,7 +71,15 @@ export function AccountSelector({
     [selectedAccount]
   );
 
-  const selected = accounts.find((account) => account.value === value);
+  // Only match team accounts if selectedAccount is explicitly provided and not "personal"
+  // This ensures personal account is always shown when selectedAccount is undefined
+  const selected = useMemo(() => {
+    if (!selectedAccount || selectedAccount === PERSONAL_ACCOUNT_SLUG) {
+      return undefined;
+    }
+    return accounts.find((account) => account.value === selectedAccount);
+  }, [selectedAccount, accounts]);
+  
   const pictureUrl = personalData.data?.picture_url;
 
   return (
@@ -121,15 +129,7 @@ export function AccountSelector({
                     "gap-x-2": !collapsed,
                   })}
                 >
-                  <Avatar className={"h-6 w-6 rounded-xs"}>
-                    <AvatarImage src={account.image ?? undefined} />
-
-                    <AvatarFallback
-                      className={"rounded-xs group-hover:bg-muted"}
-                    >
-                      {account.label ? account.label[0] : ""}
-                    </AvatarFallback>
-                  </Avatar>
+                  <PersonIcon className="h-5 w-5" />
 
                   <span
                     className={cn("truncate", {
@@ -208,19 +208,7 @@ export function AccountSelector({
                       value={account.value ?? ""}
                     >
                       <div className={"flex items-center"}>
-                        <Avatar className={"mr-2 h-6 w-6 rounded-xs"}>
-                          <AvatarImage src={account.image ?? undefined} />
-
-                          <AvatarFallback
-                            className={cn("rounded-xs text-foreground", {
-                              "bg-background": value === account.value,
-                              "group-hover:bg-background":
-                                value !== account.value,
-                            })}
-                          >
-                            {account.label ? account.label[0] : ""}
-                          </AvatarFallback>
-                        </Avatar>
+                        <PersonIcon className="mr-2 h-5 w-5" />
 
                         <span className={"mr-2 max-w-[165px] truncate"}>
                           {account.label}
@@ -287,9 +275,6 @@ function Icon({ selected }: { selected: boolean }) {
 }
 
 function PersonalAccountAvatar({ pictureUrl }: { pictureUrl?: string | null }) {
-  return pictureUrl ? (
-    <UserAvatar pictureUrl={pictureUrl} />
-  ) : (
-    <PersonIcon className="h-5 w-5" />
-  );
+  // Always use default icon instead of showing account pictures
+  return <PersonIcon className="h-5 w-5" />;
 }

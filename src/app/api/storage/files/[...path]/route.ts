@@ -10,10 +10,11 @@ import { HTTP_STATUS } from "~/shared/constants";
  */
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
-    const pathParts = params.path;
+    const { path } = await params;
+    const pathParts = path;
     if (pathParts.length < 2) {
       return NextResponse.json(
         { error: "Invalid path" },
