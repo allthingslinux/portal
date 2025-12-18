@@ -68,7 +68,7 @@ export function ImageUploader(
     <div className={"flex items-center space-x-4"}>
       <label
         className={
-          "fade-in zoom-in-50 group/label relative h-20 w-20 animate-in cursor-pointer"
+          "fade-in zoom-in-50 group/label relative size-20 animate-in cursor-pointer"
         }
         htmlFor={inputId}
       >
@@ -76,7 +76,7 @@ export function ImageUploader(
         <img
           alt={""}
           className={
-            "h-20 w-20 rounded-full object-cover transition-all duration-300 group-hover/label:opacity-80"
+            "size-20 rounded-full object-cover transition-all duration-300 group-hover/label:opacity-80"
           }
           decoding="async"
           height={80}
@@ -114,7 +114,7 @@ function FallbackImage(
     <div className={"flex items-center space-x-4"}>
       <label
         className={
-          "fade-in zoom-in-50 relative flex h-20 w-20 animate-in cursor-pointer flex-col items-center justify-center rounded-full border border-border hover:border-primary"
+          "fade-in zoom-in-50 relative flex size-20 animate-in cursor-pointer flex-col items-center justify-center rounded-full border border-border hover:border-primary"
         }
         htmlFor={props.inputId}
       >

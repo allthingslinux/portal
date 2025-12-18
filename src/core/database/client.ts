@@ -23,8 +23,6 @@ function createClient() {
 }
 
 export function getDrizzleClient() {
-  // Always create a fresh client to avoid connection pooling issues
-  // This ensures we get connections with the correct search_path
   if (clientSingleton) {
     return clientSingleton;
   }
@@ -33,7 +31,6 @@ export function getDrizzleClient() {
   return clientSingleton;
 }
 
-// Export function to reset the client (useful for testing or after DB changes)
 export function resetDrizzleClient() {
   clientSingleton = undefined;
 }

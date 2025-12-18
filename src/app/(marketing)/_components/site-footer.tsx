@@ -1,5 +1,5 @@
 import { AppLogo } from "~/components/app-logo";
-import { Footer } from "~/components/portal/marketing";
+import { Footer } from "~/components/portal/marketing/footer";
 import { Trans } from "~/components/portal/trans";
 import appConfig from "~/config/app.config";
 

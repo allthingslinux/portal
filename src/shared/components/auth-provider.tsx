@@ -4,12 +4,15 @@ import { useCallback, useEffect, useRef } from "react";
 
 import { authClient } from "~/core/auth/better-auth";
 import { useSyncUserFromKeycloak } from "~/core/auth/better-auth/hooks/use-sync-user-from-keycloak";
-import { useMonitoring } from "~/core/monitoring/api/hooks";
+import { useMonitoring } from "~/core/monitoring/api/hooks/use-monitoring";
 import { useAppEvents } from "~/shared/events";
 
 export function AuthProvider(props: React.PropsWithChildren) {
   return <AuthEventDispatcher>{props.children}</AuthEventDispatcher>;
 }
+
+const SYNC_INTERVAL_MS = 5 * 60 * 1000;
+const MIN_SYNC_COOLDOWN_MS = 60_000;
 
 function AuthEventDispatcher({ children }: React.PropsWithChildren) {
   const { data: session, isPending } = authClient.useSession();
@@ -37,7 +40,8 @@ function AuthEventDispatcher({ children }: React.PropsWithChildren) {
       const timeSinceLastSync = now - lastSyncTimeRef.current;
       const shouldSync =
         isNewSession ||
-        (timeSinceLastSync > 60_000 && !syncInProgressRef.current); // At least 1 minute since last sync
+        (timeSinceLastSync > MIN_SYNC_COOLDOWN_MS &&
+          !syncInProgressRef.current);
 
       if (shouldSync) {
         syncInProgressRef.current = true;
@@ -57,20 +61,17 @@ function AuthEventDispatcher({ children }: React.PropsWithChildren) {
       return;
     }
 
-    const interval = setInterval(
-      () => {
-        if (!syncInProgressRef.current) {
-          syncInProgressRef.current = true;
-          lastSyncTimeRef.current = Date.now();
-          syncUser.mutate(undefined, {
-            onSettled: () => {
-              syncInProgressRef.current = false;
-            },
-          });
-        }
-      },
-      5 * 60 * 1000
-    ); // 5 minutes
+    const interval = setInterval(() => {
+      if (!syncInProgressRef.current) {
+        syncInProgressRef.current = true;
+        lastSyncTimeRef.current = Date.now();
+        syncUser.mutate(undefined, {
+          onSettled: () => {
+            syncInProgressRef.current = false;
+          },
+        });
+      }
+    }, SYNC_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, [session?.user, syncUser.mutate]);

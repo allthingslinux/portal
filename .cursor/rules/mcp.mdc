@@ -1,0 +1,136 @@
+---
+alwaysApply: true
+---
+
+# MCP Tool Reference for LLMs
+
+This document outlines available MCP (Model Context Protocol) tools and their usage patterns for development tasks.
+
+## Available MCP Servers
+
+### 1. Next.js DevTools MCP (`next-devtools`)
+**Purpose**: Next.js development, runtime diagnostics, and documentation
+**Tools Available**:
+- `init` - Initialize Next.js context and documentation requirements
+- `nextjs_docs` - Search official Next.js documentation
+- `nextjs_index` - Discover running Next.js dev servers
+- `nextjs_call` - Execute runtime diagnostic tools
+- `browser_eval` - Browser automation for testing
+- `upgrade_nextjs_16` - Automated Next.js upgrades
+- `enable_cache_components` - Cache Components setup
+
+### 2. Better Auth MCP (`Better Auth`)
+**Purpose**: Authentication and OAuth provider functionality
+**Tools Available**:
+- OAuth discovery and metadata endpoints
+- Session management and token validation
+- Protected resource access control
+
+### 3. Ultracite MCP (`ultracite`)
+**Purpose**: Code quality, linting rules, and best practices
+**Tools Available**:
+- `getRules` - Retrieve all available linting rules
+
+## Next.js Development Workflow
+
+### Session Initialization
+**ALWAYS call `init` first** when working with Next.js projects:
+- Establishes documentation-first context
+- Lists available runtime tools
+- Sets up proper development environment
+
+### Documentation Queries
+**Use `nextjs_docs` for ALL Next.js questions**:
+- Search official documentation: `nextjs_docs(action: "search", query: "generateMetadata")`
+- Get full content: `nextjs_docs(action: "get", path: "/docs/app/api-reference/functions/refresh")`
+- Filter by router type: `nextjs_docs(action: "search", query: "middleware", routerType: "app")`
+
+### Runtime Diagnostics (Next.js 16+)
+**Use `nextjs_index` and `nextjs_call` for live application state**:
+- Discover servers: `nextjs_index()` returns available dev servers and tools
+- Get errors: `nextjs_call(port: "3000", toolName: "get_errors")`
+- View routes: `nextjs_call(port: "3000", toolName: "get_page_metadata")`
+- Check logs: `nextjs_call(port: "3000", toolName: "get_logs")`
+
+### Browser Testing
+**Use `browser_eval` for UI testing and automation**:
+- Navigate: `browser_eval(action: "navigate", url: "http://localhost:3000")`
+- Click elements: `browser_eval(action: "click", element: "Login button", ref: "button#login")`
+- Type text: `browser_eval(action: "type", element: "Email input", ref: "input#email", text: "user@example.com")`
+- Take screenshots: `browser_eval(action: "screenshot", fullPage: true)`
+
+### Development Automation
+**Use specialized tools for complex tasks**:
+- Upgrade Next.js: `upgrade_nextjs_16(project_path: "./")`
+- Enable Cache Components: `enable_cache_components(project_path: "./")`
+
+## Code Quality & Linting
+
+### Ultracite Rules
+**Use `getRules` from Ultracite MCP** to access comprehensive linting guidance:
+- React hooks patterns and anti-patterns
+- Accessibility (a11y) best practices
+- TypeScript usage guidelines
+- Component design patterns
+- Performance optimizations
+
+**Query patterns**:
+- "What rules does Ultracite have for React hooks?"
+- "Show me accessibility rules in Ultracite"
+- "What's the difference between ultracite/core and ultracite/react?"
+
+## Authentication Integration
+
+### Better Auth OAuth
+**Use Better Auth MCP for secure MCP client authentication**:
+- OAuth discovery: Automatic metadata endpoint handling
+- Session validation: `auth.api.getMcpSession(headers)` for token verification
+- Protected resources: Scope-based access control
+
+### MCP Handler Patterns
+**For authenticated MCP tools**:
+```typescript
+const handler = withMcpAuth(auth, (req, session) => {
+    return createMcpHandler((server) => {
+        server.tool("authenticated-tool", "Tool requiring auth", {}, async () => {
+            // Access authenticated session data
+            return { content: [{ type: "text", text: "Authenticated response" }] };
+        });
+    });
+});
+```
+
+## Tool Selection Guidelines
+
+### For Next.js Development:
+1. **Documentation**: Use `nextjs_docs` (never rely on cached knowledge)
+2. **Runtime Issues**: Use `nextjs_index` + `nextjs_call` (Next.js 16+)
+3. **UI Testing**: Use `browser_eval` (fallback for older Next.js)
+4. **Setup/Upgrades**: Use specialized tools (`upgrade_nextjs_16`, `enable_cache_components`)
+
+### For Code Quality:
+1. **Linting Rules**: Use Ultracite `getRules` for comprehensive guidance
+2. **Best Practices**: Query specific rule categories (React, TypeScript, a11y)
+
+### For Authentication:
+1. **MCP Clients**: Use Better Auth OAuth provider functionality
+2. **Session Management**: Use `withMcpAuth` helper for authenticated handlers
+
+## Integration Patterns
+
+### Multi-Tool Workflows:
+- **Bug Investigation**: `nextjs_call(port, "get_errors")` → `nextjs_docs(query)` → `browser_eval(test)`
+- **Feature Development**: `init()` → `nextjs_docs(search)` → `enable_cache_components()`
+- **Code Review**: Ultracite rules → `nextjs_docs(verification)` → `browser_eval(testing)`
+
+### Error Handling:
+- **Network Issues**: Retry MCP calls, check server availability
+- **Authentication**: Use Better Auth session validation
+- **Documentation**: Fall back to general knowledge if MCP unavailable
+
+### Performance Considerations:
+- **Caching**: MCP responses may be cached by the client
+- **Batch Operations**: Use single calls for related information
+- **Selective Queries**: Specify router types, use precise search terms
+
+This reference ensures LLMs can effectively leverage the full MCP ecosystem for comprehensive development assistance.

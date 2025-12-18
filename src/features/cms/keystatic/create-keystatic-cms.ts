@@ -1,4 +1,4 @@
-import type { CmsClient } from "~/features/cms/types";
+import type { CmsClient } from "~/features/cms/types/cms-client";
 import { getLogger } from "~/shared/logger";
 
 /**

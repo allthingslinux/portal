@@ -1,4 +1,4 @@
-import type { CmsType } from "~/features/cms/types";
+import type { CmsType } from "~/features/cms/types/cms.type";
 import { createRegistry } from "~/shared/registry";
 
 const CMS_CLIENT = process.env.CMS_CLIENT as CmsType;
@@ -8,7 +8,6 @@ type ContentRendererProps = {
   type?: CmsType;
 };
 
-// Create a registry for CMS client implementations
 const cmsContentRendererRegistry = createRegistry<
   React.ComponentType<ContentRendererProps>,
   CmsType

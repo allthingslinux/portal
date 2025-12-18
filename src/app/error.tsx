@@ -7,7 +7,7 @@ import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
 import { useSession } from "~/core/auth/better-auth/hooks";
-import { useCaptureException } from "~/core/monitoring/api/hooks";
+import { useCaptureException } from "~/core/monitoring/api/hooks/use-capture-exception";
 
 const ErrorPage = ({
   error,

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, gte } from "drizzle-orm";
+import { and, eq, gte, ne } from "drizzle-orm";
 import { db } from "~/core/database/client";
 import {
   accounts,
@@ -8,7 +8,6 @@ import {
   invitations,
   rolePermissions,
   roles,
-  userAccounts,
 } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
@@ -42,7 +41,7 @@ class _TeamAccountsApi {
   async getTeamAccount(slug: string) {
     // Using shared Drizzle client
 
-    const result = await db.transaction(async (tx) =>
+    const teamAccounts = await db.transaction(async (tx) =>
       tx
         .select({
           id: accounts.id,
@@ -56,16 +55,16 @@ class _TeamAccountsApi {
         .limit(1)
     );
 
-    if (result.length === 0) {
+    if (teamAccounts.length === 0) {
       return {
         error: { message: "Account not found" },
-        data: null,
+        account: null,
       };
     }
 
     return {
       error: null,
-      data: result[0],
+      account: teamAccounts[0],
     };
   }
 
@@ -75,7 +74,7 @@ class _TeamAccountsApi {
   async getTeamAccountById(accountId: string) {
     // Using shared Drizzle client
 
-    const result = await db.transaction(async (tx) =>
+    const teamAccounts = await db.transaction(async (tx) =>
       tx
         .select({
           id: accounts.id,
@@ -88,23 +87,23 @@ class _TeamAccountsApi {
         .limit(1)
     );
 
-    if (result.length === 0) {
+    if (teamAccounts.length === 0) {
       return {
         error: { message: "Account not found" },
-        data: null,
+        account: null,
       };
     }
 
     return {
       error: null,
-      data: result[0],
+      account: teamAccounts[0],
     };
   }
 
   /**
    * Get account workspace data (replaces team_account_workspace RPC)
    */
-  async getAccountWorkspace(slug: string) {
+  async getAccountWorkspace(slug: string, userId: string) {
     // Using shared Drizzle client
 
     try {
@@ -130,30 +129,43 @@ class _TeamAccountsApi {
             rolePermissions,
             eq(accountsMemberships.accountRole, rolePermissions.role)
           )
-          .where(eq(accounts.slug, slug))
-      );
-
-      const accountsResult = await db.transaction(async (tx) =>
-        tx
-          .select({
-            id: userAccounts.id,
-            name: userAccounts.name,
-            slug: userAccounts.slug,
-            role: userAccounts.role,
-            pictureUrl: userAccounts.pictureUrl,
-          })
-          .from(userAccounts)
+          .where(
+            and(eq(accounts.slug, slug), eq(accountsMemberships.userId, userId))
+          )
       );
 
       if (accountResult.length === 0) {
         return {
           error: { message: "Account not found or access denied" },
-          data: null,
+          workspace: null,
         };
       }
 
       // Group permissions by account (similar to the RPC)
       const accountRow = accountResult[0];
+
+      const teamAccounts = await db.transaction(async (tx) =>
+        tx
+          .select({
+            id: accounts.id,
+            name: accounts.name,
+            slug: accounts.slug,
+            role: accountsMemberships.accountRole,
+            pictureUrl: accounts.pictureUrl,
+          })
+          .from(accounts)
+          .innerJoin(
+            accountsMemberships,
+            eq(accounts.id, accountsMemberships.accountId)
+          )
+          .where(
+            and(
+              eq(accountsMemberships.userId, userId),
+              eq(accounts.isPersonalAccount, false),
+              ne(accounts.id, accountRow.id)
+            )
+          )
+      );
       const permissions = accountResult
         .map((row) => row.permissions)
         .filter((p): p is AppPermission => p !== null);
@@ -162,7 +174,7 @@ class _TeamAccountsApi {
         id: accountRow.id,
         name: accountRow.name,
         slug: accountRow.slug ?? "",
-        picture_url: accountRow.pictureUrl ?? "",
+        pictureUrl: accountRow.pictureUrl ?? "",
         permissions,
         role: accountRow.role,
         role_hierarchy_level: accountRow.roleHierarchyLevel,
@@ -171,9 +183,9 @@ class _TeamAccountsApi {
 
       return {
         error: null,
-        data: {
+        workspace: {
           account: workspaceData,
-          accounts: accountsResult as WorkspaceAccountItem[],
+          accounts: teamAccounts as WorkspaceAccountItem[],
         },
       };
     } catch (error) {
@@ -185,7 +197,7 @@ class _TeamAccountsApi {
 
       return {
         error: { message: "Failed to get account workspace" },
-        data: null,
+        workspace: null,
       };
     }
   }
@@ -267,7 +279,7 @@ class _TeamAccountsApi {
     // Use admin client since the user is not yet part of the account
     // Using shared Drizzle client
 
-    const result = await db
+    const invitationsResult = await db
       .select({
         id: invitations.id,
         expiresAt: invitations.expiresAt,
@@ -289,26 +301,26 @@ class _TeamAccountsApi {
       )
       .limit(1);
 
-    if (result.length === 0) {
+    if (invitationsResult.length === 0) {
       return {
         error: { message: "Invitation not found or expired" },
-        data: null,
+        invitation: null,
       };
     }
 
-    const invitation = result[0];
+    const invitationRow = invitationsResult[0];
 
     return {
       error: null,
-      data: {
-        id: invitation.id,
-        expires_at: invitation.expiresAt,
-        email: invitation.email,
+      invitation: {
+        id: invitationRow.id,
+        expires_at: invitationRow.expiresAt,
+        email: invitationRow.email,
         account: {
-          id: invitation.account.id,
-          name: invitation.account.name,
-          slug: invitation.account.slug,
-          picture_url: invitation.account.pictureUrl,
+          id: invitationRow.account.id,
+          name: invitationRow.account.name,
+          slug: invitationRow.account.slug,
+          pictureUrl: invitationRow.account.pictureUrl,
         },
       },
     };

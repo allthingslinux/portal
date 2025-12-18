@@ -25,7 +25,6 @@ export function createErrorResponse(
     );
   }
 
-  // Handle standard Error objects
   if (error instanceof Error) {
     return NextResponse.json(
       { error: error.message },

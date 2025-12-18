@@ -4,7 +4,6 @@ import { Trans } from "~/components/portal/trans";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
-// local imports
 import { HomeLayoutPageHeader } from "./_components/home-page-header";
 
 export const generateMetadata = async () => {

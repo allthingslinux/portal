@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import { Bell, CircleAlert, Info, TriangleAlert, XIcon } from "lucide-react";
@@ -14,7 +13,8 @@ import {
 } from "~/components/ui/popover";
 import { Separator } from "~/components/ui/separator";
 
-import { useDismissNotification, useFetchNotifications } from "../hooks";
+import { useDismissNotification } from "../hooks/use-dismiss-notification";
+import { useFetchNotifications } from "../hooks/use-fetch-notifications";
 import type { Notification } from "../types";
 
 export function NotificationsPopover(params: {

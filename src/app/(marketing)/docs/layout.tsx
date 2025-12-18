@@ -2,7 +2,6 @@ import { SidebarProvider } from "~/components/ui/sidebar";
 
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 
-// local imports
 import { DocsNavigation } from "./_components/docs-navigation";
 import { getDocs } from "./_lib/server/docs.loader";
 import { buildDocumentationTree } from "./_lib/utils";

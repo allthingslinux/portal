@@ -42,13 +42,23 @@ export function SiteHeaderAccountSection({
 }) {
   const signOut = useSignOut();
 
+  const handleSignOut = async () => {
+    try {
+      await signOut.mutateAsync();
+      // Redirect to home page after successful sign out
+      window.location.href = pathsConfig.app.home;
+    } catch (error) {
+      console.error("Sign out failed:", error);
+    }
+  };
+
   if (user) {
     return (
       <PersonalAccountDropdown
         features={features}
         paths={paths}
         showProfileName={false}
-        signOutRequested={() => signOut.mutateAsync()}
+        signOutRequested={handleSignOut}
         user={user}
       />
     );

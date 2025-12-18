@@ -9,7 +9,6 @@ import {
   betterAuthUser,
 } from "~/core/database/schema";
 import { getSessionUserData } from "../session";
-import { betterAuthUserIdToUuid } from "../utils/user-id-to-uuid";
 
 // Track when we last updated Keycloak to prevent immediate sync overwrite
 let lastKeycloakUpdateTime = 0;
@@ -233,7 +232,6 @@ export async function syncUserFromKeycloak(): Promise<{
       .where(eq(betterAuthUser.id, user.id));
 
     // Update personal account name directly (since hooks don't fire on direct DB updates)
-    const userIdUuid = betterAuthUserIdToUuid(user.id);
     await db
       .update(accounts)
       .set({
@@ -241,7 +239,7 @@ export async function syncUserFromKeycloak(): Promise<{
       })
       .where(
         and(
-          eq(accounts.primaryOwnerUserId, userIdUuid),
+          eq(accounts.primaryOwnerUserId, user.id),
           eq(accounts.isPersonalAccount, true)
         )
       )

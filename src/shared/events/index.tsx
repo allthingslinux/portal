@@ -4,7 +4,6 @@ import { createContext, useCallback, useContext, useRef } from "react";
 
 type EmptyPayload = NonNullable<unknown>;
 
-// Base event types
 export type BaseAppEventTypes = {
   "user.signedIn": { userId: string };
   "user.signedUp": { method: "password" | "oauth" };

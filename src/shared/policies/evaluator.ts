@@ -49,7 +49,6 @@ class LRUCache<K, V> {
     const value = this.cache.get(key);
 
     if (value !== undefined) {
-      // Move to end (most recently used)
       this.cache.delete(key);
       this.cache.set(key, value);
     }
@@ -61,7 +60,6 @@ class LRUCache<K, V> {
     if (this.cache.has(key)) {
       this.cache.delete(key);
     } else if (this.cache.size >= this.maxSize) {
-      // Remove least recently used (first entry)
       const firstKey = this.cache.keys().next().value;
 
       if (firstKey) {
@@ -121,7 +119,6 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
    * Clear all cached policies (useful for testing or memory management)
    */
   clearCache(): void {
-    // Create new WeakMap to clear all references
     this.registryPolicyCache = new WeakMap();
   }
 
@@ -279,7 +276,6 @@ export class PoliciesEvaluator<TContext extends PolicyContext = PolicyContext> {
       allResults.push(...groupResult.results);
       allReasons.push(...groupResult.reasons);
 
-      // Stop on first failure
       if (!groupResult.allowed) {
         return {
           allowed: false,
@@ -329,7 +325,6 @@ export const allow = (metadata?: Record<string, unknown>): PolicyResult => ({
   metadata,
 });
 
-// Function overloads for deny() to support both string and structured errors
 export function deny(
   reason: string,
   metadata?: Record<string, unknown>
@@ -393,10 +388,8 @@ export async function createPoliciesFromRegistry<
 
   for (const spec of policySpecs) {
     if (typeof spec === "string") {
-      // Simple policy ID
       policies.push(await createPolicyFromRegistry(registry, spec));
     } else {
-      // Policy ID with config
       const [policyId, config] = spec;
       policies.push(await createPolicyFromRegistry(registry, policyId, config));
     }

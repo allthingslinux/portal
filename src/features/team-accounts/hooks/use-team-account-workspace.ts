@@ -2,7 +2,7 @@
 
 import { useWorkspaceContext } from "~/shared/hooks/use-workspace-context";
 
-import { TeamAccountWorkspaceContext } from "../components";
+import { TeamAccountWorkspaceContext } from "../components/team-account-workspace-context";
 
 /**
  * @name useTeamAccountWorkspace

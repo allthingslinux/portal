@@ -86,17 +86,14 @@ export function deny(error: PolicyErrorCode): PolicyResult {
  * Deep freeze an object and all its nested properties
  */
 function deepFreeze<T>(obj: T, visited = new WeakSet()): Readonly<T> {
-  // Prevent infinite recursion with circular references
   if (visited.has(obj as object)) {
     return obj;
   }
 
   visited.add(obj as object);
 
-  // Get all property names
   const propNames = Reflect.ownKeys(obj as object);
 
-  // Freeze properties before freezing self
   for (const name of propNames) {
     const value = (obj as Record<string, unknown>)[name as string];
 
@@ -115,17 +112,13 @@ function safeClone<T>(obj: T): T {
   try {
     return structuredClone(obj);
   } catch {
-    // If structuredClone fails (e.g., due to functions), create a shallow clone
-    // and recursively clone cloneable properties
     if (obj && typeof obj === "object") {
       const cloned = Array.isArray(obj) ? ([] as unknown as T) : ({} as T);
 
       for (const [key, value] of Object.entries(obj)) {
         try {
-          // Try to clone individual properties
           (cloned as Record<string, unknown>)[key] = structuredClone(value);
         } catch {
-          // If individual property can't be cloned (like functions), keep as-is
           (cloned as Record<string, unknown>)[key] = value;
         }
       }
@@ -133,7 +126,6 @@ function safeClone<T>(obj: T): T {
       return cloned;
     }
 
-    // For primitives or non-cloneable objects, return as-is
     return obj;
   }
 }
@@ -144,10 +136,8 @@ function safeClone<T>(obj: T): T {
 function createImmutableContext<T extends PolicyContext>(
   context: T
 ): Readonly<T> {
-  // Safely clone the context, handling functions and other edge cases
   const cloned = safeClone(context);
 
-  // Deep freeze the object to make it immutable
   return deepFreeze(cloned);
 }
 
@@ -180,7 +170,6 @@ export function definePolicy<
     configSchema: config.configSchema,
 
     create(context: TContext, policyConfig?: TConfig) {
-      // Validate configuration if schema is provided
       if (config.configSchema && policyConfig !== undefined) {
         const validation = config.configSchema.safeParse(policyConfig);
 
@@ -191,12 +180,10 @@ export function definePolicy<
         }
       }
 
-      // Create immutable context
       const immutableContext = createImmutableContext(context);
 
       return {
         async evaluate(stage?: PolicyStage) {
-          // Check if this policy should run at this stage
           if (stage && config.stages && !config.stages.includes(stage)) {
             return allow({
               skipped: true,
@@ -211,7 +198,6 @@ export function definePolicy<
               stage
             );
 
-            // Ensure metadata includes policy ID and stage
             return {
               ...result,
               metadata: {

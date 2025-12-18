@@ -4,10 +4,6 @@ type LogFn = {
   (msg: string, ...args: unknown[]): void;
 };
 
-/**
- * @name Logger
- * @description Logger type for logging messages
- */
 export type Logger = {
   info: LogFn;
   error: LogFn;

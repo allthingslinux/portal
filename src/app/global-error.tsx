@@ -8,7 +8,7 @@ import { RootProviders } from "~/components/root-providers";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
 import { useSession } from "~/core/auth/better-auth/hooks";
-import { useCaptureException } from "~/core/monitoring/api/hooks";
+import { useCaptureException } from "~/core/monitoring/api/hooks/use-capture-exception";
 
 const GlobalErrorPage = ({
   error,

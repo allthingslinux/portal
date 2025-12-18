@@ -50,15 +50,15 @@ export const accounts = pgTable(
   "accounts",
   {
     id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
-    primaryOwnerUserId: uuid("primary_owner_user_id").notNull(),
+    primaryOwnerUserId: text("primary_owner_user_id").notNull(),
     name: varchar({ length: 255 }).notNull(),
     slug: text(),
     email: varchar({ length: 320 }),
     isPersonalAccount: boolean("is_personal_account").default(false).notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }),
-    createdBy: uuid("created_by"),
-    updatedBy: uuid("updated_by"),
+    createdBy: text("created_by"),
+    updatedBy: text("updated_by"),
     pictureUrl: varchar("picture_url", { length: 1000 }),
     publicData: jsonb("public_data").default({}).notNull(),
   },
@@ -76,17 +76,17 @@ export const accounts = pgTable(
       .where(sql`(is_personal_account = true)`),
     foreignKey({
       columns: [table.createdBy],
-      foreignColumns: [usersInAuth.id],
+      foreignColumns: [betterAuthUser.id],
       name: "accounts_created_by_fkey",
     }),
     foreignKey({
       columns: [table.primaryOwnerUserId],
-      foreignColumns: [usersInAuth.id],
+      foreignColumns: [betterAuthUser.id],
       name: "accounts_primary_owner_user_id_fkey",
     }).onDelete("cascade"),
     foreignKey({
       columns: [table.updatedBy],
-      foreignColumns: [usersInAuth.id],
+      foreignColumns: [betterAuthUser.id],
       name: "accounts_updated_by_fkey",
     }),
     unique("accounts_slug_key").on(table.slug),
@@ -112,7 +112,7 @@ export const invitations = pgTable(
     id: serial().primaryKey().notNull(),
     email: varchar({ length: 255 }).notNull(),
     accountId: uuid("account_id").notNull(),
-    invitedBy: uuid("invited_by").notNull(),
+    invitedBy: text("invited_by").notNull(),
     role: varchar({ length: 50 }).notNull(),
     inviteToken: varchar("invite_token", { length: 255 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
@@ -134,7 +134,7 @@ export const invitations = pgTable(
     }).onDelete("cascade"),
     foreignKey({
       columns: [table.invitedBy],
-      foreignColumns: [usersInAuth.id],
+      foreignColumns: [betterAuthUser.id],
       name: "invitations_invited_by_fkey",
     }).onDelete("cascade"),
     foreignKey({
@@ -153,7 +153,7 @@ export const nonces = pgTable(
     id: uuid().defaultRandom().primaryKey().notNull(),
     clientToken: text("client_token").notNull(),
     nonce: text().notNull(),
-    userId: uuid("user_id"),
+    userId: text("user_id"),
     purpose: text().notNull(),
     expiresAt: timestamp("expires_at", {
       withTimezone: true,
@@ -190,7 +190,7 @@ export const nonces = pgTable(
       .where(sql`((used_at IS NULL) AND (revoked = false))`),
     foreignKey({
       columns: [table.userId],
-      foreignColumns: [usersInAuth.id],
+      foreignColumns: [betterAuthUser.id],
       name: "nonces_user_id_fkey",
     }).onDelete("cascade"),
   ]
@@ -277,7 +277,7 @@ export const roles = pgTable(
 export const accountsMemberships = pgTable(
   "accounts_memberships",
   {
-    userId: uuid("user_id").notNull(),
+    userId: text("user_id").notNull(),
     accountId: uuid("account_id").notNull(),
     accountRole: varchar("account_role", { length: 50 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
@@ -286,8 +286,8 @@ export const accountsMemberships = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    createdBy: uuid("created_by"),
-    updatedBy: uuid("updated_by"),
+    createdBy: text("created_by"),
+    updatedBy: text("updated_by"),
   },
   (table) => [
     index("ix_accounts_memberships_account_id").using("btree", table.accountId),
@@ -308,17 +308,17 @@ export const accountsMemberships = pgTable(
     }),
     foreignKey({
       columns: [table.createdBy],
-      foreignColumns: [usersInAuth.id],
+      foreignColumns: [betterAuthUser.id],
       name: "accounts_memberships_created_by_fkey",
     }),
     foreignKey({
       columns: [table.updatedBy],
-      foreignColumns: [usersInAuth.id],
+      foreignColumns: [betterAuthUser.id],
       name: "accounts_memberships_updated_by_fkey",
     }),
     foreignKey({
       columns: [table.userId],
-      foreignColumns: [usersInAuth.id],
+      foreignColumns: [betterAuthUser.id],
       name: "accounts_memberships_user_id_fkey",
     }).onDelete("cascade"),
     primaryKey({

@@ -7,7 +7,6 @@ import {
 import { getTeamAccountSidebarConfig } from "~/config/team-account-navigation.config";
 import type { TeamAccountWorkspace } from "../_lib/server/team-account-workspace.loader";
 
-// local imports
 import { TeamAccountAccountsSelector } from "./team-account-accounts-selector";
 import { TeamAccountNotifications } from "./team-account-notifications";
 
@@ -56,7 +55,7 @@ export function TeamAccountNavigationMenu(props: {
           accounts={accounts.map((accountItem) => ({
             label: accountItem.name,
             value: accountItem.slug,
-            image: accountItem.picture_url,
+            image: accountItem.pictureUrl,
           }))}
           selectedAccount={account.slug ?? ""}
           userId={user.id}

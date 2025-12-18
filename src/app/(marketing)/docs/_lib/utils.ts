@@ -23,11 +23,15 @@ export function buildDocumentationTree(pages: Cms.ContentItem[]) {
       parent.children.push(page);
 
       // sort children by order
-      parent.children.sort((a, b) => a.order - b.order);
+      parent.children.sort(
+        (a: Cms.ContentItem, b: Cms.ContentItem) => a.order - b.order
+      );
     } else {
       tree.push(page);
     }
   }
 
-  return tree.sort((a, b) => a.order - b.order);
+  return tree.sort(
+    (a: Cms.ContentItem, b: Cms.ContentItem) => a.order - b.order
+  );
 }

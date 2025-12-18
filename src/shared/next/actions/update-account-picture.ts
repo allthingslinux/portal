@@ -1,6 +1,6 @@
 import "server-only";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "~/core/database/client";
 import { accounts } from "~/core/database/schema";
@@ -11,13 +11,23 @@ import { accounts } from "~/core/database/schema";
  *
  * @param accountId - The account ID to update
  * @param pictureUrl - The new picture URL (or null to remove)
+ * @param userId - The user ID performing the update (for authorization)
  */
 export async function updateAccountPictureInDatabase(
   accountId: string,
-  pictureUrl: string | null
-) {
-  await db
+  pictureUrl: string | null,
+  userId?: string
+): Promise<boolean> {
+  // Use raw userId instead of converting to UUID for database lookup
+  const whereCondition = userId
+    ? and(eq(accounts.id, accountId), eq(accounts.primaryOwnerUserId, userId))
+    : eq(accounts.id, accountId);
+
+  const result = await db
     .update(accounts)
     .set({ pictureUrl })
-    .where(eq(accounts.id, accountId));
+    .where(whereCondition)
+    .returning({ id: accounts.id });
+
+  return result.length > 0;
 }

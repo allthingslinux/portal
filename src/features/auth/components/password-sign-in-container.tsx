@@ -28,21 +28,18 @@ export function PasswordSignInContainer({
   const onSubmit = useCallback(
     async (credentials: z.infer<typeof PasswordSignInSchema>) => {
       try {
-        const data = await signInMutation.mutateAsync({
+        const response = await signInMutation.mutateAsync({
           ...credentials,
           options: { captchaToken: captcha.token },
         });
 
-        // Record successful password sign-in
         recordAuthMethod("password", { email: credentials.email });
 
         if (onSignIn) {
-          const userId = data.data?.user?.id;
-
-          onSignIn(userId);
+          onSignIn(response.data?.user?.id);
         }
       } catch {
-        // wrong credentials, do nothing
+        // Error handled by useSignInWithEmailPassword
       } finally {
         captcha.reset();
       }

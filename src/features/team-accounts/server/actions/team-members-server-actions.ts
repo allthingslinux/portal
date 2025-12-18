@@ -13,8 +13,7 @@ import { UpdateMemberRoleSchema } from "../../schema/update-member-role.schema";
 import { createAccountMembersService } from "../services/account-members.service";
 
 /**
- * @name removeMemberFromAccountAction
- * @description Removes a member from an account.
+ * Removes a member from an account.
  */
 export const removeMemberFromAccountAction = enhanceAction(
   async ({ accountId, userId }) => {
@@ -25,7 +24,6 @@ export const removeMemberFromAccountAction = enhanceAction(
       userId,
     });
 
-    // revalidate all pages that depend on the account
     revalidateAccountLayout();
 
     return { success: true };
@@ -36,17 +34,14 @@ export const removeMemberFromAccountAction = enhanceAction(
 );
 
 /**
- * @name updateMemberRoleAction
- * @description Updates the role of a member in an account.
+ * Updates the role of a member in an account.
  */
 export const updateMemberRoleAction = enhanceAction(
   async (data) => {
     const service = createAccountMembersService();
 
-    // update the role of the member
     await service.updateMemberRole(data);
 
-    // revalidate all pages that depend on the account
     revalidateAccountLayout();
 
     return { success: true };
@@ -57,9 +52,7 @@ export const updateMemberRoleAction = enhanceAction(
 );
 
 /**
- * @name transferOwnershipAction
- * @description Transfers the ownership of an account to another member.
- * Requires OTP verification for security.
+ * Transfers the ownership of an account to another member.
  */
 export const transferOwnershipAction = enhanceAction(
   async (data, user) => {
@@ -73,7 +66,6 @@ export const transferOwnershipAction = enhanceAction(
 
     logger.info(ctx, "Processing team ownership transfer request...");
 
-    // assert that the user is the owner of the account
     const ownerCheck = await db
       .select({ id: accounts.id })
       .from(accounts)
@@ -85,9 +77,7 @@ export const transferOwnershipAction = enhanceAction(
       )
       .limit(1);
 
-    const isOwner = ownerCheck.length > 0;
-
-    if (!isOwner) {
+    if (ownerCheck.length === 0) {
       logger.error(ctx, "User is not the owner of this account");
 
       throw new Error(
@@ -95,21 +85,12 @@ export const transferOwnershipAction = enhanceAction(
       );
     }
 
-    // OTP verification removed - ownership transfer now requires only owner authentication
-    logger.info(
-      ctx,
-      "Proceeding with ownership transfer (OTP verification removed)..."
-    );
+    logger.info(ctx, "Proceeding with ownership transfer...");
 
     const service = createAccountMembersService();
 
-    // at this point, the user is authenticated, is the owner of the account, and has verified via OTP
-    // so we proceed with the transfer of ownership with admin privileges
-
-    // transfer the ownership of the account
     await service.transferOwnership(data);
 
-    // revalidate all pages that depend on the account
     revalidateAccountLayout();
 
     logger.info(ctx, "Team ownership transferred successfully");

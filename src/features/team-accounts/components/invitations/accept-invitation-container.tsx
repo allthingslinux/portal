@@ -18,7 +18,7 @@ export function AcceptInvitationContainer(props: {
     account: {
       name: string;
       id: string;
-      picture_url: string | null;
+      pictureUrl: string | null;
     };
   };
 
@@ -38,7 +38,7 @@ export function AcceptInvitationContainer(props: {
         />
       </Heading>
 
-      <If condition={props.invitation.account.picture_url}>
+      <If condition={props.invitation.account.pictureUrl}>
         {(url) => (
           <Image
             alt={"Logo"}

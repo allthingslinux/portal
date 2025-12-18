@@ -10,10 +10,9 @@ import {
 } from "~/components/portal/page";
 import { SidebarProvider } from "~/components/ui/sidebar";
 import { getTeamAccountSidebarConfig } from "~/config/team-account-navigation.config";
-import { TeamAccountWorkspaceContextProvider } from "~/features/team-accounts/components";
+import { TeamAccountWorkspaceContextProvider } from "~/features/team-accounts/components/team-account-workspace-context";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
-// local imports
 import { TeamAccountLayoutMobileNavigation } from "./_components/team-account-layout-mobile-navigation";
 import { TeamAccountLayoutSidebar } from "./_components/team-account-layout-sidebar";
 import { TeamAccountNavigationMenu } from "./_components/team-account-navigation-menu";
@@ -61,12 +60,12 @@ function SidebarLayout({
     account: {
       ...data.account,
       permissions,
-      picture_url: data.account.picture_url ?? "",
+      pictureUrl: data.account.pictureUrl ?? "",
       slug: data.account.slug ?? "",
     },
     accounts: data.accounts.map((acc) => ({
       ...acc,
-      picture_url: acc.picture_url ?? "",
+      pictureUrl: acc.pictureUrl ?? "",
       slug: acc.slug ?? "",
     })),
   };
@@ -75,7 +74,7 @@ function SidebarLayout({
   const accountsForSelector = data.accounts.map((acc) => ({
     label: acc.name,
     value: acc.slug,
-    image: acc.picture_url,
+    image: acc.pictureUrl,
   }));
 
   return (
@@ -137,12 +136,12 @@ function HeaderLayout({
     account: {
       ...data.account,
       permissions,
-      picture_url: data.account.picture_url ?? "",
+      pictureUrl: data.account.pictureUrl ?? "",
       slug: data.account.slug ?? "",
     },
     accounts: data.accounts.map((acc) => ({
       ...acc,
-      picture_url: acc.picture_url ?? "",
+      pictureUrl: acc.pictureUrl ?? "",
       slug: acc.slug ?? "",
     })),
   };
@@ -150,7 +149,7 @@ function HeaderLayout({
   const accountsForSelector = data.accounts.map((acc) => ({
     label: acc.name,
     value: acc.slug,
-    image: acc.picture_url,
+    image: acc.pictureUrl,
   }));
 
   return (

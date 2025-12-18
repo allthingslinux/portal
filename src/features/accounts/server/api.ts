@@ -1,10 +1,10 @@
 import type { InferSelectModel } from "drizzle-orm";
-import { eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 import { db } from "~/core/database/client";
 import {
   accounts,
-  userAccounts,
+  accountsMemberships,
   userAccountWorkspace,
 } from "~/core/database/schema";
 import { API_ERRORS } from "~/shared/constants/errors";
@@ -53,20 +53,32 @@ class _AccountsApi {
    * @name loadUserAccounts
    * Load the user accounts.
    */
-  async loadUserAccounts(): Promise<
-    Array<{ label: string; value: string; image: string | null }>
-  > {
+  async loadUserAccounts(
+    userId: string
+  ): Promise<Array<{ label: string; value: string; image: string | null }>> {
     const accountResults = await db
       .select({
-        name: userAccounts.name,
-        slug: userAccounts.slug,
-        pictureUrl: userAccounts.pictureUrl,
+        name: accounts.name,
+        slug: accounts.slug,
+        pictureUrl: accounts.pictureUrl,
+        id: accounts.id,
       })
-      .from(userAccounts);
+      .from(accounts)
+      .innerJoin(
+        accountsMemberships,
+        eq(accounts.id, accountsMemberships.accountId)
+      )
+      .where(
+        and(
+          eq(accountsMemberships.userId, userId),
+          eq(accounts.isPersonalAccount, false)
+        )
+      )
+      .orderBy(asc(accounts.name));
 
-    return accountResults.map(({ name, slug, pictureUrl }) => ({
+    return accountResults.map(({ name, slug, pictureUrl, id }) => ({
       label: name ?? "",
-      value: slug ?? "",
+      value: slug ?? id,
       image: pictureUrl,
     }));
   }

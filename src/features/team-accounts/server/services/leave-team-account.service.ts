@@ -8,7 +8,7 @@ import { getLogger } from "~/shared/logger";
 
 const Schema = z.object({
   accountId: z.string().uuid(),
-  userId: z.string().uuid(),
+  userId: z.string(), // Accept Better Auth user IDs (not just UUIDs)
 });
 
 export function createLeaveTeamAccountService() {
@@ -16,16 +16,13 @@ export function createLeaveTeamAccountService() {
 }
 
 /**
- * @name LeaveTeamAccountService
- * @description Service for leaving a team account.
+ * Service for leaving a team account.
  */
 class LeaveTeamAccountService {
   private readonly namespace = "leave-team-account";
 
   /**
-   * @name leaveTeamAccount
-   * @description Leave a team account
-   * @param params
+   * Leave a team account
    */
   async leaveTeamAccount(params: z.infer<typeof Schema>) {
     const logger = await getLogger();

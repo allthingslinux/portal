@@ -120,10 +120,20 @@ function SignOutDropdownItem(
     onSignOut: () => unknown;
   }>
 ) {
+  const handleSignOut = async () => {
+    try {
+      await props.onSignOut();
+      // Redirect to home page after successful sign out
+      window.location.href = pathsConfig.app.home;
+    } catch (error) {
+      console.error("Sign out failed:", error);
+    }
+  };
+
   return (
     <DropdownMenuItem
       className={"flex h-12 w-full items-center space-x-2"}
-      onClick={props.onSignOut}
+      onClick={handleSignOut}
     >
       <LogOut className={"h-4"} />
 

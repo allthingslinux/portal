@@ -1,9 +1,6 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { db } from "~/core/database/client";
-import { accounts } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 import { enhanceAction } from "~/shared/next/actions";
 import {
@@ -16,6 +13,7 @@ import { CreateTeamSchema } from "../../schema/create-team.schema";
 import { DeleteTeamAccountSchema } from "../../schema/delete-team-account.schema";
 import { LeaveTeamAccountSchema } from "../../schema/leave-team-account.schema";
 import { UpdateTeamNameSchema } from "../../schema/update-team-name.schema";
+import { UpdateTeamPictureSchema } from "../../schema/update-team-picture.schema";
 import { createCreateTeamAccountService } from "../services/create-team-account.service";
 import { createDeleteTeamAccountService } from "../services/delete-team-account.service";
 import { createLeaveTeamAccountService } from "../services/leave-team-account.service";
@@ -24,13 +22,19 @@ import { createUpdateTeamAccountService } from "../services/update-team-account.
 /**
  * Update team account picture URL
  */
-export async function updateTeamAccountPictureUrlAction(
-  accountId: string,
-  pictureUrl: string | null
-) {
-  await updateAccountPictureInDatabase(accountId, pictureUrl);
-  revalidateTeamAccountSettings();
-}
+export const updateTeamAccountPictureUrlAction = enhanceAction(
+  async (params, user) => {
+    await updateAccountPictureInDatabase(
+      params.accountId,
+      params.pictureUrl,
+      user.id
+    );
+    revalidateTeamAccountSettings();
+  },
+  {
+    schema: UpdateTeamPictureSchema,
+  }
+);
 
 /**
  * Update team account name
@@ -112,40 +116,32 @@ export const createTeamAccountAction = enhanceAction(
 export const deleteTeamAccountAction = enhanceAction(
   async (formData: FormData, user) => {
     const logger = await getLogger();
-
-    const params = DeleteTeamAccountSchema.parse(
-      Object.fromEntries(formData.entries())
-    );
-
-    const ctx = {
-      name: "team-accounts.delete",
-      userId: user.id,
-      accountId: params.accountId,
-    };
-
     const enableTeamAccountDeletion =
       process.env.NEXT_PUBLIC_ENABLE_TEAM_ACCOUNTS_DELETION === "true";
 
-    if (!enableTeamAccountDeletion) {
-      logger.warn(ctx, "Team account deletion is not enabled");
+    const { success, data } = DeleteTeamAccountSchema.safeParse(
+      Object.fromEntries(formData.entries())
+    );
 
+    if (!success) {
+      throw new Error("Invalid request");
+    }
+
+    if (!enableTeamAccountDeletion) {
+      logger.warn({ userId: user.id }, "Team account deletion is disabled");
       throw new Error("Team account deletion is not enabled");
     }
 
-    logger.info(ctx, "Deleting team account...");
+    const service = createDeleteTeamAccountService();
 
-    await deleteTeamAccount({
-      accountId: params.accountId,
+    await service.deleteTeamAccount({
+      accountId: data.accountId,
       userId: user.id,
     });
 
-    logger.info(ctx, "Team account request successfully sent");
-
-    return redirect("/home");
+    redirect("/home");
   },
-  {
-    auth: true,
-  }
+  {}
 );
 
 /**
@@ -153,15 +149,32 @@ export const deleteTeamAccountAction = enhanceAction(
  */
 export const leaveTeamAccountAction = enhanceAction(
   async (formData: FormData, user) => {
-    const body = Object.fromEntries(formData.entries());
-    const params = LeaveTeamAccountSchema.parse(body);
+    const logger = await getLogger();
+
+    const { success, data } = LeaveTeamAccountSchema.safeParse(
+      Object.fromEntries(formData.entries())
+    );
+
+    if (!success) {
+      throw new Error("Invalid request");
+    }
+
+    const ctx = {
+      name: "team-accounts.leave",
+      userId: user.id,
+      accountId: data.accountId,
+    };
+
+    logger.info(ctx, "User leaving team account...");
 
     const service = createLeaveTeamAccountService();
 
     await service.leaveTeamAccount({
-      accountId: params.accountId,
+      accountId: data.accountId,
       userId: user.id,
     });
+
+    logger.info(ctx, "User left team account");
 
     revalidateAccountLayout();
 
@@ -169,40 +182,3 @@ export const leaveTeamAccountAction = enhanceAction(
   },
   {}
 );
-
-async function deleteTeamAccount(params: {
-  accountId: string;
-  userId: string;
-}) {
-  const service = createDeleteTeamAccountService();
-
-  // verify that the user has the necessary permissions to delete the team account
-  await assertUserPermissionsToDeleteTeamAccount(
-    params.accountId,
-    params.userId
-  );
-
-  // delete the team account
-  await service.deleteTeamAccount(params);
-}
-
-async function assertUserPermissionsToDeleteTeamAccount(
-  accountId: string,
-  userId: string
-) {
-  const result = await db
-    .select({ count: accounts.id })
-    .from(accounts)
-    .where(
-      and(eq(accounts.id, accountId), eq(accounts.primaryOwnerUserId, userId))
-    )
-    .limit(1);
-
-  const isOwner = result.length > 0;
-
-  if (!isOwner) {
-    throw new Error("You do not have permission to delete this account");
-  }
-
-  return isOwner;
-}

@@ -1,7 +1,9 @@
 import "server-only";
+import slugify from "@sindresorhus/slugify";
+import { eq } from "drizzle-orm";
 
 import { db } from "~/core/database/client";
-import { accounts } from "~/core/database/schema";
+import { accounts, accountsMemberships } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
 export function createCreateTeamAccountService() {
@@ -25,6 +27,27 @@ class CreateTeamAccountService {
       throw new Error("Team accounts are not enabled");
     }
 
+    // Generate a unique slug for the team account
+    const baseSlug = slugify(params.name);
+    let slug = baseSlug;
+    let counter = 1;
+
+    // Check for slug uniqueness
+    while (true) {
+      const existingAccount = await db
+        .select({ id: accounts.id })
+        .from(accounts)
+        .where(eq(accounts.slug, slug))
+        .limit(1);
+
+      if (existingAccount.length === 0) {
+        break; // Slug is unique
+      }
+
+      counter += 1;
+      slug = `${baseSlug}-${counter}`;
+    }
+
     // Create the team account using Drizzle
     try {
       const result = await db.transaction(async (tx) => {
@@ -32,6 +55,7 @@ class CreateTeamAccountService {
           .insert(accounts)
           .values({
             name: params.name,
+            slug,
             primaryOwnerUserId: params.userId,
             isPersonalAccount: false,
             publicData: {},
@@ -42,7 +66,16 @@ class CreateTeamAccountService {
           throw new Error("Failed to create team account");
         }
 
-        return insertResult[0];
+        const newAccount = insertResult[0];
+
+        // Add the creator as a member with owner role
+        await tx.insert(accountsMemberships).values({
+          userId: params.userId,
+          accountId: newAccount.id,
+          accountRole: "owner",
+        });
+
+        return newAccount;
       });
 
       logger.info(ctx, "Team account created successfully");

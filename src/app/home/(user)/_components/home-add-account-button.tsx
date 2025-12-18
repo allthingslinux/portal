@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Trans } from "~/components/portal/trans";
 import { Button } from "~/components/ui/button";
-import { CreateTeamAccountDialog } from "~/features/team-accounts/components";
+import { CreateTeamAccountDialog } from "~/features/team-accounts/components/create-team-account-dialog";
 
 export function HomeAddAccountButton(props: { className?: string }) {
   const [isAddingAccount, setIsAddingAccount] = useState(false);

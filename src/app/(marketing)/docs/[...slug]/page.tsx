@@ -7,7 +7,6 @@ import { ContentRenderer, createCmsClient } from "~/features/cms/core";
 
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 
-// local imports
 import { DocsCards } from "../_components/docs-cards";
 
 const getPageBySlug = cache(pageLoader);

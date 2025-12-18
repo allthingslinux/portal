@@ -23,17 +23,18 @@ export type UserWorkspace = Awaited<ReturnType<typeof loadUserWorkspace>>;
 export const loadUserWorkspace = createWorkspaceLoader(async () => {
   const api = createAccountsApi();
 
-  const accountsPromise = shouldLoadAccounts
-    ? () => api.loadUserAccounts()
-    : () => Promise.resolve([] as AccountItem[]);
-
   const workspacePromise =
     api.getAccountWorkspace() as Promise<WorkspaceRecord>;
 
-  const [accounts, workspace, user] = await Promise.all([
+  const user = await requireUserInServerComponent();
+
+  const accountsPromise = shouldLoadAccounts
+    ? () => api.loadUserAccounts(user.id)
+    : () => Promise.resolve([] as AccountItem[]);
+
+  const [accounts, workspace] = await Promise.all([
     accountsPromise(),
     workspacePromise,
-    requireUserInServerComponent(),
   ]);
 
   const mappedWorkspace = workspace

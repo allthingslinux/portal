@@ -13,12 +13,7 @@ class DeleteTeamAccountService {
   private readonly namespace = "accounts.delete-team-account";
 
   /**
-   * Deletes a team account. Permissions are not checked here, as they are
-   * checked in the server action.
-   *
-   * USE WITH CAUTION. THE USER MUST HAVE THE NECESSARY PERMISSIONS.
-   *
-   * @param params
+   * Deletes a team account.
    */
   async deleteTeamAccount(params: { accountId: string; userId: string }) {
     const logger = await getLogger();

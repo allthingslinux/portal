@@ -11,8 +11,8 @@ import { db } from "~/core/database/client";
 import {
   accounts,
   accountsMemberships,
+  betterAuthUser,
   roles,
-  usersInAuth,
 } from "~/core/database/schema";
 
 import { AdminBanUserDialog } from "./admin-ban-user-dialog";
@@ -290,15 +290,15 @@ async function getMembers(accountSlug: string): Promise<AdminMember[]> {
         role: accountsMemberships.accountRole,
         roleHierarchyLevel: roles.hierarchyLevel,
         primaryOwnerUserId: accounts.primaryOwnerUserId,
-        name: usersInAuth.email, // Using email as name since personal accounts don't have names
-        email: usersInAuth.email,
-        pictureUrl: accounts.pictureUrl,
+        name: betterAuthUser.name,
+        email: betterAuthUser.email,
+        pictureUrl: betterAuthUser.image,
         createdAt: accountsMemberships.createdAt,
         updatedAt: accountsMemberships.updatedAt,
       })
       .from(accountsMemberships)
       .innerJoin(accounts, eq(accounts.id, accountsMemberships.accountId))
-      .innerJoin(usersInAuth, eq(usersInAuth.id, accountsMemberships.userId))
+      .innerJoin(betterAuthUser, eq(betterAuthUser.id, accountsMemberships.userId))
       .leftJoin(roles, eq(roles.name, accountsMemberships.accountRole))
       .where(eq(accounts.slug, accountSlug));
   });

@@ -12,12 +12,7 @@ export async function AdminDashboard() {
   const data = await loadAdminDashboard();
 
   return (
-    <div
-      className={
-        "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" +
-        "xl:grid-cols-4"
-      }
-    >
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <Card>
         <CardHeader>
           <CardTitle>Users</CardTitle>
@@ -29,7 +24,7 @@ export async function AdminDashboard() {
 
         <CardContent>
           <div className={"flex justify-between"}>
-            <Figure>{data.accounts}</Figure>
+            <Figure>{data.personalAccountsCount}</Figure>
           </div>
         </CardContent>
       </Card>
@@ -45,7 +40,7 @@ export async function AdminDashboard() {
 
         <CardContent>
           <div className={"flex justify-between"}>
-            <Figure>{data.teamAccounts}</Figure>
+            <Figure>{data.teamAccountsCount}</Figure>
           </div>
         </CardContent>
       </Card>

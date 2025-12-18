@@ -25,8 +25,7 @@ export function createAdminAuthUserService() {
 }
 
 /**
- * @name AdminAuthUserService
- * @description Service for performing admin actions on users via Keycloak Admin API.
+ * Service for performing admin actions on users via Keycloak Admin API.
  */
 class AdminAuthUserService {
   private readonly config = this.resolveConfig();

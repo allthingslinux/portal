@@ -7,7 +7,6 @@ import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 import { getLogger } from "~/shared/logger";
 
-// local imports
 import { SitePageHeader } from "../_components/site-page-header";
 import { BlogPagination } from "./_components/blog-pagination";
 import { PostPreview } from "./_components/post-preview";

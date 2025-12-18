@@ -12,8 +12,6 @@ export function useNotificationsStream({
   enabled: boolean;
 }) {
   useEffect(() => {
-    // Realtime notifications disabled; no-op stream.
-    // No dependencies needed since this is a no-op
     return;
   }, []);
 }

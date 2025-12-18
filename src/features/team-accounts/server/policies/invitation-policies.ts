@@ -1,4 +1,4 @@
-import { createPoliciesEvaluator } from "~/shared/policies";
+import { createPoliciesEvaluator } from "~/shared/policies/evaluator";
 
 import type { FeaturePolicyInvitationContext } from "./feature-policy-invitation-context";
 import { invitationPolicyRegistry } from "./policies";

@@ -1,4 +1,4 @@
-import { MonitoringContext } from "~/core/monitoring/core";
+import { MonitoringContext } from "~/core/monitoring/core/monitoring.context";
 
 import { SentryMonitoringService } from "../services/sentry-monitoring.service";
 

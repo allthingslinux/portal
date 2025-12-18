@@ -11,8 +11,6 @@ export async function requireUser(options?: {
   const userData = await getSessionUserData();
 
   if (!userData) {
-    // Use Next.js redirect() instead of throwing an error
-    // This prevents Next.js from treating it as a regular error and creating redirect loops
     const redirectPath = getRedirectTo(SIGN_IN_PATH, options?.next);
     redirect(redirectPath);
   }

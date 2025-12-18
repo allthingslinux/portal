@@ -18,9 +18,7 @@ class AccountMembersService {
   private readonly namespace = "account-members";
 
   /**
-   * @name removeMemberFromAccount
-   * @description Removes a member from an account.
-   * @param params
+   * Removes a member from an account.
    */
   async removeMemberFromAccount(params: z.infer<typeof RemoveMemberSchema>) {
     const logger = await getLogger();
@@ -59,9 +57,7 @@ class AccountMembersService {
   }
 
   /**
-   * @name updateMemberRole
-   * @description Updates the role of a member in an account.
-   * @param params
+   * Updates the role of a member in an account.
    */
   async updateMemberRole(params: z.infer<typeof UpdateMemberRoleSchema>) {
     const logger = await getLogger();
@@ -107,9 +103,7 @@ class AccountMembersService {
   }
 
   /**
-   * @name transferOwnership
-   * @description Transfers ownership of an account to another user.
-   * @param params
+   * Transfers ownership of an account to another user.
    */
   async transferOwnership(
     params: z.infer<typeof TransferOwnershipConfirmationSchema>
@@ -130,8 +124,9 @@ class AccountMembersService {
       // 2. Update accounts_memberships for both old and new owner
       // 3. Potentially update other related records
 
-      logger.info(ctx, "Successfully transferred ownership of account");
-      return { success: true };
+      throw new Error(
+        "Ownership transfer not yet implemented. See TODO comments for required implementation."
+      );
     } catch (error) {
       logger.error(
         { ...ctx, error },
