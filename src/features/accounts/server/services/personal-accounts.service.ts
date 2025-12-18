@@ -9,6 +9,7 @@ import {
   usersInAuth,
 } from "~/core/database/schema";
 import { createAdminAuthUserService } from "~/features/admin/lib/server/services/admin-auth-user.service";
+import { getLogger } from "~/shared/logger";
 
 /**
  * Service for managing personal accounts
@@ -64,7 +65,15 @@ export function createPersonalAccountsService() {
         );
 
       if (data.name) {
-        await syncNameToAuthProviders(userId, data.name);
+        try {
+          await syncNameToAuthProviders(userId, data.name);
+        } catch (error) {
+          const logger = await getLogger();
+          logger.error(
+            { error, userId },
+            "Failed to sync account name to auth providers, but account update succeeded"
+          );
+        }
       }
     },
 
