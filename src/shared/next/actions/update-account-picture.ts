@@ -2,7 +2,6 @@ import "server-only";
 
 import { and, eq } from "drizzle-orm";
 
-import { betterAuthUserIdToUuid } from "~/core/auth/better-auth/utils/user-id-to-uuid";
 import { db } from "~/core/database/client";
 import { accounts } from "~/core/database/schema";
 
@@ -19,11 +18,9 @@ export async function updateAccountPictureInDatabase(
   pictureUrl: string | null,
   userId?: string
 ) {
+  // Use raw userId instead of converting to UUID for database lookup
   const whereCondition = userId
-    ? and(
-        eq(accounts.id, accountId),
-        eq(accounts.primaryOwnerUserId, betterAuthUserIdToUuid(userId))
-      )
+    ? and(eq(accounts.id, accountId), eq(accounts.primaryOwnerUserId, userId))
     : eq(accounts.id, accountId);
 
   await db.update(accounts).set({ pictureUrl }).where(whereCondition);

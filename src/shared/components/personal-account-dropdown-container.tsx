@@ -32,6 +32,16 @@ export function ProfileAccountDropdownContainer(props: {
     return null;
   }
 
+  const handleSignOut = async () => {
+    try {
+      await signOut.mutateAsync();
+      // Redirect to home page after successful sign out
+      window.location.href = paths.home;
+    } catch (error) {
+      console.error("Sign out failed:", error);
+    }
+  };
+
   return (
     <PersonalAccountDropdown
       account={props.account}
@@ -39,7 +49,7 @@ export function ProfileAccountDropdownContainer(props: {
       features={features}
       paths={paths}
       showProfileName={props.showProfileName}
-      signOutRequested={() => signOut.mutateAsync()}
+      signOutRequested={handleSignOut}
       user={userData}
     />
   );
