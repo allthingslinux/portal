@@ -14,8 +14,6 @@
   ],
   "project": [
     "src/**/*.{ts,tsx}!",
-    "!src/**/*.test.{ts,tsx}!",
-    "!src/**/*.spec.{ts,tsx}!",
     "!src/**/*.stories.{ts,tsx}!"
   ],
   "paths": {

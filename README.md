@@ -11,7 +11,6 @@
 - **i18n**: i18next
 - **Package Manager**: Bun
 - **Code Quality**: Biome (linting/formatting), Knip (unused dependency checker)
-- **Testing**: Playwright
 
 ## Prerequisites
 
@@ -84,7 +83,6 @@ bun run dev
 ### Development
 - `bun run dev` - Start development server
 - `bun run build` - Production build
-- `bun run build:test` - Production build for testing
 - `bun run start` - Start production server
 - `bun run clean` - Clean build artifacts and node_modules
 
@@ -93,9 +91,6 @@ bun run dev
 - `bun run lint:fix` - Fix linting issues
 - `bun run typecheck` - TypeScript type checking
 - `bun run knip` - Find unused dependencies, exports, and files
-
-### Testing
-- `bun run test` - Run Playwright tests
 
 ### Database
 - `bun run db:migrate` - Run database migrations
@@ -165,8 +160,7 @@ bun run knip --fix
 
 Before committing:
 1. Run all quality checks: `bun run lint && bun run typecheck && bun run knip`
-2. Ensure tests pass: `bun run test`
-3. Format code: `bun run lint:fix`
+2. Format code: `bun run lint:fix`
 
 ### Database Development
 
