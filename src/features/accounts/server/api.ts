@@ -53,9 +53,9 @@ class _AccountsApi {
    * @name loadUserAccounts
    * Load the user accounts.
    */
-  async loadUserAccounts(userId: string): Promise<
-    Array<{ label: string; value: string; image: string | null }>
-  > {
+  async loadUserAccounts(
+    userId: string
+  ): Promise<Array<{ label: string; value: string; image: string | null }>> {
     const accountResults = await db
       .select({
         name: accounts.name,

@@ -130,10 +130,7 @@ class _TeamAccountsApi {
             eq(accountsMemberships.accountRole, rolePermissions.role)
           )
           .where(
-            and(
-              eq(accounts.slug, slug),
-              eq(accountsMemberships.userId, userId)
-            )
+            and(eq(accounts.slug, slug), eq(accountsMemberships.userId, userId))
           )
       );
 

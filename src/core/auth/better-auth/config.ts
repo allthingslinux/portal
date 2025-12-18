@@ -94,10 +94,7 @@ export const auth = betterAuth({
               });
             });
           } catch (error) {
-            console.error(
-              "Failed to create personal account for user:",
-              error
-            );
+            console.error("Failed to create personal account for user:", error);
             // TODO: Send to error tracking service (e.g., Sentry, etc.)
             // For now, log in production too since this creates broken user state
           }
