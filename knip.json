@@ -12,32 +12,15 @@
     "src/core/database/drizzle.config.js",
     "src/core/database-webhooks/index.ts"
   ],
-  "project": [
-    "src/**/*.{ts,tsx}!",
-    "!src/**/*.stories.{ts,tsx}!"
-  ],
+  "project": ["src/**/*.{ts,tsx}!", "!src/**/*.stories.{ts,tsx}!"],
   "paths": {
-    "~/*": [
-      "./src/app/*"
-    ],
-    "~/config/*": [
-      "./src/core/config/*"
-    ],
-    "~/components/*": [
-      "./src/shared/components/*"
-    ],
-    "~/core/*": [
-      "./src/core/*"
-    ],
-    "~/features/*": [
-      "./src/features/*"
-    ],
-    "~/shared/*": [
-      "./src/shared/*"
-    ],
-    "~/tools/*": [
-      "./src/tools/*"
-    ]
+    "~/*": ["./src/app/*"],
+    "~/config/*": ["./src/core/config/*"],
+    "~/components/*": ["./src/shared/components/*"],
+    "~/core/*": ["./src/core/*"],
+    "~/features/*": ["./src/features/*"],
+    "~/shared/*": ["./src/shared/*"],
+    "~/tools/*": ["./src/tools/*"]
   },
   "ignore": [
     "**/node_modules/**",
@@ -46,7 +29,5 @@
     "**/build/**",
     "**/*.d.ts"
   ],
-  "ignoreDependencies": [
-    "@types/*"
-  ]
+  "ignoreDependencies": ["@types/*"]
 }

@@ -3,30 +3,30 @@
   "extends": ["ultracite/core", "ultracite/next"],
   "html": {
     "parser": {
-      "interpolation": true,
-    },
+      "interpolation": true
+    }
   },
   "linter": {
     "rules": {
       "style": {
-        "noExportedImports": "off",
+        "noExportedImports": "off"
       },
       "security": {
-        "noDangerouslySetInnerHtml": "off",
+        "noDangerouslySetInnerHtml": "off"
       },
       "performance": {
         "noBarrelFile": "off",
-        "noNamespaceImport": "off",
+        "noNamespaceImport": "off"
       },
       "suspicious": {
-        "useAwait": "off",
+        "useAwait": "off"
       },
       "complexity": {
-        "noExcessiveCognitiveComplexity": "off",
+        "noExcessiveCognitiveComplexity": "off"
       },
       "nursery": {
-        "noLeakedRender": "off",
-      },
-    },
-  },
+        "noLeakedRender": "off"
+      }
+    }
+  }
 }
