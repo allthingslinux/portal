@@ -15,10 +15,7 @@ export function enhanceAction<
   Config extends {
     auth?: boolean;
     captcha?: boolean;
-    schema?: z.ZodType<
-      Config["captcha"] extends true ? Args & { captchaToken: string } : Args,
-      z.ZodTypeDef
-    >;
+    schema?: z.ZodTypeAny;
   },
 >(
   fn: (
@@ -62,6 +59,7 @@ export function enhanceAction<
       user = (await requireUser()) as UserParam;
     }
 
-    return fn(data, user);
+    // biome-ignore lint/suspicious/noExplicitAny: Complex Zod v4 type inference workaround
+    return fn(data as any, user);
   };
 }

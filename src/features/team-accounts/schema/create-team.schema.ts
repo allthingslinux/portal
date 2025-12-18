@@ -17,9 +17,8 @@ const SPECIAL_CHARACTERS_REGEX = /[!@#$%^&*()+=[\]{};':"\\|,.<>/?]/;
  * @name TeamNameSchema
  */
 export const TeamNameSchema = z
-  .string({
-    description: "The name of the team account",
-  })
+  .string()
+  .describe("The name of the team account")
   .min(2)
   .max(50)
   .refine((name) => !SPECIAL_CHARACTERS_REGEX.test(name), {

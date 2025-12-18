@@ -282,26 +282,30 @@ async function getMemberships(
 async function getMembers(accountSlug: string): Promise<AdminMember[]> {
   // Using shared Drizzle client
 
-  const data = await db.transaction(async (tx) => {
-    return await tx
-      .select({
-        userId: accountsMemberships.userId,
-        accountId: accountsMemberships.accountId,
-        role: accountsMemberships.accountRole,
-        roleHierarchyLevel: roles.hierarchyLevel,
-        primaryOwnerUserId: accounts.primaryOwnerUserId,
-        name: betterAuthUser.name,
-        email: betterAuthUser.email,
-        pictureUrl: betterAuthUser.image,
-        createdAt: accountsMemberships.createdAt,
-        updatedAt: accountsMemberships.updatedAt,
-      })
-      .from(accountsMemberships)
-      .innerJoin(accounts, eq(accounts.id, accountsMemberships.accountId))
-      .innerJoin(betterAuthUser, eq(betterAuthUser.id, accountsMemberships.userId))
-      .leftJoin(roles, eq(roles.name, accountsMemberships.accountRole))
-      .where(eq(accounts.slug, accountSlug));
-  });
+  const data = await db.transaction(
+    async (tx) =>
+      await tx
+        .select({
+          userId: accountsMemberships.userId,
+          accountId: accountsMemberships.accountId,
+          role: accountsMemberships.accountRole,
+          roleHierarchyLevel: roles.hierarchyLevel,
+          primaryOwnerUserId: accounts.primaryOwnerUserId,
+          name: betterAuthUser.name,
+          email: betterAuthUser.email,
+          pictureUrl: betterAuthUser.image,
+          createdAt: accountsMemberships.createdAt,
+          updatedAt: accountsMemberships.updatedAt,
+        })
+        .from(accountsMemberships)
+        .innerJoin(accounts, eq(accounts.id, accountsMemberships.accountId))
+        .innerJoin(
+          betterAuthUser,
+          eq(betterAuthUser.id, accountsMemberships.userId)
+        )
+        .leftJoin(roles, eq(roles.name, accountsMemberships.accountRole))
+        .where(eq(accounts.slug, accountSlug))
+  );
 
   // Add generated id for components that expect it
   const dataWithId: AdminMember[] = data.map((item) => ({

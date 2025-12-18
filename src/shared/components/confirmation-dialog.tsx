@@ -109,12 +109,13 @@ export function ConfirmationDialog<
   type FormValues = TData & { confirmation: string };
 
   const confirmationSchema = createConfirmationSchema(confirmationText);
-  const finalSchema = (
-    schema ? z.intersection(schema, confirmationSchema) : confirmationSchema
-  ) as z.ZodType<FormValues>;
+  const finalSchema = schema
+    ? z.intersection(schema, confirmationSchema)
+    : confirmationSchema;
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(finalSchema as z.ZodTypeAny),
+    // biome-ignore lint/suspicious/noExplicitAny: Zod v4 + React Hook Form type compatibility workaround
+    resolver: zodResolver(finalSchema as any),
     defaultValues: {
       confirmation: "",
       ...(defaultValues ?? {}),
@@ -159,7 +160,8 @@ export function ConfirmationDialog<
             className={"flex flex-col space-y-8"}
             data-test={testId}
             onSubmit={form.handleSubmit(
-              handleSubmit as SubmitHandler<FormValues>
+              // biome-ignore lint/suspicious/noExplicitAny: Zod v4 + React Hook Form type compatibility workaround
+              handleSubmit as any
             )}
           >
             <If condition={error}>

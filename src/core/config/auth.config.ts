@@ -17,25 +17,20 @@ const oAuthProviders: Provider[] = ["keycloak"];
 
 const AuthConfigSchema = z.object({
   captchaTokenSiteKey: z
-    .string({
-      description: "The reCAPTCHA site key.",
-    })
+    .string()
+    .describe("The reCAPTCHA site key.")
     .optional(),
   displayTermsCheckbox: z
-    .boolean({
-      description: "Whether to display the terms checkbox during sign-up.",
-    })
+    .boolean()
+    .describe("Whether to display the terms checkbox during sign-up.")
     .optional(),
   enableIdentityLinking: z
-    .boolean({
-      description: "Allow linking and unlinking of auth identities.",
-    })
+    .boolean()
+    .describe("Allow linking and unlinking of auth identities.")
     .optional()
     .default(false),
   providers: z.object({
-    password: z.boolean({
-      description: "Enable password authentication.",
-    }),
+    password: z.boolean().describe("Enable password authentication."),
     oAuth: providers.array(),
   }),
 });

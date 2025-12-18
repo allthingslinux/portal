@@ -17,10 +17,12 @@ import { z } from "zod";
 
 import { cn } from "../lib/utils";
 
-type MultiStepFormProps<T extends z.ZodType> = {
+type MultiStepFormProps<T extends z.ZodTypeAny> = {
   schema: T;
-  form: UseFormReturn<z.infer<T>>;
-  onSubmit: (data: z.infer<T>) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: Complex generic types with React Hook Form
+  form: UseFormReturn<any>;
+  // biome-ignore lint/suspicious/noExplicitAny: Complex generic types with React Hook Form
+  onSubmit: (data: any) => void;
   useStepTransition?: boolean;
   className?: string;
 };
@@ -81,7 +83,13 @@ export function MultiStepForm<T extends z.ZodType>({
   );
 
   const stepNames = steps.map((step) => step.props.name);
-  const multiStepForm = useMultiStepForm(schema, form, stepNames, onSubmit);
+  const multiStepForm = useMultiStepForm(
+    schema,
+    // biome-ignore lint/suspicious/noExplicitAny: Zod v4 + React Hook Form type compatibility workaround
+    form as any,
+    stepNames,
+    onSubmit
+  );
 
   return (
     <MultiStepFormContext.Provider value={multiStepForm}>
@@ -172,9 +180,11 @@ export function useMultiStepFormContext<Schema extends z.ZodType>() {
  */
 export function useMultiStepForm<Schema extends z.ZodType>(
   schema: Schema,
-  form: UseFormReturn<z.infer<Schema>>,
+  // biome-ignore lint/suspicious/noExplicitAny: Zod v4 + React Hook Form type compatibility workaround
+  form: UseFormReturn<any>,
   stepNames: string[],
-  onSubmit: (data: z.infer<Schema>) => void
+  // biome-ignore lint/suspicious/noExplicitAny: Zod v4 + React Hook Form type compatibility workaround
+  onSubmit: (data: any) => void
 ) {
   const [state, setState] = useState({
     currentStepIndex: 0,

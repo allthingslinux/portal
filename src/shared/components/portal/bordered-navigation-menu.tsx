@@ -57,7 +57,7 @@ export function BorderedNavigationMenuItem(props: {
           {active ? (
             <span
               className={cn(
-                "fade-in zoom-in-90 -bottom-2.5 absolute left-0 h-0.5 w-full animate-in bg-primary"
+                "fade-in zoom-in-90 absolute -bottom-2.5 left-0 h-0.5 w-full animate-in bg-primary"
               )}
             />
           ) : null}

@@ -53,7 +53,7 @@ export const updateAccountDataAction = enhanceAction(
     schema: z.object({
       accountId: z.string().uuid(),
       name: z.string().min(2).max(100).optional(),
-      public_data: z.record(z.unknown()).optional(),
+      public_data: z.record(z.string(), z.any()).optional(),
     }),
   }
 );

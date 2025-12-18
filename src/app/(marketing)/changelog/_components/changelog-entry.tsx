@@ -21,14 +21,14 @@ export function ChangelogEntry({
     <div className="flex gap-6 md:gap-8">
       <div className="relative flex flex-1 flex-col gap-y-2.5 space-y-0 border-transparent border-l border-dashed pb-4 md:border-border md:pl-8 lg:pl-12">
         {highlight ? (
-          <span className="-translate-x-1/2 absolute top-5.5 left-0 hidden h-2.5 w-2.5 md:flex">
+          <span className="absolute top-5.5 left-0 hidden h-2.5 w-2.5 -translate-x-1/2 md:flex">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-400" />
           </span>
         ) : (
           <div
             className={cn(
-              "-translate-x-1/2 absolute top-5.5 left-0 hidden h-2.5 w-2.5 rounded-full bg-muted md:block"
+              "absolute top-5.5 left-0 hidden h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-muted md:block"
             )}
           />
         )}

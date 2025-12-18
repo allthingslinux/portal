@@ -20,7 +20,7 @@ export function createErrorResponse(
   // Handle Zod validation errors
   if (error instanceof z.ZodError) {
     return NextResponse.json(
-      { error: error.errors[0].message || defaultMessage },
+      { error: error.issues[0].message || defaultMessage },
       { status: HTTP_STATUS.BAD_REQUEST }
     );
   }

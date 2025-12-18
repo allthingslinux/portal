@@ -45,10 +45,7 @@ type HandlerParams<
  * );
  *
  */
-export const enhanceRouteHandler = <
-  Body,
-  Params extends Config<z.ZodType<Body, z.ZodTypeDef>>,
->(
+export const enhanceRouteHandler = <Params extends Config<z.ZodTypeAny>>(
   // Route handler function
   handler:
     | ((
@@ -121,7 +118,8 @@ export const enhanceRouteHandler = <
         );
       }
     } else {
-      body = undefined;
+      // biome-ignore lint/suspicious/noExplicitAny: Zod v4 schema type compatibility workaround
+      body = undefined as any;
     }
 
     return handler({

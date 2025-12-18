@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { cn } from "~/components/lib/utils";
 import { If } from "~/components/portal/if";
 import { Trans } from "~/components/portal/trans";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
   Command,
@@ -75,11 +74,11 @@ export function AccountSelector({
   // This ensures personal account is always shown when selectedAccount is undefined
   const selected = useMemo(() => {
     if (!selectedAccount || selectedAccount === PERSONAL_ACCOUNT_SLUG) {
-      return undefined;
+      return;
     }
     return accounts.find((account) => account.value === selectedAccount);
   }, [selectedAccount, accounts]);
-  
+
   const pictureUrl = personalData.data?.picture_url;
 
   return (
@@ -258,14 +257,6 @@ export function AccountSelector({
   );
 }
 
-function UserAvatar(props: { pictureUrl?: string }) {
-  return (
-    <Avatar className={"h-6 w-6 rounded-xs"}>
-      <AvatarImage src={props.pictureUrl} />
-    </Avatar>
-  );
-}
-
 function Icon({ selected }: { selected: boolean }) {
   return (
     <CheckCircle
@@ -274,7 +265,11 @@ function Icon({ selected }: { selected: boolean }) {
   );
 }
 
-function PersonalAccountAvatar({ pictureUrl }: { pictureUrl?: string | null }) {
+function PersonalAccountAvatar({
+  pictureUrl: _pictureUrl,
+}: {
+  pictureUrl?: string | null;
+}) {
   // Always use default icon instead of showing account pictures
   return <PersonIcon className="h-5 w-5" />;
 }

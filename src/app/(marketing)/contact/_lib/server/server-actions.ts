@@ -8,20 +8,13 @@ import { enhanceAction } from "~/shared/next/actions";
 import { ContactEmailSchema } from "../contact-email.schema";
 
 const contactEmail = z
-  .string({
-    description:
-      "The email where you want to receive the contact form submissions.",
-    required_error:
-      "Contact email is required. Please use the environment variable CONTACT_EMAIL.",
-  })
+  .string()
+  .describe("The email where you want to receive the contact form submissions.")
   .parse(process.env.CONTACT_EMAIL);
 
 const emailFrom = z
-  .string({
-    description: "The email sending address.",
-    required_error:
-      "Sender email is required. Please use the environment variable EMAIL_SENDER.",
-  })
+  .string()
+  .describe("The email sending address.")
   .parse(process.env.EMAIL_SENDER);
 
 export const sendContactEmail = enhanceAction(

@@ -105,6 +105,11 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
 const ChartTooltipContent: React.FC<
   React.ComponentPropsWithRef<typeof RechartsPrimitive.Tooltip> &
     React.ComponentPropsWithRef<"div"> & {
+      active?: boolean;
+      // biome-ignore lint/suspicious/noExplicitAny: Recharts tooltip props are complex
+      payload?: any[];
+      // biome-ignore lint/suspicious/noExplicitAny: Recharts tooltip props are complex
+      label?: any;
       hideLabel?: boolean;
       hideIndicator?: boolean;
       indicator?: "line" | "dot" | "dashed";
@@ -182,7 +187,7 @@ const ChartTooltipContent: React.FC<
     >
       {nestLabel ? null : tooltipLabel}
       <div className="grid gap-1.5">
-        {payload.map((item, index) => {
+        {payload.map((item, index: number) => {
           const key = `${nameKey ?? item.name ?? item.dataKey ?? "value"}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
           const indicatorColor = color ?? item.payload.fill ?? item.color;
@@ -256,11 +261,13 @@ ChartTooltipContent.displayName = "ChartTooltip";
 const ChartLegend = RechartsPrimitive.Legend;
 
 const ChartLegendContent: React.FC<
-  React.ComponentPropsWithRef<"div"> &
-    Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-      hideIcon?: boolean;
-      nameKey?: string;
-    }
+  React.ComponentPropsWithRef<"div"> & {
+    verticalAlign?: "top" | "middle" | "bottom";
+    // biome-ignore lint/suspicious/noExplicitAny: Recharts tooltip props are complex
+    payload?: any[];
+    hideIcon?: boolean;
+    nameKey?: string;
+  }
 > = ({
   className,
   hideIcon = false,
@@ -271,7 +278,7 @@ const ChartLegendContent: React.FC<
 }) => {
   const { config } = useChart();
 
-  if (!payload?.length) {
+  if (!(payload && Array.isArray(payload)) || payload.length === 0) {
     return null;
   }
 

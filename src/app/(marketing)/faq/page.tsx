@@ -110,7 +110,7 @@ function FaqItem({
 
         <div>
           <ChevronDown
-            className={"group-open:-rotate-180 h-5 transition duration-300"}
+            className={"h-5 transition duration-300 group-open:-rotate-180"}
           />
         </div>
       </summary>

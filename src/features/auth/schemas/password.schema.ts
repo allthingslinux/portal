@@ -47,8 +47,6 @@ export function refineRepeatPassword(
       code: "custom",
     });
   }
-
-  return true;
 }
 
 function validatePassword(password: string, ctx: z.RefinementCtx) {
@@ -80,6 +78,4 @@ function validatePassword(password: string, ctx: z.RefinementCtx) {
       code: "custom",
     });
   }
-
-  return true;
 }
