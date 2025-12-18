@@ -76,7 +76,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.8",
+    "@biomejs/biome": "2.3.10",
     "@keystatic/core": "0.5.48",
     "@keystatic/next": "^5.0.4",
     "@next/bundle-analyzer": "16.0.1",
