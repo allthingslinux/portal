@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "~/core/database/client";
 import {
   accounts,
-  userAccounts,
+  accountsMemberships,
   userAccountWorkspace,
 } from "~/core/database/schema";
 import { API_ERRORS } from "~/shared/constants/errors";
@@ -53,16 +53,21 @@ class _AccountsApi {
    * @name loadUserAccounts
    * Load the user accounts.
    */
-  async loadUserAccounts(): Promise<
+  async loadUserAccounts(userId: string): Promise<
     Array<{ label: string; value: string; image: string | null }>
   > {
     const accountResults = await db
       .select({
-        name: userAccounts.name,
-        slug: userAccounts.slug,
-        pictureUrl: userAccounts.pictureUrl,
+        name: accounts.name,
+        slug: accounts.slug,
+        pictureUrl: accounts.pictureUrl,
       })
-      .from(userAccounts);
+      .from(accounts)
+      .innerJoin(
+        accountsMemberships,
+        eq(accounts.id, accountsMemberships.accountId)
+      )
+      .where(eq(accountsMemberships.userId, userId));
 
     return accountResults.map(({ name, slug, pictureUrl }) => ({
       label: name ?? "",

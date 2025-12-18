@@ -194,7 +194,7 @@ class _TeamAccountsApi {
 
       return {
         error: { message: "Failed to get account workspace" },
-        data: null,
+        workspace: null,
       };
     }
   }
