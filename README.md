@@ -10,6 +10,8 @@
 - **Monitoring**: Sentry
 - **i18n**: i18next
 - **Package Manager**: Bun
+- **Code Quality**: Biome (linting/formatting), Knip (unused dependency checker)
+- **Testing**: Playwright
 
 ## Prerequisites
 
@@ -17,6 +19,15 @@
 - Bun
 - PostgreSQL 17+
 - Docker & Docker Compose (for Keycloak)
+
+## Configuration
+
+Key configuration files:
+- `knip.json` - Unused dependency/file checker configuration
+- `biome.jsonc` - Linter and formatter configuration
+- `next.config.ts` - Next.js configuration
+- `tsconfig.json` - TypeScript configuration
+- `postcss.config.mjs` - PostCSS configuration
 
 ## Getting Started
 
@@ -70,16 +81,33 @@ bun run dev
 
 ## Scripts
 
+### Development
 - `bun run dev` - Start development server
 - `bun run build` - Production build
+- `bun run build:test` - Production build for testing
+- `bun run start` - Start production server
+- `bun run clean` - Clean build artifacts and node_modules
+
+### Code Quality
 - `bun run lint` - Run linter (Ultracite)
 - `bun run lint:fix` - Fix linting issues
 - `bun run typecheck` - TypeScript type checking
+- `bun run knip` - Find unused dependencies, exports, and files
+
+### Testing
 - `bun run test` - Run Playwright tests
+
+### Database
 - `bun run db:migrate` - Run database migrations
 - `bun run db:seed` - Seed database
 - `bun run db:setup` - Migrate and seed
 - `bun run db:studio` - Open Drizzle Studio
+- `bun run db:create-better-auth-tables` - Create Better Auth tables
+- `bun run db:push` - Push schema changes to database
+- `bun run db:generate` - Generate migration files
+
+### Utilities
+- `bun run analyze` - Bundle analyzer for production build
 
 ## Project Structure
 
@@ -102,6 +130,50 @@ src/
 │   └── team-accounts/# Team account features
 └── shared/           # Shared components and utilities
 ```
+
+## Development Workflow
+
+### Code Quality
+
+This project uses several tools to maintain code quality:
+
+- **Biome**: Fast linter and formatter for JavaScript/TypeScript
+- **Knip**: Finds unused dependencies, exports, and files
+- **TypeScript**: Static type checking
+
+Run all quality checks:
+```bash
+bun run lint && bun run typecheck && bun run knip
+```
+
+### Finding Unused Code
+
+Use Knip to identify unused dependencies, exports, and files:
+
+```bash
+# Check all files (development mode)
+bun run knip
+
+# Check only production code
+bun run knip --production
+
+# Auto-fix unused exports and dependencies
+bun run knip --fix
+```
+
+### Contributing
+
+Before committing:
+1. Run all quality checks: `bun run lint && bun run typecheck && bun run knip`
+2. Ensure tests pass: `bun run test`
+3. Format code: `bun run lint:fix`
+
+### Database Development
+
+When making schema changes:
+1. Update schema in `src/core/database/schema.ts`
+2. Generate migration: `bun run db:generate`
+3. Apply migration: `bun run db:migrate`
 
 ## License
 
