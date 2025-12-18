@@ -148,7 +148,12 @@ class _TeamAccountsApi {
             accountsMemberships,
             eq(accounts.id, accountsMemberships.accountId)
           )
-          .where(eq(accountsMemberships.userId, userId))
+          .where(
+            and(
+              eq(accountsMemberships.userId, userId),
+              eq(accounts.isPersonalAccount, false)
+            )
+          )
       );
 
       if (accountResult.length === 0) {

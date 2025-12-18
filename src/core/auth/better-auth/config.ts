@@ -50,11 +50,6 @@ export const auth = betterAuth({
       create: {
         after: async (user) => {
           try {
-            const { betterAuthUserIdToUuid } = await import(
-              "./utils/user-id-to-uuid"
-            );
-            const userIdUuid = betterAuthUserIdToUuid(user.id);
-
             await db.transaction(async (tx) => {
               const [account] = await tx
                 .insert(accounts)
@@ -71,7 +66,7 @@ export const auth = betterAuth({
               }
 
               await tx.insert(accountsMemberships).values({
-                userId: userIdUuid,
+                userId: user.id,
                 accountId: account.id,
                 accountRole: "owner",
               });
@@ -86,11 +81,6 @@ export const auth = betterAuth({
       update: {
         after: async (user) => {
           try {
-            const { betterAuthUserIdToUuid } = await import(
-              "./utils/user-id-to-uuid"
-            );
-            const userIdUuid = betterAuthUserIdToUuid(user.id);
-
             await db
               .update(accounts)
               .set({
@@ -98,7 +88,7 @@ export const auth = betterAuth({
               })
               .where(
                 and(
-                  eq(accounts.primaryOwnerUserId, userIdUuid),
+                  eq(accounts.primaryOwnerUserId, user.id),
                   eq(accounts.isPersonalAccount, true)
                 )
               );
