@@ -7,11 +7,7 @@ import { and, eq } from "drizzle-orm";
 import authConfig from "~/core/config/auth.config";
 import { db } from "~/core/database/client";
 import * as schema from "~/core/database/schema";
-import {
-  accounts,
-  accountsMemberships,
-  usersInAuth,
-} from "~/core/database/schema";
+import { accounts, accountsMemberships } from "~/core/database/schema";
 
 const baseURL =
   process.env.NEXT_PUBLIC_APP_URL ??
@@ -60,23 +56,10 @@ export const auth = betterAuth({
             const userIdUuid = betterAuthUserIdToUuid(user.id);
 
             await db.transaction(async (tx) => {
-              await tx
-                .insert(usersInAuth)
-                .values({
-                  id: userIdUuid,
-                  email: user.email || null,
-                })
-                .onConflictDoUpdate({
-                  target: usersInAuth.id,
-                  set: {
-                    email: user.email || null,
-                  },
-                });
-
               const [account] = await tx
                 .insert(accounts)
                 .values({
-                  primaryOwnerUserId: userIdUuid,
+                  primaryOwnerUserId: user.id,
                   name: user.name || user.email?.split("@")[0] || "User",
                   isPersonalAccount: true,
                   publicData: {},
