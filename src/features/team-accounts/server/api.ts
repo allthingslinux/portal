@@ -168,7 +168,7 @@ class _TeamAccountsApi {
         id: accountRow.id,
         name: accountRow.name,
         slug: accountRow.slug ?? "",
-        picture_url: accountRow.pictureUrl ?? "",
+        pictureUrl: accountRow.pictureUrl ?? "",
         permissions,
         role: accountRow.role,
         role_hierarchy_level: accountRow.roleHierarchyLevel,
@@ -314,7 +314,7 @@ class _TeamAccountsApi {
           id: invitationRow.account.id,
           name: invitationRow.account.name,
           slug: invitationRow.account.slug,
-          picture_url: invitationRow.account.pictureUrl,
+          pictureUrl: invitationRow.account.pictureUrl,
         },
       },
     };

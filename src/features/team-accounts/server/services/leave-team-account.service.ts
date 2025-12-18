@@ -8,7 +8,7 @@ import { getLogger } from "~/shared/logger";
 
 const Schema = z.object({
   accountId: z.string().uuid(),
-  userId: z.string().uuid(),
+  userId: z.string(), // Accept Better Auth user IDs (not just UUIDs)
 });
 
 export function createLeaveTeamAccountService() {

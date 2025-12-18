@@ -124,8 +124,9 @@ class AccountMembersService {
       // 2. Update accounts_memberships for both old and new owner
       // 3. Potentially update other related records
 
-      logger.info(ctx, "Successfully transferred ownership of account");
-      return { success: true };
+      throw new Error(
+        "Ownership transfer not yet implemented. See TODO comments for required implementation."
+      );
     } catch (error) {
       logger.error(
         { ...ctx, error },

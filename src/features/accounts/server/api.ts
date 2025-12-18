@@ -61,6 +61,7 @@ class _AccountsApi {
         name: accounts.name,
         slug: accounts.slug,
         pictureUrl: accounts.pictureUrl,
+        id: accounts.id,
       })
       .from(accounts)
       .innerJoin(
@@ -69,9 +70,9 @@ class _AccountsApi {
       )
       .where(eq(accountsMemberships.userId, userId));
 
-    return accountResults.map(({ name, slug, pictureUrl }) => ({
+    return accountResults.map(({ name, slug, pictureUrl, id }) => ({
       label: name ?? "",
-      value: slug ?? "",
+      value: slug ?? id,
       image: pictureUrl,
     }));
   }

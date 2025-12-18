@@ -1,12 +1,10 @@
 import { and, eq } from "drizzle-orm";
-import { betterAuthUserIdToUuid } from "~/core/auth/better-auth/utils/user-id-to-uuid";
 import { db } from "~/core/database/client";
 import {
   accounts,
   accountsMemberships,
   betterAuthAccount,
   betterAuthUser,
-  usersInAuth,
 } from "~/core/database/schema";
 import { createAdminAuthUserService } from "~/features/admin/lib/server/services/admin-auth-user.service";
 import { getLogger } from "~/shared/logger";
@@ -52,15 +50,13 @@ export function createPersonalAccountsService() {
         publicData?: Record<string, unknown>;
       }
     ) {
-      const userIdUuid = betterAuthUserIdToUuid(userId);
-
       await db
         .update(accounts)
         .set(data)
         .where(
           and(
             eq(accounts.id, accountId),
-            eq(accounts.primaryOwnerUserId, userIdUuid)
+            eq(accounts.primaryOwnerUserId, userId)
           )
         );
 
@@ -78,8 +74,7 @@ export function createPersonalAccountsService() {
     },
 
     async getAccount(userId: string) {
-      const userIdUuid = betterAuthUserIdToUuid(userId);
-
+      // Use raw userId instead of converting to UUID after database migration
       const [account] = await db
         .select({
           id: accounts.id,
@@ -90,7 +85,7 @@ export function createPersonalAccountsService() {
         .from(accounts)
         .where(
           and(
-            eq(accounts.primaryOwnerUserId, userIdUuid),
+            eq(accounts.primaryOwnerUserId, userId),
             eq(accounts.isPersonalAccount, true)
           )
         )
@@ -100,12 +95,10 @@ export function createPersonalAccountsService() {
         return account;
       }
 
-      return this.createPersonalAccount(userId);
+      return service.createPersonalAccount(userId);
     },
 
     async createPersonalAccount(userId: string) {
-      const userIdUuid = betterAuthUserIdToUuid(userId);
-
       const [userData] = await db
         .select({
           id: betterAuthUser.id,
@@ -122,23 +115,10 @@ export function createPersonalAccountsService() {
 
       try {
         return await db.transaction(async (tx) => {
-          await tx
-            .insert(usersInAuth)
-            .values({
-              id: userIdUuid,
-              email: userData.email || null,
-            })
-            .onConflictDoUpdate({
-              target: usersInAuth.id,
-              set: {
-                email: userData.email || null,
-              },
-            });
-
           const [newAccount] = await tx
             .insert(accounts)
             .values({
-              primaryOwnerUserId: userIdUuid,
+              primaryOwnerUserId: userId,
               name: userData.name || userData.email?.split("@")[0] || "User",
               isPersonalAccount: true,
               publicData: {},
@@ -150,7 +130,7 @@ export function createPersonalAccountsService() {
           }
 
           await tx.insert(accountsMemberships).values({
-            userId: userIdUuid,
+            userId,
             accountId: newAccount.id,
             accountRole: "owner",
           });

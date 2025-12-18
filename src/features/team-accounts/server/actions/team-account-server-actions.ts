@@ -1,9 +1,6 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { db } from "~/core/database/client";
-import { accounts } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 import { enhanceAction } from "~/shared/next/actions";
 import {
@@ -135,16 +132,16 @@ export const deleteTeamAccountAction = enhanceAction(
       throw new Error("Team account deletion is not enabled");
     }
 
-    await deleteTeamAccount({
+    const service = createDeleteTeamAccountService();
+
+    await service.deleteTeamAccount({
       accountId: data.accountId,
       userId: user.id,
     });
 
     redirect("/home");
   },
-  {
-    schema: undefined,
-  }
+  {}
 );
 
 /**
@@ -183,44 +180,5 @@ export const leaveTeamAccountAction = enhanceAction(
 
     return redirect("/home");
   },
-  {
-    schema: undefined,
-  }
+  {}
 );
-
-async function deleteTeamAccount(params: {
-  accountId: string;
-  userId: string;
-}) {
-  const service = createDeleteTeamAccountService();
-
-  // verify that the user has the necessary permissions to delete the team account
-  await assertUserPermissionsToDeleteTeamAccount(
-    params.accountId,
-    params.userId
-  );
-
-  // delete the team account
-  await service.deleteTeamAccount(params);
-}
-
-async function assertUserPermissionsToDeleteTeamAccount(
-  accountId: string,
-  userId: string
-) {
-  const result = await db
-    .select({ count: accounts.id })
-    .from(accounts)
-    .where(
-      and(eq(accounts.id, accountId), eq(accounts.primaryOwnerUserId, userId))
-    )
-    .limit(1);
-
-  const isOwner = result.length > 0;
-
-  if (!isOwner) {
-    throw new Error("You do not have permission to delete this account");
-  }
-
-  return isOwner;
-}
