@@ -17,11 +17,8 @@ import { getI18nSettings } from "~/shared/lib/i18n/i18n.settings";
 import { ReactQueryProvider } from "./react-query-provider";
 
 type RootProvidersProps = React.PropsWithChildren<{
-  // The language to use for the app (optional)
   lang?: string;
-  // The theme (light or dark or system) (optional)
   theme?: string;
-  // The CSP nonce to pass to scripts (optional)
   nonce?: string;
 }>;
 

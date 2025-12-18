@@ -23,10 +23,9 @@ export const loadTeamWorkspace = createWorkspaceLoader(
   async (accountSlug: string) => {
     const api = createTeamAccountsApi();
 
-    const [workspaceResult, user] = await Promise.all([
-      api.getAccountWorkspace(accountSlug),
-      requireUserInServerComponent(),
-    ]);
+    const user = await requireUserInServerComponent();
+
+    const workspaceResult = await api.getAccountWorkspace(accountSlug, user.id);
 
     if (!workspaceResult.workspace?.account) {
       return redirect(pathsConfig.app.home);

@@ -62,8 +62,7 @@ export function SignInMethodsContainer(props: {
     signInWithProviderMutation,
   ]);
 
-  // Show loading state immediately when auto-redirecting (before useEffect runs)
-  // This prevents the form from flashing before redirect
+  // Show loading state immediately when auto-redirecting
   if (shouldAutoRedirect || signInWithProviderMutation.isPending) {
     return (
       <>

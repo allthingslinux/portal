@@ -1,19 +1,7 @@
-/**
- * General utility functions for the application.
- * These are non-UI specific utilities that can be used across the codebase.
- */
-
-/**
- * Check if the code is running in a browser environment.
- */
 export function isBrowser() {
   return typeof window !== "undefined";
 }
 
-/**
- * @name formatCurrency
- * @description Format the currency based on the currency code
- */
 export function formatCurrency(params: {
   currencyCode: string;
   locale: string;

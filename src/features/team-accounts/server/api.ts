@@ -8,7 +8,6 @@ import {
   invitations,
   rolePermissions,
   roles,
-  userAccounts,
 } from "~/core/database/schema";
 import { getLogger } from "~/shared/logger";
 
@@ -104,7 +103,7 @@ class _TeamAccountsApi {
   /**
    * Get account workspace data (replaces team_account_workspace RPC)
    */
-  async getAccountWorkspace(slug: string) {
+  async getAccountWorkspace(slug: string, userId: string) {
     // Using shared Drizzle client
 
     try {
@@ -136,13 +135,18 @@ class _TeamAccountsApi {
       const teamAccounts = await db.transaction(async (tx) =>
         tx
           .select({
-            id: userAccounts.id,
-            name: userAccounts.name,
-            slug: userAccounts.slug,
-            role: userAccounts.role,
-            pictureUrl: userAccounts.pictureUrl,
+            id: accounts.id,
+            name: accounts.name,
+            slug: accounts.slug,
+            role: accountsMemberships.accountRole,
+            pictureUrl: accounts.pictureUrl,
           })
-          .from(userAccounts)
+          .from(accounts)
+          .innerJoin(
+            accountsMemberships,
+            eq(accounts.id, accountsMemberships.accountId)
+          )
+          .where(eq(accountsMemberships.userId, userId))
       );
 
       if (accountResult.length === 0) {

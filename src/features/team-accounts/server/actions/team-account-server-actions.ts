@@ -16,6 +16,7 @@ import { CreateTeamSchema } from "../../schema/create-team.schema";
 import { DeleteTeamAccountSchema } from "../../schema/delete-team-account.schema";
 import { LeaveTeamAccountSchema } from "../../schema/leave-team-account.schema";
 import { UpdateTeamNameSchema } from "../../schema/update-team-name.schema";
+import { UpdateTeamPictureSchema } from "../../schema/update-team-picture.schema";
 import { createCreateTeamAccountService } from "../services/create-team-account.service";
 import { createDeleteTeamAccountService } from "../services/delete-team-account.service";
 import { createLeaveTeamAccountService } from "../services/leave-team-account.service";
@@ -24,13 +25,19 @@ import { createUpdateTeamAccountService } from "../services/update-team-account.
 /**
  * Update team account picture URL
  */
-export async function updateTeamAccountPictureUrlAction(
-  accountId: string,
-  pictureUrl: string | null
-) {
-  await updateAccountPictureInDatabase(accountId, pictureUrl, undefined);
-  revalidateTeamAccountSettings();
-}
+export const updateTeamAccountPictureUrlAction = enhanceAction(
+  async (params, user) => {
+    await updateAccountPictureInDatabase(
+      params.accountId,
+      params.pictureUrl,
+      user.id
+    );
+    revalidateTeamAccountSettings();
+  },
+  {
+    schema: UpdateTeamPictureSchema,
+  }
+);
 
 /**
  * Update team account name

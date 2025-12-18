@@ -15,7 +15,10 @@ export function UpdateTeamAccountImage(props: {
     <AccountImageUploader
       accountId={props.account.id}
       onUpdate={(pictureUrl) =>
-        updateTeamAccountPictureUrlAction(props.account.id, pictureUrl)
+        updateTeamAccountPictureUrlAction({
+          accountId: props.account.id,
+          pictureUrl,
+        })
       }
       pictureUrl={props.account.pictureUrl}
       translationNamespace="teams"

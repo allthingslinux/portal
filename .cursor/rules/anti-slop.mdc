@@ -1,8 +1,7 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
-
-# Anti-slop (Cursor)
+# Anti-slop
 
 ## Purpose
 - Eliminate redundancy, dead weight, and generic output.

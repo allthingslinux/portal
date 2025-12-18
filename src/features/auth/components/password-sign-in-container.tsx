@@ -39,7 +39,7 @@ export function PasswordSignInContainer({
           onSignIn(response.data?.user?.id);
         }
       } catch {
-        // Sign-in failed (handled by useSignInWithEmailPassword error state)
+        // Error handled by useSignInWithEmailPassword
       } finally {
         captcha.reset();
       }

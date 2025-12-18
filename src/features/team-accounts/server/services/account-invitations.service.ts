@@ -288,12 +288,9 @@ class AccountInvitationsService {
     }
   }
 
-  /**
-   * Dispatches invitation emails to the invited users.
-   */
   private async dispatchInvitationEmails(
     ctx: { accountSlug: string; name: string },
-    _invitations: unknown[] // Using unknown for now to match existing interface
+    _invitations: unknown[]
   ) {
     if (!_invitations.length) {
       return;
@@ -301,8 +298,6 @@ class AccountInvitationsService {
 
     const logger = await getLogger();
     // TODO: Update dispatcher service to work with Drizzle
-    // const service = createAccountInvitationsDispatchService(drizzleClient);
-
     logger.info(ctx, "Email dispatching placeholder - needs Drizzle migration");
   }
 }
