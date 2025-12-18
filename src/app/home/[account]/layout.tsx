@@ -60,12 +60,12 @@ function SidebarLayout({
     account: {
       ...data.account,
       permissions,
-      picture_url: data.account.picture_url ?? "",
+      pictureUrl: data.account.pictureUrl ?? "",
       slug: data.account.slug ?? "",
     },
     accounts: data.accounts.map((acc) => ({
       ...acc,
-      picture_url: acc.picture_url ?? "",
+      pictureUrl: acc.pictureUrl ?? "",
       slug: acc.slug ?? "",
     })),
   };
@@ -74,7 +74,7 @@ function SidebarLayout({
   const accountsForSelector = data.accounts.map((acc) => ({
     label: acc.name,
     value: acc.slug,
-    image: acc.picture_url,
+    image: acc.pictureUrl,
   }));
 
   return (
@@ -136,12 +136,12 @@ function HeaderLayout({
     account: {
       ...data.account,
       permissions,
-      picture_url: data.account.picture_url ?? "",
+      pictureUrl: data.account.pictureUrl ?? "",
       slug: data.account.slug ?? "",
     },
     accounts: data.accounts.map((acc) => ({
       ...acc,
-      picture_url: acc.picture_url ?? "",
+      pictureUrl: acc.pictureUrl ?? "",
       slug: acc.slug ?? "",
     })),
   };
@@ -149,7 +149,7 @@ function HeaderLayout({
   const accountsForSelector = data.accounts.map((acc) => ({
     label: acc.name,
     value: acc.slug,
-    image: acc.picture_url,
+    image: acc.pictureUrl,
   }));
 
   return (

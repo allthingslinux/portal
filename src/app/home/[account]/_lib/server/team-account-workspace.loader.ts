@@ -34,7 +34,7 @@ export const loadTeamWorkspace = createWorkspaceLoader(
     const account = {
       ...workspaceResult.workspace.account,
       slug: workspaceResult.workspace.account.slug ?? "",
-      picture_url: workspaceResult.workspace.account.picture_url ?? "",
+      pictureUrl: workspaceResult.workspace.account.pictureUrl ?? "",
     };
 
     const accounts = workspaceResult.workspace.accounts.map((acc) => ({
@@ -42,7 +42,7 @@ export const loadTeamWorkspace = createWorkspaceLoader(
       name: acc.name ?? "",
       slug: acc.slug ?? "",
       role: acc.role ?? "",
-      picture_url: acc.pictureUrl ?? "",
+      pictureUrl: acc.pictureUrl ?? "",
     }));
 
     return {

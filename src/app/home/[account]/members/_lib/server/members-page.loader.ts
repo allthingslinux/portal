@@ -7,6 +7,7 @@ import { db } from "~/core/database/client";
 import {
   accounts,
   accountsMemberships,
+  betterAuthUser,
   invitations,
   roles,
 } from "~/core/database/schema";
@@ -89,7 +90,7 @@ async function loadAccountMembers(
   drizzleClient: typeof db,
   accountSlug: string
 ): Promise<MemberRow[]> {
-  const userAccount = alias(accounts, "userAccount");
+  const userAccount = alias(betterAuthUser, "userAccount");
   const roleTable = alias(roles, "roleTable");
 
   const data = (await drizzleClient
@@ -101,17 +102,14 @@ async function loadAccountMembers(
       primary_owner_user_id: accounts.primaryOwnerUserId,
       name: userAccount.name,
       email: userAccount.email,
-      picture_url: userAccount.pictureUrl,
+      picture_url: userAccount.image,
       created_at: accountsMemberships.createdAt,
       updated_at: accountsMemberships.updatedAt,
       role_hierarchy_level: roleTable.hierarchyLevel,
     })
     .from(accountsMemberships)
     .innerJoin(accounts, eq(accountsMemberships.accountId, accounts.id))
-    .innerJoin(
-      userAccount,
-      eq(accountsMemberships.userId, userAccount.primaryOwnerUserId)
-    )
+    .innerJoin(userAccount, eq(accountsMemberships.userId, userAccount.id))
     .innerJoin(roleTable, eq(accountsMemberships.accountRole, roleTable.name))
     .where(eq(accounts.slug, accountSlug))) as MemberRow[];
 

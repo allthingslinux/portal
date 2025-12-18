@@ -55,7 +55,7 @@ export function TeamAccountNavigationMenu(props: {
           accounts={accounts.map((accountItem) => ({
             label: accountItem.name,
             value: accountItem.slug,
-            image: accountItem.picture_url,
+            image: accountItem.pictureUrl,
           }))}
           selectedAccount={account.slug ?? ""}
           userId={user.id}
