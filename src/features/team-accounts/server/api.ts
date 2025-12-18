@@ -129,7 +129,12 @@ class _TeamAccountsApi {
             rolePermissions,
             eq(accountsMemberships.accountRole, rolePermissions.role)
           )
-          .where(eq(accounts.slug, slug))
+          .where(
+            and(
+              eq(accounts.slug, slug),
+              eq(accountsMemberships.userId, userId)
+            )
+          )
       );
 
       const teamAccounts = await db.transaction(async (tx) =>
