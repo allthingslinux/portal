@@ -1,23 +1,45 @@
 {
   "entry": [
-    "src/app/**/{page,layout,loading,error,not-found}.{ts,tsx}",
-    "src/app/**/route.ts",
-    "src/components/**",
-    "src/lib/**",
-    "src/config/**"
+    "src/app/**/{page,layout,loading,error,not-found}.{ts,tsx}!",
+    "src/app/**/route.ts!",
+    "src/app/**/{page,layout,loading,error,not-found}.js!",
+    "src/app/**/route.js!",
+    "next.config.ts",
+    "postcss.config.mjs",
+    "src/core/database/migrate.ts",
+    "src/core/database/seed.ts",
+    "src/core/database/create-better-auth-tables.ts",
+    "src/core/database/drizzle.config.js",
+    "src/core/database-webhooks/index.ts"
   ],
   "project": [
-    "src/**/*.{ts,tsx}",
-    "!src/**/*.test.{ts,tsx}",
-    "!src/**/*.spec.{ts,tsx}",
-    "!src/**/*.stories.{ts,tsx}"
+    "src/**/*.{ts,tsx}!",
+    "!src/**/*.test.{ts,tsx}!",
+    "!src/**/*.spec.{ts,tsx}!",
+    "!src/**/*.stories.{ts,tsx}!"
   ],
   "paths": {
-    "~/*": ["./src/app/*"],
-    "~/config/*": ["./src/config/*"],
-    "~/components/*": ["./src/components/*"],
-    "~/lib/*": ["./src/lib/*"],
-    "~/packages/*": ["./src/packages/*"]
+    "~/*": [
+      "./src/app/*"
+    ],
+    "~/config/*": [
+      "./src/core/config/*"
+    ],
+    "~/components/*": [
+      "./src/shared/components/*"
+    ],
+    "~/core/*": [
+      "./src/core/*"
+    ],
+    "~/features/*": [
+      "./src/features/*"
+    ],
+    "~/shared/*": [
+      "./src/shared/*"
+    ],
+    "~/tools/*": [
+      "./src/tools/*"
+    ]
   },
   "ignore": [
     "**/node_modules/**",
@@ -27,11 +49,6 @@
     "**/*.d.ts"
   ],
   "ignoreDependencies": [
-    "@types/*",
-    "next",
-    "react",
-    "react-dom",
-    "typescript",
-    "eslint"
+    "@types/*"
   ]
 }
