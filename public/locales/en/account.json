@@ -3,6 +3,7 @@
   "accountTabDescription": "Manage your account settings",
   "homePage": "Home",
   "settingsTab": "Settings",
+  "settingsTabDescription": "Manage your personal account settings and preferences",
   "multiFactorAuth": "Multi-Factor Authentication",
   "multiFactorAuthDescription": "Set up Multi-Factor Authentication method to further secure your account",
   "updateProfileSuccess": "Profile successfully updated",
