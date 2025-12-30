@@ -62,3 +62,5 @@ node-compile-cache/
 .env
 
 uploads/
+
+.kiro/cli-todo-lists
