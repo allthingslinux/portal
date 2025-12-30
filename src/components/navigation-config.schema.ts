@@ -40,7 +40,7 @@ export const NavigationConfigSchema = z.object({
   style: z.enum(["custom", "sidebar", "header"]).default("sidebar"),
   sidebarCollapsed: z
     .enum(["false", "true"])
-    .default("true")
+    .default("false")
     .optional()
     .transform((value) => value === "true"),
   sidebarCollapsedStyle: z.enum(["offcanvas", "icon", "none"]).default("icon"),
