@@ -1,5 +1,5 @@
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import type * as schema from "~/core/database/schema";
+import type * as schema from "~/lib/database/schema";
 
 import type { RecordChange, Tables } from "../record-change.type";
 

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { db } from "~/core/database/client";
+import { db } from "~/lib/database/client";
 import { getLogger } from "~/shared/logger";
 
 import type { RecordChange, Tables } from "../record-change.type";
@@ -39,7 +39,7 @@ class DatabaseWebhookHandlerService {
     const adminClient = db;
     const service = createDatabaseWebhookRouterService(
       adminClient as unknown as import("drizzle-orm/postgres-js").PostgresJsDatabase<
-        typeof import("~/core/database/schema")
+        typeof import("~/lib/database/schema")
       >
     );
 

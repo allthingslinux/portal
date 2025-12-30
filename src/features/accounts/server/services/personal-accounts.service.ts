@@ -1,12 +1,12 @@
 import { and, eq } from "drizzle-orm";
-import { db } from "~/core/database/client";
+import { createAdminAuthUserService } from "~/features/admin/lib/server/services/admin-auth-user.service";
+import { db } from "~/lib/database/client";
 import {
   accounts,
   accountsMemberships,
   betterAuthAccount,
   betterAuthUser,
-} from "~/core/database/schema";
-import { createAdminAuthUserService } from "~/features/admin/lib/server/services/admin-auth-user.service";
+} from "~/lib/database/schema";
 import { getLogger } from "~/shared/logger";
 
 /**
@@ -35,7 +35,7 @@ export function createPersonalAccountsService() {
       await adminService.updateUserName(keycloakAccount.accountId, name);
 
       const { markKeycloakUpdate } = await import(
-        "~/core/auth/better-auth/server/sync-user-from-keycloak"
+        "~/lib/auth/server/sync-user-from-keycloak"
       );
       await markKeycloakUpdate();
     }
@@ -83,12 +83,7 @@ export function createPersonalAccountsService() {
           public_data: accounts.publicData,
         })
         .from(accounts)
-        .where(
-          and(
-            eq(accounts.primaryOwnerUserId, userId),
-            eq(accounts.isPersonalAccount, true)
-          )
-        )
+        .where(eq(accounts.primaryOwnerUserId, userId))
         .limit(1);
 
       if (account) {
@@ -120,7 +115,6 @@ export function createPersonalAccountsService() {
             .values({
               primaryOwnerUserId: userId,
               name: userData.name || userData.email?.split("@")[0] || "User",
-              isPersonalAccount: true,
               publicData: {},
             })
             .returning();
