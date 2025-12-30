@@ -1,10 +1,9 @@
 "use server";
 
 import { and, eq, inArray, sql } from "drizzle-orm";
-
-import { db } from "~/core/database/client";
-import { notifications } from "~/core/database/schema";
 import type { Notification } from "~/features/notifications/types";
+import { db } from "~/lib/database/client";
+import { notifications } from "~/lib/database/schema";
 
 /**
  * Dismiss a notification
