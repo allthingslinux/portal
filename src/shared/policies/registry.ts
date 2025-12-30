@@ -1,5 +1,4 @@
 import { createRegistry } from "~/shared/registry";
-
 import type { FeaturePolicyDefinition } from "./declarative";
 import type { PolicyContext } from "./types";
 
