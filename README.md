@@ -40,7 +40,7 @@ bun install
 
 ### 2. Environment Variables
 
-Configure required environment variables. See `src/core/config/app.config.ts` and `src/core/config/auth.config.ts` for required values.
+Configure required environment variables. See `src/lib/config/app.config.ts` and `src/lib/config/auth.config.ts` for required values.
 
 **Required**:
 - `NEXT_PUBLIC_PRODUCT_NAME`
@@ -116,21 +116,27 @@ bun run dev
 ```
 src/
 ├── app/              # Next.js App Router pages
-├── core/             # Core configuration and infrastructure
-│   ├── auth/         # Better Auth setup
-│   ├── config/       # App and auth configuration
-│   ├── database/     # Drizzle schema and migrations
-│   ├── email/        # Email templates and mailers
-│   ├── i18n/         # Internationalization
-│   └── monitoring/   # Analytics and Sentry
+│   ├── dashboard/    # User dashboard pages
+│   ├── settings/     # User settings pages
+│   ├── admin/        # Admin panel pages
+│   └── (marketing)/  # Marketing and public pages
+├── components/       # Shared UI components
+│   ├── ui/           # Base UI components (shadcn/ui)
+│   ├── features/     # Feature-specific components
+│   └── marketing/    # Marketing page components
 ├── features/         # Feature modules
 │   ├── accounts/     # Account management
 │   ├── admin/        # Admin features
-│   ├── auth/         # Authentication UI
 │   ├── cms/          # CMS integration (Keystatic)
-│   ├── notifications/# Notification system
-│   └── team-accounts/# Team account features
-└── shared/           # Shared components and utilities
+│   └── notifications/# Notification system
+├── hooks/            # Shared React hooks
+├── lib/              # Core libraries and configuration
+│   ├── auth/         # Better Auth setup
+│   ├── config/       # App and auth configuration
+│   ├── database/     # Drizzle schema and migrations
+│   └── email/        # Email templates and mailers
+├── shared/           # Shared utilities and constants
+└── utils/            # Utility functions
 ```
 
 ## Development Workflow
@@ -172,7 +178,7 @@ Before committing:
 ### Database Development
 
 When making schema changes:
-1. Update schema in `src/core/database/schema.ts`
+1. Update schema in `src/lib/database/schema.ts`
 2. Generate migration: `bun run db:generate`
 3. Apply migration: `bun run db:migrate`
 
