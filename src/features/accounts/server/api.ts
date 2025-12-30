@@ -1,12 +1,8 @@
 import type { InferSelectModel } from "drizzle-orm";
-import { and, asc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
-import { db } from "~/core/database/client";
-import {
-  accounts,
-  accountsMemberships,
-  userAccountWorkspace,
-} from "~/core/database/schema";
+import { db } from "~/lib/database/client";
+import { accounts, userAccountWorkspace } from "~/lib/database/schema";
 import { API_ERRORS } from "~/shared/constants/errors";
 
 type Account = InferSelectModel<typeof accounts>;
@@ -54,33 +50,10 @@ class _AccountsApi {
    * Load the user accounts.
    */
   async loadUserAccounts(
-    userId: string
+    _userId: string
   ): Promise<Array<{ label: string; value: string; image: string | null }>> {
-    const accountResults = await db
-      .select({
-        name: accounts.name,
-        slug: accounts.slug,
-        pictureUrl: accounts.pictureUrl,
-        id: accounts.id,
-      })
-      .from(accounts)
-      .innerJoin(
-        accountsMemberships,
-        eq(accounts.id, accountsMemberships.accountId)
-      )
-      .where(
-        and(
-          eq(accountsMemberships.userId, userId),
-          eq(accounts.isPersonalAccount, false)
-        )
-      )
-      .orderBy(asc(accounts.name));
-
-    return accountResults.map(({ name, slug, pictureUrl, id }) => ({
-      label: name ?? "",
-      value: slug ?? id,
-      image: pictureUrl,
-    }));
+    // No team accounts - return empty array
+    return [];
   }
 }
 

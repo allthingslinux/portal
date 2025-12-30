@@ -1,0 +1,34 @@
+import type { Metadata } from "next";
+import { use } from "react";
+import { PersonalAccountSettingsContainer } from "~/components/features/personal-account-settings";
+import { PageBody } from "~/components/page";
+import featureFlagsConfig from "~/lib/config/feature-flags.config";
+import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
+import { withI18n } from "~/shared/lib/i18n/with-i18n";
+import { requireUserInServerComponent } from "~/shared/lib/server/require-user-in-server-component";
+
+const features = {
+  enableAccountDeletion: featureFlagsConfig.enableAccountDeletion,
+};
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  const i18n = await createI18nServerInstance();
+  return { title: i18n.t("account:settingsTab") };
+};
+
+function PersonalAccountSettingsPage() {
+  const user = use(requireUserInServerComponent());
+
+  return (
+    <PageBody>
+      <div className="w-full">
+        <PersonalAccountSettingsContainer
+          features={features}
+          userId={user.id}
+        />
+      </div>
+    </PageBody>
+  );
+}
+
+export default withI18n(PersonalAccountSettingsPage);

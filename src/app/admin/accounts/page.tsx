@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 
-import { AppBreadcrumbs } from "~/components/portal/app-breadcrumbs";
-import { PageBody, PageHeader } from "~/components/portal/page";
-import { Button } from "~/components/ui/button";
-import { AdminAccountsTable } from "~/features/admin/components/admin-accounts-table";
-import { AdminCreateUserDialog } from "~/features/admin/components/admin-create-user-dialog";
-import { AdminGuard } from "~/features/admin/components/admin-guard";
+import { AppBreadcrumbs } from "~/components/app-breadcrumbs";
+import { AdminAccountsTable } from "~/components/features/admin-accounts-table";
+import { AdminGuard } from "~/components/features/admin-guard";
+import { PageBody, PageHeader } from "~/components/page";
 import { loadAdminAccounts } from "~/features/admin/lib/server/loaders/admin-accounts.loader";
 import { DEFAULT_PAGE_SIZE } from "~/shared/constants";
 
@@ -31,25 +29,17 @@ async function AccountsPage(props: AdminAccountsPageProps) {
   const { data, pageCount } = await loadAdminAccounts({
     page,
     pageSize,
-    type: searchParams.account_type ?? "all",
     query: searchParams.query,
   });
 
   return (
     <>
-      <PageHeader description={<AppBreadcrumbs />}>
-        <div className="flex justify-end">
-          <AdminCreateUserDialog>
-            <Button data-test="admin-create-user-button">Create User</Button>
-          </AdminCreateUserDialog>
-        </div>
-      </PageHeader>
+      <PageHeader description={<AppBreadcrumbs />} />
 
       <PageBody>
         <AdminAccountsTable
           data={data}
           filters={{
-            type: searchParams.account_type ?? "all",
             query: searchParams.query ?? "",
           }}
           page={page}

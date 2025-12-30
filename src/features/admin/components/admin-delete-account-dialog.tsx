@@ -1,9 +1,9 @@
 "use client";
 
-import { ConfirmationDialog } from "~/shared/components/confirmation-dialog";
+import { ConfirmationDialog } from "~/components/confirmation-dialog";
 
-import { deleteAccountAction } from "../lib/server/admin-server-actions";
-import { DeleteAccountSchema } from "../lib/server/schema/admin-actions.schema";
+import { deleteAccountAction } from "~/features/admin/lib/server/admin-server-actions";
+import { DeleteAccountSchema } from "~/features/admin/lib/server/schema/admin-actions.schema";
 
 export function AdminDeleteAccountDialog(
   props: React.PropsWithChildren<{

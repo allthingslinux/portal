@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
-import { Trans } from "~/components/portal/trans";
+import { Trans } from "~/components/trans";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import {
   AlertDialog,
@@ -17,11 +17,10 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
-import { useSession } from "~/core/auth/better-auth/hooks";
 import { ErrorBoundary } from "~/core/monitoring/api/components/error-boundary";
-
-import { DeletePersonalAccountSchema } from "../../schema/delete-personal-account.schema";
-import { deletePersonalAccountAction } from "../../server/personal-accounts-server-actions";
+import { DeletePersonalAccountSchema } from "~/features/accounts/schema/delete-personal-account.schema";
+import { deletePersonalAccountAction } from "~/features/accounts/server/personal-accounts-server-actions";
+import { useSession } from "~/hooks/use-session";
 
 export function AccountDangerZone() {
   return (

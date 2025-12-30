@@ -2,10 +2,10 @@ import { headers } from "next/headers";
 import { cn } from "~/components/lib/utils";
 import { RootProviders } from "~/components/root-providers";
 import { Toaster } from "~/components/ui/sonner";
-import { getFontsClassName } from "~/shared/lib/fonts";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
-import { generateRootMetadata } from "~/shared/lib/root-metadata";
-import { getRootTheme } from "~/shared/lib/root-theme";
+import { getFontsClassName } from "~/utils/fonts";
+import { generateRootMetadata } from "~/utils/root-metadata";
+import { getRootTheme } from "~/utils/root-theme";
 
 import "../styles/globals.css";
 

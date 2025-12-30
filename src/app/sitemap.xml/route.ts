@@ -1,6 +1,6 @@
 import { getServerSideSitemap } from "next-sitemap";
-import appConfig from "~/config/app.config";
 import { createCmsClient } from "~/features/cms/core";
+import appConfig from "~/lib/config/app.config";
 
 /**
  * @description The maximum age of the sitemap in seconds.

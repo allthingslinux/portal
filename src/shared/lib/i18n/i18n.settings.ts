@@ -25,13 +25,7 @@ export const I18N_COOKIE_NAME = "lang";
  *
  * Add your own namespaces here
  */
-export const defaultI18nNamespaces = [
-  "common",
-  "auth",
-  "account",
-  "teams",
-  "marketing",
-];
+export const defaultI18nNamespaces = ["common", "auth", "account", "marketing"];
 
 /**
  * Get the i18n settings for the given language and namespaces.

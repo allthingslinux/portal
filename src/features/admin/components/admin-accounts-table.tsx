@@ -5,10 +5,9 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { EllipsisVertical } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { DataTable } from "~/components/portal/data-table";
-import { If } from "~/components/portal/if";
+import { DataTable } from "~/components/data-table";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -20,26 +19,14 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
 import type { AdminAccountRow } from "~/features/admin/lib/server/loaders/admin-accounts.loader";
 
-import { AdminDeleteAccountDialog } from "./admin-delete-account-dialog";
 import { AdminDeleteUserDialog } from "./admin-delete-user-dialog";
 import { AdminImpersonateUserDialog } from "./admin-impersonate-user-dialog";
-import { AdminResetPasswordDialog } from "./admin-reset-password-dialog";
 
 type Account = AdminAccountRow;
 
 const FiltersSchema = z.object({
-  type: z.enum(["all", "team", "personal"]),
   query: z.string().optional(),
 });
 
@@ -50,8 +37,7 @@ export function AdminAccountsTable(
     pageSize: number;
     page: number;
     filters: {
-      type: "all" | "team" | "personal";
-      query: string;
+      query?: string;
     };
   }>
 ) {
@@ -80,7 +66,6 @@ function AccountsTableFilters(props: {
   const form = useForm({
     resolver: zodResolver(FiltersSchema),
     defaultValues: {
-      type: props.filters?.type ?? "all",
       query: props.filters?.query ?? "",
     },
     mode: "onChange",
@@ -90,12 +75,8 @@ function AccountsTableFilters(props: {
   const router = useRouter();
   const pathName = usePathname();
 
-  const onSubmit = ({
-    type: filterType,
-    query: searchQuery,
-  }: z.infer<typeof FiltersSchema>) => {
+  const onSubmit = ({ query: searchQuery }: z.infer<typeof FiltersSchema>) => {
     const params = new URLSearchParams({
-      account_type: filterType,
       query: searchQuery ?? "",
     });
 
@@ -104,45 +85,12 @@ function AccountsTableFilters(props: {
     router.push(url);
   };
 
-  const type = useWatch({ control: form.control, name: "type" });
-
   return (
     <Form {...form}>
       <form
         className={"flex gap-2.5"}
         onSubmit={form.handleSubmit((data) => onSubmit(data))}
       >
-        <Select
-          onValueChange={(value) => {
-            form.setValue(
-              "type",
-              value as z.infer<typeof FiltersSchema>["type"],
-              {
-                shouldValidate: true,
-                shouldDirty: true,
-                shouldTouch: true,
-              }
-            );
-
-            return onSubmit(form.getValues());
-          }}
-          value={type}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={"Account Type"} />
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Account Type</SelectLabel>
-
-              <SelectItem value={"all"}>All accounts</SelectItem>
-              <SelectItem value={"team"}>Team</SelectItem>
-              <SelectItem value={"personal"}>Personal</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-
         <FormField
           name={"query"}
           render={({ field }) => (
@@ -186,7 +134,7 @@ function getColumns(): ColumnDef<Account>[] {
     {
       id: "type",
       header: "Type",
-      cell: ({ row }) => (row.original.isPersonalAccount ? "Personal" : "Team"),
+      cell: () => "Personal", // All accounts are personal now
     },
     {
       id: "created_at",
@@ -202,7 +150,6 @@ function getColumns(): ColumnDef<Account>[] {
       id: "actions",
       header: "",
       cell: ({ row }) => {
-        const isPersonalAccount = row.original.isPersonalAccount;
         const userId = row.original.id;
 
         return (
@@ -227,33 +174,18 @@ function getColumns(): ColumnDef<Account>[] {
                     </Link>
                   </DropdownMenuItem>
 
-                  <If condition={isPersonalAccount}>
-                    <AdminResetPasswordDialog userId={userId}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Send Reset Password link
-                      </DropdownMenuItem>
-                    </AdminResetPasswordDialog>
+                  {/* All accounts are personal now */}
+                  <AdminImpersonateUserDialog userId={userId}>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      Impersonate User
+                    </DropdownMenuItem>
+                  </AdminImpersonateUserDialog>
 
-                    <AdminImpersonateUserDialog userId={userId}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Impersonate User
-                      </DropdownMenuItem>
-                    </AdminImpersonateUserDialog>
-
-                    <AdminDeleteUserDialog userId={userId}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Delete Personal Account
-                      </DropdownMenuItem>
-                    </AdminDeleteUserDialog>
-                  </If>
-
-                  <If condition={!isPersonalAccount}>
-                    <AdminDeleteAccountDialog accountId={row.original.id}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Delete Team Account
-                      </DropdownMenuItem>
-                    </AdminDeleteAccountDialog>
-                  </If>
+                  <AdminDeleteUserDialog userId={userId}>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      Delete Personal Account
+                    </DropdownMenuItem>
+                  </AdminDeleteUserDialog>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>

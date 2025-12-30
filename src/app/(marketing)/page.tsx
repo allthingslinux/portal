@@ -2,17 +2,17 @@ import { ArrowRightIcon, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { CtaButton } from "~/components/portal/marketing/cta-button";
-import { EcosystemShowcase } from "~/components/portal/marketing/ecosystem-showcase";
-import { FeatureCard } from "~/components/portal/marketing/feature-card";
-import { FeatureGrid } from "~/components/portal/marketing/feature-grid";
+import { CtaButton } from "~/components/marketing/cta-button";
+import { EcosystemShowcase } from "~/components/marketing/ecosystem-showcase";
+import { FeatureCard } from "~/components/marketing/feature-card";
+import { FeatureGrid } from "~/components/marketing/feature-grid";
 import {
   FeatureShowcase,
   FeatureShowcaseIconContainer,
-} from "~/components/portal/marketing/feature-showcase";
-import { Hero } from "~/components/portal/marketing/hero";
-import { Pill, PillActionButton } from "~/components/portal/marketing/pill";
-import { Trans } from "~/components/portal/trans";
+} from "~/components/marketing/feature-showcase";
+import { Hero } from "~/components/marketing/hero";
+import { Pill, PillActionButton } from "~/components/marketing/pill";
+import { Trans } from "~/components/trans";
 
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 

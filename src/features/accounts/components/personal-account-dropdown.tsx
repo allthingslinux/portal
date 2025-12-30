@@ -10,11 +10,11 @@ import {
 
 import Link from "next/link";
 import { useMemo } from "react";
+import { If } from "~/components/if";
 import { cn } from "~/components/lib/utils";
-import { If } from "~/components/portal/if";
-import { SubMenuModeToggle } from "~/components/portal/mode-toggle";
-import { ProfileAvatar } from "~/components/portal/profile-avatar";
-import { Trans } from "~/components/portal/trans";
+import { SubMenuModeToggle } from "~/components/mode-toggle";
+import { ProfileAvatar } from "~/components/profile-avatar";
+import { Trans } from "~/components/trans";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,9 +22,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import type { BetterAuthUser } from "~/core/auth/better-auth/types";
-
-import { usePersonalAccountData } from "../hooks/use-personal-account-data";
+import { usePersonalAccountData } from "~/hooks/use-personal-account-data";
+import type { BetterAuthUser } from "~/lib/auth/types";
 
 export function PersonalAccountDropdown({
   className,

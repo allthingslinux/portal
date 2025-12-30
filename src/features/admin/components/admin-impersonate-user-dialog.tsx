@@ -2,15 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { LoadingOverlay } from "~/components/portal/loading-overlay";
-import { authClient } from "~/core/auth/better-auth";
-import { ConfirmationDialog } from "~/shared/components/confirmation-dialog";
-
+import { ConfirmationDialog } from "~/components/confirmation-dialog";
+import { LoadingOverlay } from "~/components/loading-overlay";
 import {
   type ImpersonationTokens,
   impersonateUserAction,
-} from "../lib/server/admin-server-actions";
-import { ImpersonateUserSchema } from "../lib/server/schema/admin-actions.schema";
+} from "~/features/admin/lib/server/admin-server-actions";
+import { ImpersonateUserSchema } from "~/features/admin/lib/server/schema/admin-actions.schema";
+import { authClient } from "~/lib/auth";
 
 export function AdminImpersonateUserDialog(
   props: React.PropsWithChildren<{
@@ -107,7 +106,7 @@ function useSetSession(tokens: { accessToken: string; refreshToken: string }) {
       }
 
       // use a hard refresh to avoid hitting cached pages
-      window.location.replace("/home");
+      window.location.replace("/dashboard");
     },
   });
 }

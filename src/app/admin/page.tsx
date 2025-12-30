@@ -1,6 +1,6 @@
-import { PageBody, PageHeader } from "~/components/portal/page";
-import { AdminDashboard } from "~/features/admin/components/admin-dashboard";
-import { AdminGuard } from "~/features/admin/components/admin-guard";
+import { AdminDashboard } from "~/components/features/admin-dashboard";
+import { AdminGuard } from "~/components/features/admin-guard";
+import { PageBody, PageHeader } from "~/components/page";
 
 function AdminPage() {
   return (

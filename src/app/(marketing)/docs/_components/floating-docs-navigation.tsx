@@ -4,9 +4,9 @@ import { Menu } from "lucide-react";
 
 import { usePathname } from "next/navigation";
 import { useEffect, useEffectEvent, useMemo, useState } from "react";
-import { If } from "~/components/portal/if";
+import { If } from "~/components/if";
 import { Button } from "~/components/ui/button";
-import { isBrowser } from "~/shared/utils";
+import { isBrowser } from "~/utils/utils";
 
 export function FloatingDocumentationNavigation(
   props: React.PropsWithChildren

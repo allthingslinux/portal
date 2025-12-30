@@ -1,11 +1,11 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { SiteHeader } from "~/(marketing)/_components/site-header";
-import { Trans } from "~/components/portal/trans";
+import { Trans } from "~/components/trans";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
-import { getSessionUserData } from "~/core/auth/better-auth/session";
-import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import { getSessionUserData } from "~/lib/auth/session";
+import type { BetterAuthUser } from "~/lib/auth/types";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
 

@@ -3,15 +3,13 @@ import "server-only";
 import { type NextRequest, NextResponse } from "next/server";
 
 import type { z } from "zod";
-import type { BetterAuthUser } from "~/core/auth/better-auth/types";
-import { requireUser } from "~/core/database/require-user";
-import { verifyCaptchaToken } from "~/features/auth/captcha/server";
+import type { BetterAuthUser } from "~/lib/auth/types";
+import { requireUser } from "~/lib/database/require-user";
 import { HTTP_STATUS } from "~/shared/constants";
 import { API_ERRORS } from "~/shared/constants/errors";
 
 type Config<Schema> = {
   auth?: boolean;
-  captcha?: boolean;
   schema?: Schema;
 };
 
@@ -27,26 +25,8 @@ type HandlerParams<
 
 /**
  * Enhanced route handler function.
- *
- * This function takes a request and parameters object as arguments and returns a route handler function.
- * The route handler function can be used to handle HTTP requests and apply additional enhancements
- * based on the provided parameters.
- *
- * Usage:
- * export const POST = enhanceRouteHandler(
- *   ({ request, body, user }) => {
- *     return new Response(`Hello, ${body.name}!`);
- *   },
- *   {
- *     schema: z.object({
- *       name: z.string(),
- *     }),
- *   },
- * );
- *
  */
 export const enhanceRouteHandler = <Params extends Config<z.ZodTypeAny>>(
-  // Route handler function
   handler:
     | ((
         context: HandlerParams<Params["schema"], Params["auth"]>
@@ -56,41 +36,15 @@ export const enhanceRouteHandler = <Params extends Config<z.ZodTypeAny>>(
       ) => Promise<NextResponse | Response>),
   params?: Params
 ) => {
-  /**
-   * Route handler function.
-   *
-   * This function takes a request object as an argument and returns a response object.
-   */
   return async function routeHandler(
     request: NextRequest,
-    routeParams: {
-      params: Promise<Record<string, string>>;
-    }
+    routeParams: { params: Promise<Record<string, string>> }
   ) {
     type UserParam = Params["auth"] extends false ? undefined : BetterAuthUser;
 
     let user: UserParam = undefined as UserParam;
-
-    // Check if the captcha token should be verified
-    const shouldVerifyCaptcha = params?.captcha ?? false;
-
-    // Verify the captcha token if required and setup
-    if (shouldVerifyCaptcha) {
-      const token = captchaTokenGetter(request);
-
-      // If the captcha token is not provided, return a 400 response.
-      if (token) {
-        await verifyCaptchaToken(token);
-      } else {
-        return new Response(API_ERRORS.CAPTCHA_TOKEN_REQUIRED, {
-          status: HTTP_STATUS.BAD_REQUEST,
-        });
-      }
-    }
-
     const shouldVerifyAuth = params?.auth ?? true;
 
-    // Check if the user should be authenticated
     if (shouldVerifyAuth) {
       user = (await requireUser()) as UserParam;
     }
@@ -100,8 +54,6 @@ export const enhanceRouteHandler = <Params extends Config<z.ZodTypeAny>>(
       : undefined;
 
     if (params?.schema) {
-      // clone the request to read the body
-      // so that we can pass it to the handler safely
       const json = await request.clone().json();
       const parsedBody = await params.schema.safeParseAsync(json);
 
@@ -130,11 +82,3 @@ export const enhanceRouteHandler = <Params extends Config<z.ZodTypeAny>>(
     });
   };
 };
-
-/**
- * Get the captcha token from the request headers.
- * @param request
- */
-function captchaTokenGetter(request: NextRequest) {
-  return request.headers.get("x-captcha-token");
-}

@@ -1,8 +1,8 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
-import { db } from "~/core/database/client";
-import { accounts, accountsMemberships } from "~/core/database/schema";
+import { db } from "~/lib/database/client";
+import { accounts, accountsMemberships } from "~/lib/database/schema";
 import { getLogger } from "~/shared/logger";
 
 export function createDeletePersonalAccountService() {

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { If } from "~/components/if";
 import { cn } from "~/components/lib/utils";
-import { If } from "~/components/portal/if";
 import { Separator } from "~/components/ui/separator";
 import { ContentRenderer, createCmsClient } from "~/features/cms/core";
 

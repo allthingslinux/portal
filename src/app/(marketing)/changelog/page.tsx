@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cache } from "react";
-import { If } from "~/components/portal/if";
-import { Trans } from "~/components/portal/trans";
+import { If } from "~/components/if";
+import { Trans } from "~/components/trans";
 import { createCmsClient } from "~/features/cms/core";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";

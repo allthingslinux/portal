@@ -2,8 +2,8 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
-import { DataTable } from "~/components/portal/data-table";
-import { ProfileAvatar } from "~/components/portal/profile-avatar";
+import { DataTable } from "~/components/data-table";
+import { ProfileAvatar } from "~/components/profile-avatar";
 
 type AdminMember = {
   id: string;

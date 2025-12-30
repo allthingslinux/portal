@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { cache } from "react";
-import { db } from "~/core/database/client";
-import { accounts, accountsMemberships } from "~/core/database/schema";
-import { AdminAccountPage } from "~/features/admin/components/admin-account-page";
-import { AdminGuard } from "~/features/admin/components/admin-guard";
+import { AdminAccountPage } from "~/components/features/admin-account-page";
+import { AdminGuard } from "~/components/features/admin-guard";
+import { db } from "~/lib/database/client";
+import { accounts, accountsMemberships } from "~/lib/database/schema";
 
 type Params = {
   params: Promise<{
@@ -62,13 +62,9 @@ async function accountLoader(id: string): Promise<AdminAccount> {
   return {
     id: account.id,
     name: account.name,
-    slug: account.slug ?? null,
     email: account.email ?? null,
-    isPersonalAccount: account.isPersonalAccount,
     updatedAt: account.updatedAt,
     createdAt: account.createdAt,
-    createdBy: account.createdBy,
-    updatedBy: account.updatedBy,
     pictureUrl: account.pictureUrl,
     publicData: account.publicData,
     primaryOwnerUserId: account.primaryOwnerUserId,

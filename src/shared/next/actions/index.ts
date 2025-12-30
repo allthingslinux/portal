@@ -1,20 +1,18 @@
 import "server-only";
 
 import type { ZodType, z } from "zod";
-import type { BetterAuthUser } from "~/core/auth/better-auth/types";
-import { requireUser } from "~/core/database/require-user";
-import { verifyCaptchaToken } from "~/features/auth/captcha/server";
+import type { BetterAuthUser } from "~/lib/auth/types";
+import { requireUser } from "~/lib/database/require-user";
 
 /**
  * @name enhanceAction
- * @description Enhance an action with captcha, schema and auth checks
+ * @description Enhance an action with schema and auth checks
  */
 export function enhanceAction<
   Args,
   Response,
   Config extends {
     auth?: boolean;
-    captcha?: boolean;
     schema?: z.ZodTypeAny;
   },
 >(
@@ -47,13 +45,6 @@ export function enhanceAction<
     };
 
     const data = await validateData();
-
-    const verifyCaptcha = config.captcha ?? false;
-
-    if (verifyCaptcha) {
-      const token = (data as Args & { captchaToken: string }).captchaToken;
-      await verifyCaptchaToken(token);
-    }
 
     if (requireAuth) {
       user = (await requireUser()) as UserParam;

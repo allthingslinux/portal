@@ -6,10 +6,8 @@ type EmptyPayload = NonNullable<unknown>;
 
 export type BaseAppEventTypes = {
   "user.signedIn": { userId: string };
-  "user.signedUp": { method: "password" | "oauth" };
+  "user.signedUp": { method: "oauth" };
   "user.updated": EmptyPayload;
-
-  // Add more base event types here
 };
 
 export type ConsumerProvidedEventTypes = EmptyPayload;

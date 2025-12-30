@@ -3,8 +3,8 @@
 import { Bell, CircleAlert, Info, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { If } from "~/components/if";
 import { cn } from "~/components/lib/utils";
-import { If } from "~/components/portal/if";
 import { Button } from "~/components/ui/button";
 import {
   Popover,
@@ -12,10 +12,9 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Separator } from "~/components/ui/separator";
-
-import { useDismissNotification } from "../hooks/use-dismiss-notification";
-import { useFetchNotifications } from "../hooks/use-fetch-notifications";
-import type { Notification } from "../types";
+import type { Notification } from "~/features/notifications/types";
+import { useDismissNotification } from "~/hooks/use-dismiss-notification";
+import { useFetchNotifications } from "~/hooks/use-fetch-notifications";
 
 export function NotificationsPopover(params: {
   realtime: boolean;

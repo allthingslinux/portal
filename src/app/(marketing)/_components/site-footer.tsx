@@ -1,7 +1,7 @@
 import { AppLogo } from "~/components/app-logo";
-import { Footer } from "~/components/portal/marketing/footer";
-import { Trans } from "~/components/portal/trans";
-import appConfig from "~/config/app.config";
+import { Footer } from "~/components/marketing/footer";
+import { Trans } from "~/components/trans";
+import appConfig from "~/lib/config/app.config";
 
 export function SiteFooter() {
   return (

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { isSuperAdmin } from "../lib/server/utils/is-super-admin";
+import { isSuperAdmin } from "~/features/admin/lib/server/utils/is-super-admin";
 
 type LayoutOrPageComponent<Params> = React.ComponentType<Params>;
 

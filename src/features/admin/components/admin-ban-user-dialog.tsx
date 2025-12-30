@@ -1,9 +1,9 @@
 "use client";
 
-import { ConfirmationDialog } from "~/shared/components/confirmation-dialog";
+import { ConfirmationDialog } from "~/components/confirmation-dialog";
 
-import { banUserAction } from "../lib/server/admin-server-actions";
-import { BanUserSchema } from "../lib/server/schema/admin-actions.schema";
+import { banUserAction } from "~/features/admin/lib/server/admin-server-actions";
+import { BanUserSchema } from "~/features/admin/lib/server/schema/admin-actions.schema";
 
 export function AdminBanUserDialog(
   props: React.PropsWithChildren<{

@@ -1,8 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { If } from "~/components/if";
 import { cn } from "~/components/lib/utils";
-import { If } from "~/components/portal/if";
-import { Trans } from "~/components/portal/trans";
+import { Trans } from "~/components/trans";
 import type { Cms } from "~/features/cms/core";
 
 import { DateFormatter } from "../../blog/_components/date-formatter";

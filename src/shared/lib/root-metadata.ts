@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { headers } from "next/headers";
 
-import appConfig from "~/config/app.config";
+import appConfig from "~/lib/config/app.config";
 
 /**
  * @name generateRootMetadata

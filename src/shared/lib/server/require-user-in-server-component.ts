@@ -2,7 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 
-import { requireUser } from "~/core/database/require-user";
+import { requireUser } from "~/lib/database/require-user";
 
 /**
  * @name requireUserInServerComponent

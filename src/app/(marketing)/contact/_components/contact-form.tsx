@@ -4,8 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { ContactEmailSchema } from "~/(marketing)/contact/_lib/contact-email.schema";
-import { sendContactEmail } from "~/(marketing)/contact/_lib/server/server-actions";
-import { Trans } from "~/components/portal/trans";
+import { Trans } from "~/components/trans";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import {
@@ -18,6 +17,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { sendContactEmail } from "../_lib/server/server-actions";
 
 export function ContactForm() {
   const [pending, startTransition] = useTransition();

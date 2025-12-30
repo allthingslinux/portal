@@ -3,12 +3,12 @@
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { SiteHeader } from "~/(marketing)/_components/site-header";
-import { Trans } from "~/components/portal/trans";
 import { RootProviders } from "~/components/root-providers";
+import { Trans } from "~/components/trans";
 import { Button } from "~/components/ui/button";
 import { Heading } from "~/components/ui/heading";
-import { useSession } from "~/core/auth/better-auth/hooks";
-import { useCaptureException } from "~/core/monitoring/api/hooks/use-capture-exception";
+import { useCaptureException } from "~/hooks/use-capture-exception";
+import { useSession } from "~/hooks/use-session";
 
 const GlobalErrorPage = ({
   error,

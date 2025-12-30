@@ -1,5 +1,5 @@
 import { AppLogo } from "~/components/app-logo";
-import { AuthLayoutShell } from "~/features/auth/shared";
+import { AuthLayoutShell } from "~/lib/auth/components/auth-layout";
 
 function AuthLayout({ children }: React.PropsWithChildren) {
   return <AuthLayoutShell Logo={AppLogo}>{children}</AuthLayoutShell>;

@@ -1,9 +1,8 @@
 "use client";
 
-import { AccountImageUploader } from "~/shared/components/account-image-uploader";
-
-import { useRevalidatePersonalAccountDataQuery } from "../../hooks/use-personal-account-data";
-import { updateAccountPictureUrlAction } from "../../server/personal-accounts-server-actions";
+import { AccountImageUploader } from "~/components/account-image-uploader";
+import { updateAccountPictureUrlAction } from "~/features/accounts/server/personal-accounts-server-actions";
+import { useRevalidatePersonalAccountDataQuery } from "~/hooks/use-personal-account-data";
 
 export function UpdateAccountImageContainer({
   user,

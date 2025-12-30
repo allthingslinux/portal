@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext } from "react";
-import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import type { BetterAuthUser } from "~/lib/auth/types";
 
 type UserWorkspace = {
   accounts: Array<{

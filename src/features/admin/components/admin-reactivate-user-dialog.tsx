@@ -1,9 +1,9 @@
 "use client";
 
-import { ConfirmationDialog } from "~/shared/components/confirmation-dialog";
+import { ConfirmationDialog } from "~/components/confirmation-dialog";
 
-import { reactivateUserAction } from "../lib/server/admin-server-actions";
-import { ReactivateUserSchema } from "../lib/server/schema/admin-actions.schema";
+import { reactivateUserAction } from "~/features/admin/lib/server/admin-server-actions";
+import { ReactivateUserSchema } from "~/features/admin/lib/server/schema/admin-actions.schema";
 
 export function AdminReactivateUserDialog(
   props: React.PropsWithChildren<{

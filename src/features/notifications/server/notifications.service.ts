@@ -1,7 +1,7 @@
 import "server-only";
 
-import { db } from "~/core/database/client";
-import { notifications } from "~/core/database/schema";
+import { db } from "~/lib/database/client";
+import { notifications } from "~/lib/database/schema";
 import { getLogger } from "~/shared/logger";
 
 type Notification = typeof notifications.$inferInsert;

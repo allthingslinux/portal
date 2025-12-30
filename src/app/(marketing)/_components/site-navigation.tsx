@@ -1,6 +1,6 @@
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { Trans } from "~/components/portal/trans";
+import { Trans } from "~/components/trans";
 import {
   DropdownMenu,
   DropdownMenuContent,

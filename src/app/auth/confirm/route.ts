@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import pathsConfig from "~/config/paths.config";
+import pathsConfig from "~/lib/config/paths.config";
 
 /**
  * Auth confirm route

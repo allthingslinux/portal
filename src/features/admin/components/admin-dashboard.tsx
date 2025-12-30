@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 
-import { loadAdminDashboard } from "../lib/server/loaders/admin-dashboard.loader";
+import { loadAdminDashboard } from "~/features/admin/lib/server/loaders/admin-dashboard.loader";
 
 export async function AdminDashboard() {
   const data = await loadAdminDashboard();
@@ -25,22 +25,6 @@ export async function AdminDashboard() {
         <CardContent>
           <div className={"flex justify-between"}>
             <Figure>{data.personalAccountsCount}</Figure>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Team Accounts</CardTitle>
-
-          <CardDescription>
-            The number of team accounts that have been created.
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <div className={"flex justify-between"}>
-            <Figure>{data.teamAccountsCount}</Figure>
           </div>
         </CardContent>
       </Card>

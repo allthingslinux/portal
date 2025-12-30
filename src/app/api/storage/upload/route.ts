@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-
-import { requireUser } from "~/core/database/require-user";
 import { storageService } from "~/core/storage/storage.service";
+import { requireUser } from "~/lib/database/require-user";
 import { HTTP_STATUS } from "~/shared/constants";
 
 /**

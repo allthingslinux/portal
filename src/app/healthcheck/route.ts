@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { db } from "~/core/database/client";
-import { config } from "~/core/database/schema";
+import { db } from "~/lib/database/client";
+import { betterAuthUser } from "~/lib/database/schema";
 
 /**
  * Healthcheck endpoint for the web app. If this endpoint returns a 200, the web app will be considered healthy.
@@ -25,7 +25,8 @@ export async function GET() {
  */
 async function getDatabaseHealthCheck() {
   try {
-    await db.select().from(config).limit(1);
+    // Simple database connectivity check - removed config table
+    await db.select().from(betterAuthUser).limit(1);
 
     return true;
   } catch {

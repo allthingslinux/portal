@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CoverImage } from "~/(marketing)/blog/_components/cover-image";
 import { DateFormatter } from "~/(marketing)/blog/_components/date-formatter";
-import { If } from "~/components/portal/if";
+import { If } from "~/components/if";
 import type { Cms } from "~/features/cms/core";
 
 type Props = {

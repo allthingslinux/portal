@@ -2,8 +2,8 @@ import "server-only";
 
 import { and, eq } from "drizzle-orm";
 
-import { db } from "~/core/database/client";
-import { accounts } from "~/core/database/schema";
+import { db } from "~/lib/database/client";
+import { accounts } from "~/lib/database/schema";
 
 /**
  * Shared utility to update account picture URL in the database.

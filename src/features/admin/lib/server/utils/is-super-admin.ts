@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
-import { getServerSession } from "~/core/auth/better-auth/session";
-import { db } from "~/core/database/client";
+import { getServerSession } from "~/lib/auth/session";
+import { db } from "~/lib/database/client";
 import { getLogger } from "~/shared/logger";
 
 /**

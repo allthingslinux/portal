@@ -1,5 +1,5 @@
+import { If } from "~/components/if";
 import { cn } from "~/components/lib/utils";
-import { If } from "~/components/portal/if";
 import type { Cms } from "~/features/cms/core";
 
 import { CoverImage } from "./cover-image";

@@ -3,11 +3,7 @@ import { cookies } from "next/headers";
 import { use } from "react";
 import { AdminSidebar } from "~/admin/_components/admin-sidebar";
 import { AdminMobileNavigation } from "~/admin/_components/mobile-navigation";
-import {
-  Page,
-  PageMobileNavigation,
-  PageNavigation,
-} from "~/components/portal/page";
+import { Page, PageMobileNavigation, PageNavigation } from "~/components/page";
 import { SidebarProvider } from "~/components/ui/sidebar";
 
 export const metadata: Metadata = {

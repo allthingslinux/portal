@@ -12,8 +12,6 @@ import {
   ImpersonateUserSchema,
   ReactivateUserSchema,
 } from "./schema/admin-actions.schema";
-import { CreateUserSchema } from "./schema/create-user.schema";
-import { ResetPasswordSchema } from "./schema/reset-password.schema";
 import { createAdminAccountsService } from "./services/admin-accounts.service";
 import { createAdminAuthUserService } from "./services/admin-auth-user.service";
 import { adminAction } from "./utils/admin-action";
@@ -39,19 +37,13 @@ export const banUserAction = adminAction(
         await service.banUser(userId);
       } catch (error) {
         logger.error({ error }, "Error banning user");
-
-        return {
-          success: false,
-        };
+        return { success: false };
       }
 
       revalidateAdmin();
-
       logger.info({ userId }, "Super Admin has successfully banned user");
     },
-    {
-      schema: BanUserSchema,
-    }
+    { schema: BanUserSchema }
   )
 );
 
@@ -71,19 +63,13 @@ export const reactivateUserAction = adminAction(
         await service.reactivateUser(userId);
       } catch (error) {
         logger.error({ error }, "Error reactivating user");
-
-        return {
-          success: false,
-        };
+        return { success: false };
       }
 
       revalidateAdmin();
-
       logger.info({ userId }, "Super Admin has successfully reactivated user");
     },
-    {
-      schema: ReactivateUserSchema,
-    }
+    { schema: ReactivateUserSchema }
   )
 );
 
@@ -106,9 +92,7 @@ export const impersonateUserAction = adminAction(
         throw error;
       }
     },
-    {
-      schema: ImpersonateUserSchema,
-    }
+    { schema: ImpersonateUserSchema }
   )
 );
 
@@ -123,16 +107,12 @@ export const deleteUserAction = adminAction(
       const logger = await getLogger();
 
       logger.info({ userId }, "Super Admin is deleting user...");
-
       await service.deleteUser(userId);
-
       logger.info({ userId }, "Super Admin has successfully deleted user");
 
       return redirect("/admin/accounts");
     },
-    {
-      schema: DeleteUserSchema,
-    }
+    { schema: DeleteUserSchema }
   )
 );
 
@@ -147,11 +127,8 @@ export const deleteAccountAction = adminAction(
       const logger = await getLogger();
 
       logger.info({ accountId }, "Super Admin is deleting account...");
-
       await service.deleteAccount(accountId);
-
       revalidateAdmin();
-
       logger.info(
         { accountId },
         "Super Admin has successfully deleted account"
@@ -159,76 +136,7 @@ export const deleteAccountAction = adminAction(
 
       return redirect("/admin/accounts");
     },
-    {
-      schema: DeleteAccountSchema,
-    }
-  )
-);
-
-/**
- * @name createUserAction
- * @description Create a new user in the system.
- */
-export const createUserAction = adminAction(
-  enhanceAction(
-    async ({ email, password, emailConfirm }) => {
-      const logger = await getLogger();
-
-      logger.info(
-        { email },
-        "Super Admin is creating a new user in Keycloak..."
-      );
-
-      const service = getAdminAuthService();
-
-      await service.createUser({
-        email,
-        password,
-        emailVerified: Boolean(emailConfirm),
-      });
-
-      logger.info({ email }, "Keycloak user created successfully");
-
-      return {
-        success: true,
-        error: undefined,
-      };
-    },
-    {
-      schema: CreateUserSchema,
-    }
-  )
-);
-
-/**
- * @name resetPasswordAction
- * @description Reset a user's password by sending a password reset email.
- */
-export const resetPasswordAction = adminAction(
-  enhanceAction(
-    async ({ userId }) => {
-      const service = getAdminAuthService();
-      const logger = await getLogger();
-
-      logger.info({ userId }, "Super Admin is resetting user password...");
-
-      try {
-        const result = await service.resetPassword(userId);
-
-        logger.info(
-          { userId },
-          "Super Admin has successfully sent password reset email"
-        );
-
-        return result;
-      } catch (error) {
-        logger.error({ error }, "Error resetting user password");
-        throw error;
-      }
-    },
-    {
-      schema: ResetPasswordSchema,
-    }
+    { schema: DeleteAccountSchema }
   )
 );
 

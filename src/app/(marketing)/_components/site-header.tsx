@@ -1,6 +1,6 @@
 import { AppLogo } from "~/components/app-logo";
-import { Header } from "~/components/portal/marketing/header";
-import type { BetterAuthUser } from "~/core/auth/better-auth/types";
+import { Header } from "~/components/marketing/header";
+import type { BetterAuthUser } from "~/lib/auth/types";
 
 import { SiteHeaderAccountSection } from "./site-header-account-section";
 import { SiteNavigation } from "./site-navigation";

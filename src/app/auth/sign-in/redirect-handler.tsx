@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { authClient } from "~/core/auth/better-auth/client";
+import { authClient } from "~/lib/auth/client";
 
 /**
  * Client component that immediately redirects to OAuth

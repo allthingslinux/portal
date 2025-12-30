@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-import { getMailer } from "~/core/email/mailers/core";
+import { getMailer } from "~/lib/email/mailers/core";
 import { enhanceAction } from "~/shared/next/actions";
 
 import { ContactEmailSchema } from "../contact-email.schema";
