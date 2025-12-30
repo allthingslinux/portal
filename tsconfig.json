@@ -21,9 +21,11 @@
     ],
     "paths": {
       "~/*": ["./src/app/*"],
-      "~/config/*": ["./src/core/config/*"],
-      "~/components/*": ["./src/shared/components/*"],
+      "~/lib/*": ["./src/lib/*"],
       "~/core/*": ["./src/core/*"],
+      "~/components/*": ["./src/components/*"],
+      "~/hooks/*": ["./src/hooks/*"],
+      "~/utils/*": ["./src/utils/*"],
       "~/features/*": ["./src/features/*"],
       "~/shared/*": ["./src/shared/*"],
       "~/tools/*": ["./src/tools/*"]

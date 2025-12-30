@@ -144,5 +144,11 @@
   "setEmailSuccessMessage": "We sent you an email to confirm your email address. Please check your inbox and click on the link to confirm your email address.",
   "setEmailLoading": "Setting your email...",
   "setEmailError": "Email not set. Please try again",
-  "emailNotChanged": "Your email address has not changed"
+  "emailNotChanged": "Your email address has not changed",
+  "profileSettings": "Profile Settings",
+  "profileSettingsDescription": "Update your personal information that will be synced with your authentication provider",
+  "email": "Email Address",
+  "emailPlaceholder": "Enter your email address",
+  "namePlaceholder": "Enter your full name",
+  "updateProfile": "Update Profile"
 }

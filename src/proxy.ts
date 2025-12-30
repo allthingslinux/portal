@@ -26,7 +26,7 @@ export async function proxy(request: NextRequest) {
     // Call Better Auth's handler directly to initiate OAuth flow
     // This ensures cookies are set correctly in the same request context
     try {
-      const { auth } = await import("~/core/auth/better-auth");
+      const { auth } = await import("~/lib/auth");
       const { toNextJsHandler } = await import("better-auth/next-js");
 
       // Create a POST request to Better Auth's OAuth2 endpoint

@@ -1,0 +1,67 @@
+{
+  "tasks": [
+    {
+      "task_description": "Remove billing packages directory",
+      "completed": true
+    },
+    {
+      "task_description": "Remove billing routes from web app (team and personal billing pages)",
+      "completed": true
+    },
+    {
+      "task_description": "Remove billing webhook API route",
+      "completed": true
+    },
+    {
+      "task_description": "Remove billing references from navigation configs",
+      "completed": true
+    },
+    {
+      "task_description": "Remove billing references from feature flags config",
+      "completed": true
+    },
+    { "task_description": "Remove billing config files", "completed": true },
+    {
+      "task_description": "Remove billing dependencies from web app package.json",
+      "completed": true
+    },
+    {
+      "task_description": "Remove billing-related database tables from schema migration",
+      "completed": true
+    },
+    {
+      "task_description": "Remove billing imports from other files",
+      "completed": true
+    },
+    {
+      "task_description": "Update pnpm workspace to exclude billing packages",
+      "completed": true
+    }
+  ],
+  "description": "Remove all billing-related features from the SaaS boilerplate codebase",
+  "context": [
+    "Removed entire packages/billing directory containing lemon-squeezy, stripe, core, and gateway packages",
+    "Removed team and personal billing page directories from web app",
+    "Removed billing webhook API route directory",
+    "Removed billing navigation items from both team and personal account navigation configs",
+    "Removed billing feature flags from feature-flags.config.ts",
+    "Removed billing.config.ts and billing.sample.config.ts files",
+    "Removed @kit/billing and @kit/billing-gateway dependencies from web app package.json",
+    "Created migration to remove all billing-related database tables, types, and functions",
+    "Removed all billing imports from remaining files: paths config, pricing page, marketing home page, healthcheck, and analytics provider",
+    "pnpm workspace already uses wildcard patterns that automatically exclude deleted directories, no changes needed"
+  ],
+  "modified_files": [
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/config/team-account-navigation.config.tsx",
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/config/personal-account-navigation.config.tsx",
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/config/feature-flags.config.ts",
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/package.json",
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/supabase/migrations/20251104210800_remove_billing.sql",
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/config/paths.config.ts",
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/app/(marketing)/pricing/page.tsx",
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/app/(marketing)/page.tsx",
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/app/healthcheck/route.ts",
+    "/home/kaizen/dev/allthingslinux/portal/apps/web/components/analytics-provider.tsx"
+  ],
+  "id": "1762308533704"
+}

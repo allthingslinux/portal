@@ -1,0 +1,24 @@
+# Development environment overrides
+realm: portal
+displayName: "Portal Realm (Development)"
+loginTheme: keycloak
+eventsEnabled: true
+eventsListeners: 
+  - jboss-logging
+enabledEventTypes:
+  - LOGIN
+  - LOGIN_ERROR
+  - LOGOUT
+  - REGISTER
+  - REGISTER_ERROR
+adminEventsEnabled: true
+adminEventsDetailsEnabled: true
+
+# Relaxed security for development
+sslRequired: none
+bruteForceProtected: false
+verifyEmail: false
+
+# Extended session timeouts for development
+ssoSessionIdleTimeout: 7200  # 2 hours
+ssoSessionMaxLifespan: 86400  # 24 hours

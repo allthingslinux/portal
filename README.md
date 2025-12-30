@@ -101,6 +101,13 @@ bun run dev
 - `bun run db:push` - Push schema changes to database
 - `bun run db:generate` - Generate migration files
 
+### Keycloak Configuration
+- `docker compose up -d` - Start services and import Keycloak config
+- `docker compose run --rm keycloak-config` - Run config import only
+- `docker compose logs keycloak-config` - View config import logs
+- `./scripts/clean-keycloak-export.sh <export-file>` - Clean exported realm config
+- `./scripts/audit-keycloak.sh` - Run security audit on Keycloak configuration
+
 ### Utilities
 - `bun run analyze` - Bundle analyzer for production build
 

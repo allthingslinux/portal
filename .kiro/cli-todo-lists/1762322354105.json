@@ -1,0 +1,33 @@
+{
+  "tasks": [
+    {
+      "task_description": "Examine packages structure and dependencies",
+      "completed": false
+    },
+    {
+      "task_description": "Move packages/* into apps/web/lib",
+      "completed": false
+    },
+    {
+      "task_description": "Update all @portal/* imports to relative paths",
+      "completed": false
+    },
+    {
+      "task_description": "Move apps/web to root as main app",
+      "completed": false
+    },
+    {
+      "task_description": "Remove monorepo configuration files",
+      "completed": false
+    },
+    {
+      "task_description": "Update root package.json for single app",
+      "completed": false
+    },
+    { "task_description": "Clean up and verify build", "completed": false }
+  ],
+  "description": "Consolidate monorepo into single Next.js app by moving packages into apps/web and removing Turborepo configuration",
+  "context": [],
+  "modified_files": [],
+  "id": "1762322354105"
+}

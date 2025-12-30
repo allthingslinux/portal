@@ -48,7 +48,7 @@ services:
 
   # Keycloak Identity Provider
   keycloak:
-    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-24.0.5}
+    image: quay.io/keycloak/keycloak:26.1.0
     container_name: keycloak-app
     restart: unless-stopped
     command: start-dev
@@ -63,9 +63,9 @@ services:
       KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
       KC_DB_SCHEMA: public
 
-      # Admin Credentials (Keycloak 24+ uses KEYCLOAK_ADMIN / KEYCLOAK_ADMIN_PASSWORD)
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin_password}
+      # Admin Credentials (Bootstrap method for Keycloak 22+)
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin_password}
 
       # Hostname Configuration (for external proxy)
       # For local testing we default to localhost. Override for real domains.
@@ -77,7 +77,7 @@ services:
       # PROXY_ADDRESS_FORWARDING: true
 
       # Health Checks
-      # KC_HEALTH_ENABLED: true
+      KC_HEALTH_ENABLED: true
 
       # Metrics (optional, for monitoring)
       # KC_METRICS_ENABLED: ${KEYCLOAK_METRICS_ENABLED:-true}
@@ -93,13 +93,67 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      test: ["CMD-SHELL", "{ printf 'HEAD /health/ready HTTP/1.0\\r\\n\\r\\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
     # security_opt:
       # - no-new-privileges:true
+
+  # Keycloak Configuration CLI
+  keycloak-config:
+    image: adorsys/keycloak-config-cli:latest
+    container_name: keycloak-config-cli
+    environment:
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_USER: ${KEYCLOAK_ADMIN_USER:-admin}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin_password}
+      KEYCLOAK_AVAILABILITYCHECK_ENABLED: true
+      KEYCLOAK_AVAILABILITYCHECK_TIMEOUT: 120s
+      KEYCLOAK_CONNECTTIMEOUT: 30s
+      KEYCLOAK_READTIMEOUT: 30s
+      IMPORT_FILES_LOCATIONS: '/config/portal-realm.json'
+      IMPORT_VALIDATE: true
+      IMPORT_VARSUBSTITUTION_ENABLED: true
+      IMPORT_PARALLEL: false
+      IMPORT_CACHE_ENABLED: true
+      IMPORT_REMOTESTATE_ENABLED: true
+      IMPORT_MANAGED_REQUIRED_ACTIONS: no-delete
+      IMPORT_MANAGED_COMPONENTS: no-delete
+      IMPORT_MANAGED_AUTHENTICATION_FLOW: no-delete
+      # Pass through environment variables for substitution
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      KEYCLOAK_ID: ${KEYCLOAK_ID}
+      KEYCLOAK_SECRET: ${KEYCLOAK_SECRET}
+      PORTAL_ADMIN_PASSWORD: ${PORTAL_ADMIN_PASSWORD}
+      PORTAL_REDIRECT_URIS: ${PORTAL_REDIRECT_URIS}
+      PORTAL_WEB_ORIGINS: ${PORTAL_WEB_ORIGINS}
+      PORTAL_POST_LOGOUT_URIS: ${PORTAL_POST_LOGOUT_URIS}
+      PORTAL_ADMIN_EMAIL: ${PORTAL_ADMIN_EMAIL}
+      LOGGING_LEVEL_KEYCLOAKCONFIGCLI: debug
+    volumes:
+      - ./keycloak-config:/config:ro
+    networks:
+      - keycloak-network
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    restart: "no"
+
+  # Security audit service
+  kcwarden:
+    image: ghcr.io/iteratec/kcwarden:latest
+    container_name: kcwarden
+    volumes:
+      - ./keycloak-config:/config
+    networks:
+      - keycloak-network
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    profiles:
+      - audit
 
 # Networks
 networks:
