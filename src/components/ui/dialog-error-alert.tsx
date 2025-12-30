@@ -1,0 +1,27 @@
+import { If } from "~/components/if";
+import { Trans } from "~/components/trans";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+
+export function DialogErrorAlert({
+  error,
+  titleKey = "common:operationFailed",
+  descriptionKey = "common:genericError",
+}: {
+  error: boolean;
+  titleKey?: string;
+  descriptionKey?: string;
+}) {
+  return (
+    <If condition={error}>
+      <Alert variant={"destructive"}>
+        <AlertTitle>
+          <Trans i18nKey={titleKey} />
+        </AlertTitle>
+
+        <AlertDescription>
+          <Trans i18nKey={descriptionKey} />
+        </AlertDescription>
+      </Alert>
+    </If>
+  );
+}
