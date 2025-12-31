@@ -108,7 +108,7 @@
     "wp-types": "^4.69.0"
   },
   "engines": {
-    "node": ">=20.10.0"
+    "node": ">=24.12.0"
   },
   "author": {
     "name": "All Things Linux"
