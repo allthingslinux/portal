@@ -123,10 +123,10 @@ export function PersonalAccountDropdown({
         </If>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className={"xl:min-w-[15rem]!"}>
+      <DropdownMenuContent className={"xl:min-w-[15rem]"}>
         <DropdownMenuItem
           className={
-            "pointer-events-none h-10! rounded-none focus:bg-transparent focus:text-inherit"
+            "pointer-events-none h-10 rounded-none focus:bg-transparent focus:text-inherit"
           }
         >
           <div
