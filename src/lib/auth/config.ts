@@ -35,8 +35,13 @@ export const auth = betterAuth({
       refreshCache: true,
     },
   },
+  cookies: {
+    domain: "localhost",
+    secure: false,
+    sameSite: "lax",
+  },
   account: {
-    storeStateStrategy: "database", // Store OAuth state in database instead of cookie
+    storeStateStrategy: "cookie", // Store OAuth state in cookie
   },
   socialProviders: {
     // GitHub for developer users
