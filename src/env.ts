@@ -56,34 +56,19 @@ export const env = createEnv({
     NEXT_PUBLIC_THEME_COLOR_DARK: z.string().default("#ffffff"),
     
     // Optional CI flag
-    NEXT_PUBLIC_CI: z.string().optional(),
+    NEXT_PUBLIC_CI: z
+      .string()
+      .optional()
+      .transform((s) => s === "true"),
   },
 
   /**
    * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
    * middlewares) or client-side so we need to destruct manually.
+   * 
+   * For Next.js >= 13.4.4, you only need to destructure client variables:
    */
-  runtimeEnv: {
-    // Server
-    DATABASE_URL: process.env.DATABASE_URL,
-    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
-    KEYCLOAK_ID: process.env.KEYCLOAK_ID,
-    KEYCLOAK_SECRET: process.env.KEYCLOAK_SECRET,
-    KEYCLOAK_ISSUER: process.env.KEYCLOAK_ISSUER,
-    DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
-    DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
-    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    EMAIL_HOST: process.env.EMAIL_HOST,
-    EMAIL_PORT: process.env.EMAIL_PORT,
-    EMAIL_USER: process.env.EMAIL_USER,
-    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
-    EMAIL_SENDER: process.env.EMAIL_SENDER,
-    CONTACT_EMAIL: process.env.CONTACT_EMAIL,
-    CMS_CLIENT: process.env.CMS_CLIENT,
-    NODE_ENV: process.env.NODE_ENV,
-    
-    // Client
+  experimental__runtimeEnv: {
     NEXT_PUBLIC_PRODUCT_NAME: process.env.NEXT_PUBLIC_PRODUCT_NAME,
     NEXT_PUBLIC_SITE_TITLE: process.env.NEXT_PUBLIC_SITE_TITLE,
     NEXT_PUBLIC_SITE_DESCRIPTION: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
