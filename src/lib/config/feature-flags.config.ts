@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { env } from "../../env";
 
 type LanguagePriority = "user" | "application";
 
@@ -25,36 +26,13 @@ const FeatureFlagsSchema = z.object({
 });
 
 const featuresFlagConfig = FeatureFlagsSchema.parse({
-  enableThemeToggle: getBoolean(
-    process.env.NEXT_PUBLIC_ENABLE_THEME_TOGGLE,
-    true
-  ),
-  enableAccountDeletion: getBoolean(
-    process.env.NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_DELETION,
-    false
-  ),
-  languagePriority: process.env
-    .NEXT_PUBLIC_LANGUAGE_PRIORITY as LanguagePriority,
-  enableNotifications: getBoolean(
-    process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS,
-    false
-  ),
-  realtimeNotifications: getBoolean(
-    process.env.NEXT_PUBLIC_REALTIME_NOTIFICATIONS,
-    false
-  ),
-  enableVersionUpdater: getBoolean(
-    process.env.NEXT_PUBLIC_ENABLE_VERSION_UPDATER,
-    false
-  ),
+  enableThemeToggle: env.NEXT_PUBLIC_ENABLE_THEME_TOGGLE ?? true,
+  enableAccountDeletion:
+    env.NEXT_PUBLIC_ENABLE_PERSONAL_ACCOUNT_DELETION ?? false,
+  languagePriority: env.NEXT_PUBLIC_LANGUAGE_PRIORITY as LanguagePriority,
+  enableNotifications: env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS ?? false,
+  realtimeNotifications: env.NEXT_PUBLIC_REALTIME_NOTIFICATIONS ?? false,
+  enableVersionUpdater: env.NEXT_PUBLIC_ENABLE_VERSION_UPDATER ?? false,
 } satisfies z.infer<typeof FeatureFlagsSchema>);
 
 export default featuresFlagConfig;
-
-function getBoolean(value: unknown, defaultValue: boolean) {
-  if (typeof value === "string") {
-    return value === "true";
-  }
-
-  return defaultValue;
-}

@@ -1,21 +1,21 @@
 "use server";
 
 import { z } from "zod";
-
 import { getMailer } from "~/lib/email/mailers/core";
 import { enhanceAction } from "~/shared/next/actions";
+import { env } from "../../../../../env";
 
 import { ContactEmailSchema } from "../contact-email.schema";
 
 const contactEmail = z
   .string()
   .describe("The email where you want to receive the contact form submissions.")
-  .parse(process.env.CONTACT_EMAIL);
+  .parse(env.CONTACT_EMAIL);
 
 const emailFrom = z
   .string()
   .describe("The email sending address.")
-  .parse(process.env.EMAIL_SENDER);
+  .parse(env.EMAIL_SENDER);
 
 export const sendContactEmail = enhanceAction(
   async (data) => {

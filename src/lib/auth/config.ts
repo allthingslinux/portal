@@ -4,14 +4,12 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { genericOAuth, keycloak } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
-import { env } from "../../env";
 import { db } from "~/lib/database/client";
 import * as schema from "~/lib/database/schema";
 import { accounts, accountsMemberships } from "~/lib/database/schema";
+import { env } from "../../env";
 
 const baseURL = env.NEXT_PUBLIC_SITE_URL;
-
-const betterAuthSecret = resolveBetterAuthSecret();
 
 /**
  * Better Auth configuration - Multi-provider with Keycloak, GitHub, Discord
@@ -122,5 +120,3 @@ function createKeycloakProviderConfig() {
     pkce: true, // Enable PKCE for Keycloak
   });
 }
-
-

@@ -300,7 +300,7 @@ const DropzoneEmptyState = ({ className }: { className?: string }) => {
           <Trans i18nKey="common:dropzone.dragAndDrop" />{" "}
           <button
             className="cursor-pointer underline transition hover:text-foreground"
-            onClick={() => inputRef.current?.click()}
+            onClick={() => inputRef?.click()}
             type="button"
           >
             <Trans

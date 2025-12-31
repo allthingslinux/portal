@@ -6,7 +6,6 @@ import authConfig from "~/lib/config/auth.config";
 import pathsConfig from "~/lib/config/paths.config";
 import { createI18nServerInstance } from "~/shared/lib/i18n/i18n.server";
 import { withI18n } from "~/shared/lib/i18n/with-i18n";
-import { RedirectHandler } from "./redirect-handler";
 
 type SignInPageProps = {
   searchParams: Promise<{ next?: string }>;
@@ -21,15 +20,16 @@ async function SignInPage({ searchParams }: SignInPageProps) {
   const { next } = await searchParams;
   const returnPath = next || pathsConfig.app.home;
 
-  // Auto-redirect if only one OAuth provider
-  if (authConfig.providers.oAuth.length === 1) {
-    return (
-      <RedirectHandler
-        provider={authConfig.providers.oAuth[0]}
-        returnPath={returnPath}
-      />
-    );
-  }
+  // Auto-redirect if only one OAuth provider (this logic may need review)
+  // Currently disabled as we have 3 providers configured
+  // if (authConfig.providers.oAuth.length === 1) {
+  //   return (
+  //     <RedirectHandler
+  //       provider={authConfig.providers.oAuth[0]}
+  //       returnPath={returnPath}
+  //     />
+  //   );
+  // }
 
   return (
     <>
@@ -47,7 +47,7 @@ async function SignInPage({ searchParams }: SignInPageProps) {
           callback: pathsConfig.auth.callback,
           returnPath,
         }}
-        providers={{ oAuth: authConfig.providers.oAuth }}
+        providers={{ oAuth: [...authConfig.providers.oAuth] }}
       />
     </>
   );
