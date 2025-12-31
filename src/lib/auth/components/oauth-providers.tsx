@@ -17,10 +17,22 @@ export const OauthProviders: React.FC<{
     returnPath: string;
   };
 }> = (props) => {
+  console.log("🔧 OauthProviders rendered with:", {
+    enabledProviders: props.enabledProviders,
+    paths: props.paths
+  });
+  
   const signInWithProviderMutation = useSignInWithProvider();
   const loading = signInWithProviderMutation.isPending;
 
   const enabledProviders = props.enabledProviders;
+
+  if (!enabledProviders?.length) {
+    console.log("❌ No enabled providers found");
+    return null;
+  }
+
+  console.log("✅ Rendering providers:", enabledProviders);
 
   if (!enabledProviders?.length) {
     return null;
@@ -37,15 +49,26 @@ export const OauthProviders: React.FC<{
           {enabledProviders.map((provider) => (
             <AuthProviderButton
               key={provider}
-              onClick={() => {
+              onClick={(e) => {
+                console.log("🖱️ Raw button click event:", e);
                 console.log("🖱️ Button clicked for provider:", provider);
-                const callbackUrl = props.paths.returnPath || "/dashboard";
-                console.log("📍 Using callback URL:", callbackUrl);
-                console.log("🚀 Calling signInWithProviderMutation.mutate");
-                signInWithProviderMutation.mutate({
-                  provider,
-                  redirectTo: callbackUrl,
-                });
+                console.log("🔍 Event target:", e.target);
+                console.log("🔍 Current target:", e.currentTarget);
+                
+                try {
+                  const callbackUrl = props.paths.returnPath || "/dashboard";
+                  console.log("📍 Using callback URL:", callbackUrl);
+                  console.log("🚀 About to call signInWithProviderMutation.mutate");
+                  
+                  signInWithProviderMutation.mutate({
+                    provider,
+                    redirectTo: callbackUrl,
+                  });
+                  
+                  console.log("✅ Mutation call completed");
+                } catch (error) {
+                  console.error("💥 Error in click handler:", error);
+                }
               }}
               providerId={provider}
             >
