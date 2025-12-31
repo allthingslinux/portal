@@ -4,15 +4,12 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { genericOAuth, keycloak } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
+import { env } from "../../env";
 import { db } from "~/lib/database/client";
 import * as schema from "~/lib/database/schema";
 import { accounts, accountsMemberships } from "~/lib/database/schema";
 
-const baseURL =
-  process.env.NEXT_PUBLIC_APP_URL ??
-  (process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-    : "http://localhost:3000");
+const baseURL = env.NEXT_PUBLIC_SITE_URL;
 
 const betterAuthSecret = resolveBetterAuthSecret();
 
@@ -46,13 +43,13 @@ export const auth = betterAuth({
   socialProviders: {
     // GitHub for developer users
     github: {
-      clientId: process.env.GITHUB_CLIENT_ID || "",
-      clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
+      clientId: env.GITHUB_CLIENT_ID || "",
+      clientSecret: env.GITHUB_CLIENT_SECRET || "",
     },
     // Discord for community users
     discord: {
-      clientId: process.env.DISCORD_CLIENT_ID || "",
-      clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
+      clientId: env.DISCORD_CLIENT_ID || "",
+      clientSecret: env.DISCORD_CLIENT_SECRET || "",
     },
   },
   plugins: [
@@ -63,7 +60,7 @@ export const auth = betterAuth({
   ],
   baseURL,
   basePath: "/api/auth",
-  secret: betterAuthSecret,
+  secret: env.BETTER_AUTH_SECRET,
   databaseHooks: {
     user: {
       create: {
@@ -112,38 +109,18 @@ export const auth = betterAuth({
   },
   advanced: {
     cookiePrefix: "better-auth",
-    useSecureCookies: process.env.NODE_ENV === "production",
+    useSecureCookies: env.NODE_ENV === "production",
     crossSubDomainCookies: { enabled: false },
   },
 });
 
 function createKeycloakProviderConfig() {
-  const clientId = process.env.KEYCLOAK_ID;
-  const clientSecret = process.env.KEYCLOAK_SECRET;
-  const issuer = process.env.KEYCLOAK_ISSUER;
-
-  if (!(clientId && clientSecret && issuer)) {
-    throw new Error("Keycloak OAuth environment variables are not set");
-  }
-
   return keycloak({
-    clientId,
-    clientSecret,
-    issuer,
+    clientId: env.KEYCLOAK_ID,
+    clientSecret: env.KEYCLOAK_SECRET,
+    issuer: env.KEYCLOAK_ISSUER,
     pkce: true, // Enable PKCE for Keycloak
   });
 }
 
-function resolveBetterAuthSecret() {
-  const secret = process.env.BETTER_AUTH_SECRET;
-  if (secret) {
-    return secret;
-  }
 
-  if (process.env.CI === "true") {
-    throw new Error("BETTER_AUTH_SECRET must be set in production or CI");
-  }
-
-  console.warn("BETTER_AUTH_SECRET not set. Using development fallback.");
-  return "development-only-better-auth-secret";
-}

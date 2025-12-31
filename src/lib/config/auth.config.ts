@@ -1,27 +1,15 @@
-import { z } from "zod";
+import { env } from "../../env";
 import { OAUTH_PROVIDERS } from "./providers.config";
 
-const keycloakEnvConfigured =
-  Boolean(process.env.KEYCLOAK_ID) &&
-  Boolean(process.env.KEYCLOAK_SECRET) &&
-  Boolean(process.env.KEYCLOAK_ISSUER);
-
-if (!keycloakEnvConfigured) {
-  throw new Error(
-    "Keycloak is required for authentication. Set KEYCLOAK_ID, KEYCLOAK_SECRET, and KEYCLOAK_ISSUER."
-  );
-}
-
-const AuthConfigSchema = z.object({
-  providers: z.object({
-    oAuth: z.array(z.string()),
-  }),
-});
-
-const authConfig = AuthConfigSchema.parse({
+const authConfig = {
   providers: {
     oAuth: OAUTH_PROVIDERS,
   },
-});
+  keycloak: {
+    id: env.KEYCLOAK_ID,
+    secret: env.KEYCLOAK_SECRET,
+    issuer: env.KEYCLOAK_ISSUER,
+  },
+};
 
 export default authConfig;
