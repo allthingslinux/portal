@@ -2,8 +2,9 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import pathsConfig from "~/lib/config/paths.config";
 
-// Temporarily disable auto-redirect for debugging OAuth state issues
-const shouldAutoRedirect = false; // password: false, oAuth: ["keycloak"]
+// Check auth configuration - password auth is disabled, only Keycloak OAuth is enabled
+// This matches your auth.config.ts setup
+const shouldAutoRedirect = true; // password: false, oAuth: ["keycloak"]
 
 export async function proxy(request: NextRequest) {
   // Only handle sign-in page
