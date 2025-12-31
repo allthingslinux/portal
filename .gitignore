@@ -64,3 +64,5 @@ node-compile-cache/
 uploads/
 
 .kiro/cli-todo-lists
+
+notes.md
