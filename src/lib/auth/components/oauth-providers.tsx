@@ -38,12 +38,9 @@ export const OauthProviders: React.FC<{
 
   return (
     <>
-      {/* Temporarily disabled LoadingOverlay for debugging
       <If condition={loading}>
         <LoadingOverlay />
       </If>
-      */}
-      {loading && console.log("🔄 LoadingOverlay would be showing")}
 
       <div className="flex w-full flex-1 flex-col space-y-3">
         <div className="flex-col space-y-2">
