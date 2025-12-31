@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import pathsConfig from "~/lib/config/paths.config";
 
 // Check auth configuration - password auth is disabled, only Keycloak OAuth is enabled
 // This matches your auth.config.ts setup
@@ -15,7 +16,7 @@ export async function proxy(request: NextRequest) {
   // redirect immediately to OAuth flow before any page rendering
   if (shouldAutoRedirect) {
     const provider = "keycloak"; // Only provider enabled
-    const returnPath = request.nextUrl.searchParams.get("next") || "/home";
+    const returnPath = request.nextUrl.searchParams.get("next") || pathsConfig.app.home;
 
     // Build base URL from request
     const protocol = request.nextUrl.protocol;

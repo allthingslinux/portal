@@ -2,11 +2,12 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { authClient } from "~/lib/auth";
+import pathsConfig from "~/lib/config/paths.config";
 
 export function useSignInWithProvider() {
   return useMutation({
     mutationFn: async (params: { provider: string; redirectTo?: string }) => {
-      const callbackURL = params.redirectTo || "/home";
+      const callbackURL = params.redirectTo || pathsConfig.app.home;
 
       // Keycloak uses genericOAuth plugin, others use socialProviders
       const result =
