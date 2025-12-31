@@ -1,5 +1,5 @@
-import { getDatabaseWebhookHandlerService } from "~/core/database-webhooks";
-import { getServerMonitoringService } from "~/core/monitoring/api/services/get-server-monitoring-service";
+import { getDatabaseWebhookHandlerService } from "~/lib/database-webhooks";
+import { getServerMonitoringService } from "~/lib/monitoring/api/services/get-server-monitoring-service";
 import { enhanceRouteHandler } from "~/shared/next/routes";
 
 /**

@@ -1,4 +1,4 @@
-import { initializeServerI18n } from "~/core/i18n/i18n.server";
+import { initializeServerI18n } from "~/lib/i18n/i18n.server";
 
 export function initializeEmailI18n(params: {
   language: string | undefined;

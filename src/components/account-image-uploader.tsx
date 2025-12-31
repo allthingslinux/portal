@@ -117,7 +117,7 @@ async function deleteProfilePhoto(url: string) {
     return;
   }
 
-  const { storageClient } = await import("~/core/storage/storage-client");
+  const { storageClient } = await import("~/lib/storage/storage-client");
 
   return storageClient.deleteFile(AVATARS_BUCKET, fileName);
 }
@@ -128,7 +128,7 @@ async function uploadUserProfilePhoto(photoFile: File, userId: string) {
   const { nanoid } = await import("nanoid");
   const cacheBuster = nanoid(16);
 
-  const { storageClient } = await import("~/core/storage/storage-client");
+  const { storageClient } = await import("~/lib/storage/storage-client");
 
   const result = await storageClient.uploadFile(
     AVATARS_BUCKET,

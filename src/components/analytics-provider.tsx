@@ -3,7 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useEffectEvent } from "react";
 
-import { analytics } from "~/core/monitoring/analytics";
+import { analytics } from "~/lib/monitoring/analytics";
 import {
   type AppEvent,
   type AppEventType,

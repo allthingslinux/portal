@@ -17,10 +17,10 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
-import { ErrorBoundary } from "~/core/monitoring/api/components/error-boundary";
 import { DeletePersonalAccountSchema } from "~/features/accounts/schema/delete-personal-account.schema";
 import { deletePersonalAccountAction } from "~/features/accounts/server/personal-accounts-server-actions";
 import { useSession } from "~/hooks/use-session";
+import { ErrorBoundary } from "~/lib/monitoring/api/components/error-boundary";
 
 export function AccountDangerZone() {
   return (

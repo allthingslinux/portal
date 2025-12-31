@@ -4,11 +4,11 @@ import { cookies, headers } from "next/headers";
 import { cache } from "react";
 
 import { z } from "zod";
+import featuresFlagConfig from "~/lib/config/feature-flags.config";
 import {
   initializeServerI18n,
   parseAcceptLanguageHeader,
-} from "~/core/i18n/i18n.server";
-import featuresFlagConfig from "~/lib/config/feature-flags.config";
+} from "~/lib/i18n/i18n.server";
 import {
   getI18nSettings,
   I18N_COOKIE_NAME,

@@ -6,7 +6,7 @@ import {
   setUser,
 } from "@sentry/nextjs";
 
-import type { MonitoringService } from "~/core/monitoring/core/monitoring.service";
+import type { MonitoringService } from "~/lib/monitoring/core/monitoring.service";
 
 /**
  * @class

@@ -1,5 +1,5 @@
-import { ConsoleMonitoringService } from "~/core/monitoring/core/console-monitoring.service";
-import type { MonitoringService } from "~/core/monitoring/core/monitoring.service";
+import { ConsoleMonitoringService } from "~/lib/monitoring/core/console-monitoring.service";
+import type { MonitoringService } from "~/lib/monitoring/core/monitoring.service";
 import { createRegistry } from "~/shared/registry";
 
 import {
@@ -15,7 +15,7 @@ const serverMonitoringRegistry = createRegistry<
 
 // Register the 'sentry' monitoring service
 serverMonitoringRegistry.register("sentry", async () => {
-  const { SentryMonitoringService } = await import("~/core/monitoring/sentry");
+  const { SentryMonitoringService } = await import("~/lib/monitoring/sentry");
 
   return new SentryMonitoringService();
 });

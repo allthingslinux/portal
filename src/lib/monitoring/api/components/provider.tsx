@@ -29,7 +29,7 @@ const monitoringProviderRegistry = createRegistry<
 // Register the Sentry provider
 monitoringProviderRegistry.register("sentry", async () => {
   const { SentryProvider } = await import(
-    "~/core/monitoring/sentry/components/provider"
+    "~/lib/monitoring/sentry/components/provider"
   );
 
   return {

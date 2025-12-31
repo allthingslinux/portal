@@ -19,16 +19,19 @@ export const env = createEnv({
     // Keycloak Admin (optional)
     KEYCLOAK_ADMIN_USER: z.string().optional(),
     KEYCLOAK_ADMIN_PASSWORD: z.string().optional(),
-    
+
     // Keycloak Database (for Docker setup)
     KEYCLOAK_DB_NAME: z.string().optional(),
     KEYCLOAK_DB_USER: z.string().optional(),
     KEYCLOAK_DB_PASSWORD: z.string().optional(),
-    
+
     // Keycloak Server Configuration
     KEYCLOAK_HOSTNAME: z.string().optional(),
     KEYCLOAK_LOG_LEVEL: z.string().optional(),
-    KEYCLOAK_METRICS_ENABLED: z.string().optional().transform((s) => s === "true"),
+    KEYCLOAK_METRICS_ENABLED: z
+      .string()
+      .optional()
+      .transform((s) => s === "true"),
     KEYCLOAK_FEATURES: z.string().optional(),
 
     // OAuth Providers (optional)
@@ -87,7 +90,7 @@ export const env = createEnv({
 
     // Skip validation flag
     SKIP_ENV_VALIDATION: z.string().optional(),
-    
+
     // Docker Configuration
     POSTGRES_VERSION: z.string().optional(),
   },
@@ -180,9 +183,13 @@ export const env = createEnv({
     NEXT_PUBLIC_LANGUAGE_PRIORITY: z.string().optional(),
 
     // External Services (with environment-based defaults)
-    NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional().default(() =>
-      process.env.NODE_ENV === "development" ? "http://127.0.0.1:54321" : ""
-    ),
+    NEXT_PUBLIC_SUPABASE_URL: z
+      .string()
+      .url()
+      .optional()
+      .default(() =>
+        process.env.NODE_ENV === "development" ? "http://127.0.0.1:54321" : ""
+      ),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
     NEXT_PUBLIC_CAPTCHA_SITE_KEY: z.string().optional(),

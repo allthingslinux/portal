@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { type NextRequest, NextResponse } from "next/server";
 
-import { storageService } from "~/core/storage/storage.service";
+import { storageService } from "~/lib/storage/storage.service";
 import { HTTP_STATUS } from "~/shared/constants";
 
 /**
