@@ -81,10 +81,14 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "$(env:KEYCLOAK_SECRET)",
-      "redirectUris": ["$(env:PORTAL_REDIRECT_URIS)"],
-      "webOrigins": ["$(env:PORTAL_WEB_ORIGINS)"],
+      "redirectUris": [
+        "http://localhost:3000/api/auth/callback/keycloak"
+      ],
+      "webOrigins": [
+        "http://localhost:3000"
+      ],
       "attributes": {
-        "post.logout.redirect.uris": "$(env:PORTAL_POST_LOGOUT_URIS)",
+        "post.logout.redirect.uris": "http://localhost:3000##http://localhost:3000/auth/signin",
         "pkce.code.challenge.method": "S256"
       },
       "protocol": "openid-connect",
