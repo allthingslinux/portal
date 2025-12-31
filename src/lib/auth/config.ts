@@ -36,7 +36,7 @@ export const auth = betterAuth({
     },
   },
   account: {
-    storeStateStrategy: "cookie", // Store OAuth state in cookie, not DB
+    storeStateStrategy: "database", // Store OAuth state in database instead of cookie
   },
   socialProviders: {
     // GitHub for developer users
@@ -108,7 +108,7 @@ export const auth = betterAuth({
   },
   advanced: {
     cookiePrefix: "better-auth",
-    useSecureCookies: env.NODE_ENV === "production",
+    useSecureCookies: false, // Disable secure cookies for HTTP development
     crossSubDomainCookies: { enabled: false },
   },
 });
