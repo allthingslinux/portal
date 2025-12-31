@@ -7,5 +7,11 @@
     "source.organizeImports.biome": "explicit"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "biome.enabled": true
+  "biome.enabled": true,
+  "i18n-ally.localesPaths": [
+    "public/locales",
+    "src/lib/i18n",
+    "src/shared/lib/i18n",
+    "src/lib/email/email-templates/locales"
+  ]
 }
