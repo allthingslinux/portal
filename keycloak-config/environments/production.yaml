@@ -1,7 +1,7 @@
 # Production environment overrides
 realm: portal
 displayName: "Portal Realm"
-loginTheme: keycloak
+loginTheme: portal-theme
 
 # Enhanced security for production
 sslRequired: external

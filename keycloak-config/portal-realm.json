@@ -44,7 +44,7 @@
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": true,
   "refreshTokenMaxReuse": 0,
-  "loginTheme": "keycloak",
+  "loginTheme": "portal-theme",
   "accountTheme": "keycloak",
   "adminTheme": "keycloak",
   "emailTheme": "keycloak",
