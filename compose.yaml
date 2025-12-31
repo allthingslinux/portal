@@ -85,8 +85,15 @@ services:
       # Logging
       KC_LOG_LEVEL: ${KEYCLOAK_LOG_LEVEL:-INFO}
 
+      # Theme environment variables
+      PORTAL_LOGO_URL: ${NEXT_PUBLIC_SITE_URL}/logo.png
+      PORTAL_THEME_COLOR: ${NEXT_PUBLIC_THEME_COLOR}
+      PORTAL_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+
       # Features (uncomment to customize)
       # KC_FEATURES: ${KEYCLOAK_FEATURES}
+    volumes:
+      - ./packages/keycloak-theme/dist_keycloak:/opt/keycloak/providers:ro
     networks:
       - keycloak-network
     depends_on:

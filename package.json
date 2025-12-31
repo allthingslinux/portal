@@ -4,11 +4,17 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "analyze": "ANALYZE=true bun run build",
     "build": "next build",
+    "build-keycloak": "cd packages/keycloak-theme && npm run build-keycloak-theme",
     "clean": "git clean -xdf .next node_modules",
     "dev": "next dev | pino-pretty -c",
+    "dev-keycloak": "cd packages/keycloak-theme && npm run storybook",
+    "deploy:theme": "./scripts/deploy-theme.sh",
     "lint": "ultracite check",
     "lint:fix": "ultracite fix",
     "start": "next start",
