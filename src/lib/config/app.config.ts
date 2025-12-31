@@ -9,7 +9,7 @@ const appConfig = {
   theme: env.NEXT_PUBLIC_DEFAULT_THEME_MODE,
   themeColor: env.NEXT_PUBLIC_THEME_COLOR,
   themeColorDark: env.NEXT_PUBLIC_THEME_COLOR_DARK,
-  production: env.NODE_ENV === "production",
+  production: process.env.NODE_ENV === "production", // Use process.env directly for client-side access
 };
 
 export default appConfig;
