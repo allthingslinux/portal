@@ -38,7 +38,10 @@ export const OauthProviders: React.FC<{
             <AuthProviderButton
               key={provider}
               onClick={() => {
+                console.log("🖱️ Button clicked for provider:", provider);
                 const callbackUrl = props.paths.returnPath || "/dashboard";
+                console.log("📍 Using callback URL:", callbackUrl);
+                console.log("🚀 Calling signInWithProviderMutation.mutate");
                 signInWithProviderMutation.mutate({
                   provider,
                   redirectTo: callbackUrl,
