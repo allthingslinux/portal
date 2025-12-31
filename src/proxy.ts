@@ -50,7 +50,7 @@ export async function proxy(request: NextRequest) {
         },
         body: JSON.stringify({
           providerId: provider,
-          callbackURL,
+          callbackURL: returnPath, // Use relative path, not absolute
         }),
       });
 

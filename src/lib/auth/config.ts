@@ -59,6 +59,7 @@ export const auth = betterAuth({
   baseURL,
   basePath: "/api/auth",
   secret: env.BETTER_AUTH_SECRET,
+  trustedOrigins: [env.NEXT_PUBLIC_SITE_URL],
   databaseHooks: {
     user: {
       create: {
