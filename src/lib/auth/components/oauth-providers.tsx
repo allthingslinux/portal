@@ -50,8 +50,10 @@ export const OauthProviders: React.FC<{
               onClick={(e) => {
                 console.log("🖱️ Raw button click event:", e);
                 console.log("🖱️ Button clicked for provider:", provider);
-                console.log("🔍 Event target:", e.target);
-                console.log("🔍 Current target:", e.currentTarget);
+                if (e) {
+                  console.log("🔍 Event target:", e.target);
+                  console.log("🔍 Current target:", e.currentTarget);
+                }
                 
                 try {
                   const callbackUrl = props.paths.returnPath || "/dashboard";

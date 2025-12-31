@@ -19,8 +19,10 @@ export function AuthProviderButton({
       onClick={(e) => {
         console.log("🔥 BUTTON CLICKED - RAW EVENT:", e);
         console.log("🔥 Provider ID:", providerId);
-        e.preventDefault();
-        e.stopPropagation();
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
         onClick();
       }}
       onMouseDown={() => console.log("🖱️ Mouse down on button:", providerId)}
