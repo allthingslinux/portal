@@ -36,9 +36,9 @@ export const auth = betterAuth({
     },
   },
   cookies: {
-    domain: "localhost",
+    domain: undefined, // Let browser handle domain automatically
     secure: false,
-    sameSite: "lax",
+    sameSite: "none", // Allow cross-site cookies for OAuth
   },
   account: {
     storeStateStrategy: "cookie", // Store OAuth state in cookie
