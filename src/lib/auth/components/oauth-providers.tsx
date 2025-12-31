@@ -24,6 +24,8 @@ export const OauthProviders: React.FC<{
   
   const signInWithProviderMutation = useSignInWithProvider();
   const loading = signInWithProviderMutation.isPending;
+  
+  console.log("⏳ Loading state:", loading);
 
   const enabledProviders = props.enabledProviders;
 
@@ -34,15 +36,14 @@ export const OauthProviders: React.FC<{
 
   console.log("✅ Rendering providers:", enabledProviders);
 
-  if (!enabledProviders?.length) {
-    return null;
-  }
-
   return (
     <>
+      {/* Temporarily disabled LoadingOverlay for debugging
       <If condition={loading}>
         <LoadingOverlay />
       </If>
+      */}
+      {loading && console.log("🔄 LoadingOverlay would be showing")}
 
       <div className="flex w-full flex-1 flex-col space-y-3">
         <div className="flex-col space-y-2">

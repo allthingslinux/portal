@@ -23,6 +23,10 @@ export function AuthProviderButton({
         e.stopPropagation();
         onClick();
       }}
+      onMouseDown={() => console.log("🖱️ Mouse down on button:", providerId)}
+      onMouseUp={() => console.log("🖱️ Mouse up on button:", providerId)}
+      onPointerDown={() => console.log("👆 Pointer down on button:", providerId)}
+      style={{ pointerEvents: 'auto', zIndex: 9999 }}
       variant={"outline"}
     >
       <OauthProviderLogoImage providerId={providerId} />
