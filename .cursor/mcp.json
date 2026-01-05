@@ -1,0 +1,35 @@
+{
+  "mcpServers": {
+    "llms.txt": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "mcpdoc",
+        "mcpdoc",
+        "--urls",
+        "shadcn:https://ui.shadcn.com/llms.txt",
+        "drizzle:https://orm.drizzle.team/llms.txt",
+        "better-auth:https://www.better-auth.com/llms.txt",
+        "better-auth-ui:https://better-auth-ui.com/llms.txt",
+        "--transport",
+        "stdio"
+      ]
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    },
+    "betterauth": {
+      "url": "https://mcp.chonkie.ai/better-auth/better-auth-builder/mcp",
+      "headers": {}
+    },
+    "ultracite": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://www.ultracite.ai/api/mcp/mcp"]
+    },
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mpc@latest"]
+    }
+  }
+}

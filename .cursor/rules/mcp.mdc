@@ -1,0 +1,29 @@
+---
+alwaysApply: true
+---
+
+# Tools
+
+As an agentic LLM, you have access to the following MCP servers/tools to work more productively. Please use them when appropriate.
+
+## llms.txt
+
+- `list_doc_sources` to list available llms.txt files for up to date documentation.
+- `fetch_docs` to fetch the documentation for a given llms.txt file.
+
+## shadcn
+
+- `get_project_registries` - Get configured registry names from components.json
+- `list_items_in_registries` - List items from registries
+- `search_items_in_registries` - Search for components in registries using fuzzy matching
+- `view_items_in_registries` - View detailed information about specific registry items
+- `get_item_examples_from_registries` - Find usage examples and demos with complete code
+- `get_add_command_for_items` - Get the shadcn CLI add command for specific items
+- `get_audit_checklist` - Get checklist to verify components are working correctly
+
+## Better Auth
+
+- `betterauth_chat` - Engage in interactive conversations and get help with complex queries
+- `betterauth_search` - Search Better Auth's knowledge base for specific information
+- `betterauth_list_files` - List all files available in Better Auth's knowledge base
+- `betterauth_get_file` - Retrieve a specific file from Better Auth's knowledge base by its ID

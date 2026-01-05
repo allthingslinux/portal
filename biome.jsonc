@@ -1,0 +1,68 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/react",
+    "ultracite/biome/next"
+  ],
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              // URLs first (rare but important)
+              ":URL:",
+              // Node.js and Bun built-ins
+              ":BUN:",
+              ":NODE:",
+              // React ecosystem (prioritized)
+              [
+                "react",
+                "react-dom",
+                "react/**",
+                "@types/react",
+                "@types/react-dom"
+              ],
+              // UI and styling libraries
+              [
+                "@radix-ui/**",
+                "lucide-react",
+                "sonner",
+                "tailwindcss",
+                "class-variance-authority"
+              ],
+              // Next.js specific
+              ["next", "next/**", "@next/**"],
+              // Form and validation
+              ["react-hook-form", "@hookform/resolvers", "zod"],
+              // Other packages
+              ":PACKAGE:",
+              // Blank line separator
+              ":BLANK_LINE:",
+              // Internal aliases by specificity
+              ["@/components/ui", "@/components/ui/**"],
+              ["@/components", "@/components/**"],
+              ["@/hooks", "@/hooks/**"],
+              ["@/lib", "@/lib/**"],
+              ["@/auth", "@/auth/**"],
+              ["@/db", "@/db/**"],
+              // Relative imports last
+              ":PATH:"
+            ],
+            "identifierOrder": "natural"
+          }
+        }
+      }
+    }
+  },
+  "files": {
+    "includes": [
+      "!src/components/ReactScan.tsx",
+      "!references",
+      "!src/components/ui",
+      "!drizzle"
+    ]
+  }
+}
