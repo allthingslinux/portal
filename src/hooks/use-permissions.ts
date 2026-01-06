@@ -1,55 +1,50 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 import { authClient } from "@/auth/client";
 
 export function usePermissions() {
-  const [permissions, setPermissions] = useState({
-    canManageUsers: false,
-    canViewAdmin: false,
-    loading: true,
-  });
+  const { data: session, isPending } = authClient.useSession();
 
-  const { data: session } = authClient.useSession();
+  // Compute permissions synchronously based on session data
+  // This prevents the delayed appearance of admin links
+  const permissions = useMemo(() => {
+    // While session is loading, return loading state
+    if (isPending || !session?.user) {
+      return {
+        canManageUsers: false,
+        canViewAdmin: false,
+        loading: true,
+      };
+    }
 
-  useEffect(() => {
-    const checkPermissions = () => {
-      try {
-        if (!session) {
-          setPermissions({
-            canManageUsers: false,
-            canViewAdmin: false,
-            loading: false,
-          });
-          return;
-        }
+    try {
+      // Check if user can manage users (admin permission)
+      // Use session.user.role directly, which should be available from Better Auth
+      const userRole = session.user.role || "user";
+      
+      const canManageUsers = authClient.admin.checkRolePermission({
+        role: userRole as "user" | "admin" | "staff",
+        permissions: {
+          user: ["list"],
+        },
+      });
 
-        // Check if user can manage users (admin permission)
-        const canManageUsers = authClient.admin.checkRolePermission({
-          role: (session.user.role || "user") as "user" | "admin",
-          permissions: {
-            user: ["list"],
-          },
-        });
-
-        setPermissions({
-          canManageUsers,
-          canViewAdmin: canManageUsers,
-          loading: false,
-        });
-      } catch (error) {
-        console.error("Failed to check permissions:", error);
-        setPermissions({
-          canManageUsers: false,
-          canViewAdmin: false,
-          loading: false,
-        });
-      }
-    };
-
-    checkPermissions();
-  }, [session]);
+      return {
+        canManageUsers,
+        canViewAdmin: canManageUsers,
+        loading: false,
+      };
+    } catch (error) {
+      console.error("Failed to check permissions:", error);
+      return {
+        canManageUsers: false,
+        canViewAdmin: false,
+        loading: false,
+      };
+    }
+  }, [session, isPending]);
 
   return permissions;
 }
