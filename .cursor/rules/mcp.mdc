@@ -27,3 +27,11 @@ As an agentic LLM, you have access to the following MCP servers/tools to work mo
 - `betterauth_search` - Search Better Auth's knowledge base for specific information
 - `betterauth_list_files` - List all files available in Better Auth's knowledge base
 - `betterauth_get_file` - Retrieve a specific file from Better Auth's knowledge base by its ID
+
+## Next.js Devtools MCP
+
+- `get_errors` - Retrieve current build errors, runtime errors, and type errors from your dev server
+- `get_logs` - Get the path to the development log file containing browser console logs and server output
+- `get_page_metadata` - Get metadata about specific pages including routes, components, and rendering information
+- `get_project_metadata` - Retrieve project structure, configuration, and dev server URL
+- `get_server_action_by_id` - Look up Server Actions by their ID to find the source file and function name

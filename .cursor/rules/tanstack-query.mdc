@@ -1,0 +1,536 @@
+# TanStack Query - Complete Guide
+
+Complete guide for TanStack Query integration in this codebase, covering setup, patterns, SSR, Suspense, and best practices.
+
+## Architecture Overview
+
+```
+Client Components (useQuery, useMutation)
+  ↓
+API Client Functions (src/lib/api/admin.ts)
+  ↓
+API Routes (src/app/api/admin/*/route.ts)
+  ↓
+Better Auth + Database
+```
+
+**File Structure:**
+```
+src/
+├── lib/api/
+│   ├── query-client.ts    # QueryClient factory (server/client isolation)
+│   ├── query-keys.ts      # Query key factory
+│   ├── types.ts           # TypeScript types
+│   ├── utils.ts           # API utilities (auth, errors)
+│   ├── admin.ts           # Client-side API functions (fetch)
+│   ├── server-queries.ts  # Server-side query functions (direct DB)
+│   └── hydration.ts       # SSR/hydration utilities
+├── hooks/
+│   ├── use-admin.ts       # Regular hooks
+│   └── use-admin-suspense.ts # Suspense hooks
+└── components/
+    └── error-boundary.tsx # Error Boundary with QueryErrorResetBoundary
+```
+
+## QueryClient Setup
+
+The QueryClient is configured in `src/lib/api/query-client.ts` with automatic server/client separation:
+
+```tsx
+import { getQueryClient } from "@/lib/api";
+
+// Server: Creates new instance per request (isolated)
+// Client: Returns singleton instance (shared)
+const queryClient = getQueryClient();
+```
+
+**Default Configuration:**
+- `staleTime: 60 * 1000` (1 minute)
+- `gcTime: 5 * 60 * 1000` (5 minutes)
+- `retry: 0` (no automatic retries)
+- `refetchOnWindowFocus: true`
+- Supports streaming SSR (dehydrates pending queries)
+
+## Query Keys
+
+### Factory Pattern
+
+We use a centralized query key factory in `src/lib/api/query-keys.ts`:
+
+```tsx
+import { queryKeys } from "@/lib/api/query-keys";
+
+// List queries
+queryKeys.users.list({ role: "admin" })
+// Returns: ["users", "list", { filters: { role: "admin" } }]
+
+// Detail queries
+queryKeys.users.detail("user-123")
+// Returns: ["users", "detail", "user-123"]
+
+// Invalidate related queries
+queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
+```
+
+### Key Principles
+
+1. **Always use the factory** - Never create keys manually
+2. **Include all variables** - Any variable in `queryFn` must be in the key
+3. **Array order matters** - `["users", "list"]` ≠ `["list", "users"]`
+4. **Object key order doesn't matter** - `{ role: "admin", search: "john" }` = `{ search: "john", role: "admin" }`
+5. **Keep keys serializable** - No functions, non-serializable objects
+
+### Available Keys
+
+```tsx
+queryKeys.users.all / lists() / list(filters?) / details() / detail(id)
+queryKeys.sessions.all / lists() / list(filters?) / detail(id)
+queryKeys.apiKeys.all / lists() / list(userId?) / detail(id)
+queryKeys.oauthClients.all / list(filters?) / detail(id)
+queryKeys.admin.all / stats() / dashboard()
+```
+
+## Query Functions
+
+### Basic Pattern
+
+Query functions **must** throw errors (not return undefined):
+
+```tsx
+export async function fetchUsers(filters?: UserListFilters) {
+  const response = await fetch(`/api/admin/users${params}`);
+  
+  // ✅ Always check response.ok for fetch()
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(error.error || `Failed to fetch users: ${response.statusText}`);
+  }
+  
+  return response.json();
+}
+```
+
+### Server vs Client Functions
+
+**Client-side** (`src/lib/api/admin.ts`):
+- Makes HTTP requests via `fetch()`
+- Used in hooks and client components
+- Works with API routes
+
+**Server-side** (`src/lib/api/server-queries.ts`):
+- Direct database access (no HTTP)
+- Used in Server Components for prefetching
+- Faster (no network overhead)
+
+## Queries
+
+### Query States
+
+A query has three primary states:
+- `isPending` or `status === 'pending'` - No data yet
+- `isError` or `status === 'error'` - Error occurred
+- `isSuccess` or `status === 'success'` - Data available
+
+Additional properties:
+- `data` - Available when `isSuccess`
+- `error` - Available when `isError`
+- `isFetching` - `true` during fetching (including background)
+- `fetchStatus` - `'fetching'` | `'paused'` | `'idle'`
+
+### Standard Pattern
+
+```tsx
+function UsersList() {
+  const { isPending, isError, data, error } = useUsers();
+  
+  // ✅ Check pending first
+  if (isPending) return <Loading />;
+  
+  // ✅ Check error second
+  if (isError) return <Error message={error.message} />;
+  
+  // ✅ TypeScript knows data is defined here
+  return <ul>{data.users.map(user => <li key={user.id}>{user.email}</li>)}</ul>;
+}
+```
+
+### Available Hooks
+
+**Regular Hooks** (`src/hooks/use-admin.ts`):
+- `useUsers(filters?)` - Fetch users list
+- `useUser(userId)` - Fetch single user
+- `useSessions(filters?)` - Fetch sessions
+- `useAdminStats()` - Fetch admin stats
+- `useUpdateUser()` - Update user mutation
+- `useDeleteUser()` - Delete user mutation
+- `useDeleteSession()` - Delete session mutation
+
+**Suspense Hooks** (`src/hooks/use-admin-suspense.ts`):
+- Same hooks with `Suspense` suffix
+- Data guaranteed to be defined
+- Errors propagate to Error Boundaries
+- Use with `<Suspense>` boundaries
+
+## SSR & Hydration
+
+### Server Component Pattern
+
+```tsx
+// src/app/app/admin/page.tsx
+export default async function AdminPage() {
+  // 1. Auth check (Better Auth)
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/auth/sign-in");
+  
+  // 2. Create QueryClient (isolated per request)
+  const queryClient = getServerQueryClient();
+  
+  // 3. Prefetch in parallel
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.admin.stats(),
+      queryFn: fetchAdminStatsServer,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.users.list(),
+      queryFn: () => fetchUsersServer({ limit: 50 }),
+    }),
+  ]);
+  
+  // 4. Dehydrate and hydrate
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <AdminDashboard />
+    </HydrationBoundary>
+  );
+}
+```
+
+### Key Concepts
+
+- **Server**: New QueryClient per request → isolated caches
+- **Client**: Singleton QueryClient → shared cache
+- **Hydration**: Server-prefetched data transfers to client cache
+- **Streaming**: Pending queries can be dehydrated and streamed
+
+### Best Practices
+
+1. **Prefetch critical data only** - What users will definitely see
+2. **Use parallel prefetching** - `Promise.all([...])`
+3. **Handle dependent queries** - Fetch prerequisite data first
+4. **Use `fetchQuery` for critical** - Throws errors (for 404/500 handling)
+5. **Use `prefetchQuery` for optional** - Gracefully degrades
+
+## Suspense
+
+### Basic Usage
+
+```tsx
+import { Suspense } from "react";
+import { useAdminStatsSuspense } from "@/hooks/use-admin-suspense";
+
+function StatsContent() {
+  // Data is guaranteed to be defined!
+  const { data } = useAdminStatsSuspense();
+  return <div>Users: {data.users.total}</div>;
+}
+
+export function Stats() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <StatsContent />
+    </Suspense>
+  );
+}
+```
+
+### Error Boundaries
+
+Wrap Suspense queries in Error Boundaries:
+
+```tsx
+import { ErrorBoundary } from "@/components/error-boundary";
+
+<ErrorBoundary>
+  <Suspense fallback={<Loading />}>
+    <ComponentWithSuspenseQuery />
+  </Suspense>
+</ErrorBoundary>
+```
+
+### When to Use
+
+**Use Suspense when:**
+- ✅ Automatic loading states via Suspense boundaries
+- ✅ Guaranteed data types (no optional chaining)
+- ✅ Using Error Boundaries for error handling
+- ✅ Better code organization
+
+**Use regular hooks when:**
+- ✅ Need conditional queries (`enabled` option)
+- ✅ Fine-grained control over loading/error states
+- ✅ Inline loading states needed
+- ✅ Gradual migration
+
+### Important Notes
+
+- ❌ Suspense queries can't be disabled
+- ❌ No `placeholderData` support (use `startTransition`)
+- ✅ Errors propagate to Error Boundaries automatically
+- ✅ TypeScript types are non-nullable
+
+## Better Auth Integration
+
+### Server-Side (Better Auth API)
+
+```tsx
+// Server Component or API Route
+const session = await auth.api.getSession({ headers });
+if (!session) redirect("/auth/sign-in");
+```
+
+### Client-Side (TanStack Query)
+
+```tsx
+// Client Component
+"use client";
+
+const { data: users } = useUsers(); // Uses TanStack Query
+const { data: session } = authClient.useSession(); // Better Auth Client (already uses TanStack Query)
+```
+
+### Pattern: Server Auth → Client Data
+
+```tsx
+// Server Component: Auth check
+export default async function Page() {
+  const session = await auth.api.getSession({ headers });
+  if (!session) redirect("/auth/sign-in");
+  return <DataComponent />;
+}
+
+// Client Component: Fetch data
+"use client";
+function DataComponent() {
+  const { data } = useUsers(); // TanStack Query
+  return <UsersList users={data.users} />;
+}
+```
+
+## Mutations
+
+### Basic Pattern
+
+```tsx
+const updateUser = useUpdateUser();
+
+// Use mutation
+updateUser.mutate({ id: userId, data: { role: "admin" } });
+
+// Or with async/await
+try {
+  const user = await updateUser.mutateAsync({ id: userId, data });
+  toast.success("User updated");
+} catch (error) {
+  toast.error("Failed to update");
+}
+```
+
+### Cache Invalidation
+
+Mutations automatically invalidate related queries:
+
+```tsx
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: updateUser,
+    onSuccess: (data, variables) => {
+      // Update specific cache entry
+      queryClient.setQueryData(queryKeys.users.detail(variables.id), data);
+      
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
+    },
+  });
+}
+```
+
+## Error Handling
+
+### API Functions
+
+All API functions throw errors consistently:
+
+```tsx
+export async function fetchUsers() {
+  const response = await fetch("/api/admin/users");
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: "Unknown error" }));
+    throw new Error(error.error || `Failed: ${response.statusText}`);
+  }
+  return response.json();
+}
+```
+
+### Components
+
+```tsx
+// Regular hooks
+const { isError, error } = useUsers();
+if (isError) {
+  return <Error message={error.message} />;
+}
+
+// Suspense hooks (automatic Error Boundary)
+<ErrorBoundary>
+  <Suspense>
+    <ComponentWithSuspenseQuery />
+  </Suspense>
+</ErrorBoundary>
+```
+
+## DevTools
+
+React Query Devtools are included in development:
+
+```tsx
+// Automatically included in src/app/providers.tsx
+{process.env.NODE_ENV === "development" && (
+  <ReactQueryDevtools initialIsOpen={false} />
+)}
+```
+
+Access via floating button (bottom-right) in development mode.
+
+## Adding New Resources
+
+1. **Query Keys** (`src/lib/api/query-keys.ts`):
+   ```tsx
+   posts: {
+     all: ["posts"] as const,
+     lists: () => [...queryKeys.posts.all, "list"] as const,
+     list: (filters?) => [...queryKeys.posts.lists(), { filters }] as const,
+     detail: (id) => [...queryKeys.posts.all, "detail", id] as const,
+   }
+   ```
+
+2. **Types** (`src/lib/api/types.ts`):
+   ```tsx
+   export type Post = typeof post.$inferSelect;
+   export interface PostListFilters { ... }
+   ```
+
+3. **API Client** (`src/lib/api/admin.ts`):
+   ```tsx
+   export async function fetchPosts(filters?): Promise<PostListResponse> {
+     // HTTP request with error handling
+   }
+   ```
+
+4. **Server Queries** (`src/lib/api/server-queries.ts`):
+   ```tsx
+   export async function fetchPostsServer(filters?) {
+     // Direct database access
+   }
+   ```
+
+5. **Hooks** (`src/hooks/use-admin.ts`):
+   ```tsx
+   export function usePosts(filters?) {
+     return useQuery({
+       queryKey: queryKeys.posts.list(filters),
+       queryFn: () => fetchPosts(filters),
+     });
+   }
+   ```
+
+6. **Suspense Hooks** (`src/hooks/use-admin-suspense.ts`):
+   ```tsx
+   export function usePostsSuspense(filters?) {
+     return useSuspenseQuery({
+       queryKey: queryKeys.posts.list(filters),
+       queryFn: () => fetchPosts(filters),
+     });
+   }
+   ```
+
+## Best Practices Summary
+
+✅ **Do:**
+- Always use query key factory
+- Include all variables in query keys
+- Check `response.ok` for fetch() calls
+- Throw errors (don't return undefined)
+- Use server functions for SSR prefetching
+- Check `isPending` before `isError`
+- Prefetch in parallel with `Promise.all()`
+- Wrap Suspense queries in Error Boundaries
+
+❌ **Don't:**
+- Create query keys manually
+- Forget variables in query keys
+- Use non-serializable values in keys
+- Return undefined on error
+- Mix manual state management with TanStack Query
+- Await prefetches sequentially (use parallel)
+
+## Default Configuration
+
+```tsx
+{
+  staleTime: 60 * 1000,        // 1 minute
+  gcTime: 5 * 60 * 1000,       // 5 minutes
+  retry: 0,                     // No retries
+  refetchOnWindowFocus: true,   // Refetch on focus
+}
+```
+
+## Type Safety
+
+- All types derived from database schema
+- Query keys are fully type-safe
+- TypeScript narrows types based on status checks
+- Suspense hooks guarantee non-nullable data
+
+## Common Patterns
+
+### Conditional Queries
+```tsx
+useQuery({
+  queryKey: queryKeys.users.detail(userId),
+  queryFn: () => fetchUser(userId),
+  enabled: !!userId, // Only fetch if userId exists
+})
+```
+
+### Parallel Queries
+```tsx
+const [usersQuery, statsQuery] = useSuspenseQueries({
+  queries: [
+    { queryKey: queryKeys.users.list(), queryFn: fetchUsers },
+    { queryKey: queryKeys.admin.stats(), queryFn: fetchStats },
+  ],
+});
+```
+
+### Dependent Queries
+```tsx
+const { data: user } = useUser(userId);
+const userId = user?.id;
+
+const { data: projects } = useQuery({
+  queryKey: queryKeys.projects.list(userId),
+  queryFn: () => fetchProjects(userId),
+  enabled: !!userId, // Only fetch after user is loaded
+});
+```
+
+## Integration Points
+
+- **Better Auth**: Server-side auth checks, client-side session management
+- **Drizzle ORM**: Direct database access for server queries
+- **Next.js App Router**: Server Components for prefetching, Client Components for hooks
+- **React Suspense**: Automatic loading states with Suspense hooks
+- **Error Boundaries**: Automatic error propagation with `ErrorBoundary` component
