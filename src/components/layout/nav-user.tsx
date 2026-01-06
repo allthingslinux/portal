@@ -25,6 +25,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { UserAvatar } from "@daveyplate/better-auth-ui";
 
 import { authClient } from "@/auth/client";
@@ -46,6 +47,7 @@ import {
 
 export function NavUser() {
   const { isMobile } = useSidebar();
+  const router = useRouter();
   const { data: session } = authClient.useSession();
 
   if (!session?.user) {
@@ -121,7 +123,7 @@ export function NavUser() {
                 await authClient.signOut({
                   fetchOptions: {
                     onSuccess: () => {
-                      window.location.href = "/auth/sign-in";
+                      router.push("/auth/sign-in");
                     },
                   },
                 });

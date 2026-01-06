@@ -1,54 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Ban, Shield, UserCheck, Users } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { authClient } from "@/auth/client";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAdminStats } from "@/hooks/use-admin";
 
 export function AdminStats() {
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    adminUsers: 0,
-    bannedUsers: 0,
-    activeUsers: 0,
-  });
+  const { data: stats, isPending, isError, error } = useAdminStats();
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        // Fetch all users to calculate stats
-        const { data: allUsers } = await authClient.admin.listUsers({
-          query: {
-            limit: 1000, // Adjust based on your needs
-          },
-        });
+  if (isPending) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                <Skeleton className="h-4 w-24" />
+              </CardTitle>
+              <Skeleton className="h-4 w-4" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-8 w-16 mb-1" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
-        if (allUsers) {
-          const totalUsers = allUsers.users.length;
-          const adminUsers = allUsers.users.filter(
-            (user) => user.role === "admin" || user.role?.includes("admin")
-          ).length;
-          const bannedUsers = allUsers.users.filter(
-            (user) => user.banned
-          ).length;
-          const activeUsers = totalUsers - bannedUsers;
+  if (isError) {
+    return (
+      <div className="text-center text-destructive">
+        Failed to load statistics: {error.message}
+      </div>
+    );
+  }
 
-          setStats({
-            totalUsers,
-            adminUsers,
-            bannedUsers,
-            activeUsers,
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch admin stats:", error);
-      }
-    };
-
-    fetchStats();
-  }, []);
-
+  // TypeScript knows stats is defined at this point
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
@@ -57,7 +46,7 @@ export function AdminStats() {
           <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="font-bold text-2xl">{stats.totalUsers}</div>
+          <div className="font-bold text-2xl">{stats.users.total}</div>
         </CardContent>
       </Card>
 
@@ -67,17 +56,17 @@ export function AdminStats() {
           <Shield className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="font-bold text-2xl">{stats.adminUsers}</div>
+          <div className="font-bold text-2xl">{stats.users.admins}</div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="font-medium text-sm">Active Users</CardTitle>
+          <CardTitle className="font-medium text-sm">Active Sessions</CardTitle>
           <UserCheck className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="font-bold text-2xl">{stats.activeUsers}</div>
+          <div className="font-bold text-2xl">{stats.sessions.active}</div>
         </CardContent>
       </Card>
 
@@ -87,7 +76,7 @@ export function AdminStats() {
           <Ban className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="font-bold text-2xl">{stats.bannedUsers}</div>
+          <div className="font-bold text-2xl">{stats.users.banned}</div>
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -21,56 +20,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { authClient } from "@/auth/client";
-
-interface Session {
-  id: string;
-  userId: string;
-  userAgent?: string;
-  ipAddress?: string;
-  createdAt: string;
-  expiresAt: string;
-  impersonatedBy?: string;
-  user?: {
-    id: string;
-    email: string;
-    name?: string;
-  };
-}
+import { useDeleteSession, useSessions } from "@/hooks/use-admin";
 
 export function SessionManagement() {
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isPending, error } = useSessions();
+  const deleteSession = useDeleteSession();
 
-  const fetchSessions = useCallback(async () => {
+  const sessions = data?.sessions ?? [];
+
+  const handleRevokeSession = async (sessionId: string) => {
     try {
-      setLoading(true);
-      const response = await fetch("/api/admin/sessions");
-      if (!response.ok) {
-        throw new Error("Failed to fetch sessions");
-      }
-      const data = await response.json();
-      setSessions(data.sessions || []);
-    } catch (error) {
-      toast.error("Failed to fetch sessions");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchSessions();
-  }, [fetchSessions]);
-
-  const handleRevokeSession = async (sessionToken: string) => {
-    try {
-      await authClient.admin.revokeUserSession({
-        sessionToken,
-      });
+      await deleteSession.mutateAsync(sessionId);
       toast.success("Session revoked");
-      fetchSessions();
-    } catch (_error) {
+    } catch {
       toast.error("Failed to revoke session");
     }
   };
@@ -98,21 +60,31 @@ export function SessionManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading && (
+              {isPending && (
                 <TableRow>
                   <TableCell className="text-center" colSpan={7}>
                     Loading...
                   </TableCell>
                 </TableRow>
               )}
-              {!loading && sessions.length === 0 && (
+              {error && (
+                <TableRow>
+                  <TableCell
+                    className="text-center text-destructive"
+                    colSpan={7}
+                  >
+                    Failed to load sessions: {error.message}
+                  </TableCell>
+                </TableRow>
+              )}
+              {!(isPending || error) && sessions.length === 0 && (
                 <TableRow>
                   <TableCell className="text-center" colSpan={7}>
                     No active sessions found.
                   </TableCell>
                 </TableRow>
               )}
-              {!loading &&
+              {!(isPending || error) &&
                 sessions.length > 0 &&
                 sessions.map((session) => (
                   <TableRow key={session.id}>
@@ -145,6 +117,7 @@ export function SessionManagement() {
                     </TableCell>
                     <TableCell>
                       <Button
+                        disabled={deleteSession.isPending}
                         onClick={() => handleRevokeSession(session.id)}
                         size="sm"
                         variant="outline"

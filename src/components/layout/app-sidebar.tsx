@@ -71,8 +71,25 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { canViewAdmin } = usePermissions();
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  /**
+   * Whether the user can view admin section.
+   * Passed from server to prevent client-side loading delay.
+   */
+  canViewAdmin?: boolean;
+}
+
+export function AppSidebar({
+  canViewAdmin: serverCanViewAdmin,
+  ...props
+}: AppSidebarProps) {
+  // Use server-provided permission if available (prevents delay on page refresh)
+  // Only use client-side check if server value is not provided (for flexibility)
+  const clientPermissions = usePermissions();
+  const canViewAdmin =
+    serverCanViewAdmin !== undefined
+      ? serverCanViewAdmin
+      : clientPermissions.canViewAdmin;
 
   const navMain = [
     {

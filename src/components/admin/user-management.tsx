@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Ban, Eye } from "lucide-react";
-import { toast } from "sonner";
 
 import {
   Card,
@@ -27,111 +26,42 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { authClient } from "@/auth/client";
+import {
+  useBanUser,
+  useImpersonateUser,
+  useSetUserRole,
+  useUnbanUser,
+  useUsers,
+} from "@/hooks";
 import { Badge } from "@/ui/badge";
 import { Button } from "@/ui/button";
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role?: string;
-  banned?: boolean | null;
-  banReason?: string | null;
-  createdAt: string | Date;
-}
-
 export function UserManagement() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
-  const fetchUsers = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data } = await authClient.admin.listUsers({
-        query: {
-          searchValue: searchTerm || undefined,
-          searchField: "email",
-          limit: 50,
-        },
-      });
-
-      if (data) {
-        setUsers(data.users);
-      }
-    } catch (error) {
-      toast.error("Failed to fetch users");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchTerm]);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
-
-  const handleSetRole = async (
-    userId: string,
-    role: "user" | "staff" | "admin"
-  ) => {
-    try {
-      await authClient.admin.setRole({
-        userId,
-        role,
-      });
-      toast.success("User role updated");
-      fetchUsers();
-    } catch (_error) {
-      toast.error("Failed to update user role");
-    }
-  };
-
-  const handleBanUser = async (userId: string) => {
-    try {
-      await authClient.admin.banUser({
-        userId,
-        banReason: "Banned by admin",
-      });
-      toast.success("User banned");
-      fetchUsers();
-    } catch (_error) {
-      toast.error("Failed to ban user");
-    }
-  };
-
-  const handleUnbanUser = async (userId: string) => {
-    try {
-      await authClient.admin.unbanUser({
-        userId,
-      });
-      toast.success("User unbanned");
-      fetchUsers();
-    } catch (_error) {
-      toast.error("Failed to unban user");
-    }
-  };
-
-  const handleImpersonateUser = async (userId: string) => {
-    try {
-      await authClient.admin.impersonateUser({
-        userId,
-      });
-      toast.success("Now impersonating user");
-      window.location.href = "/app";
-    } catch (_error) {
-      toast.error("Failed to impersonate user");
-    }
-  };
-
-  const filteredUsers = users.filter((user) => {
-    if (roleFilter !== "all" && user.role !== roleFilter) {
-      return false;
-    }
-    return true;
+  // Fetch users with search filter
+  const { data, isPending, error } = useUsers({
+    search: searchTerm || undefined,
+    limit: 50,
   });
+
+  // Mutations
+  const setRole = useSetUserRole();
+  const banUser = useBanUser();
+  const unbanUser = useUnbanUser();
+  const impersonateUser = useImpersonateUser();
+
+  // Filter users by role (client-side filtering)
+  const filteredUsers = useMemo(() => {
+    const users = data?.users ?? [];
+    if (roleFilter === "all") {
+      return users;
+    }
+    return users.filter((user) => user.role === roleFilter);
+  }, [data?.users, roleFilter]);
+
+  const hasData = !(isPending || error);
 
   return (
     <Card>
@@ -174,21 +104,31 @@ export function UserManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading && (
+              {isPending && (
                 <TableRow>
                   <TableCell className="text-center" colSpan={5}>
                     Loading...
                   </TableCell>
                 </TableRow>
               )}
-              {!loading && filteredUsers.length === 0 && (
+              {!isPending && error && (
+                <TableRow>
+                  <TableCell
+                    className="text-center text-destructive"
+                    colSpan={5}
+                  >
+                    Failed to load users: {error.message}
+                  </TableCell>
+                </TableRow>
+              )}
+              {hasData && filteredUsers.length === 0 && (
                 <TableRow>
                   <TableCell className="text-center" colSpan={5}>
                     No users found
                   </TableCell>
                 </TableRow>
               )}
-              {!loading &&
+              {hasData &&
                 filteredUsers.length > 0 &&
                 filteredUsers.map((user) => (
                   <TableRow key={user.id}>
@@ -202,11 +142,12 @@ export function UserManagement() {
                     </TableCell>
                     <TableCell>
                       <Select
+                        disabled={setRole.isPending}
                         onValueChange={(role) =>
-                          handleSetRole(
-                            user.id,
-                            role as "user" | "staff" | "admin"
-                          )
+                          setRole.mutate({
+                            userId: user.id,
+                            role: role as "user" | "staff" | "admin",
+                          })
                         }
                         value={user.role || "user"}
                       >
@@ -233,7 +174,8 @@ export function UserManagement() {
                     <TableCell>
                       <div className="flex gap-2">
                         <Button
-                          onClick={() => handleImpersonateUser(user.id)}
+                          disabled={impersonateUser.isPending}
+                          onClick={() => impersonateUser.mutate(user.id)}
                           size="sm"
                           variant="outline"
                         >
@@ -241,7 +183,8 @@ export function UserManagement() {
                         </Button>
                         {user.banned ? (
                           <Button
-                            onClick={() => handleUnbanUser(user.id)}
+                            disabled={unbanUser.isPending}
+                            onClick={() => unbanUser.mutate(user.id)}
                             size="sm"
                             variant="outline"
                           >
@@ -249,7 +192,8 @@ export function UserManagement() {
                           </Button>
                         ) : (
                           <Button
-                            onClick={() => handleBanUser(user.id)}
+                            disabled={banUser.isPending}
+                            onClick={() => banUser.mutate({ userId: user.id })}
                             size="sm"
                             variant="outline"
                           >
