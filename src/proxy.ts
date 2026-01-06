@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -7,19 +6,24 @@ import { auth } from "@/auth";
 // ============================================================================
 // Next.js Proxy (Next.js 16+)
 // ============================================================================
-// Proxy runs on Node.js runtime and can perform full session validation
-// For cookie-only checks (faster but less secure), use getSessionCookie instead
+// Proxy runs before a request is completed and can modify the response.
+// According to Next.js docs, Proxy should be used for optimistic checks like
+// permission-based redirects, not as a full session management solution.
+//
+// Important notes:
+// - Proxy should use request.headers directly (not await headers())
+// - Full auth checks should still be performed in pages/route handlers
+// - This provides optimistic UX but doesn't replace server-side validation
 
 export async function proxy(request: NextRequest) {
-  // Get session using Better Auth's API for full validation
-  // This checks the session cookie and validates it against the database
+  // Get session using Better Auth's API for optimistic validation
+  // This checks the session cookie - full validation happens in pages/routes
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: request.headers,
   });
 
-  // THIS IS NOT SECURE!
-  // This is the recommended approach to optimistically redirect users
-  // We recommend handling auth checks in each page/route
+  // Optimistic redirect for unauthenticated users
+  // Pages and route handlers should still perform full auth checks
   if (!session) {
     // Redirect to sign-in with the original path as redirectTo parameter
     const redirectTo = request.nextUrl.pathname + request.nextUrl.search;
