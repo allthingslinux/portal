@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SignedIn, SignedOut, UserButton } from "@daveyplate/better-auth-ui";
 
 import { Button } from "@/components/ui/button";
+import { createPageMetadata } from "./metadata";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Home",
+  description:
+    "Welcome to Portal - Your gateway to All Things Linux services and community.",
+});
 
 // ============================================================================
 // Home Page

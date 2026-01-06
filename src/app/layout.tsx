@@ -3,15 +3,14 @@ import Script from "next/script";
 
 import { ReactScan } from "@/components/ReactScan";
 import { Providers } from "./providers";
+import { WebVitalsReporter } from "./web-vitals";
 
 import "@/styles/globals.css";
 
 import { geistMono, geistSans, inter } from "./fonts";
+import { defaultMetadata } from "./metadata";
 
-export const metadata: Metadata = {
-  title: "Portal",
-  description: "All Things Linux",
-};
+export const metadata: Metadata = defaultMetadata;
 
 export default function RootLayout({
   children,
@@ -42,6 +41,7 @@ export default function RootLayout({
       <body>
         <ReactScan />
         <Providers>{children}</Providers>
+        <WebVitalsReporter />
       </body>
     </html>
   );

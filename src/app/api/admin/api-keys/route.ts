@@ -1,9 +1,10 @@
 import type { NextRequest } from "next/server";
-import { and, desc, eq, gt } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 import { handleAPIError, requireAdminOrStaff } from "@/lib/api/utils";
 import { db } from "@/lib/db";
-import { session, user } from "@/lib/db/schema/auth";
+import { apikey } from "@/lib/db/schema/api-keys";
+import { user } from "@/lib/db/schema/auth";
 
 // Route handlers are dynamic by default, but we explicitly mark them as such
 // since they access database and request headers
@@ -15,44 +16,44 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const userIdParam = searchParams.get("userId");
-    const active = searchParams.get("active");
+    const enabled = searchParams.get("enabled");
     const limit = Number.parseInt(searchParams.get("limit") || "100", 10);
     const offset = Number.parseInt(searchParams.get("offset") || "0", 10);
 
-    // Build where conditions for select query
-    const conditions: ReturnType<typeof eq | typeof gt>[] = [];
+    // Build where conditions
+    const conditions: ReturnType<typeof eq>[] = [];
     if (userIdParam) {
-      conditions.push(eq(session.userId, userIdParam));
+      conditions.push(eq(apikey.userId, userIdParam));
     }
-    if (active === "true") {
-      conditions.push(gt(session.expiresAt, new Date()));
+    if (enabled !== null) {
+      conditions.push(eq(apikey.enabled, enabled === "true"));
     }
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    // Fetch sessions and join with users
-    const sessionsData = await db
+    // Fetch API keys with user information
+    const apiKeysData = await db
       .select({
-        session,
+        apikey,
         user: {
           id: user.id,
           email: user.email,
           name: user.name,
         },
       })
-      .from(session)
-      .leftJoin(user, eq(session.userId, user.id))
+      .from(apikey)
+      .leftJoin(user, eq(apikey.userId, user.id))
       .where(whereClause)
-      .orderBy(desc(session.createdAt))
+      .orderBy(desc(apikey.createdAt))
       .limit(limit)
       .offset(offset);
 
-    // Transform to match expected format
-    const sessions = sessionsData.map((row) => ({
-      ...row.session,
+    // Transform to match expected format (exclude hashed key from response)
+    const apiKeys = apiKeysData.map((row) => ({
+      ...row.apikey,
       user: row.user?.id ? row.user : undefined,
     }));
 
-    return Response.json({ sessions });
+    return Response.json({ apiKeys });
   } catch (error) {
     return handleAPIError(error);
   }

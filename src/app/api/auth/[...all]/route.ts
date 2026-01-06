@@ -4,6 +4,10 @@ import { toNextJsHandler } from "better-auth/next-js";
 
 import { auth } from "@/auth";
 
+// Route handlers are dynamic by default, but we explicitly mark them as such
+// since they access request headers and handle authentication
+export const dynamic = "force-dynamic";
+
 // Add CORS headers for OAuth2 endpoints in development
 function addCorsHeaders(url: URL, headers: Headers) {
   if (
