@@ -1,16 +1,10 @@
 "use client";
 
-// ============================================================================
-// Navigation User Component
-// ============================================================================
-// This component displays the user info and footer actions in the sidebar.
-// Uses Better Auth UI's UserAvatar component for consistent user display.
-
-import { HelpCircle, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserAvatar } from "@daveyplate/better-auth-ui";
 
+import type { FooterAction } from "@/lib/navigation/types";
 import { authClient } from "@/auth/client";
 import {
   SidebarMenu,
@@ -19,7 +13,11 @@ import {
   useSidebar,
 } from "@/ui/sidebar";
 
-export function NavUser() {
+interface SidebarUserSectionProps {
+  actions: FooterAction[];
+}
+
+export function SidebarUserSection({ actions }: SidebarUserSectionProps) {
   const router = useRouter();
   const { state } = useSidebar();
   const { data: session } = authClient.useSession();
@@ -64,24 +62,32 @@ export function NavUser() {
       </SidebarMenuItem>
 
       {/* Footer Actions */}
-      <SidebarMenuItem>
-        <SidebarMenuButton asChild>
-          <Link href="/support">
-            <HelpCircle />
-            <span>Support</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-          onClick={handleLogout}
-        >
-          <LogOut />
-          <span>Log out</span>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
+      {actions.map((action) => (
+        <SidebarMenuItem key={action.id}>
+          {action.action === "logout" ? (
+            <SidebarMenuButton
+              className={
+                action.variant === "destructive"
+                  ? "text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  : undefined
+              }
+              onClick={handleLogout}
+            >
+              <action.icon />
+              <span>{action.label}</span>
+            </SidebarMenuButton>
+          ) : (
+            action.path && (
+              <SidebarMenuButton asChild>
+                <Link href={action.path}>
+                  <action.icon />
+                  <span>{action.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            )
+          )}
+        </SidebarMenuItem>
+      ))}
     </SidebarMenu>
   );
 }

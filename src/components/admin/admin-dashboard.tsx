@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PageHeader } from "@/components/layout/page-header";
+import { PageHeader } from "@/components/layout/page/page-header";
 import { AdminStats } from "./admin-stats";
 import { SessionManagement } from "./session-management";
 import { UserManagement } from "./user-management";
@@ -9,10 +9,7 @@ import { UserManagement } from "./user-management";
 export function AdminDashboard() {
   return (
     <div className="space-y-6">
-      <PageHeader
-        description="Manage users, sessions, and system settings."
-        title="Admin Dashboard"
-      />
+      <PageHeader pathname="/app/admin" />
 
       <AdminStats />
 
