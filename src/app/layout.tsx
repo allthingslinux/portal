@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 
 import { ReactScan } from "@/components/ReactScan";
 import { Providers } from "./providers";
@@ -7,20 +9,23 @@ import { WebVitalsReporter } from "./web-vitals";
 
 import "@/styles/globals.css";
 
+import { defaultMetadata } from "@/lib/seo";
 import { geistMono, geistSans, inter } from "./fonts";
-import { defaultMetadata } from "@/lib/navigation";
 
 export const metadata: Metadata = defaultMetadata;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
     <html
       className={`${inter.variable} ${geistSans.variable} ${geistMono.variable}`}
-      lang="en"
+      lang={locale}
       suppressHydrationWarning
     >
       <head>
@@ -40,7 +45,9 @@ export default function RootLayout({
       </head>
       <body>
         <ReactScan />
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
         <WebVitalsReporter />
       </body>
     </html>
