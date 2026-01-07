@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "lokalise.i18n-ally",
+    "biomejs.biome",
+    "mikestead.dotenv",
+    "editorconfig.editorconfig",
+    "usernamehw.errorlens",
+    "bradlc.vscode-tailwindcss"
+  ]
+}
