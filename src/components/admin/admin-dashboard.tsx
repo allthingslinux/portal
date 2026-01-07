@@ -10,8 +10,8 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Admin Dashboard"
         description="Manage users, sessions, and system settings."
+        title="Admin Dashboard"
       />
 
       <AdminStats />
