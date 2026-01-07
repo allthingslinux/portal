@@ -4,10 +4,10 @@
 // Centralized breadcrumb configuration for automatic breadcrumb generation.
 // Maps route paths to their display labels.
 
-export type BreadcrumbItem = {
+export interface BreadcrumbItem {
   label: string;
   href?: string;
-};
+}
 
 // Route to label mapping for automatic breadcrumb generation
 const routeLabels: Record<string, string> = {
@@ -33,7 +33,10 @@ function generateLabelFromSegment(segment: string): string {
  * Generate breadcrumbs from a pathname
  * Automatically creates breadcrumb trail from route segments
  */
-export function generateBreadcrumbsFromPath(pathname: string): BreadcrumbItem[] {
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Breadcrumb logic is naturally complex
+export function generateBreadcrumbsFromPath(
+  pathname: string
+): BreadcrumbItem[] {
   // Remove query strings and hashes
   const cleanPath = pathname.split("?")[0].split("#")[0];
 
