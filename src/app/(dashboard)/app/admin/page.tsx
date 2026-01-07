@@ -10,10 +10,14 @@ import {
   fetchUsersServer,
 } from "@/lib/api/server-queries";
 import { verifyAdminOrStaffSession } from "@/lib/auth/dal";
-import { getRouteMetadata, routeConfig } from "@/lib/navigation";
+import { getServerRouteResolver, routeConfig } from "@/lib/routes";
+import { getRouteMetadata } from "@/lib/seo";
 
 // Metadata is automatically generated from route config
-export const metadata: Metadata = getRouteMetadata("/app/admin", routeConfig);
+export async function generateMetadata(): Promise<Metadata> {
+  const resolver = await getServerRouteResolver();
+  return getRouteMetadata("/app/admin", routeConfig, resolver);
+}
 
 export default async function AdminPage() {
   // Use DAL to verify session and check admin/staff role
