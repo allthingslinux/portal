@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { Skeleton } from "@/components/ui/skeleton";
 import { PageHeader } from "@/components/layout/page-header";
 import { getServerQueryClient } from "@/lib/api/hydration";
 import { queryKeys } from "@/lib/api/query-keys";
@@ -42,12 +41,7 @@ export default async function AppPage() {
             title={`Welcome back, ${user.name || user.email}!`}
           />
 
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <Skeleton className="aspect-video rounded-xl" />
-            <Skeleton className="aspect-video rounded-xl" />
-            <Skeleton className="aspect-video rounded-xl" />
-          </div>
-          <Skeleton className="min-h-screen flex-1 rounded-xl md:min-h-min" />
+          {/* Dashboard content will be added here */}
         </div>
       </div>
     </HydrationBoundary>

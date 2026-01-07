@@ -5,14 +5,8 @@
 // ============================================================================
 // Client Component wrapper for Better Auth UI settings components.
 // Uses dynamic imports with ssr: false to prevent hydration mismatches.
-// This component must be a Client Component because Next.js doesn't allow
-// ssr: false with dynamic imports in Server Components.
 
-import {
-  AccountSettingsCards,
-  ApiKeysCard,
-  SecuritySettingsCards,
-} from "@daveyplate/better-auth-ui";
+import dynamic from "next/dynamic";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -20,10 +14,38 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Settings Content Component
 // ============================================================================
 // This component contains the tabs and Better Auth UI settings components.
-// It's a Client Component to allow dynamic imports with ssr: false.
-//
-// The dynamic imports use loading states to show skeletons immediately while
-// components load, preventing flicker when navigating to this page.
+// It's a Client Component because we disable SSR for Better Auth UI components.
+
+const AccountSettingsCards = dynamic(
+  () =>
+    import("@daveyplate/better-auth-ui").then((m) => ({
+      default: m.AccountSettingsCards,
+    })),
+  {
+    ssr: false,
+  }
+);
+
+const SecuritySettingsCards = dynamic(
+  () =>
+    import("@daveyplate/better-auth-ui").then((m) => ({
+      default: m.SecuritySettingsCards,
+    })),
+  {
+    ssr: false,
+  }
+);
+
+const ApiKeysCard = dynamic(
+  () =>
+    import("@daveyplate/better-auth-ui").then((m) => ({
+      default: m.ApiKeysCard,
+    })),
+  {
+    ssr: false,
+  }
+);
+
 export function SettingsContent() {
   return (
     <div className="max-w-4xl">
@@ -35,17 +57,14 @@ export function SettingsContent() {
         </TabsList>
 
         <TabsContent className="mt-6 space-y-6" value="account">
-          {/* Loading skeleton shows while component loads */}
           <AccountSettingsCards />
         </TabsContent>
 
         <TabsContent className="mt-6 space-y-6" value="security">
-          {/* Loading skeleton shows while component loads */}
           <SecuritySettingsCards />
         </TabsContent>
 
         <TabsContent className="mt-6 space-y-6" value="api-keys">
-          {/* Loading skeleton shows while component loads */}
           <ApiKeysCard />
         </TabsContent>
       </Tabs>

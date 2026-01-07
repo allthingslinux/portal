@@ -6,7 +6,6 @@
 
 import type { ReactNode } from "react";
 
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface PageHeaderProps {
   title: ReactNode;
@@ -22,11 +21,3 @@ export function PageHeader({ title, description }: PageHeaderProps) {
   );
 }
 
-export function PageHeaderSkeleton() {
-  return (
-    <div className="space-y-2">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-5 w-96" />
-    </div>
-  );
-}

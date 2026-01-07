@@ -23,7 +23,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavMain } from "@/components/layout/nav-main";
-import { NavProjects } from "@/components/layout/nav-projects";
 import { NavUser } from "@/components/layout/nav-user";
 import { TeamSwitcher } from "@/components/layout/team-switcher";
 import { usePermissions } from "@/hooks/use-permissions";
@@ -71,7 +70,8 @@ const data = {
   ],
 };
 
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+interface AppSidebarProps
+  extends React.ComponentPropsWithoutRef<typeof Sidebar> {
   /**
    * Whether the user can view admin section.
    * Passed from server to prevent client-side loading delay.
@@ -80,7 +80,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({
-  canViewAdmin: serverCanViewAdmin,
+  canViewAdmin: serverCanViewAdmin = false,
   ...props
 }: AppSidebarProps) {
   // Use server-provided permission if available (prevents delay on page refresh)
@@ -93,24 +93,10 @@ export function AppSidebar({
 
   const navMain = [
     {
-      title: "App",
+      title: "Dashboard",
       url: "/app",
       icon: SquareTerminal,
       isActive: true,
-      items: [
-        {
-          title: "Overview",
-          url: "/app",
-        },
-        {
-          title: "Analytics",
-          url: "/app/analytics",
-        },
-        {
-          title: "Reports",
-          url: "/app/reports",
-        },
-      ],
     },
     {
       title: "Projects",
@@ -173,7 +159,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
-        <NavProjects projects={data.projects} />
+        {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

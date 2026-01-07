@@ -40,8 +40,9 @@ export default async function AdminPage() {
       queryFn: fetchAdminStatsServer,
     }),
     // Prefetch users list (first page)
+    // Match the filters used in UserManagement component
     queryClient.prefetchQuery({
-      queryKey: queryKeys.users.list(),
+      queryKey: queryKeys.users.list({ limit: 50 }),
       queryFn: () => fetchUsersServer({ limit: 50 }),
     }),
     // Prefetch sessions (first page)
