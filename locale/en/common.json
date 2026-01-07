@@ -1,0 +1,14 @@
+{
+  "loading": "Loading...",
+  "error": "Error",
+  "retry": "Retry",
+  "submit": "Submit",
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "close": "Close",
+  "back": "Back",
+  "next": "Next",
+  "previous": "Previous"
+}

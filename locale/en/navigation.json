@@ -1,0 +1,10 @@
+{
+  "home": "Home",
+  "dashboard": "Dashboard",
+  "settings": "Settings",
+  "admin": "Admin",
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "signOut": "Sign Out",
+  "backToDashboard": "Back to dashboard"
+}

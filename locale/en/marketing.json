@@ -1,0 +1,9 @@
+{
+  "homePage": {
+    "title": "Portal",
+    "description": "Welcome to your authentication-enabled Next.js app",
+    "goToDashboard": "Go to Dashboard",
+    "metadataTitle": "Home",
+    "metadataDescription": "Welcome to Portal - Your gateway to All Things Linux services and community."
+  }
+}

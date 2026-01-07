@@ -1,0 +1,17 @@
+{
+  "title": "Something went wrong",
+  "description": "An unexpected error occurred. Please try again.",
+  "retry": "Try again",
+  "goHome": "Go home",
+  "errorId": "Error ID",
+  "stackTrace": "Stack trace (development only)",
+  "unknownError": "An unknown error occurred",
+  "pageError": "An error occurred while loading this page. Please try again.",
+  "criticalError": "A critical error occurred. Please try refreshing the page.",
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "goHome": "Go home",
+    "goToDashboard": "Go to dashboard"
+  }
+}

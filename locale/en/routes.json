@@ -1,0 +1,146 @@
+{
+  "home": {
+    "label": "Home",
+    "metadata": {
+      "title": "Home",
+      "description": "Welcome to Portal - All Things Linux"
+    }
+  },
+  "sign-in": {
+    "label": "Sign In",
+    "metadata": {
+      "title": "Sign In",
+      "description": "Sign in to your account"
+    }
+  },
+  "sign-up": {
+    "label": "Sign Up",
+    "metadata": {
+      "title": "Sign Up",
+      "description": "Create a new account"
+    }
+  },
+  "dashboard": {
+    "label": "Dashboard",
+    "metadata": {
+      "title": "Dashboard",
+      "description": "Your comprehensive dashboard overview for managing all your All Things Linux services and account settings."
+    },
+    "ui": {
+      "title": "Welcome back, {name}!",
+      "description": "Here's your dashboard overview. Use the sidebar to navigate to account settings."
+    },
+    "breadcrumb": {
+      "label": "Overview"
+    }
+  },
+  "projects": {
+    "label": "Projects",
+    "metadata": {
+      "title": "Projects",
+      "description": "Manage your projects"
+    },
+    "ui": {
+      "title": "Projects",
+      "description": "Manage your projects"
+    },
+    "breadcrumb": {
+      "label": "Projects"
+    }
+  },
+  "projects-all": {
+    "label": "All Projects",
+    "breadcrumb": {
+      "label": "All Projects"
+    }
+  },
+  "projects-active": {
+    "label": "Active",
+    "breadcrumb": {
+      "label": "Active"
+    }
+  },
+  "projects-archived": {
+    "label": "Archived",
+    "breadcrumb": {
+      "label": "Archived"
+    }
+  },
+  "documentation": {
+    "label": "Documentation",
+    "metadata": {
+      "title": "Documentation",
+      "description": "Platform documentation"
+    },
+    "ui": {
+      "title": "Documentation",
+      "description": "Platform documentation"
+    },
+    "breadcrumb": {
+      "label": "Documentation"
+    }
+  },
+  "docs-intro": {
+    "label": "Introduction",
+    "breadcrumb": {
+      "label": "Introduction"
+    }
+  },
+  "docs-getting-started": {
+    "label": "Getting Started",
+    "breadcrumb": {
+      "label": "Getting Started"
+    }
+  },
+  "docs-api": {
+    "label": "API Reference",
+    "breadcrumb": {
+      "label": "API Reference"
+    }
+  },
+  "settings": {
+    "label": "Settings",
+    "metadata": {
+      "title": "Settings",
+      "description": "Manage your account and security settings"
+    },
+    "ui": {
+      "title": "Settings",
+      "description": "Manage your account and security settings"
+    },
+    "breadcrumb": {
+      "label": "Settings"
+    }
+  },
+  "admin": {
+    "label": "Admin",
+    "metadata": {
+      "title": "Admin Dashboard",
+      "description": "Administrative dashboard"
+    },
+    "ui": {
+      "title": "Admin",
+      "description": "Administrative dashboard"
+    },
+    "breadcrumb": {
+      "label": "Admin"
+    }
+  },
+  "group": {
+    "platform": {
+      "label": "Platform"
+    }
+  },
+  "footer": {
+    "support": {
+      "label": "Support",
+      "metadata": {
+        "title": "Support",
+        "description": "Get help and support"
+      }
+    },
+    "logout": {
+      "label": "Log out"
+    }
+  }
+}
