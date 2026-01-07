@@ -1,18 +1,25 @@
 import type { ReactNode } from "react";
 
-import { routeConfig } from "@/lib/navigation";
-import { getUIDisplay } from "@/lib/navigation/ui";
+import type { RouteTranslationResolver } from "@/lib/routes";
+import { getUIDisplay, routeConfig } from "@/lib/routes";
 
 interface PageHeaderProps {
   title?: ReactNode;
   description?: string;
   pathname?: string;
+  resolver?: RouteTranslationResolver;
 }
 
-export function PageHeader({ title, description, pathname }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  pathname,
+  resolver,
+}: PageHeaderProps) {
   // Get UI display values (with fallback to metadata)
+  // If resolver provided, translations will be automatically resolved
   const { title: uiTitle, description: uiDescription } = pathname
-    ? getUIDisplay(pathname, routeConfig)
+    ? getUIDisplay(pathname, routeConfig, resolver)
     : { title: undefined, description: undefined };
 
   // Use provided props, then UI display, then fallback to undefined
