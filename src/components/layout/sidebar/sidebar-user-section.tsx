@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserAvatar } from "@daveyplate/better-auth-ui";
 
-import type { FooterAction } from "@/lib/navigation/types";
+import type { FooterAction } from "@/lib/routes/types";
 import { authClient } from "@/auth/client";
 import {
   SidebarMenu,
@@ -62,32 +62,35 @@ export function SidebarUserSection({ actions }: SidebarUserSectionProps) {
       </SidebarMenuItem>
 
       {/* Footer Actions */}
-      {actions.map((action) => (
-        <SidebarMenuItem key={action.id}>
-          {action.action === "logout" ? (
-            <SidebarMenuButton
-              className={
-                action.variant === "destructive"
-                  ? "text-destructive hover:bg-destructive/10 hover:text-destructive"
-                  : undefined
-              }
-              onClick={handleLogout}
-            >
-              <action.icon />
-              <span>{action.label}</span>
-            </SidebarMenuButton>
-          ) : (
-            action.path && (
-              <SidebarMenuButton asChild>
-                <Link href={action.path}>
-                  <action.icon />
-                  <span>{action.label}</span>
-                </Link>
+      {actions.map((action) => {
+        const Icon = action.icon;
+        return (
+          <SidebarMenuItem key={action.id}>
+            {action.action === "logout" ? (
+              <SidebarMenuButton
+                className={
+                  action.variant === "destructive"
+                    ? "text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    : undefined
+                }
+                onClick={handleLogout}
+              >
+                <Icon />
+                <span>{action.label}</span>
               </SidebarMenuButton>
-            )
-          )}
-        </SidebarMenuItem>
-      ))}
+            ) : (
+              action.path && (
+                <SidebarMenuButton asChild>
+                  <Link href={action.path}>
+                    <Icon />
+                    <span>{action.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              )
+            )}
+          </SidebarMenuItem>
+        );
+      })}
     </SidebarMenu>
   );
 }
