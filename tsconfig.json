@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ESNext",
     "lib": [
       "dom",
       "dom.iterable",
@@ -55,7 +55,6 @@
     "node_modules/**",
     "references/**",
     "src/components/ui/**",
-    ".next/**",
     "src/lib/db/auth-schema.ts"
   ]
 }
