@@ -58,10 +58,15 @@ export async function fetchMySessions(filters?: {
   offset?: number;
 }) {
   const params = new URLSearchParams();
-  if (filters?.active !== undefined)
+  if (filters?.active !== undefined) {
     params.append("active", String(filters.active));
-  if (filters?.limit) params.append("limit", String(filters.limit));
-  if (filters?.offset) params.append("offset", String(filters.offset));
+  }
+  if (filters?.limit) {
+    params.append("limit", String(filters.limit));
+  }
+  if (filters?.offset) {
+    params.append("offset", String(filters.offset));
+  }
 
   const url = `/api/user/sessions${params.toString() ? `?${params}` : ""}`;
   const response = await fetch(url);

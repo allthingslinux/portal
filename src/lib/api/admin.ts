@@ -25,12 +25,21 @@ export async function fetchUsers(
   filters?: UserListFilters
 ): Promise<UserListResponse> {
   const params = new URLSearchParams();
-  if (filters?.role) params.append("role", filters.role);
-  if (filters?.banned !== undefined)
+  if (filters?.role) {
+    params.append("role", filters.role);
+  }
+  if (filters?.banned !== undefined) {
     params.append("banned", String(filters.banned));
-  if (filters?.search) params.append("search", filters.search);
-  if (filters?.limit) params.append("limit", String(filters.limit));
-  if (filters?.offset) params.append("offset", String(filters.offset));
+  }
+  if (filters?.search) {
+    params.append("search", filters.search);
+  }
+  if (filters?.limit) {
+    params.append("limit", String(filters.limit));
+  }
+  if (filters?.offset) {
+    params.append("offset", String(filters.offset));
+  }
 
   const url = `/api/admin/users${params.toString() ? `?${params}` : ""}`;
   const response = await fetch(url);
@@ -117,11 +126,18 @@ export async function fetchSessions(
   filters?: SessionListFilters
 ): Promise<SessionListResponse> {
   const params = new URLSearchParams();
-  if (filters?.userId) params.append("userId", filters.userId);
-  if (filters?.active !== undefined)
+  if (filters?.userId) {
+    params.append("userId", filters.userId);
+  }
+  if (filters?.active !== undefined) {
     params.append("active", String(filters.active));
-  if (filters?.limit) params.append("limit", String(filters.limit));
-  if (filters?.offset) params.append("offset", String(filters.offset));
+  }
+  if (filters?.limit) {
+    params.append("limit", String(filters.limit));
+  }
+  if (filters?.offset) {
+    params.append("offset", String(filters.offset));
+  }
 
   const url = `/api/admin/sessions${params.toString() ? `?${params}` : ""}`;
   const response = await fetch(url);
@@ -203,11 +219,18 @@ export async function fetchApiKeys(filters?: {
   offset?: number;
 }): Promise<ApiKeyListResponse> {
   const params = new URLSearchParams();
-  if (filters?.userId) params.append("userId", filters.userId);
-  if (filters?.enabled !== undefined)
+  if (filters?.userId) {
+    params.append("userId", filters.userId);
+  }
+  if (filters?.enabled !== undefined) {
     params.append("enabled", String(filters.enabled));
-  if (filters?.limit) params.append("limit", String(filters.limit));
-  if (filters?.offset) params.append("offset", String(filters.offset));
+  }
+  if (filters?.limit) {
+    params.append("limit", String(filters.limit));
+  }
+  if (filters?.offset) {
+    params.append("offset", String(filters.offset));
+  }
 
   const url = `/api/admin/api-keys${params.toString() ? `?${params}` : ""}`;
   const response = await fetch(url);
@@ -271,11 +294,18 @@ export async function fetchOAuthClients(filters?: {
   offset?: number;
 }): Promise<OAuthClientListResponse> {
   const params = new URLSearchParams();
-  if (filters?.userId) params.append("userId", filters.userId);
-  if (filters?.disabled !== undefined)
+  if (filters?.userId) {
+    params.append("userId", filters.userId);
+  }
+  if (filters?.disabled !== undefined) {
     params.append("disabled", String(filters.disabled));
-  if (filters?.limit) params.append("limit", String(filters.limit));
-  if (filters?.offset) params.append("offset", String(filters.offset));
+  }
+  if (filters?.limit) {
+    params.append("limit", String(filters.limit));
+  }
+  if (filters?.offset) {
+    params.append("offset", String(filters.offset));
+  }
 
   const url = `/api/admin/oauth-clients${params.toString() ? `?${params}` : ""}`;
   const response = await fetch(url);

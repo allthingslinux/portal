@@ -83,6 +83,8 @@ export async function requireAuth(request: NextRequest): Promise<AuthResult> {
 export class APIError extends Error {
   constructor(
     message: string,
+    // biome-ignore lint/style/noParameterProperties: Concise error class
+    // biome-ignore lint/style/useConsistentMemberAccessibility: Concise error class
     public status = 500
   ) {
     super(message);
