@@ -1,11 +1,8 @@
 "use client";
 
 import { usePermissions } from "@/hooks/use-permissions";
-import { routeConfig } from "@/lib/navigation";
-import {
-  getFooterActions,
-  getNavigationItems,
-} from "@/lib/navigation/permissions";
+import { useTranslatedRoutes } from "@/hooks/use-translated-routes";
+import { getFooterActions, getNavigationItems } from "@/lib/routes/permissions";
 import { SidebarBrand } from "./sidebar-brand";
 import { SidebarNavigation } from "./sidebar-navigation";
 import { SidebarUserSection } from "./sidebar-user-section";
@@ -23,13 +20,15 @@ interface SidebarContainerProps {
 
 export function SidebarContainer({ canViewAdmin }: SidebarContainerProps) {
   const clientPermissions = usePermissions();
+  // Get translated route config (automatically resolves translations from locale file)
+  const translatedConfig = useTranslatedRoutes();
 
   const permissions = {
     canViewAdmin: canViewAdmin ?? clientPermissions.canViewAdmin,
   };
 
-  const navigationGroups = getNavigationItems(routeConfig, permissions);
-  const footerActions = getFooterActions(routeConfig, permissions);
+  const navigationGroups = getNavigationItems(translatedConfig, permissions);
+  const footerActions = getFooterActions(translatedConfig, permissions);
 
   return (
     <Sidebar collapsible="icon">
