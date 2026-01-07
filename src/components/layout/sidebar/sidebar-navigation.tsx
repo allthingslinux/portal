@@ -1,6 +1,6 @@
 "use client";
 
-import type { NavigationGroup, ProtectedRoute } from "@/lib/navigation/types";
+import type { NavigationGroup, ProtectedRoute } from "@/lib/routes/types";
 import { NavGroup } from "../navigation/nav-group";
 
 interface SidebarNavigationProps {
