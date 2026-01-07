@@ -1,8 +1,6 @@
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { DynamicAppHeader } from "@/components/layout/dynamic-app-header";
+import { AppLayout } from "@/components/layout/app-layout";
 import { isAdminOrStaff } from "@/lib/auth/check-role";
-import { verifySession } from "@/lib/dal";
+import { verifySession } from "@/lib/auth/dal";
 
 export default async function DashboardLayout({
   children,
@@ -17,14 +15,5 @@ export default async function DashboardLayout({
   // This prevents the sidebar delay by providing permissions immediately
   const canViewAdmin = await isAdminOrStaff(sessionData.userId);
 
-  return (
-    <SidebarProvider>
-      <AppSidebar canViewAdmin={canViewAdmin} />
-      <SidebarInset>
-        {/* DynamicAppHeader automatically generates breadcrumbs from route */}
-        <DynamicAppHeader />
-        {children}
-      </SidebarInset>
-    </SidebarProvider>
-  );
+  return <AppLayout canViewAdmin={canViewAdmin}>{children}</AppLayout>;
 }

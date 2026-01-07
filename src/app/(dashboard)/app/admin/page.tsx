@@ -9,18 +9,11 @@ import {
   fetchSessionsServer,
   fetchUsersServer,
 } from "@/lib/api/server-queries";
-import { verifyAdminOrStaffSession } from "@/lib/dal";
-import { createPageMetadata } from "../../../metadata";
+import { verifyAdminOrStaffSession } from "@/lib/auth/dal";
+import { getRouteMetadata, routeConfig } from "@/lib/navigation";
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Admin",
-  description:
-    "Administrative dashboard for managing users, sessions, and system settings.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-});
+// Metadata is automatically generated from route config
+export const metadata: Metadata = getRouteMetadata("/app/admin", routeConfig);
 
 export default async function AdminPage() {
   // Use DAL to verify session and check admin/staff role

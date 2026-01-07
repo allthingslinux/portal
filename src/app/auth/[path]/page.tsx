@@ -5,7 +5,7 @@ import { AuthView } from "@daveyplate/better-auth-ui";
 import { authViewPaths } from "@daveyplate/better-auth-ui/server";
 
 import { FieldDescription } from "@/components/ui/field";
-import { createPageMetadata } from "../../metadata";
+import { createPageMetadata } from "@/lib/navigation/metadata";
 
 // ============================================================================
 // Metadata Generation

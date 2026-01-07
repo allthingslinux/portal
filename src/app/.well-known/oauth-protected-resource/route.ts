@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
 
-import { serverClient } from "@/auth";
+import { serverClient } from "../../../lib/auth";
+import { BASE_URL } from "../../../lib/config";
 
 export async function GET(): Promise<NextResponse> {
   const metadata = await serverClient.getProtectedResourceMetadata({
-    resource: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-    authorization_servers: [
-      process.env.BETTER_AUTH_URL || "http://localhost:3000",
-    ],
+    resource: BASE_URL,
+    authorization_servers: [BASE_URL],
     scopes_supported: ["openid", "profile", "email", "offline_access"],
     bearer_methods_supported: ["header"],
-    resource_documentation: `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/docs`,
+    resource_documentation: `${BASE_URL}/docs`,
   });
 
   const headers = new Headers();

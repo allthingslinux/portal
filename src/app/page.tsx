@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SignedIn, SignedOut, UserButton } from "@daveyplate/better-auth-ui";
 
 import { Button } from "@/components/ui/button";
-import { createPageMetadata } from "./metadata";
+import { createPageMetadata } from "@/lib/navigation";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Home",

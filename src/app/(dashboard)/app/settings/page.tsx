@@ -1,22 +1,19 @@
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { PageHeader } from "@/components/layout/page-header";
+import { PageHeader } from "@/components/layout/page/page-header";
 import { getServerQueryClient } from "@/lib/api/hydration";
 import { queryKeys } from "@/lib/api/query-keys";
 import { fetchCurrentUserServer } from "@/lib/api/server-queries";
-import { verifySession } from "@/lib/dal";
-import { createPageMetadata } from "../../../metadata";
+import { verifySession } from "@/lib/auth/dal";
+import { getRouteMetadata, routeConfig } from "@/lib/navigation";
 import { SettingsContent } from "./settings-content";
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Settings",
-  description: "Manage your account, security settings, and API keys.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-});
+// Metadata is automatically generated from route config
+export const metadata: Metadata = getRouteMetadata(
+  "/app/settings",
+  routeConfig
+);
 
 // ============================================================================
 // Settings Page
@@ -59,10 +56,7 @@ export default async function SettingsPage() {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="space-y-6">
-          <PageHeader
-            description="Manage your account and security settings."
-            title="Settings"
-          />
+          <PageHeader pathname="/app/settings" />
           {/* SettingsContent uses dynamic imports with loading states built-in */}
           <SettingsContent />
         </div>

@@ -8,7 +8,7 @@ import { WebVitalsReporter } from "./web-vitals";
 import "@/styles/globals.css";
 
 import { geistMono, geistSans, inter } from "./fonts";
-import { defaultMetadata } from "./metadata";
+import { defaultMetadata } from "@/lib/navigation";
 
 export const metadata: Metadata = defaultMetadata;
 

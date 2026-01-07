@@ -1,22 +1,14 @@
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { PageHeader } from "@/components/layout/page-header";
+import { PageHeader } from "@/components/layout/page/page-header";
 import { getServerQueryClient } from "@/lib/api/hydration";
 import { queryKeys } from "@/lib/api/query-keys";
 import { fetchCurrentUserServer } from "@/lib/api/server-queries";
-import { verifySession } from "@/lib/dal";
-import { createPageMetadata } from "../../../metadata";
+import { verifySession } from "@/lib/auth/dal";
+import { getRouteMetadata, routeConfig } from "@/lib/navigation";
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Dashboard",
-  description:
-    "Your portal dashboard - manage your All Things Linux services and account.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-});
+export const metadata: Metadata = getRouteMetadata("/app", routeConfig);
 
 export default async function AppPage() {
   // Verify session (lightweight - just checks auth, doesn't fetch user)
@@ -38,6 +30,7 @@ export default async function AppPage() {
         <div className="space-y-6">
           <PageHeader
             description="Here's your dashboard overview. Use the sidebar to navigate to account settings."
+            pathname="/app"
             title={`Welcome back, ${user.name || user.email}!`}
           />
 
