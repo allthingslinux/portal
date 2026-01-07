@@ -6,7 +6,7 @@
 // React Context for allowing pages to override breadcrumbs dynamically.
 // Pages can use useBreadcrumbs() hook to set custom breadcrumbs.
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 
 import type { BreadcrumbItem } from "@/lib/breadcrumbs";
 

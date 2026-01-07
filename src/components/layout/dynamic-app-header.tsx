@@ -20,9 +20,9 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import {
+  type BreadcrumbItem as BreadcrumbItemType,
   generateBreadcrumbsFromPath,
   mergeBreadcrumbs,
-  type BreadcrumbItem as BreadcrumbItemType,
 } from "@/lib/breadcrumbs";
 import { BreadcrumbProvider, useBreadcrumbContext } from "./breadcrumb-context";
 
@@ -35,7 +35,9 @@ interface DynamicAppHeaderProps {
 }
 
 // Inner component that uses the breadcrumb context and renders the header
-function AppHeaderWithBreadcrumbs({ breadcrumbs: propBreadcrumbs }: DynamicAppHeaderProps) {
+function AppHeaderWithBreadcrumbs({
+  breadcrumbs: propBreadcrumbs,
+}: DynamicAppHeaderProps) {
   const pathname = usePathname();
   const contextBreadcrumbs = useBreadcrumbContext();
 
