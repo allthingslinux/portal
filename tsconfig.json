@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,16 +23,24 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/ui/*": ["./src/components/ui/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@/auth": ["./src/lib/auth"],
-      "@/auth/*": ["./src/lib/auth/*"],
-      "@/db": ["./src/lib/db"],
-      "@/db/*": ["./src/lib/db/*"],
-      "@/styles/*": ["./src/styles/*"]
+      "@/auth/*": [
+        "./src/lib/auth/*"
+      ],
+      "@/auth": [
+        "./src/lib/auth"
+      ],
+      "@/db": [
+        "./src/lib/db"
+      ],
+      "@/config": [
+        "./src/lib/config"
+      ],
+      "@/ui/*": [
+        "./src/components/ui/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
   "include": [
