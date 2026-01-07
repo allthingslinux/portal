@@ -1,6 +1,6 @@
 "use client";
 
-import type { BreadcrumbItem as BreadcrumbItemType } from "@/lib/navigation/breadcrumbs";
+import type { BreadcrumbItem as BreadcrumbItemType } from "@/lib/routes/breadcrumbs";
 import {
   Breadcrumb,
   BreadcrumbItem,
