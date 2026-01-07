@@ -23,7 +23,7 @@ export function usePermissions() {
       // Check if user can manage users (admin permission)
       // Use session.user.role directly, which should be available from Better Auth
       const userRole = session.user.role || "user";
-      
+
       const canManageUsers = authClient.admin.checkRolePermission({
         role: userRole as "user" | "admin" | "staff",
         permissions: {

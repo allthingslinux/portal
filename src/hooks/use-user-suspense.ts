@@ -1,6 +1,10 @@
 "use client";
 
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 
 import { queryKeys } from "@/lib/api/query-keys";
 import type { UpdateUserInput } from "@/lib/api/types";
