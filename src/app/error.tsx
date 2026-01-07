@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+// biome-ignore lint/suspicious/noShadowRestrictedNames: Next.js Error component
 export default function Error({
   error,
   reset,

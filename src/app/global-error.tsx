@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { geistMono, geistSans, inter } from "./fonts";
 
 import "@/styles/globals.css";
