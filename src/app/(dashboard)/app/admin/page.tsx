@@ -14,7 +14,8 @@ import { createPageMetadata } from "../../../metadata";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Admin",
-  description: "Administrative dashboard for managing users, sessions, and system settings.",
+  description:
+    "Administrative dashboard for managing users, sessions, and system settings.",
   robots: {
     index: false,
     follow: false,

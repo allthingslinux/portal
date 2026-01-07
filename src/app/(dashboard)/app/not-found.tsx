@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,9 +16,7 @@ export default function AppNotFound() {
       <Card className="w-full max-w-md text-center">
         <CardHeader>
           <CardTitle className="font-bold text-6xl">404</CardTitle>
-          <CardDescription className="text-lg">
-            Page Not Found
-          </CardDescription>
+          <CardDescription className="text-lg">Page Not Found</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
