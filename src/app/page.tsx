@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SignedIn, SignedOut, UserButton } from "@daveyplate/better-auth-ui";
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
-import { createPageMetadata } from "@/lib/navigation";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Home",
-  description:
-    "Welcome to Portal - Your gateway to All Things Linux services and community.",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations();
+  return createPageMetadata({
+    title: t("marketing.homePage.metadataTitle"),
+    description: t("marketing.homePage.metadataDescription"),
+  });
+}
 
 // ============================================================================
 // Home Page
@@ -32,22 +36,24 @@ export const metadata: Metadata = createPageMetadata({
 //   if (!session) { ... } else { ... }
 
 export default function Page() {
+  const t = useTranslations();
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 p-8">
       <div className="space-y-4 text-center">
-        <h1 className="font-bold text-4xl">Portal V2</h1>
+        <h1 className="font-bold text-4xl">{t("marketing.homePage.title")}</h1>
         <p className="text-muted-foreground text-xl">
-          Welcome to your authentication-enabled Next.js app
+          {t("marketing.homePage.description")}
         </p>
       </div>
 
       <SignedOut>
         <div className="flex gap-4">
           <Button asChild>
-            <Link href="/auth/sign-in">Sign In</Link>
+            <Link href="/auth/sign-in">{t("navigation.signIn")}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/auth/sign-up">Sign Up</Link>
+            <Link href="/auth/sign-up">{t("navigation.signUp")}</Link>
           </Button>
         </div>
       </SignedOut>
@@ -56,7 +62,7 @@ export default function Page() {
         <div className="flex flex-col items-center gap-4">
           <UserButton />
           <Button asChild>
-            <Link href="/app">Go to Dashboard</Link>
+            <Link href="/app">{t("marketing.homePage.goToDashboard")}</Link>
           </Button>
         </div>
       </SignedIn>
