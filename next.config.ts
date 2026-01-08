@@ -166,7 +166,23 @@ let nextConfig: NextConfig = {
     ];
 
     // Add CSP reporting headers if Sentry is configured
-    const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+    // Use keys() helper for consistent environment variable access
+    let sentryDsn: string | undefined;
+    let sentryRelease: string | undefined;
+    try {
+      // Import keys() helper for validated env access
+      const { keys: observabilityKeys } = await import(
+        "@/lib/observability/keys"
+      );
+      const env = observabilityKeys();
+      sentryDsn = env.NEXT_PUBLIC_SENTRY_DSN;
+      sentryRelease = env.SENTRY_RELEASE;
+    } catch {
+      // Fallback to process.env if keys() fails (shouldn't happen, but defensive)
+      sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+      sentryRelease = process.env.SENTRY_RELEASE;
+    }
+
     if (sentryDsn) {
       try {
         const dsnUrl = new URL(sentryDsn);
@@ -174,12 +190,22 @@ let nextConfig: NextConfig = {
         const projectId = dsnUrl.pathname.split("/")[1];
         const orgDomain = dsnUrl.hostname;
 
-        const reportUri = `https://${orgDomain}/api/${projectId}/security/?sentry_key=${publicKey}&sentry_environment=${process.env.NODE_ENV}&sentry_release=${process.env.SENTRY_RELEASE || "unknown"}`;
+        // Validate parsed URL components
+        if (!(publicKey && projectId && orgDomain)) {
+          throw new Error(
+            "Invalid Sentry DSN format: missing required components"
+          );
+        }
 
-        // CSP Report-Only for monitoring without blocking
+        const reportUri = `https://${orgDomain}/api/${projectId}/security/?sentry_key=${publicKey}&sentry_environment=${process.env.NODE_ENV}&sentry_release=${sentryRelease || "unknown"}`;
+
+        // Note: CSP headers with nonce support are set dynamically in middleware.ts
+        // The middleware generates per-request nonces and sets CSP using 'strict-dynamic'
+        // This static Report-Only header is kept for monitoring/reporting purposes only
+        // TODO: Once all inline scripts/styles use nonces, remove unsafe-eval and unsafe-inline
         securityHeaders.push({
           key: "Content-Security-Policy-Report-Only",
-          value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.sentry-cdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://${orgDomain} https://js.sentry-cdn.com; report-uri ${reportUri}; report-to csp-endpoint`,
+          value: `default-src 'self'; script-src 'self' 'nonce-*' 'strict-dynamic' https://js.sentry-cdn.com; style-src 'self' 'nonce-*' 'strict-dynamic'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://${orgDomain} https://js.sentry-cdn.com; report-uri ${reportUri}; report-to csp-endpoint`,
         });
 
         // Modern reporting headers
@@ -198,7 +224,9 @@ let nextConfig: NextConfig = {
           value: `csp-endpoint="${reportUri}"`,
         });
       } catch (error) {
-        console.warn("Failed to configure CSP reporting:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        console.warn("Failed to configure CSP reporting:", errorMessage);
       }
     }
 
