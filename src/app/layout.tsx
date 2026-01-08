@@ -8,7 +8,6 @@ import { WebVitalsReporter } from "./web-vitals";
 
 import "@/styles/globals.css";
 
-import { defaultMetadata } from "@/lib/seo";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { geistMono, geistSans, inter } from "./fonts";
 
