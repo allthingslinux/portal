@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
-import { ReactScan } from "@/components/ReactScan";
+import { DevTools } from "@/components/dev-tools";
 import { Providers } from "./providers";
 import { WebVitalsReporter } from "./web-vitals";
 
@@ -29,22 +28,11 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {process.env.NODE_ENV === "development" && (
-          <Script
-            crossOrigin="anonymous"
-            src="//unpkg.com/react-grab/dist/index.global.js"
-            strategy="beforeInteractive"
-          />
-        )}
-        {process.env.NODE_ENV === "development" && (
-          <Script
-            src="//unpkg.com/@react-grab/cursor/dist/client.global.js"
-            strategy="lazyOnload"
-          />
-        )}
+        {/* DevTools handles all development scripts (React Grab, React Scan) */}
+        {/* DevTools is a client component, so it handles SSR checks internally */}
+        <DevTools />
       </head>
       <body>
-        <ReactScan />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
