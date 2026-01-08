@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { merge } from "lodash";
+import merge from "lodash/merge";
 
 import {
   APP_AUTHOR,
