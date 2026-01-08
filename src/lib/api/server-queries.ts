@@ -4,6 +4,8 @@
 // Server-side query functions for prefetching in Server Components
 // These directly query the database instead of making HTTP requests
 
+import "server-only";
+
 import { and, count, desc, eq, gt, ilike, or, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";

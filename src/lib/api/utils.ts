@@ -3,9 +3,13 @@
 // ============================================================================
 // Shared utilities for API route handlers
 
+import "server-only";
+
 import type { NextRequest } from "next/server";
 
 import { isAdmin, isAdminOrStaff } from "@/lib/auth/check-role";
+import { captureError, parseError } from "@/lib/observability/error";
+import { log } from "@/lib/observability/log";
 import { auth } from "@/auth";
 
 export interface AuthResult {
@@ -94,20 +98,26 @@ export class APIError extends Error {
 
 /**
  * Handle API errors and return appropriate response
+ * Uses observability utilities for consistent error handling
  */
 export function handleAPIError(error: unknown): Response {
   if (error instanceof APIError) {
-    return Response.json({ error: error.message }, { status: error.status });
-  }
-
-  if (error instanceof Error) {
-    console.error("API Error:", error);
     return Response.json(
-      { error: error.message || "Internal server error" },
-      { status: 500 }
+      { ok: false, error: error.message },
+      { status: error.status }
     );
   }
 
-  console.error("Unknown error:", error);
-  return Response.json({ error: "Internal server error" }, { status: 500 });
+  const message = parseError(error);
+  captureError(error, {
+    tags: {
+      errorType: "api",
+    },
+  });
+  log.error(`API Error: ${message}`);
+
+  return Response.json(
+    { ok: false, error: message || "Internal server error" },
+    { status: 500 }
+  );
 }
