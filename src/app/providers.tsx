@@ -7,9 +7,10 @@ import { useRouter } from "next/navigation";
 import { AuthQueryProvider } from "@daveyplate/better-auth-tanstack";
 import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from "next-themes";
 
+import { CommandMenu } from "@/components/command-menu";
+import { ReactQueryDevtools } from "@/components/dev-tools";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { getQueryClient } from "@/lib/api/query-client";
 import { authClient } from "@/auth/client";
@@ -47,10 +48,47 @@ import { authClient } from "@/auth/client";
 //   - signUp: Sign up form configuration
 //   - signIn: Sign in form configuration
 
+// Wrapper component for Link to match Better Auth UI's expected type
+// Better Auth UI expects string href, but Next.js 16 typed routes use RouteImpl
+function LinkWrapper({
+  href,
+  className,
+  children,
+  ...props
+}: {
+  href: string;
+  className?: string;
+  children: ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: unknown;
+}) {
+  return (
+    <Link
+      className={className}
+      href={href as Parameters<typeof Link>[0]["href"]}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+}
+
 export function Providers({ children }: { children: ReactNode }) {
   const router = useRouter();
   // Get QueryClient instance (singleton on client, new instance per request on server)
   const queryClient = getQueryClient();
+
+  // Type-safe wrappers for Better Auth UI compatibility with Next.js typed routes
+  // Better Auth UI expects string types, but Next.js 16 typed routes use RouteImpl
+  const navigate = (href: string) => {
+    // @ts-expect-error - Better Auth UI passes strings, but Next.js typed routes expect RouteImpl
+    router.push(href);
+  };
+
+  const replace = (href: string) => {
+    // @ts-expect-error - Better Auth UI passes strings, but Next.js typed routes expect RouteImpl
+    router.replace(href);
+  };
 
   return (
     <ThemeProvider
@@ -74,11 +112,12 @@ export function Providers({ children }: { children: ReactNode }) {
               // Email/password authentication
               credentials
               // Next.js Link component for client-side navigation
-              Link={Link}
+              // Wrapper needed for Better Auth UI compatibility with Next.js typed routes
+              Link={LinkWrapper}
               // Multiple device session management
               multiSession
               // Programmatic navigation function
-              navigate={router.push}
+              navigate={navigate}
               // Callback when session changes (refreshes server components)
               onSessionChange={() => router.refresh()}
               // Persist client for offline auth (set to true if using persistQueryClient)
@@ -88,7 +127,7 @@ export function Providers({ children }: { children: ReactNode }) {
               // Redirect URL after successful authentication
               redirectTo="/app"
               // Replace current history entry instead of pushing
-              replace={router.replace}
+              replace={replace}
               // Two-factor authentication methods
               // Options: ["otp", "totp"] or boolean (true for both)
               twoFactor={["otp", "totp"]}
@@ -114,15 +153,14 @@ export function Providers({ children }: { children: ReactNode }) {
             >
               {children}
               <Toaster />
+              <CommandMenu />
             </AuthUIProviderTanstack>
             {/* React Query Devtools - Only included in development builds */}
-            {process.env.NODE_ENV === "development" && (
-              <ReactQueryDevtools
-                buttonPosition="bottom-right"
-                initialIsOpen={false}
-                position="bottom"
-              />
-            )}
+            <ReactQueryDevtools
+              buttonPosition="bottom-right"
+              initialIsOpen={false}
+              position="bottom"
+            />
           </AuthQueryProvider>
         </ErrorBoundary>
       </QueryClientProvider>
