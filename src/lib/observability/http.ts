@@ -9,6 +9,17 @@ interface HttpRequestOptions {
 }
 
 /**
+ * Safely calculate body size, returning undefined for non-serializable bodies
+ */
+const calculateBodySize = (body: unknown): number | undefined => {
+  try {
+    return JSON.stringify(body).length;
+  } catch {
+    return undefined;
+  }
+};
+
+/**
  * Instrument HTTP requests for custom clients
  */
 export const instrumentHttpRequest = async <T>(
@@ -67,7 +78,14 @@ export const instrumentHttpRequest = async <T>(
 
           return result;
         } catch (error) {
-          span.setStatus({ code: 2, message: "error" });
+          // Use Sentry constant for error status code
+          try {
+            const { SPAN_STATUS_ERROR } = require("@sentry/core");
+            span.setStatus({ code: SPAN_STATUS_ERROR, message: "error" });
+          } catch {
+            // Fallback if @sentry/core is not available
+            span.setStatus({ code: 2, message: "error" });
+          }
           throw error;
         }
       }
@@ -79,32 +97,39 @@ export const instrumentHttpRequest = async <T>(
 };
 
 /**
+ * Build HTTP request options for instrumentation
+ */
+const buildHttpOptions = (
+  method: "GET" | "POST" | "PUT" | "DELETE",
+  url: string,
+  body?: unknown
+): HttpRequestOptions => ({
+  method,
+  url,
+  ...(body !== undefined && {
+    requestSize: calculateBodySize(body),
+  }),
+});
+
+/**
  * Common HTTP methods with instrumentation
  */
 export const httpClient = {
   get: <T>(url: string, fetcher: () => Promise<T>) =>
-    instrumentHttpRequest({ method: "GET", url }, fetcher),
+    instrumentHttpRequest(buildHttpOptions("GET", url), fetcher),
 
   post: <T>(url: string, body: unknown, fetcher: () => Promise<T>) =>
     instrumentHttpRequest(
-      {
-        method: "POST",
-        url,
-        requestSize: body ? JSON.stringify(body).length : undefined,
-      },
+      buildHttpOptions("POST", url, body),
       fetcher
     ),
 
   put: <T>(url: string, body: unknown, fetcher: () => Promise<T>) =>
     instrumentHttpRequest(
-      {
-        method: "PUT",
-        url,
-        requestSize: body ? JSON.stringify(body).length : undefined,
-      },
+      buildHttpOptions("PUT", url, body),
       fetcher
     ),
 
   delete: <T>(url: string, fetcher: () => Promise<T>) =>
-    instrumentHttpRequest({ method: "DELETE", url }, fetcher),
+    instrumentHttpRequest(buildHttpOptions("DELETE", url), fetcher),
 };
