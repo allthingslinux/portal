@@ -6,9 +6,7 @@
 
 import {
   consoleLoggingIntegration,
-  httpClientIntegration,
   init,
-  reportingObserverIntegration,
   zodErrorsIntegration,
 } from "@sentry/nextjs";
 
@@ -34,6 +32,7 @@ const ATL_CHAT_REGEX = /^https:\/\/.*\.atl\.chat$/;
 
 import { initializeFingerprinting } from "./fingerprinting";
 import { keys } from "./keys";
+import { portalSampler } from "./sampling";
 import { initializeTransactionSanitization } from "./troubleshooting";
 
 const getReplayIntegration = () => {
@@ -66,74 +65,103 @@ export const initializeSentry = (): ReturnType<typeof init> => {
   // Environment-based sample rates
   const isProduction = process.env.NODE_ENV === "production";
 
-  const integrations = [
-    consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
+  /**
+   * Build integrations array with all required Sentry integrations
+   */
+  const buildIntegrations = (isProd: boolean) => {
+    const integrations = [
+      consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
 
-    // HTTP client integration for fetch/XHR error tracking
-    httpClientIntegration({
-      failedRequestStatusCodes: [[400, 599]], // Track 4xx and 5xx errors
-      failedRequestTargets: [
-        API_ROUTE_REGEX, // Internal API routes
-        ATL_DOMAINS_REGEX, // ATL domains
-      ],
-    }),
+      // Zod validation error enhancement
+      zodErrorsIntegration({
+        limit: 10, // Limit validation errors per event
+      }),
+    ];
 
-    // Reporting Observer for browser deprecations and crashes
-    reportingObserverIntegration({
-      types: ["crash", "deprecation", "intervention"],
-    }),
+    // Client-only integrations - only load when in browser context
+    if (typeof window !== "undefined") {
+      // HTTP client integration for fetch/XHR error tracking (client-side only)
+      try {
+        const { httpClientIntegration } = require("@sentry/nextjs");
+        if (httpClientIntegration) {
+          integrations.push(
+            httpClientIntegration({
+              failedRequestStatusCodes: [[400, 599]], // Track 4xx and 5xx errors
+              failedRequestTargets: [
+                API_ROUTE_REGEX, // Internal API routes
+                ATL_DOMAINS_REGEX, // ATL domains
+              ],
+            })
+          );
+        }
+      } catch {
+        // httpClientIntegration not available
+      }
 
-    // Zod validation error enhancement
-    zodErrorsIntegration({
-      limit: 10, // Limit validation errors per event
-    }),
-  ];
+      // Reporting Observer for browser deprecations and crashes (client-side only)
+      try {
+        const { reportingObserverIntegration } = require("@sentry/nextjs");
+        if (reportingObserverIntegration) {
+          integrations.push(
+            reportingObserverIntegration({
+              types: ["crash", "deprecation", "intervention"],
+            })
+          );
+        }
+      } catch {
+        // reportingObserverIntegration not available
+      }
+    }
 
-  // Add extra error data integration for richer error context
-  try {
-    const { extraErrorDataIntegration } = require("@sentry/nextjs");
-    integrations.push(
-      extraErrorDataIntegration({
-        depth: 5, // Capture deeper error object properties
-        captureErrorCause: true, // Capture error.cause chains
-      })
-    );
-  } catch {
-    // Integration not available
-  }
+    // Add extra error data integration for richer error context
+    try {
+      const { extraErrorDataIntegration } = require("@sentry/nextjs");
+      integrations.push(
+        extraErrorDataIntegration({
+          depth: 5, // Capture deeper error object properties
+          captureErrorCause: true, // Capture error.cause chains
+        })
+      );
+    } catch {
+      // Integration not available
+    }
 
-  const replay = getReplayIntegration();
-  if (replay) {
-    integrations.unshift(replay);
-  }
+    // Add browser tracing with optimized configuration
+    try {
+      const {
+        browserTracingIntegration,
+        browserProfilingIntegration,
+      } = require("@sentry/nextjs");
 
-  // Add browser tracing with optimized configuration
-  try {
-    const {
-      browserTracingIntegration,
-      browserProfilingIntegration,
-    } = require("@sentry/nextjs");
+      integrations.push(
+        browserTracingIntegration({
+          // Filter out health checks and monitoring endpoints
+          shouldCreateSpanForRequest: (url: string) => {
+            return !url.match(HEALTH_METRICS_REGEX);
+          },
+          // Ignore noisy resource spans
+          ignoreResourceSpans: ["resource.css", "resource.font"],
+          // Enable INP tracking for performance insights
+          enableInp: true,
+          // Reduce interaction sampling in production
+          interactionsSampleRate: isProd ? 0.1 : 1,
+        }),
+        browserProfilingIntegration()
+      );
+    } catch {
+      // Fallback if integrations not available
+    }
 
-    integrations.push(
-      browserTracingIntegration({
-        // Filter out health checks and monitoring endpoints
-        shouldCreateSpanForRequest: (url: string) => {
-          return !url.match(HEALTH_METRICS_REGEX);
-        },
-        // Ignore noisy resource spans
-        ignoreResourceSpans: ["resource.css", "resource.font"],
-        // Enable INP tracking for performance insights
-        enableInp: true,
-        // Reduce interaction sampling in production
-        interactionsSampleRate: isProduction ? 0.1 : 1,
-      })
-    );
+    // Add replay integration at the beginning (important for initialization order)
+    const replay = getReplayIntegration();
+    if (replay) {
+      integrations.unshift(replay);
+    }
 
-    // Add browser profiling integration
-    integrations.push(browserProfilingIntegration());
-  } catch {
-    // Fallback if integrations not available
-  }
+    return { integrations, replay };
+  };
+
+  const { integrations, replay } = buildIntegrations(isProduction);
 
   // Initialize transaction name sanitization
   initializeTransactionSanitization();
@@ -147,7 +175,8 @@ export const initializeSentry = (): ReturnType<typeof init> => {
     debug: false,
     // Environment and release info
     environment: process.env.NODE_ENV,
-    release: env.SENTRY_RELEASE,
+    // Use NEXT_PUBLIC_SENTRY_RELEASE for client-side, fallback to unknown
+    release: env.NEXT_PUBLIC_SENTRY_RELEASE || "unknown",
 
     // Filter out common browser extension and third-party errors
     ignoreErrors: [
@@ -239,36 +268,28 @@ export const initializeSentry = (): ReturnType<typeof init> => {
       ATL_CHAT_REGEX,
       API_ROUTE_REGEX,
     ],
-    // Smart sampling based on transaction importance
+    // Smart sampling based on transaction importance using portalSampler
     tracesSampler: (samplingContext) => {
-      const { name, inheritOrSampleWith } = samplingContext;
+      // Adapt Sentry's TracesSamplerContext to portalSampler's SamplingContext
+      const adaptedContext = {
+        name:
+          samplingContext.transactionContext?.name ||
+          samplingContext.name ||
+          "",
+        attributes: samplingContext.transactionContext?.data,
+        parentSampled: samplingContext.parentSampled,
+        parentSampleRate: samplingContext.parentSampleRate,
+        inheritOrSampleWith: (fallbackRate: number) =>
+          samplingContext.parentSampled !== undefined
+            ? samplingContext.parentSampled
+              ? 1
+              : 0
+            : Math.random() < fallbackRate
+              ? 1
+              : 0,
+      };
 
-      // Skip health checks and monitoring endpoints
-      if (name.includes("health") || name.includes("metrics")) {
-        return 0;
-      }
-
-      // Always sample auth flows (critical user experience)
-      if (
-        name.includes("auth") ||
-        name.includes("login") ||
-        name.includes("signup")
-      ) {
-        return 1;
-      }
-
-      // High sampling for API routes (important for debugging)
-      if (name.includes("/api/")) {
-        return isProduction ? 0.3 : 1;
-      }
-
-      // Lower sampling for static assets
-      if (name.includes("/_next/") || name.includes("/favicon")) {
-        return isProduction ? 0.01 : 0.1;
-      }
-
-      // Default rates based on environment
-      return inheritOrSampleWith(isProduction ? 0.1 : 1);
+      return portalSampler(isProduction)(adaptedContext);
     },
     // Browser profiling sample rate
     profileSessionSampleRate: isProduction ? 0.1 : 1,
