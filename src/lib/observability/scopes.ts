@@ -125,35 +125,43 @@ export const withLocalScope = <T>(
 
 /**
  * Common scope patterns for Portal
+ * These accept work callbacks to properly scope the execution
  */
 export const scopePatterns = {
-  // Set user context for request
-  userContext: (user: { id: string; email?: string; tier?: string }) =>
-    withIsolatedScope({ user }, () => {
-      // Context set for current scope
-    }),
+  /**
+   * Set user context for request
+   */
+  userContext: <T>(
+    user: { id: string; email?: string; tier?: string },
+    fn: () => T
+  ): T => withIsolatedScope({ user }, fn),
 
-  // Set API request context
-  apiContext: (endpoint: string, method: string, userId?: string) =>
+  /**
+   * Set API request context
+   */
+  apiContext: <T>(
+    endpoint: string,
+    method: string,
+    fn: () => T,
+    userId?: string
+  ): T =>
     withLocalScope(
       {
         tags: { endpoint, method, ...(userId && { user_id: userId }) },
         context: { api: { endpoint, method } },
       },
-      () => {
-        // Context set for current scope
-      }
+      fn
     ),
 
-  // Set background job context
-  jobContext: (jobName: string, jobId: string) =>
+  /**
+   * Set background job context
+   */
+  jobContext: <T>(jobName: string, jobId: string, fn: () => T): T =>
     withIsolatedScope(
       {
         tags: { job_name: jobName, job_id: jobId },
         extra: { job: { name: jobName, id: jobId } },
       },
-      () => {
-        // Context set for current scope
-      }
+      fn
     ),
 };
