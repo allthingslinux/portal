@@ -116,8 +116,10 @@ export function handleAPIError(error: unknown): Response {
   });
   log.error(`API Error: ${message}`);
 
+  // Return generic error message to prevent leaking internal details
+  // Detailed error information is captured in Sentry for debugging
   return Response.json(
-    { ok: false, error: message || "Internal server error" },
+    { ok: false, error: "Internal server error" },
     { status: 500 }
   );
 }
