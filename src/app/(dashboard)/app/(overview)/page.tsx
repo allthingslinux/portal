@@ -40,7 +40,9 @@ export default async function AppPage() {
             description={t("routes.dashboard.ui.description")}
             pathname="/app"
             resolver={resolver}
-            title={t("routes.dashboard.ui.title", { name: user.name || user.email })}
+            title={t("routes.dashboard.ui.title", {
+              name: user.name || user.email,
+            })}
           />
 
           {/* Dashboard content will be added here */}

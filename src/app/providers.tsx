@@ -1,5 +1,10 @@
 "use client";
 
+import { initializeSentry } from "@/lib/observability/client";
+
+// Initialize Sentry on client-side
+initializeSentry();
+
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
 import Link from "next/link";

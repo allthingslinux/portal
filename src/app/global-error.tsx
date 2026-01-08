@@ -37,8 +37,9 @@ export default function GlobalError({
   const t = useTranslations();
 
   useEffect(() => {
-    // Log error to error reporting service
-    console.error("Global error boundary caught:", error);
+    // Log the error to Sentry
+    const { captureException } = require("@sentry/nextjs");
+    captureException(error);
   }, [error]);
 
   return (

@@ -24,8 +24,9 @@ export default function Error({
   const t = useTranslations();
 
   useEffect(() => {
-    // Log error to error reporting service
-    console.error("Root error boundary caught:", error);
+    // Log the error to Sentry
+    const { captureException } = require("@sentry/nextjs");
+    captureException(error);
   }, [error]);
 
   return (
