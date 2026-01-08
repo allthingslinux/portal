@@ -23,7 +23,9 @@ export const withObservability = (sourceConfig: NextConfig): NextConfig => {
     authToken: env.SENTRY_AUTH_TOKEN,
 
     // Route Sentry requests through your server (avoids ad-blockers)
-    tunnelRoute: "/monitoring",
+    // When tunnelRoute is set, Sentry SDK automatically uses this path for tunneling
+    // Our manual route handler at /api/monitoring handles the actual forwarding
+    tunnelRoute: "/api/monitoring",
 
     // Only print logs for uploading source maps in CI
     silent: !process.env.CI,
