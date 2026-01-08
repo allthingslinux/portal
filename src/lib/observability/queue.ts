@@ -2,6 +2,12 @@
  * Queue instrumentation utilities for messaging and background jobs
  */
 
+// Shared type for trace headers
+type TraceHeaders = {
+  "sentry-trace"?: string;
+  baggage?: string;
+};
+
 interface QueueMessage {
   id: string;
   body: unknown;
@@ -24,14 +30,26 @@ interface QueueConsumerOptions {
 }
 
 /**
+ * Build consumer attributes object from options
+ */
+const buildQueueConsumerAttributes = (options: QueueConsumerOptions) => ({
+  "messaging.message.id": options.messageId,
+  "messaging.destination.name": options.queueName,
+  "messaging.message.body.size": options.messageSize,
+  ...(options.retryCount !== undefined && {
+    "messaging.message.retry.count": options.retryCount,
+  }),
+  ...(options.receiveLatency !== undefined && {
+    "messaging.message.receive.latency": options.receiveLatency,
+  }),
+});
+
+/**
  * Instrument queue message publishing
  */
 export const instrumentQueueProducer = async <T>(
   options: QueueProducerOptions,
-  producer: (traceHeaders: {
-    "sentry-trace"?: string;
-    baggage?: string;
-  }) => Promise<T>
+  producer: (traceHeaders: TraceHeaders) => Promise<T>
 ): Promise<T> => {
   try {
     const { startSpan, getTraceData } = require("@sentry/nextjs");
@@ -62,7 +80,7 @@ export const instrumentQueueProducer = async <T>(
  */
 export const instrumentQueueConsumer = async <T>(
   options: QueueConsumerOptions,
-  traceHeaders: { "sentry-trace"?: string; baggage?: string },
+  traceHeaders: TraceHeaders,
   consumer: () => Promise<T>
 ): Promise<T> => {
   try {
@@ -87,26 +105,29 @@ export const instrumentQueueConsumer = async <T>(
                 {
                   name: "queue_consumer",
                   op: "queue.process",
-                  attributes: {
-                    "messaging.message.id": options.messageId,
-                    "messaging.destination.name": options.queueName,
-                    "messaging.message.body.size": options.messageSize,
-                    ...(options.retryCount !== undefined && {
-                      "messaging.message.retry.count": options.retryCount,
-                    }),
-                    ...(options.receiveLatency !== undefined && {
-                      "messaging.message.receive.latency":
-                        options.receiveLatency,
-                    }),
-                  },
+                  attributes: buildQueueConsumerAttributes(options),
                 },
                 consumer
               );
 
-              parent.setStatus?.({ code: 1, message: "ok" });
+              // Use Sentry status constants
+              try {
+                const { SPAN_STATUS_OK, SPAN_STATUS_ERROR } = require("@sentry/core");
+                parent.setStatus?.({ code: SPAN_STATUS_OK, message: "ok" });
+              } catch {
+                // Fallback if constants not available
+                parent.setStatus?.({ code: 1, message: "ok" });
+              }
               return result;
             } catch (error) {
-              parent.setStatus?.({ code: 2, message: "error" });
+              // Use Sentry status constants
+              try {
+                const { SPAN_STATUS_ERROR } = require("@sentry/core");
+                parent.setStatus?.({ code: SPAN_STATUS_ERROR, message: "error" });
+              } catch {
+                // Fallback if constants not available
+                parent.setStatus?.({ code: 2, message: "error" });
+              }
               throw error;
             }
           }
@@ -125,7 +146,7 @@ export const instrumentQueueConsumer = async <T>(
 export const createQueueMessage = (
   id: string,
   body: unknown,
-  traceHeaders: { "sentry-trace"?: string; baggage?: string }
+  traceHeaders: TraceHeaders
 ): QueueMessage & { sentryTrace?: string; sentryBaggage?: string } => {
   return {
     id,
