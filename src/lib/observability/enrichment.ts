@@ -184,8 +184,10 @@ export const initializePortalContext = (user?: PortalUserContext): void => {
   setDeploymentContext();
 
   // Set initial Portal tags
+  const hostname =
+    typeof window !== "undefined" ? window.location.hostname : "server";
   setPortalTags({
     service: "portal",
-    domain: typeof window !== "undefined" ? window.location.hostname : "server",
+    domain: hostname,
   });
 };
