@@ -88,7 +88,7 @@ export const instrumentCacheGet = async <T>(
         // Set cache hit/miss and item size
         // Prefer explicit hit parameter; fallback checks if result is not undefined
         // This handles falsy values (0, "", false, null) correctly
-        const hit = options.hit ?? (result !== undefined);
+        const hit = options.hit ?? result !== undefined;
         span.setAttribute("cache.hit", hit);
 
         if (hit && options.itemSize) {
@@ -126,9 +126,24 @@ export const calculateCacheItemSize = (value: unknown): number => {
 
 /**
  * Common cache configurations for Portal
+ * Provides preset configurations for different cache backends
  */
 export const cacheConfigs = {
+  /**
+   * Redis cache configuration
+   * @param host - Redis server hostname (default: "localhost")
+   * @param port - Redis server port (default: 6379)
+   * @returns Cache configuration with address and port
+   */
   redis: (host = "localhost", port = 6379) => ({ address: host, port }),
+  /**
+   * In-memory cache configuration
+   * @returns Cache configuration for in-memory storage
+   */
   memory: () => ({ address: "in-memory" }),
+  /**
+   * Next.js cache configuration
+   * @returns Cache configuration for Next.js built-in cache
+   */
   nextjs: () => ({ address: "next-cache" }),
 };
