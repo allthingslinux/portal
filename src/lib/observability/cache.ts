@@ -18,6 +18,26 @@ interface CacheGetOptions extends CacheOptions {
 }
 
 /**
+ * Normalize cache key into primary key and key array
+ */
+const normalizeKey = (key: string | string[]) => {
+  const keys = Array.isArray(key) ? key : [key];
+  return { primaryKey: keys[0], keys };
+};
+
+/**
+ * Build base cache attributes shared between get and set operations
+ */
+const baseCacheAttributes = (options: CacheOptions) => {
+  const { keys } = normalizeKey(options.key);
+  return {
+    "cache.key": keys,
+    ...(options.address && { "network.peer.address": options.address }),
+    ...(options.port && { "network.peer.port": options.port }),
+  };
+};
+
+/**
  * Instrument cache set operations
  */
 export const instrumentCacheSet = async <T>(
@@ -26,18 +46,15 @@ export const instrumentCacheSet = async <T>(
 ): Promise<T> => {
   try {
     const { startSpan } = require("@sentry/nextjs");
-
-    const key = Array.isArray(options.key) ? options.key[0] : options.key;
+    const { primaryKey } = normalizeKey(options.key);
 
     return await startSpan(
       {
-        name: `cache.set ${key}`,
+        name: `cache.set ${primaryKey}`,
         op: "cache.put",
         attributes: {
-          "cache.key": Array.isArray(options.key) ? options.key : [options.key],
+          ...baseCacheAttributes(options),
           ...(options.itemSize && { "cache.item_size": options.itemSize }),
-          ...(options.address && { "network.peer.address": options.address }),
-          ...(options.port && { "network.peer.port": options.port }),
         },
       },
       setter
@@ -57,24 +74,21 @@ export const instrumentCacheGet = async <T>(
 ): Promise<T> => {
   try {
     const { startSpan } = require("@sentry/nextjs");
-
-    const key = Array.isArray(options.key) ? options.key[0] : options.key;
+    const { primaryKey } = normalizeKey(options.key);
 
     return await startSpan(
       {
-        name: `cache.get ${key}`,
+        name: `cache.get ${primaryKey}`,
         op: "cache.get",
-        attributes: {
-          "cache.key": Array.isArray(options.key) ? options.key : [options.key],
-          ...(options.address && { "network.peer.address": options.address }),
-          ...(options.port && { "network.peer.port": options.port }),
-        },
+        attributes: baseCacheAttributes(options),
       },
       async (span: { setAttribute: (key: string, value: unknown) => void }) => {
         const result = await getter();
 
         // Set cache hit/miss and item size
-        const hit = options.hit ?? Boolean(result);
+        // Prefer explicit hit parameter; fallback checks if result is not undefined
+        // This handles falsy values (0, "", false, null) correctly
+        const hit = options.hit ?? (result !== undefined);
         span.setAttribute("cache.hit", hit);
 
         if (hit && options.itemSize) {
