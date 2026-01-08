@@ -63,30 +63,11 @@ export const fingerprintPatterns = {
   contextualError: (context: string) => ["{{ default }}", context],
 };
 
-interface SentryEvent {
-  fingerprint?: string[];
-}
+import type { Event, EventHint } from "@sentry/types";
 
-interface SentryHint {
-  originalException?: {
-    name?: string;
-    statusCode?: number;
-    status?: number;
-    endpoint?: string;
-    url?: string;
-    method?: string;
-    code?: string;
-    operation?: string;
-    table?: string;
-    model?: string;
-    provider?: string;
-    type?: string;
-    field?: string;
-    path?: string;
-    rule?: string;
-    constraint?: string;
-  };
-}
+// Use official Sentry types instead of custom interfaces
+type SentryEvent = Event;
+type SentryHint = EventHint;
 
 /**
  * Process API error fingerprinting
