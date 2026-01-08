@@ -159,12 +159,18 @@ async function TermsDisclaimer() {
   // Simple string replacement approach - t.rich() doesn't work reliably
   // with getTranslations() in Server Components when passed to Client Components
   const termsLink = (
-    <Link className="underline underline-offset-4" href="/terms">
+    <Link
+      className="underline underline-offset-4"
+      href="https://www.iubenda.com/terms-and-conditions/97069484"
+    >
       {termsText}
     </Link>
   );
   const privacyLink = (
-    <Link className="underline underline-offset-4" href="/privacy">
+    <Link
+      className="underline underline-offset-4"
+      href="https://www.iubenda.com/privacy-policy/97069484/full-legal"
+    >
       {privacyText}
     </Link>
   );
