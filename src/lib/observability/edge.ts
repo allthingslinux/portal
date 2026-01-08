@@ -82,7 +82,7 @@ export const initializeSentry = (): ReturnType<typeof init> => {
 
     // Environment and release info
     environment: process.env.NODE_ENV,
-    release: env.SENTRY_RELEASE,
+    release: env.SENTRY_RELEASE || "unknown",
 
     // Enable logging
     enableLogs: true,
