@@ -34,20 +34,46 @@
                 "class-variance-authority"
               ],
               // Next.js specific
-              ["next", "next/**", "@next/**"],
+              [
+                "next",
+                "next/**",
+                "@next/**"
+              ],
               // Form and validation
-              ["react-hook-form", "@hookform/resolvers", "zod"],
+              [
+                "react-hook-form",
+                "@hookform/resolvers",
+                "zod"
+              ],
               // Other packages
               ":PACKAGE:",
               // Blank line separator
               ":BLANK_LINE:",
               // Internal aliases by specificity
-              ["@/components/ui", "@/components/ui/**"],
-              ["@/components", "@/components/**"],
-              ["@/hooks", "@/hooks/**"],
-              ["@/lib", "@/lib/**"],
-              ["@/auth", "@/auth/**"],
-              ["@/db", "@/db/**"],
+              [
+                "@/components/ui",
+                "@/components/ui/**"
+              ],
+              [
+                "@/components",
+                "@/components/**"
+              ],
+              [
+                "@/hooks",
+                "@/hooks/**"
+              ],
+              [
+                "@/lib",
+                "@/lib/**"
+              ],
+              [
+                "@/auth",
+                "@/auth/**"
+              ],
+              [
+                "@/db",
+                "@/db/**"
+              ],
               // Relative imports last
               ":PATH:"
             ],
@@ -59,7 +85,7 @@
   },
   "files": {
     "includes": [
-      "!src/components/ReactScan.tsx",
+      "!src/components/react-scan.tsx",
       "!references",
       "!src/components/ui",
       "!drizzle"
