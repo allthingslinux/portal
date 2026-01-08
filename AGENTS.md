@@ -9,15 +9,18 @@ Portal is a centralized hub and identity management system for the AllThingsLinu
 - Install deps: `pnpm install`
 - Run build: `pnpm build`
 - Start production: `pnpm start`
+- Start development: `pnpm dev` (request user to run, never run directly)
 - Check code: `pnpm check`
 - Format code: `pnpm fix`
 - Type check: `pnpm type-check`
-- Generate auth schema: `pnpm auth:generate-schema`
+- Generate auth schema: `pnpm auth:init-schema`
 - Generate DB migrations: `pnpm db:generate`
 - Run DB migrations: `pnpm db:migrate`
-- Push DB schema: `pnpm db:push`
+- Push DB schema: `pnpm db:push` (dev only)
 - Open DB studio: `pnpm db:studio`
+- Seed database: `pnpm db:seed`
 - Create admin user: `pnpm create-admin`
+- Start database: `docker compose up -d portal-db`
 
 ## Tech Stack
 
@@ -27,8 +30,8 @@ Portal is a centralized hub and identity management system for the AllThingsLinu
 - BetterAuth for authentication
 - DrizzleORM + PostgreSQL
 - Zod for validation
-- Zustand for state management
-- MDX with Remark/Rehype
+- TanStack Query (React Query) for state management and data fetching
+- next-intl for internationalization
 - Biome and Ultracite for linting/formatting
 
 ## Code Style
@@ -75,16 +78,27 @@ import { usePermissions } from "@/hooks/use-permissions"; // Custom hooks
 
 ```
 src/
-├── app/                  # Next.js App Router
-├── components/           # Reusable components
-│   ├── ui/               # shadcn/ui (auto-generated)
-│   ├── admin/            # Admin components
-│   └── layout/           # Layout components
-├── lib/                  # Core business logic
-│   ├── auth/             # Authentication module
-│   └── db/               # Database schemas
-├── hooks/                # Custom React hooks
-└── styles/               # Global styles
+├── app/                    # Next.js App Router
+│   ├── (dashboard)/        # Protected dashboard routes
+│   │   └── app/            # Main application routes
+│   ├── api/                # API routes
+│   ├── auth/               # Authentication pages
+├── components/             # Reusable React components
+│   ├── ui/                 # shadcn/ui
+│   └── layout/             # Layout components
+├── lib/                    # Core business logic
+│   ├── auth/               # Authentication module
+│   ├── db/                 # Database configuration
+│   ├── api/                # API client utilities
+│   ├── config/             # Application configuration
+│   ├── email/              # Email configuration
+│   ├── routes/             # Route utilities and i18n routes
+│   ├── seo/                # SEO utilities
+│   └── utils/              # General utilities
+├── hooks/                  # Custom React hooks
+├── i18n/                   # Internationalization setup
+├── styles/                 # Global styles
+└── proxy.ts                # Development proxy configuration
 ```
 
 ## Security Guidelines
@@ -103,4 +117,7 @@ src/
 - Use Suspense for loading states
 - Optimize images with next/image
 - Format code with `pnpm fix`
-- Available MCP tools: shadcn, Better Auth, llms.txt documentation
+- Database setup uses Docker Compose (`docker compose up -d portal-db`)
+- Available MCP tools: shadcn, Better Auth, llms.txt documentation, Next.js Devtools, GitHub, Sentry, Trigger.dev
+- Use TanStack Query for all server state management
+- Internationalization handled via next-intl with locale files in `locale/` directory
