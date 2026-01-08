@@ -17,6 +17,8 @@ import {
   twoFactor,
 } from "better-auth/plugins";
 
+import "server-only";
+
 import { db } from "@/lib/db/client";
 import { schema } from "@/lib/db/schema";
 import {
@@ -24,6 +26,7 @@ import {
   sendResetPasswordEmail,
   sendVerificationEmail,
 } from "./email";
+import { keys } from "./keys";
 import {
   ac,
   admin as adminRole,
@@ -35,7 +38,8 @@ import {
 // Constants
 // ============================================================================
 
-const baseURL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+const env = keys();
+const baseURL = env.BETTER_AUTH_URL || "http://localhost:3000";
 
 // ============================================================================
 // Database Configuration
@@ -864,7 +868,7 @@ const authOptions = {
   // Base path for Better Auth routes (default: "/api/auth")
   // basePath: "/api/auth",
   // Secret for encryption, signing, and hashing (defaults to BETTER_AUTH_SECRET or AUTH_SECRET env var)
-  secret: process.env.BETTER_AUTH_SECRET,
+  secret: env.BETTER_AUTH_SECRET,
   // Database adapter configuration
   database,
   // Email and password authentication
