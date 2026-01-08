@@ -13,6 +13,7 @@ import { CommandMenu } from "@/components/command-menu";
 import { ReactQueryDevtools } from "@/components/dev-tools";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { getQueryClient } from "@/lib/api/query-client";
+import { useBetterAuthUILocalization } from "@/lib/auth/localization";
 import { authClient } from "@/auth/client";
 
 // Note: We use our own QueryClientProvider for general data fetching hooks.
@@ -78,6 +79,10 @@ export function Providers({ children }: { children: ReactNode }) {
   // Get QueryClient instance (singleton on client, new instance per request on server)
   const queryClient = getQueryClient();
 
+  // Get Better Auth UI localization from next-intl translations
+  // This hook automatically uses useTranslations() internally
+  const localization = useBetterAuthUILocalization();
+
   // Type-safe wrappers for Better Auth UI compatibility with Next.js typed routes
   // Better Auth UI expects string types, but Next.js 16 typed routes use RouteImpl
   const navigate = (href: string) => {
@@ -111,9 +116,12 @@ export function Providers({ children }: { children: ReactNode }) {
               authClient={authClient}
               // Email/password authentication
               credentials
+              // Localization: Maps next-intl translations to Better Auth UI format
+              // All strings are automatically translated using our locale files
+              Link={LinkWrapper}
               // Next.js Link component for client-side navigation
               // Wrapper needed for Better Auth UI compatibility with Next.js typed routes
-              Link={LinkWrapper}
+              localization={localization}
               // Multiple device session management
               multiSession
               // Programmatic navigation function

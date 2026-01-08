@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SignedIn, SignedOut, UserButton } from "@daveyplate/better-auth-ui";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
@@ -35,8 +34,8 @@ export async function generateMetadata(): Promise<Metadata> {
 //   const { data: session } = authClient.useSession();
 //   if (!session) { ... } else { ... }
 
-export default function Page() {
-  const t = useTranslations();
+export default async function Page() {
+  const t = await getTranslations();
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 p-8">

@@ -8,33 +8,34 @@ import { getRequestConfig } from "next-intl/server";
 async function loadLocaleMessages(locale: string) {
   try {
     // Try loading from locale/{locale}/ directory (split files)
-    const [
-      common,
-      navigation,
-      routes,
-      auth,
-      account,
-      error,
-      marketing,
-    ] = await Promise.all([
-      import(`../../locale/${locale}/common.json`).catch(() => null),
-      import(`../../locale/${locale}/navigation.json`).catch(() => null),
-      import(`../../locale/${locale}/routes.json`).catch(() => null),
-      import(`../../locale/${locale}/auth.json`).catch(() => null),
-      import(`../../locale/${locale}/account.json`).catch(() => null),
-      import(`../../locale/${locale}/error.json`).catch(() => null),
-      import(`../../locale/${locale}/marketing.json`).catch(() => null),
-    ]);
+    const [common, navigation, routes, auth, account, error, marketing] =
+      await Promise.all([
+        import(`../../locale/${locale}/common.json`).catch(() => null),
+        import(`../../locale/${locale}/navigation.json`).catch(() => null),
+        import(`../../locale/${locale}/routes.json`).catch(() => null),
+        import(`../../locale/${locale}/auth.json`).catch(() => null),
+        import(`../../locale/${locale}/account.json`).catch(() => null),
+        import(`../../locale/${locale}/error.json`).catch(() => null),
+        import(`../../locale/${locale}/marketing.json`).catch(() => null),
+      ]);
 
     // If all files loaded successfully, merge them
     // Files are wrapped with their filename as the namespace key
-    if (common && navigation && routes && auth && account && error && marketing) {
+    if (
+      common &&
+      navigation &&
+      routes &&
+      auth &&
+      account &&
+      error &&
+      marketing
+    ) {
       return {
         common: common.default, // Wrap common.json content under "common" key
         navigation: navigation.default, // Wrap navigation.json content under "navigation" key
         routes: routes.default, // Wrap routes.json content under "routes" key
         auth: auth.default, // Wrap auth.json content under "auth" key
-        ...account.default, // May be empty or have keys - spread if any
+        account: account.default, // Wrap account.json content under "account" key
         error: error.default, // Wrap error.json content under "error" key (includes notFound nested)
         marketing: marketing.default, // Wrap marketing.json content under "marketing" key
       };

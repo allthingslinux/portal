@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +11,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function AppNotFound() {
-  // Use single useTranslations() call with dot notation for full key paths
+export default async function AppNotFound() {
+  // Use getTranslations() for server components
   // This helps i18n-ally detect the complete namespace.key path
-  const t = useTranslations();
+  const t = await getTranslations();
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center p-4">
