@@ -40,6 +40,9 @@
         "-y",
         "next-devtools-mcp@latest"
       ]
+    },
+    "Sentry": {
+      "url": "https://mcp.sentry.dev/mcp/allthingslinux/portal"
     }
   }
 }
