@@ -110,6 +110,12 @@ importers:
       '@sentry/nextjs':
         specifier: ^10.32.1
         version: 10.32.1(@opentelemetry/context-async-hooks@2.3.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.3.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.3.0(@opentelemetry/api@1.9.0))(next@16.1.1(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)(webpack@5.104.1(esbuild@0.25.12))
+      '@sentry/node-native':
+        specifier: ^10.32.1
+        version: 10.32.1
+      '@sentry/profiling-node':
+        specifier: ^10.32.1
+        version: 10.32.1
       '@t3-oss/env-nextjs':
         specifier: ^0.13.10
         version: 0.13.10(typescript@5.9.3)(zod@4.3.5)
@@ -2916,6 +2922,14 @@ packages:
     resolution: {integrity: sha512-O24G8jxbfBY1RE/v2qFikPJISVMOrd/zk8FKyl+oUVYdOxU2Ucjk2cR3EQruBFlc7irnL6rT3GPfRZ/kBgLkmQ==}
     engines: {node: '>=18'}
 
+  '@sentry-internal/node-cpu-profiler@2.2.0':
+    resolution: {integrity: sha512-oLHVYurqZfADPh5hvmQYS5qx8t0UZzT2u6+/68VXsFruQEOnYJTODKgU3BVLmemRs3WE6kCJjPeFdHVYOQGSzQ==}
+    engines: {node: '>=18'}
+
+  '@sentry-internal/node-native-stacktrace@0.3.0':
+    resolution: {integrity: sha512-ef0M2y2JDrC/H0AxMJJQInGTdZTlnwa6AAVWR4fMOpJRubkfdH2IZXE/nWU0Nj74oeJLQgdPtS6DeijLJtqq8Q==}
+    engines: {node: '>=18'}
+
   '@sentry-internal/replay-canvas@10.32.1':
     resolution: {integrity: sha512-/XGTzWNWVc+B691fIVekV2KeoHFEDA5KftrLFAhEAW7uWOwk/xy3aQX4TYM0LcPm2PBKvoumlAD+Sd/aXk63oA==}
     engines: {node: '>=18'}
@@ -3010,6 +3024,10 @@ packages:
       '@opentelemetry/sdk-trace-base': ^1.30.1 || ^2.1.0 || ^2.2.0
       '@opentelemetry/semantic-conventions': ^1.37.0
 
+  '@sentry/node-native@10.32.1':
+    resolution: {integrity: sha512-i+bjYsuLMB/VSlZj8aXC2olxZLNkUdxoP5OLGvC7sTyL3BNWdK5PL3ef3fIQ3q5sSq9EHRnYCvgOUQUSJi81hw==}
+    engines: {node: '>=18'}
+
   '@sentry/node@10.32.1':
     resolution: {integrity: sha512-oxlybzt8QW0lx/QaEj1DcvZDRXkgouewFelu/10dyUwv5So3YvipfvWInda+yMLmn25OggbloDQ0gyScA2jU3g==}
     engines: {node: '>=18'}
@@ -3023,6 +3041,11 @@ packages:
       '@opentelemetry/core': ^1.30.1 || ^2.1.0 || ^2.2.0
       '@opentelemetry/sdk-trace-base': ^1.30.1 || ^2.1.0 || ^2.2.0
       '@opentelemetry/semantic-conventions': ^1.37.0
+
+  '@sentry/profiling-node@10.32.1':
+    resolution: {integrity: sha512-UDSZayQw4K5wv/XNHoB+i+KrnlCStLb0H2lsypF4dgQFCrHXmbwhMh9ieofVGk5bxdmXoL3lSE+3W9cJbpqy2A==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@sentry/react@10.32.1':
     resolution: {integrity: sha512-/tX0HeACbAmVP57x8txTrGk/U3fa9pDBaoAtlOrnPv5VS/aC5SGkehXWeTGSAa+ahlOWwp3IF8ILVXRiOoG/Vg==}
@@ -5175,6 +5198,10 @@ packages:
         optional: true
       sass:
         optional: true
+
+  node-abi@3.85.0:
+    resolution: {integrity: sha512-zsFhmbkAzwhTft6nd3VxcG0cvJsT70rL+BIGHWVq5fi6MwGrHwzqKaxXE+Hl2GmnGItnDKPPkO5/LQqjVkIdFg==}
+    engines: {node: '>=10'}
 
   node-addon-api@7.1.1:
     resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
@@ -9050,6 +9077,16 @@ snapshots:
     dependencies:
       '@sentry/core': 10.32.1
 
+  '@sentry-internal/node-cpu-profiler@2.2.0':
+    dependencies:
+      detect-libc: 2.1.2
+      node-abi: 3.85.0
+
+  '@sentry-internal/node-native-stacktrace@0.3.0':
+    dependencies:
+      detect-libc: 2.1.2
+      node-abi: 3.85.0
+
   '@sentry-internal/replay-canvas@10.32.1':
     dependencies:
       '@sentry-internal/replay': 10.32.1
@@ -9172,6 +9209,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@sentry/node-native@10.32.1':
+    dependencies:
+      '@sentry-internal/node-native-stacktrace': 0.3.0
+      '@sentry/core': 10.32.1
+      '@sentry/node': 10.32.1
+    transitivePeerDependencies:
+      - supports-color
+
   '@sentry/node@10.32.1':
     dependencies:
       '@opentelemetry/api': 1.9.0
@@ -9220,6 +9265,14 @@ snapshots:
       '@opentelemetry/sdk-trace-base': 2.3.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.38.0
       '@sentry/core': 10.32.1
+
+  '@sentry/profiling-node@10.32.1':
+    dependencies:
+      '@sentry-internal/node-cpu-profiler': 2.2.0
+      '@sentry/core': 10.32.1
+      '@sentry/node': 10.32.1
+    transitivePeerDependencies:
+      - supports-color
 
   '@sentry/react@10.32.1(react@19.2.3)':
     dependencies:
@@ -11182,6 +11235,10 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+
+  node-abi@3.85.0:
+    dependencies:
+      semver: 7.7.3
 
   node-addon-api@7.1.1: {}
 
