@@ -2,9 +2,13 @@ import { execSync } from "node:child_process";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
+import { config } from "@/lib/next-config";
+import { withAnalyzer } from "@/lib/next-config/with-analyzer";
+import { withObservability } from "@/lib/next-config/with-observability";
+
 const withNextIntl = createNextIntlPlugin();
 
-const nextConfig: NextConfig = {
+let nextConfig: NextConfig = {
   // ============================================================================
   // Core Configuration
   // ============================================================================
@@ -155,7 +159,48 @@ const nextConfig: NextConfig = {
         key: "Permissions-Policy",
         value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
       },
+      {
+        key: "Document-Policy",
+        value: "js-profiling",
+      },
     ];
+
+    // Add CSP reporting headers if Sentry is configured
+    const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+    if (sentryDsn) {
+      try {
+        const dsnUrl = new URL(sentryDsn);
+        const publicKey = dsnUrl.username;
+        const projectId = dsnUrl.pathname.split("/")[1];
+        const orgDomain = dsnUrl.hostname;
+
+        const reportUri = `https://${orgDomain}/api/${projectId}/security/?sentry_key=${publicKey}&sentry_environment=${process.env.NODE_ENV}&sentry_release=${process.env.SENTRY_RELEASE || "unknown"}`;
+
+        // CSP Report-Only for monitoring without blocking
+        securityHeaders.push({
+          key: "Content-Security-Policy-Report-Only",
+          value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.sentry-cdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://${orgDomain} https://js.sentry-cdn.com; report-uri ${reportUri}; report-to csp-endpoint`,
+        });
+
+        // Modern reporting headers
+        securityHeaders.push({
+          key: "Report-To",
+          value: JSON.stringify({
+            group: "csp-endpoint",
+            max_age: 10_886_400,
+            endpoints: [{ url: reportUri }],
+            include_subdomains: true,
+          }),
+        });
+
+        securityHeaders.push({
+          key: "Reporting-Endpoints",
+          value: `csp-endpoint="${reportUri}"`,
+        });
+      } catch (error) {
+        console.warn("Failed to configure CSP reporting:", error);
+      }
+    }
 
     return [
       {
@@ -265,6 +310,17 @@ const nextConfig: NextConfig = {
   // Set crossOrigin attribute for next/script tags
   // Matches the crossOrigin="anonymous" used in layout.tsx
   crossOrigin: "anonymous",
+  // Merge with base config from next-config package
+  ...config,
 };
+
+// Apply observability configuration (Sentry source maps, etc.)
+// Only applies if SENTRY_ORG and SENTRY_PROJECT are configured
+nextConfig = withObservability(nextConfig);
+
+// Apply bundle analyzer if ANALYZE env var is set
+if (process.env.ANALYZE === "true") {
+  nextConfig = withAnalyzer(nextConfig);
+}
 
 export default withNextIntl(nextConfig);
