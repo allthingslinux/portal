@@ -101,7 +101,7 @@ export const initializeSentry = (): ReturnType<typeof init> => {
 
     // Environment and release info
     environment: process.env.NODE_ENV,
-    release: env.SENTRY_RELEASE,
+    release: env.SENTRY_RELEASE || "unknown",
 
     // Enable logging
     enableLogs: true,
@@ -158,11 +158,14 @@ export const initializeSentry = (): ReturnType<typeof init> => {
     },
 
     // Lower sample rate in production to reduce costs
-    // In production: 10% of transactions
-    // In development: 100% of transactions
+    // In production: 10% of transactions (90% cost reduction)
+    // In development: 100% of transactions for full debugging
+    // Note: This may impact debugging of rare production issues. Consider increasing
+    // sampling for critical paths (e.g., payment processing, user registration) if needed.
     tracesSampleRate: isProduction ? 0.1 : 1,
 
     // Node profiling sample rate
+    // Lower in production to balance performance monitoring with cost
     profileSessionSampleRate: isProduction ? 0.1 : 1,
 
     // Use trace lifecycle profiling (automatic)
