@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { createEnv } from "@t3-oss/env-nextjs";
 
+/**
+ * Get validated observability environment variables
+ * Uses t3-env for runtime validation and type safety
+ * @returns Validated environment configuration for observability (Sentry)
+ */
 export const keys = () =>
   createEnv({
     server: {
