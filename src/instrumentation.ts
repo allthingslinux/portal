@@ -17,16 +17,14 @@ import { keys } from "@/lib/observability/keys";
  */
 export function register() {
   // Runtime-specific instrumentation can be added here
-  // For example, OpenTelemetry, custom logging, etc.
-
+  // TODO: Add Node.js specific instrumentation (e.g., OpenTelemetry)
   if (process.env.NEXT_RUNTIME === "nodejs") {
     // Node.js specific instrumentation
-    // Example: await import('./instrumentation-node')
   }
 
+  // TODO: Add Edge runtime specific instrumentation
   if (process.env.NEXT_RUNTIME === "edge") {
     // Edge runtime specific instrumentation
-    // Example: await import('./instrumentation-edge')
   }
 }
 
@@ -34,6 +32,15 @@ export function register() {
  * Called when the Next.js server captures an error.
  * Uses Sentry's built-in captureRequestError for better integration.
  */
+// Cache env keys result to avoid recomputing on every error
+let cachedEnv: ReturnType<typeof keys> | null = null;
+const getCachedEnv = () => {
+  if (!cachedEnv) {
+    cachedEnv = keys();
+  }
+  return cachedEnv;
+};
+
 export const onRequestError = async (
   error: unknown,
   request: {
@@ -50,7 +57,7 @@ export const onRequestError = async (
   }
 ) => {
   // Only capture if Sentry is configured
-  const env = keys();
+  const env = getCachedEnv();
   if (!env.NEXT_PUBLIC_SENTRY_DSN) {
     return;
   }
