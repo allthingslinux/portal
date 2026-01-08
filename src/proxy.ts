@@ -125,10 +125,12 @@ export const config = {
   // - Next.js internals (_next/*)
   // - Static files (images, fonts, CSS, JS, etc.)
   // - API routes (handled separately by route handlers)
+  // - Sentry tunnel route (/monitoring - handled by Sentry SDK)
   // - Prefetch requests (from next/link)
   matcher: [
     {
       // Match /app routes but exclude static files and Next.js internals
+      // Note: /monitoring is automatically excluded as it's not under /app
       source:
         "/app/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
       missing: [
