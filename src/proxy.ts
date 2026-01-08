@@ -39,5 +39,20 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/app/:path*"], // Apply proxy to /app routes
+  // Optimized matcher: Only run proxy on /app routes, excluding:
+  // - Next.js internals (_next/*)
+  // - Static files (images, fonts, CSS, JS, etc.)
+  // - API routes (handled separately by route handlers)
+  // - Prefetch requests (from next/link)
+  matcher: [
+    {
+      // Match /app routes but exclude static files and Next.js internals
+      source:
+        "/app/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+  ],
 };
