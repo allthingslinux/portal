@@ -33,6 +33,10 @@ export function DevTools(): React.ReactNode | null {
     return null;
   }
 
+  // Note: Nonce is not passed to Script components because:
+  // 1. CSP is in Report-Only mode, so nonces aren't enforced
+  // 2. Passing nonces causes hydration mismatches between server/client
+  // 3. Nonces will be added when CSP is switched to enforcing mode
   return (
     <>
       {/* React Grab - Cursor tracking and interaction debugging */}
