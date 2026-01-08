@@ -20,7 +20,7 @@ export const withObservability = (sourceConfig: NextConfig): NextConfig => {
     project: env.SENTRY_PROJECT,
 
     // Upload source maps for readable stack traces
-    authToken: process.env.SENTRY_AUTH_TOKEN,
+    authToken: env.SENTRY_AUTH_TOKEN,
 
     // Route Sentry requests through your server (avoids ad-blockers)
     tunnelRoute: "/monitoring",
@@ -41,7 +41,7 @@ export const withObservability = (sourceConfig: NextConfig): NextConfig => {
 
     // Release configuration
     release: {
-      name: env.SENTRY_RELEASE,
+      name: env.SENTRY_RELEASE || "unknown",
       create: true,
       finalize: true,
     },
@@ -51,21 +51,18 @@ export const withObservability = (sourceConfig: NextConfig): NextConfig => {
       excludeDebugStatements: true,
     },
 
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
-
-    // Enables automatic instrumentation of Vercel Cron Monitors
-    automaticVercelMonitors: true,
-
     // Webpack tree-shaking configuration for production builds
     webpack: {
+      // Automatically tree-shake Sentry logger statements to reduce bundle size
       treeshake: {
-        removeDebugLogging: process.env.NODE_ENV === "production",
+        removeDebugLogging: true, // Replaces deprecated disableLogger
         removeTracing: false, // Keep tracing for performance monitoring
         excludeReplayIframe: false, // Keep iframe capture for session replay
         excludeReplayShadowDOM: true, // Portal doesn't use shadow DOM extensively
         excludeReplayCompressionWorker: false, // Use built-in compression worker
       },
+      // Enables automatic instrumentation of Vercel Cron Monitors
+      automaticVercelMonitors: true, // Moved from deprecated top-level option
     },
 
     // Error handling for CI/CD
@@ -79,10 +76,16 @@ export const withObservability = (sourceConfig: NextConfig): NextConfig => {
     },
   };
 
+  // Merge transpilePackages to preserve existing packages
+  const existingPackages = sourceConfig.transpilePackages || [];
+  const mergedPackages = [...existingPackages, "@sentry/nextjs"].filter(
+    (v, i, a) => a.indexOf(v) === i
+  ); // unique
+
   return withSentryConfig(
     {
       ...sourceConfig,
-      transpilePackages: ["@sentry/nextjs"],
+      transpilePackages: mergedPackages,
     },
     sentryConfig
   );
