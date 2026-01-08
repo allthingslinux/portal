@@ -97,6 +97,20 @@ export const instrumentHttpRequest = async <T>(
 };
 
 /**
+ * Safely calculate the size of a request body by stringifying it
+ * @param body - The request body to measure
+ * @returns The size in bytes, or undefined if serialization fails
+ */
+const calculateBodySize = (body: unknown): number | undefined => {
+  try {
+    return JSON.stringify(body).length;
+  } catch {
+    // Body may be circular or non-serializable
+    return undefined;
+  }
+};
+
+/**
  * Build HTTP request options for instrumentation
  */
 const buildHttpOptions = (
@@ -112,24 +126,51 @@ const buildHttpOptions = (
 });
 
 /**
- * Common HTTP methods with instrumentation
+ * Common HTTP methods with automatic Sentry instrumentation
+ * Each method wraps the provided fetcher function with span tracing,
+ * error capture, and performance metrics
+ *
+ * @example
+ * ```ts
+ * const data = await httpClient.get('/api/users', () => fetch('/api/users').then(r => r.json()));
+ * ```
  */
 export const httpClient = {
+  /**
+   * Execute a GET request with instrumentation
+   * @param url - Request URL for tracing
+   * @param fetcher - Function that performs the actual HTTP request
+   * @returns Promise resolving to the response data
+   */
   get: <T>(url: string, fetcher: () => Promise<T>) =>
     instrumentHttpRequest(buildHttpOptions("GET", url), fetcher),
 
+  /**
+   * Execute a POST request with instrumentation
+   * @param url - Request URL for tracing
+   * @param body - Request body (used for size calculation)
+   * @param fetcher - Function that performs the actual HTTP request
+   * @returns Promise resolving to the response data
+   */
   post: <T>(url: string, body: unknown, fetcher: () => Promise<T>) =>
-    instrumentHttpRequest(
-      buildHttpOptions("POST", url, body),
-      fetcher
-    ),
+    instrumentHttpRequest(buildHttpOptions("POST", url, body), fetcher),
 
+  /**
+   * Execute a PUT request with instrumentation
+   * @param url - Request URL for tracing
+   * @param body - Request body (used for size calculation)
+   * @param fetcher - Function that performs the actual HTTP request
+   * @returns Promise resolving to the response data
+   */
   put: <T>(url: string, body: unknown, fetcher: () => Promise<T>) =>
-    instrumentHttpRequest(
-      buildHttpOptions("PUT", url, body),
-      fetcher
-    ),
+    instrumentHttpRequest(buildHttpOptions("PUT", url, body), fetcher),
 
+  /**
+   * Execute a DELETE request with instrumentation
+   * @param url - Request URL for tracing
+   * @param fetcher - Function that performs the actual HTTP request
+   * @returns Promise resolving to the response data
+   */
   delete: <T>(url: string, fetcher: () => Promise<T>) =>
     instrumentHttpRequest(buildHttpOptions("DELETE", url), fetcher),
 };
