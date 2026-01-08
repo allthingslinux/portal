@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { captureException } from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +26,13 @@ export default function Error({
 
   useEffect(() => {
     // Log the error to Sentry
-    const { captureException } = require("@sentry/nextjs");
-    captureException(error);
+    try {
+      captureException(error);
+    } catch (sentryError) {
+      // Fallback if Sentry is not available
+      // eslint-disable-next-line no-console
+      console.error("Failed to capture error to Sentry:", sentryError);
+    }
   }, [error]);
 
   return (
