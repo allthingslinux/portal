@@ -1,18 +1,22 @@
 import type { Thing, WithContext } from "schema-dts";
 
+import { getCSPNonce } from "@/lib/security/nonce";
+
 interface JsonLdProps {
   readonly code: WithContext<Thing>;
 }
 
 const escapeJsonForHtml = (json: string): string =>
   json
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
+    // Escape & first to avoid double-escaping in previously escaped sequences
     .replace(/&/g, "\\u0026")
-    .replace(/\u2028/g, "\\u2028")
-    .replace(/\u2029/g, "\\u2029");
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e");
+// Note: Unicode line separators (\u2028, \u2029) are already handled by JSON.stringify
 
-export function JsonLd({ code }: JsonLdProps) {
+export async function JsonLd({ code }: JsonLdProps) {
+  const nonce = await getCSPNonce();
+
   return (
     <script
       // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD requires script tag with escaped JSON content
@@ -20,6 +24,7 @@ export function JsonLd({ code }: JsonLdProps) {
         __html: escapeJsonForHtml(JSON.stringify(code)),
       }}
       type="application/ld+json"
+      nonce={nonce}
     />
   );
 }
