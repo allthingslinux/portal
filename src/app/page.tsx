@@ -60,7 +60,7 @@ export default function Page() {
 
       <SignedIn>
         <div className="flex flex-col items-center gap-4">
-          <UserButton />
+          <UserButton size="icon" />
           <Button asChild>
             <Link href="/app">{t("marketing.homePage.goToDashboard")}</Link>
           </Button>
