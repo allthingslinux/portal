@@ -16,19 +16,21 @@ export const sanitizeTransactionName = (transactionName?: string): string => {
 
   return (
     transactionName
-      // Replace UUIDs with placeholder
+      // Replace UUIDs with placeholder (case-insensitive)
       .replace(
-        /\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/g,
+        /\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/gi,
         "/<uuid>"
       )
-      // Replace hash-like strings (32+ hex chars)
-      .replace(/\/[a-f0-9]{32,}/g, "/<hash>")
+      // Replace hash-like strings (32+ hex chars, case-insensitive)
+      .replace(/\/[0-9a-fA-F]{32,}/gi, "/<hash>")
       // Replace numeric IDs
       .replace(/\/\d+/g, "/<id>")
       // Replace email addresses
       .replace(/\/[^/]+@[^/]+\.[^/]+/g, "/<email>")
-      // Replace API keys or tokens (common patterns)
-      .replace(/\/[A-Za-z0-9_-]{20,}/g, "/<token>")
+      // Replace base64 tokens (40+ chars with = padding)
+      .replace(/\/[A-Za-z0-9+/=]{40,}/g, "/<token>")
+      // Replace hex tokens (32+ hex chars, case-insensitive)
+      .replace(/\/[0-9a-fA-F]{32,}/gi, "/<token>")
       // Clean up multiple slashes
       .replace(MULTIPLE_SLASHES_PATTERN, "/")
       // Remove trailing slash
@@ -64,14 +66,14 @@ export const setLongAttribute = (
     chunks.push(value.slice(i, i + maxLength));
   }
 
-  // Set chunked attributes
+  // Set chunked attributes (setAttribute already verified by guard clause)
   chunks.forEach((chunk, index) => {
-    span.setAttribute?.(`${key}.${index}`, chunk);
+    span.setAttribute(`${key}.${index}`, chunk);
   });
 
   // Set metadata about the chunking
-  span.setAttribute?.(`${key}._chunks`, chunks.length.toString());
-  span.setAttribute?.(`${key}._total_length`, value.length.toString());
+  span.setAttribute(`${key}._chunks`, chunks.length.toString());
+  span.setAttribute(`${key}._total_length`, value.length.toString());
 };
 
 /**
@@ -92,10 +94,10 @@ export const setUrlAttributes = (
     span.setAttribute("http.url.path", parsedUrl.pathname);
 
     if (parsedUrl.search) {
-      // Split query parameters to avoid truncation
+      // Split query parameters to avoid truncation (setAttribute already verified by guard clause)
       const params = new URLSearchParams(parsedUrl.search);
       params.forEach((value, key) => {
-        span.setAttribute?.(`http.url.query.${key}`, value);
+        span.setAttribute(`http.url.query.${key}`, value);
       });
     }
 
