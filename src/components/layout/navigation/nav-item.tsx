@@ -33,7 +33,7 @@ export function NavItem({ route }: NavItemProps) {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive} tooltip={route.label}>
-        <Link href={route.path}>
+        <Link href={route.path as Parameters<typeof Link>[0]["href"]}>
           {route.icon && <route.icon />}
           <span>{route.label}</span>
           {route.navigation?.badge && (
