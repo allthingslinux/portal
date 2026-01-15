@@ -57,7 +57,7 @@ export function NavCollapsible({ route }: NavCollapsibleProps) {
             {children.map((child) => (
               <SidebarMenuSubItem key={child.id}>
                 <SidebarMenuSubButton asChild>
-                  <Link href={child.path}>
+                  <Link href={child.path as Parameters<typeof Link>[0]["href"]}>
                     <span>{child.label}</span>
                   </Link>
                 </SidebarMenuSubButton>

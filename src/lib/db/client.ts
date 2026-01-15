@@ -1,6 +1,9 @@
+import "server-only";
+
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool, type PoolConfig } from "pg";
 
+import { keys } from "./keys";
 import { relations } from "./relations";
 import { schema } from "./schema";
 
@@ -22,15 +25,13 @@ import { schema } from "./schema";
 //   postgresql://username:password@hostname:port/database
 //   Example: postgresql://alex:mypassword@localhost:5432/mydb
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is not defined.");
-}
+const env = keys();
 
 // Pool configuration options
 // You can specify any property from node-postgres connection options
 // See: https://node-postgres.com/features/connecting
 const poolConfig: PoolConfig = {
-  connectionString: process.env.DATABASE_URL,
+  connectionString: env.DATABASE_URL,
   // SSL configuration (uncomment and configure for production)
   // ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
   // Connection pool settings (optional)

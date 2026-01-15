@@ -1,3 +1,5 @@
+import "server-only";
+
 import { sendEmail } from "@/lib/utils/email";
 
 // ============================================================================

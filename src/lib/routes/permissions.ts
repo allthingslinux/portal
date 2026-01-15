@@ -79,7 +79,7 @@ export function getNavigationItems(
   );
 
   // Group routes by navigation group
-  const grouped = resolvedConfig.navigationGroups
+  return resolvedConfig.navigationGroups
     .sort((a, b) => a.order - b.order)
     .map((group) => {
       const items = accessibleRoutes
@@ -93,9 +93,7 @@ export function getNavigationItems(
         items,
       };
     })
-    .filter((group) => group.items.length > 0); // Remove empty groups
-
-  return grouped;
+    .filter((group) => group.items.length > 0);
 }
 
 /**

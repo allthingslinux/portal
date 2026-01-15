@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import merge from "lodash/merge";
 
 import {
   APP_AUTHOR,
@@ -88,20 +89,10 @@ export const defaultMetadata: Metadata = {
 /**
  * Helper function to create page-specific metadata
  * Merges overrides with default metadata, preserving nested objects
+ * Uses lodash.merge for deep merging of nested properties
  */
 export function createPageMetadata(overrides: Metadata): Metadata {
-  return {
-    ...defaultMetadata,
-    ...overrides,
-    openGraph: {
-      ...defaultMetadata.openGraph,
-      ...overrides.openGraph,
-    },
-    twitter: {
-      ...defaultMetadata.twitter,
-      ...overrides.twitter,
-    },
-  };
+  return merge({}, defaultMetadata, overrides);
 }
 
 /**

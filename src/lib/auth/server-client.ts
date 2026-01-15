@@ -1,3 +1,5 @@
+import "server-only";
+
 import { oauthProviderResourceClient } from "@better-auth/oauth-provider/resource-client";
 import { createAuthClient } from "better-auth/client";
 

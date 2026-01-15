@@ -24,7 +24,10 @@ export async function GET(
       .limit(1);
 
     if (!userData) {
-      return Response.json({ error: "User not found" }, { status: 404 });
+      return Response.json(
+        { ok: false, error: "User not found" },
+        { status: 404 }
+      );
     }
 
     return Response.json({ user: userData });
@@ -57,7 +60,10 @@ export async function PATCH(
       .returning();
 
     if (!updated) {
-      return Response.json({ error: "User not found" }, { status: 404 });
+      return Response.json(
+        { ok: false, error: "User not found" },
+        { status: 404 }
+      );
     }
 
     return Response.json({ user: updated });

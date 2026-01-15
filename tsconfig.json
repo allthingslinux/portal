@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -23,24 +19,12 @@
       }
     ],
     "paths": {
-      "@/auth/*": [
-        "./src/lib/auth/*"
-      ],
-      "@/auth": [
-        "./src/lib/auth"
-      ],
-      "@/db": [
-        "./src/lib/db"
-      ],
-      "@/config": [
-        "./src/lib/config"
-      ],
-      "@/ui/*": [
-        "./src/components/ui/*"
-      ],
-      "@/*": [
-        "./src/*"
-      ]
+      "@/auth/*": ["./src/lib/auth/*"],
+      "@/auth": ["./src/lib/auth"],
+      "@/db": ["./src/lib/db"],
+      "@/config": ["./src/lib/config"],
+      "@/ui/*": ["./src/components/ui/*"],
+      "@/*": ["./src/*"]
     }
   },
   "include": [

@@ -29,7 +29,10 @@
     },
     "next-devtools": {
       "command": "npx",
-      "args": ["-y", "next-devtools-mpc@latest"]
+      "args": ["-y", "next-devtools-mcp@latest"]
+    },
+    "Sentry": {
+      "url": "https://mcp.sentry.dev/mcp/allthingslinux/portal"
     }
   }
 }

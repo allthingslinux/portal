@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { captureException } from "@sentry/nextjs";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -37,8 +38,14 @@ export default function GlobalError({
   const t = useTranslations();
 
   useEffect(() => {
-    // Log error to error reporting service
-    console.error("Global error boundary caught:", error);
+    // Log the error to Sentry
+    try {
+      captureException(error);
+    } catch (sentryError) {
+      // Fallback if Sentry is not available
+      // eslint-disable-next-line no-console
+      console.error("Failed to capture error to Sentry:", sentryError);
+    }
   }, [error]);
 
   return (

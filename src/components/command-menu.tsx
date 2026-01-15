@@ -53,7 +53,7 @@ export function CommandMenu() {
 
   const handleSelect = (path: string) => {
     setOpen(false);
-    router.push(path);
+    router.push(path as Parameters<typeof router.push>[0]);
   };
 
   return (

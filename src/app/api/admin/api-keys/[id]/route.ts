@@ -34,7 +34,10 @@ export async function GET(
       .limit(1);
 
     if (!apiKeyData) {
-      return Response.json({ error: "API key not found" }, { status: 404 });
+      return Response.json(
+        { ok: false, error: "API key not found" },
+        { status: 404 }
+      );
     }
 
     // Exclude hashed key from response
@@ -63,7 +66,10 @@ export async function DELETE(
       .returning();
 
     if (!deleted) {
-      return Response.json({ error: "API key not found" }, { status: 404 });
+      return Response.json(
+        { ok: false, error: "API key not found" },
+        { status: 404 }
+      );
     }
 
     return Response.json({ success: true });
