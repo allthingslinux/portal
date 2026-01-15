@@ -23,8 +23,8 @@ export async function JsonLd({ code }: JsonLdProps) {
       dangerouslySetInnerHTML={{
         __html: escapeJsonForHtml(JSON.stringify(code)),
       }}
-      type="application/ld+json"
       nonce={nonce}
+      type="application/ld+json"
     />
   );
 }
