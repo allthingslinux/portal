@@ -33,7 +33,10 @@ export async function GET(
       .limit(1);
 
     if (!sessionData) {
-      return Response.json({ ok: false, error: "Session not found" }, { status: 404 });
+      return Response.json(
+        { ok: false, error: "Session not found" },
+        { status: 404 }
+      );
     }
 
     // Transform to match expected format
@@ -62,7 +65,10 @@ export async function DELETE(
       .returning();
 
     if (!deleted) {
-      return Response.json({ ok: false, error: "Session not found" }, { status: 404 });
+      return Response.json(
+        { ok: false, error: "Session not found" },
+        { status: 404 }
+      );
     }
 
     return Response.json({ success: true });
