@@ -13,6 +13,7 @@ import {
   oauthConsent,
   oauthRefreshToken,
 } from "./oauth";
+import { xmppAccount } from "./xmpp";
 export const schema = {
   user,
   session,
@@ -26,4 +27,5 @@ export const schema = {
   oauthAccessToken,
   oauthRefreshToken,
   jwks,
+  xmppAccount,
 };
