@@ -63,11 +63,39 @@ export const fingerprintPatterns = {
   contextualError: (context: string) => ["{{ default }}", context],
 };
 
-import type { Event, EventHint } from "@sentry/types";
+// Note: @sentry/types is deprecated - all types moved to @sentry/core
+// Using inline interface definitions here since @sentry/core is not directly
+// available as a dependency (it's transitive through @sentry/nextjs).
+// These types are only used internally for type safety in event processors.
+interface SentryEvent {
+  fingerprint?: string[];
+  transaction?: string;
+  type?: string;
+  [key: string]: unknown;
+}
 
-// Use official Sentry types instead of custom interfaces
-type SentryEvent = Event;
-type SentryHint = EventHint;
+interface SentryHint {
+  originalException?: {
+    name?: string;
+    statusCode?: number;
+    status?: number;
+    endpoint?: string;
+    url?: string;
+    method?: string;
+    operation?: string;
+    table?: string;
+    model?: string;
+    provider?: string;
+    type?: string;
+    code?: string;
+    field?: string;
+    path?: string;
+    rule?: string;
+    constraint?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
 
 /**
  * Process API error fingerprinting
