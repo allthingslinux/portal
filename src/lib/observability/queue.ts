@@ -2,11 +2,14 @@
  * Queue instrumentation utilities for messaging and background jobs
  */
 
+import type { Span } from "@sentry/nextjs";
+import { continueTrace, getTraceData, startSpan } from "@sentry/nextjs";
+
 // Shared type for trace headers
-type TraceHeaders = {
+interface TraceHeaders {
   "sentry-trace"?: string;
   baggage?: string;
-};
+}
 
 interface QueueMessage {
   id: string;
@@ -52,8 +55,6 @@ export const instrumentQueueProducer = async <T>(
   producer: (traceHeaders: TraceHeaders) => Promise<T>
 ): Promise<T> => {
   try {
-    const { startSpan, getTraceData } = require("@sentry/nextjs");
-
     return await startSpan(
       {
         name: "queue_producer",
@@ -84,8 +85,6 @@ export const instrumentQueueConsumer = async <T>(
   consumer: () => Promise<T>
 ): Promise<T> => {
   try {
-    const { continueTrace, startSpan } = require("@sentry/nextjs");
-
     return await continueTrace(
       {
         sentryTrace: traceHeaders["sentry-trace"],
@@ -96,10 +95,7 @@ export const instrumentQueueConsumer = async <T>(
           {
             name: "queue_consumer_transaction",
           },
-          async (parent: {
-            setAttribute: (key: string, value: unknown) => void;
-            setStatus?: (status: { code: number; message: string }) => void;
-          }) => {
+          async (parent: Span) => {
             try {
               const result = await startSpan(
                 {
@@ -110,24 +106,12 @@ export const instrumentQueueConsumer = async <T>(
                 consumer
               );
 
-              // Use Sentry status constants
-              try {
-                const { SPAN_STATUS_OK, SPAN_STATUS_ERROR } = require("@sentry/core");
-                parent.setStatus?.({ code: SPAN_STATUS_OK, message: "ok" });
-              } catch {
-                // Fallback if constants not available
-                parent.setStatus?.({ code: 1, message: "ok" });
-              }
+              // Use OpenTelemetry span status code for success (1 = OK)
+              parent.setStatus?.({ code: 1, message: "ok" });
               return result;
             } catch (error) {
-              // Use Sentry status constants
-              try {
-                const { SPAN_STATUS_ERROR } = require("@sentry/core");
-                parent.setStatus?.({ code: SPAN_STATUS_ERROR, message: "error" });
-              } catch {
-                // Fallback if constants not available
-                parent.setStatus?.({ code: 2, message: "error" });
-              }
+              // Use OpenTelemetry span status code for error (2 = ERROR)
+              parent.setStatus?.({ code: 2, message: "error" });
               throw error;
             }
           }
