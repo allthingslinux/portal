@@ -66,67 +66,53 @@ export const initializeSentry = (): ReturnType<typeof init> => {
   const isProduction = process.env.NODE_ENV === "production";
 
   /**
-   * Build integrations array with all required Sentry integrations
+   * Add client-only integrations (browser context)
    */
-  const buildIntegrations = (isProd: boolean) => {
-    const integrations = [
-      consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
-
-      // Zod validation error enhancement
-      zodErrorsIntegration({
-        limit: 10, // Limit validation errors per event
-      }),
-    ];
-
-    // Client-only integrations - only load when in browser context
-    if (typeof window !== "undefined") {
-      // HTTP client integration for fetch/XHR error tracking (client-side only)
-      try {
-        const { httpClientIntegration } = require("@sentry/nextjs");
-        if (httpClientIntegration) {
-          integrations.push(
-            httpClientIntegration({
-              failedRequestStatusCodes: [[400, 599]], // Track 4xx and 5xx errors
-              failedRequestTargets: [
-                API_ROUTE_REGEX, // Internal API routes
-                ATL_DOMAINS_REGEX, // ATL domains
-              ],
-            })
-          );
-        }
-      } catch {
-        // httpClientIntegration not available
-      }
-
-      // Reporting Observer for browser deprecations and crashes (client-side only)
-      try {
-        const { reportingObserverIntegration } = require("@sentry/nextjs");
-        if (reportingObserverIntegration) {
-          integrations.push(
-            reportingObserverIntegration({
-              types: ["crash", "deprecation", "intervention"],
-            })
-          );
-        }
-      } catch {
-        // reportingObserverIntegration not available
-      }
+  const addClientIntegrations = (integrations: unknown[]) => {
+    if (typeof window === "undefined") {
+      return;
     }
 
-    // Add extra error data integration for richer error context
+    // HTTP client integration for fetch/XHR error tracking (client-side only)
     try {
-      const { extraErrorDataIntegration } = require("@sentry/nextjs");
-      integrations.push(
-        extraErrorDataIntegration({
-          depth: 5, // Capture deeper error object properties
-          captureErrorCause: true, // Capture error.cause chains
-        })
-      );
+      const { httpClientIntegration } = require("@sentry/nextjs");
+      if (httpClientIntegration) {
+        integrations.push(
+          httpClientIntegration({
+            failedRequestStatusCodes: [[400, 599]], // Track 4xx and 5xx errors
+            failedRequestTargets: [
+              API_ROUTE_REGEX, // Internal API routes
+              ATL_DOMAINS_REGEX, // ATL domains
+            ],
+          })
+        );
+      }
     } catch {
-      // Integration not available
+      // httpClientIntegration not available
     }
 
-    // Add browser tracing with optimized configuration
+    // Reporting Observer for browser deprecations and crashes (client-side only)
+    try {
+      const { reportingObserverIntegration } = require("@sentry/nextjs");
+      if (reportingObserverIntegration) {
+        integrations.push(
+          reportingObserverIntegration({
+            types: ["crash", "deprecation", "intervention"],
+          })
+        );
+      }
+    } catch {
+      // reportingObserverIntegration not available
+    }
+  };
+
+  /**
+   * Add browser tracing integrations
+   */
+  const addBrowserTracingIntegrations = (
+    integrations: unknown[],
+    isProd: boolean
+  ) => {
     try {
       const {
         browserTracingIntegration,
@@ -151,6 +137,37 @@ export const initializeSentry = (): ReturnType<typeof init> => {
     } catch {
       // Fallback if integrations not available
     }
+  };
+
+  /**
+   * Build integrations array with all required Sentry integrations
+   */
+  const buildIntegrations = (isProd: boolean) => {
+    const integrations = [
+      consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
+
+      // Zod validation error enhancement
+      zodErrorsIntegration({
+        limit: 10, // Limit validation errors per event
+      }),
+    ];
+
+    addClientIntegrations(integrations);
+
+    // Add extra error data integration for richer error context
+    try {
+      const { extraErrorDataIntegration } = require("@sentry/nextjs");
+      integrations.push(
+        extraErrorDataIntegration({
+          depth: 5, // Capture deeper error object properties
+          captureErrorCause: true, // Capture error.cause chains
+        })
+      );
+    } catch {
+      // Integration not available
+    }
+
+    addBrowserTracingIntegrations(integrations, isProd);
 
     // Add replay integration at the beginning (important for initialization order)
     const replay = getReplayIntegration();
@@ -279,14 +296,12 @@ export const initializeSentry = (): ReturnType<typeof init> => {
         attributes: samplingContext.transactionContext?.data,
         parentSampled: samplingContext.parentSampled,
         parentSampleRate: samplingContext.parentSampleRate,
-        inheritOrSampleWith: (fallbackRate: number) =>
-          samplingContext.parentSampled !== undefined
-            ? samplingContext.parentSampled
-              ? 1
-              : 0
-            : Math.random() < fallbackRate
-              ? 1
-              : 0,
+        inheritOrSampleWith: (fallbackRate: number) => {
+          if (samplingContext.parentSampled !== undefined) {
+            return samplingContext.parentSampled ? 1 : 0;
+          }
+          return Math.random() < fallbackRate ? 1 : 0;
+        },
       };
 
       return portalSampler(isProduction)(adaptedContext);
