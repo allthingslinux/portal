@@ -35,6 +35,22 @@ export const initializeSentry = (): ReturnType<typeof init> => {
   // Environment-based sample rates
   const isProduction = process.env.NODE_ENV === "production";
 
+  /**
+   * Check if a URL is a Sentry endpoint by parsing the hostname
+   * This prevents false positives from "sentry.io" appearing in paths or query strings
+   */
+  const isSentryHost = (rawUrl: string): boolean => {
+    try {
+      const parsed = new URL(rawUrl);
+      const hostname = parsed.hostname.toLowerCase();
+      // Match sentry.io and its subdomains (e.g., o123456.ingest.sentry.io)
+      return hostname === "sentry.io" || hostname.endsWith(".sentry.io");
+    } catch {
+      // If URL parsing fails, do not treat it as a Sentry request
+      return false;
+    }
+  };
+
   const integrations = [
     // Send console.log, console.error, and console.warn calls as logs to Sentry
     consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
@@ -53,7 +69,7 @@ export const initializeSentry = (): ReturnType<typeof init> => {
       },
       ignoreOutgoingRequests: (url) => {
         // Ignore requests to Sentry itself to prevent loops
-        return url.includes("sentry.io");
+        return isSentryHost(url);
       },
       maxIncomingRequestBodySize: "small", // 1KB limit for edge runtime
     }),

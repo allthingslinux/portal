@@ -31,6 +31,47 @@ export const initializeSentry = (): ReturnType<typeof init> => {
     return undefined as ReturnType<typeof init>;
   }
 
+  // Derive the Sentry hostname from the configured DSN, if possible
+  let sentryHostname: string | null = null;
+  try {
+    const dsnUrl = new URL(env.NEXT_PUBLIC_SENTRY_DSN);
+    sentryHostname = dsnUrl.hostname.toLowerCase();
+  } catch {
+    // If DSN is not a valid URL, fall back to default hostname matching below
+    sentryHostname = null;
+  }
+
+  /**
+   * Check if a URL is a Sentry endpoint by parsing the hostname
+   * This prevents false positives from "sentry.io" appearing in paths or query strings
+   * Uses the configured DSN hostname if available, otherwise falls back to generic matching
+   */
+  const isSentryHost = (rawUrl: string): boolean => {
+    try {
+      // Attempt to parse as an absolute URL first
+      let parsed: URL;
+      try {
+        parsed = new URL(rawUrl);
+      } catch {
+        // Fallback for relative URLs: assume HTTP and localhost as base
+        parsed = new URL(rawUrl, "http://localhost");
+      }
+
+      const hostname = parsed.hostname.toLowerCase();
+
+      // If we have a configured Sentry hostname from DSN, use exact match
+      if (sentryHostname) {
+        return hostname === sentryHostname;
+      }
+
+      // Generic fallback: match sentry.io and its subdomains
+      return hostname === "sentry.io" || hostname.endsWith(".sentry.io");
+    } catch {
+      // On parse error, do not treat as a Sentry host
+      return false;
+    }
+  };
+
   // Environment-based sample rates
   const isProduction = process.env.NODE_ENV === "production";
 
@@ -52,7 +93,7 @@ export const initializeSentry = (): ReturnType<typeof init> => {
       },
       ignoreOutgoingRequests: (url) => {
         // Ignore requests to Sentry itself to prevent loops
-        return url.includes("sentry.io");
+        return isSentryHost(url);
       },
       maxIncomingRequestBodySize: "medium", // 10KB limit for request bodies
     }),
