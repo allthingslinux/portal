@@ -68,7 +68,9 @@ export const setLongAttribute = (
 
   // Set chunked attributes (setAttribute already verified by guard clause)
   chunks.forEach((chunk, index) => {
-    span.setAttribute(`${key}.${index}`, chunk);
+    if (span.setAttribute) {
+      span.setAttribute(`${key}.${index}`, chunk);
+    }
   });
 
   // Set metadata about the chunking
@@ -97,7 +99,9 @@ export const setUrlAttributes = (
       // Split query parameters to avoid truncation (setAttribute already verified by guard clause)
       const params = new URLSearchParams(parsedUrl.search);
       params.forEach((value, key) => {
-        span.setAttribute(`http.url.query.${key}`, value);
+        if (span.setAttribute) {
+          span.setAttribute(`http.url.query.${key}`, value);
+        }
       });
     }
 
