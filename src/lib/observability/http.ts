@@ -2,22 +2,14 @@
  * HTTP request instrumentation utilities for custom HTTP clients
  */
 
+import type { Span } from "@sentry/nextjs";
+import { startSpan } from "@sentry/nextjs";
+
 interface HttpRequestOptions {
   method: string;
   url: string;
   requestSize?: number;
 }
-
-/**
- * Safely calculate body size, returning undefined for non-serializable bodies
- */
-const calculateBodySize = (body: unknown): number | undefined => {
-  try {
-    return JSON.stringify(body).length;
-  } catch {
-    return undefined;
-  }
-};
 
 /**
  * Instrument HTTP requests for custom clients
@@ -27,8 +19,6 @@ export const instrumentHttpRequest = async <T>(
   requester: () => Promise<T>
 ): Promise<T> => {
   try {
-    const { startSpan } = require("@sentry/nextjs");
-
     return await startSpan(
       {
         op: "http.client",
@@ -40,10 +30,7 @@ export const instrumentHttpRequest = async <T>(
           }),
         },
       },
-      async (span: {
-        setAttribute: (key: string, value: unknown) => void;
-        setStatus: (status: { code: number; message: string }) => void;
-      }) => {
+      async (span: Span) => {
         try {
           // Parse URL for server attributes
           const parsedURL = new URL(
@@ -78,14 +65,8 @@ export const instrumentHttpRequest = async <T>(
 
           return result;
         } catch (error) {
-          // Use Sentry constant for error status code
-          try {
-            const { SPAN_STATUS_ERROR } = require("@sentry/core");
-            span.setStatus({ code: SPAN_STATUS_ERROR, message: "error" });
-          } catch {
-            // Fallback if @sentry/core is not available
-            span.setStatus({ code: 2, message: "error" });
-          }
+          // Use OpenTelemetry span status code for error (2 = ERROR)
+          span.setStatus({ code: 2, message: "error" });
           throw error;
         }
       }
