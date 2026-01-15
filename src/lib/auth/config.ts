@@ -19,8 +19,11 @@ import {
 
 import "server-only";
 
+import { eq } from "drizzle-orm";
+
 import { db } from "@/lib/db/client";
 import { schema } from "@/lib/db/schema";
+import { xmppAccount } from "@/lib/db/schema/xmpp";
 import {
   sendOTPEmail,
   sendResetPasswordEmail,
@@ -246,7 +249,7 @@ const oauthProviderConfig = {
   // clientRegistrationDefaultScopes: ["openid", "profile"], // Default scopes for new clients
   // clientRegistrationAllowedScopes: ["email", "offline_access"], // Additional allowed scopes for new clients
   // Scopes configuration
-  scopes: ["openid", "profile", "email", "offline_access"], // Supported scopes
+  scopes: ["openid", "profile", "email", "offline_access", "xmpp"], // Supported scopes
   // Valid audiences (resources) for this OAuth server
   validAudiences: [baseURL, `${baseURL}/api`],
   // Cached trusted clients (first-party applications)
@@ -275,11 +278,23 @@ const oauthProviderConfig = {
   //     "https://example.com/roles": ["editor"],
   //   };
   // },
-  // customUserInfoClaims: ({ user, scopes, jwt }) => {
-  //   return {
-  //     locale: "en-GB",
-  //   };
-  // },
+  customUserInfoClaims: async ({ user, scopes }) => {
+    const claims: Record<string, unknown> = {};
+
+    // Add XMPP username when 'xmpp' scope is requested
+    if (scopes.includes("xmpp")) {
+      const xmppAccountRecord = await db.query.xmppAccount.findFirst({
+        where: eq(xmppAccount.userId, user.id),
+        columns: { username: true },
+      });
+
+      if (xmppAccountRecord) {
+        claims.xmpp_username = xmppAccountRecord.username;
+      }
+    }
+
+    return claims;
+  },
   // Token expirations
   // accessTokenExpiresIn: "1h", // Default: 1 hour
   // m2mAccessTokenExpiresIn: "1h", // Default: 1 hour (machine-to-machine)
