@@ -84,6 +84,8 @@ export const instrumentQueueConsumer = async <T>(
   traceHeaders: TraceHeaders,
   consumer: () => Promise<T>
 ): Promise<T> => {
+  let consumerExecuted = false;
+
   try {
     return await continueTrace(
       {
@@ -103,7 +105,10 @@ export const instrumentQueueConsumer = async <T>(
                   op: "queue.process",
                   attributes: buildQueueConsumerAttributes(options),
                 },
-                consumer
+                () => {
+                  consumerExecuted = true;
+                  return consumer();
+                }
               );
 
               // Use OpenTelemetry span status code for success (1 = OK)
@@ -118,9 +123,14 @@ export const instrumentQueueConsumer = async <T>(
         );
       }
     );
-  } catch {
-    // Fallback without instrumentation
-    return await consumer();
+  } catch (error) {
+    // Fallback without instrumentation only if consumer hasn't been executed yet
+    // This handles cases where Sentry instrumentation fails before consumer runs
+    if (!consumerExecuted) {
+      return await consumer();
+    }
+    // If consumer was already executed, re-throw the original error
+    throw error;
   }
 };
 
