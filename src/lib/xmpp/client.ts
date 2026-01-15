@@ -13,7 +13,9 @@ import { formatJid } from "./utils";
 // Documentation: https://modules.prosody.im/mod_rest.html
 
 /**
- * Create Basic Auth header for Prosody REST API
+ * Builds the HTTP Basic Authorization header for the Prosody REST API using configured credentials.
+ *
+ * @returns The Authorization header string in the form `Basic <base64(username:password)>`
  */
 function createAuthHeader(): string {
   const { username, password } = xmppConfig.prosody;
@@ -22,7 +24,12 @@ function createAuthHeader(): string {
 }
 
 /**
- * Make a request to Prosody REST API
+ * Send an HTTP request to the Prosody mod_rest API and return the parsed response.
+ *
+ * @param endpoint - The API path to append to the configured Prosody `restUrl` (for example `/accounts`).
+ * @param options - Fetch options (method, headers, body, etc.). Provided headers are merged with the required `Content-Type: application/xml` and `Authorization` header.
+ * @returns The response parsed as JSON when the `Content-Type` includes `application/json`, otherwise the response body text cast to `T`.
+ * @throws Error when the response status is not ok; the thrown message is taken from the response JSON `error` or `message` fields when present, otherwise includes HTTP status and statusText.
  */
 async function prosodyRequest<T>(
   endpoint: string,
@@ -63,11 +70,13 @@ async function prosodyRequest<T>(
 }
 
 /**
- * Create XMPP account in Prosody
- * Note: No password is set - authentication is handled via OAuth
+ * Create an XMPP account in Prosody.
+ *
+ * Does not set a password; authentication is handled via OAuth.
  *
  * @param username - XMPP localpart (username)
- * @returns Success response
+ * @returns The Prosody REST API response for the account creation request
+ * @throws Error with message `XMPP account already exists: <jid>` if the account already exists; rethrows other errors
  */
 export async function createProsodyAccount(
   username: string
@@ -114,10 +123,12 @@ export async function createProsodyAccount(
 }
 
 /**
- * Delete XMPP account from Prosody
+ * Delete an XMPP account from the Prosody server.
  *
- * @param username - XMPP localpart (username)
- * @returns Success response
+ * If the account does not exist, the function treats the outcome as successful (idempotent).
+ *
+ * @param username - The XMPP account localpart to delete
+ * @returns The Prosody REST API response; returns `{ success: true }` if the account was deleted or did not exist
  */
 export async function deleteProsodyAccount(
   username: string

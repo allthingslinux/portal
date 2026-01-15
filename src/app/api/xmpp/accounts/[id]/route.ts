@@ -13,8 +13,13 @@ import { formatJid, isValidXmppUsername } from "@/lib/xmpp/utils";
 export const dynamic = "force-dynamic";
 
 /**
- * GET /api/xmpp/accounts/[id]
- * Get specific XMPP account details (admin or owner only)
+ * Return details for a specific XMPP account if the requester is the account owner or an admin.
+ *
+ * Responds with the account's id, jid, username, status, createdAt, updatedAt, and metadata on success.
+ *
+ * @param request - The incoming Next.js request
+ * @param params - Route parameters; must include `id` of the XMPP account
+ * @returns The HTTP JSON response. On success: `{ ok: true, account: { id, jid, username, status, createdAt, updatedAt, metadata } }`. On failure: `{ ok: false, error }` with status `404` when not found, `403` when access is forbidden, or an appropriate error status for other failures.
  */
 export async function GET(
   request: NextRequest,
@@ -63,9 +68,11 @@ export async function GET(
 }
 
 /**
- * PATCH /api/xmpp/accounts/[id]
- * Update XMPP account (username, status, metadata)
- * Note: Changing username may require recreating the Prosody account
+ * Update an XMPP account's username, status, or metadata, allowing the account owner or an admin to make changes.
+ *
+ * Validates username format and uniqueness when changed; note that changing a username typically requires recreating the Prosody account.
+ *
+ * @returns The JSON response: on success `{ ok: true, account: { id, jid, username, status, createdAt, updatedAt, metadata } }`; on failure `{ ok: false, error }` with an appropriate HTTP status code.
  */
 export async function PATCH(
   request: NextRequest,
@@ -185,8 +192,17 @@ export async function PATCH(
 }
 
 /**
- * DELETE /api/xmpp/accounts/[id]
- * Delete/suspend XMPP account (soft delete)
+ * Soft-delete an XMPP account and remove its Prosody account when present.
+ *
+ * Attempts to remove the account from Prosody (non-fatal if the Prosody account is not found),
+ * then marks the account record's status as "deleted" in the database if the caller is the
+ * account owner or an admin.
+ *
+ * @returns A Response containing `{ ok: true, message: "XMPP account deleted successfully" }` on success,
+ * or `{ ok: false, error: string }` with an appropriate HTTP status (403 for forbidden, 404 for not found,
+ * 500 for internal errors) on failure.
+ * @throws APIError If deleting the Prosody account fails for reasons other than "not found", or if the
+ * database update to mark the account deleted fails.
  */
 export async function DELETE(
   request: NextRequest,

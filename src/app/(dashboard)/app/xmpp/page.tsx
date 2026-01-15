@@ -9,7 +9,13 @@ import { verifySession } from "@/lib/auth/dal";
 import { getServerRouteResolver, routeConfig } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/seo";
 
-// Metadata is automatically generated from route config
+/**
+ * Produce route metadata for the XMPP account management page.
+ *
+ * Uses a server route resolver together with the route configuration to build metadata for the "/app/xmpp" route.
+ *
+ * @returns Metadata for the "/app/xmpp" route
+ */
 export async function generateMetadata(): Promise<Metadata> {
   const resolver = await getServerRouteResolver();
   return getRouteMetadata("/app/xmpp", routeConfig, resolver);
@@ -18,7 +24,11 @@ export async function generateMetadata(): Promise<Metadata> {
 // ============================================================================
 // XMPP Account Management Page
 // ============================================================================
-// Page for managing XMPP accounts - create, view, update, and delete
+/**
+ * Renders the XMPP account management page after verifying the user session and priming the server-side query cache for XMPP accounts, prepared for client hydration.
+ *
+ * @returns The server-rendered React element for the XMPP account management UI wrapped with hydration state.
+ */
 
 export default async function XmppPage() {
   // Verify user session

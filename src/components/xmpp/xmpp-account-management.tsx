@@ -34,6 +34,11 @@ import {
 } from "@/hooks/use-xmpp-account";
 import type { XmppAccountStatus } from "@/lib/xmpp/types";
 
+/**
+ * Render the XMPP account management UI allowing users to view, create, and delete their XMPP account.
+ *
+ * @returns A React element containing the XMPP account management interface, including loading and error states, a create-account form when no account exists, detailed account information when present (JID, username, status, creation date, connection instructions), copy-to-clipboard and toast feedback, and a confirmation dialog for destructive deletion.
+ */
 export function XmppAccountManagement() {
   const { data: account, isLoading, error } = useXmppAccount();
   const createMutation = useCreateXmppAccount();

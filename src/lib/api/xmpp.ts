@@ -20,7 +20,10 @@ interface XmppApiResponse<T> {
 }
 
 /**
- * Fetch current user's XMPP account
+ * Retrieve the current user's XMPP account.
+ *
+ * @returns The user's `XmppAccount` if one exists, or `null` if the server reports no account (404) or the response contains no account.
+ * @throws Error when the HTTP response is not successful (except 404); the error message contains the server-provided error text or the response status text.
  */
 export async function fetchXmppAccount(): Promise<XmppAccount | null> {
   const response = await fetch("/api/xmpp/accounts");
@@ -42,7 +45,11 @@ export async function fetchXmppAccount(): Promise<XmppAccount | null> {
 }
 
 /**
- * Fetch a specific XMPP account by ID
+ * Retrieve the XMPP account with the specified ID.
+ *
+ * @param id - The ID of the XMPP account to fetch
+ * @returns The XMPP account corresponding to `id`
+ * @throws When the server responds with a non-OK status or when the response does not include an account
  */
 export async function fetchXmppAccountById(id: string): Promise<XmppAccount> {
   const response = await fetch(`/api/xmpp/accounts/${id}`);
@@ -64,7 +71,11 @@ export async function fetchXmppAccountById(id: string): Promise<XmppAccount> {
 }
 
 /**
- * Create a new XMPP account for the current user
+ * Creates a new XMPP account for the current user.
+ *
+ * @param data - Payload with the fields required to create the account
+ * @returns The created `XmppAccount`
+ * @throws Error if the API request fails or the response does not include an account
  */
 export async function createXmppAccount(
   data: CreateXmppAccountRequest
@@ -92,7 +103,12 @@ export async function createXmppAccount(
 }
 
 /**
- * Update an XMPP account
+ * Update an existing XMPP account by ID.
+ *
+ * @param id - The ID of the XMPP account to update
+ * @param data - Partial account fields to update
+ * @returns The updated XMPP account
+ * @throws Error if the server responds with an error or if the response does not include the updated account
  */
 export async function updateXmppAccount(
   id: string,
@@ -121,7 +137,10 @@ export async function updateXmppAccount(
 }
 
 /**
- * Delete an XMPP account
+ * Delete the XMPP account with the specified ID.
+ *
+ * @param id - The ID of the XMPP account to delete.
+ * @throws Error if the server responds with a non-OK status; the error message will include the server-provided message when available.
  */
 export async function deleteXmppAccount(id: string): Promise<void> {
   const response = await fetch(`/api/xmpp/accounts/${id}`, {

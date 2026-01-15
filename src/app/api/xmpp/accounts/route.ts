@@ -170,8 +170,14 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET /api/xmpp/accounts
- * Get current user's XMPP account information
+ * Retrieve the authenticated user's XMPP account record.
+ *
+ * Returns the user's XMPP account details if one exists for the authenticated user,
+ * or an error response when no account is found.
+ *
+ * @returns A JSON Response:
+ * - Success (200): `{ ok: true, account: { id, jid, username, status, createdAt, updatedAt, metadata } }`
+ * - Not found (404): `{ ok: false, error: "XMPP account not found" }`
  */
 export async function GET(request: NextRequest) {
   try {

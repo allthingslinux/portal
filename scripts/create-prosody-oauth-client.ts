@@ -22,7 +22,17 @@ import { oauthClient } from "@/lib/db/schema/oauth";
 //
 // Output:
 //   Prints the client_id and client_secret that should be set in Prosody
-//   configuration as PROSODY_OAUTH_CLIENT_ID and PROSODY_OAUTH_CLIENT_SECRET
+/**
+ * Register a Prosody OAuth client in the application's database and print its credentials.
+ *
+ * Reads PROSODY_CLIENT_NAME (defaults to "Prosody XMPP Server") and optional PROSODY_CLIENT_ID
+ * from environment. If a client with the configured name already exists, logs its details and exits.
+ *
+ * Side effects: inserts a new oauth client record into the database and prints the client ID/secret
+ * to stdout for use in Prosody configuration.
+ *
+ * @throws Error if creating the OAuth client fails or no client record is returned after insertion.
+ */
 
 async function createProsodyOAuthClient() {
   const clientName = process.env.PROSODY_CLIENT_NAME || "Prosody XMPP Server";

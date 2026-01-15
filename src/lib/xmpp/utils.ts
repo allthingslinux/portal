@@ -21,9 +21,12 @@ const XMPP_USERNAME_SANITIZE_REGEX = /[^a-zA-Z0-9._-]/g;
 const XMPP_USERNAME_START_REGEX = /^[^a-zA-Z0-9]/;
 
 /**
- * Validate XMPP username (localpart)
- * @param username - The username to validate
- * @returns true if valid, false otherwise
+ * Validate an XMPP localpart (username) according to allowed characters and length.
+ *
+ * The localpart must start with a letter or digit, may contain letters, digits, `.`, `_`, or `-`,
+ * and must be between 1 and 63 characters long.
+ *
+ * @returns `true` if `username` meets these rules, `false` otherwise.
  */
 export function isValidXmppUsername(username: string): boolean {
   if (!username || typeof username !== "string") {
@@ -41,10 +44,11 @@ export function isValidXmppUsername(username: string): boolean {
 }
 
 /**
- * Generate XMPP username from email address
- * Extracts the localpart (part before @) from an email
- * @param email - Email address (e.g., "user@example.com")
- * @returns Username derived from email localpart
+ * Derives a valid XMPP username from the local part of an email address.
+ *
+ * @param email - The email address to derive the username from (e.g., "user@example.com").
+ * @returns The sanitized username suitable for use as an XMPP localpart.
+ * @throws Error if `email` is not a non-empty string or if a valid username cannot be generated.
  */
 export function generateUsernameFromEmail(email: string): string {
   if (!email || typeof email !== "string") {
@@ -67,10 +71,12 @@ export function generateUsernameFromEmail(email: string): string {
 }
 
 /**
- * Format JID from username and domain
- * @param username - XMPP localpart (username)
- * @param domain - XMPP domain (e.g., "xmpp.atl.chat")
- * @returns Full JID (e.g., "username@xmpp.atl.chat")
+ * Create a full XMPP JID from a valid localpart and domain.
+ *
+ * @param username - XMPP localpart; must satisfy the XMPP username rules or an error is thrown
+ * @param domain - XMPP domain (e.g., "xmpp.atl.chat"); must be a non-empty string
+ * @returns The full JID in the form `username@domain`
+ * @throws Error if `username` is invalid or if `domain` is missing or not a string
  */
 export function formatJid(username: string, domain: string): string {
   if (!isValidXmppUsername(username)) {
@@ -85,9 +91,11 @@ export function formatJid(username: string, domain: string): string {
 }
 
 /**
- * Parse JID into username and domain
- * @param jid - Full JID (e.g., "username@xmpp.atl.chat")
- * @returns Object with username and domain
+ * Parse a full JID into its localpart (`username`) and host (`domain`).
+ *
+ * @param jid - Full JID (for example, "username@xmpp.atl.chat")
+ * @returns An object containing `username` (the localpart) and `domain` (the host)
+ * @throws Error if `jid` is not a string or does not contain exactly one `@` with non-empty parts
  */
 export function parseJid(jid: string): { username: string; domain: string } {
   if (!jid || typeof jid !== "string") {
@@ -108,9 +116,10 @@ export function parseJid(jid: string): { username: string; domain: string } {
 }
 
 /**
- * Validate XMPP account status
- * @param status - Status to validate
- * @returns true if valid, false otherwise
+ * Type guard that checks whether a status string is an allowed XMPP account status.
+ *
+ * @param status - Status string to validate
+ * @returns `true` if `status` is one of `"active"`, `"suspended"`, or `"deleted"`, `false` otherwise
  */
 export function isValidXmppAccountStatus(
   status: string

@@ -21,7 +21,9 @@ import type {
 // TanStack Query hooks for XMPP account management
 
 /**
- * Fetch current user's XMPP account
+ * Fetches the current user's XMPP account.
+ *
+ * @returns The React Query result containing the current user's XMPP account data
  */
 export function useXmppAccount() {
   return useQuery({
@@ -32,7 +34,12 @@ export function useXmppAccount() {
 }
 
 /**
- * Fetch a specific XMPP account by ID
+ * Provides a React Query hook that fetches an XMPP account by its ID.
+ *
+ * The query will not run when `id` is falsy and considers fetched data fresh for 1 minute.
+ *
+ * @param id - The XMPP account identifier
+ * @returns The query result containing the XMPP account data; `data` is `undefined` while loading or when `id` is falsy.
  */
 export function useXmppAccountById(id: string) {
   return useQuery({
@@ -44,7 +51,9 @@ export function useXmppAccountById(id: string) {
 }
 
 /**
- * Create a new XMPP account for the current user
+ * Creates a new XMPP account for the current user.
+ *
+ * @returns The mutation object used to create an XMPP account. Invoking the mutation sends the create request and, on success, invalidates the cached current XMPP account to trigger a refetch.
  */
 export function useCreateXmppAccount() {
   const queryClient = useQueryClient();
@@ -61,7 +70,13 @@ export function useCreateXmppAccount() {
 }
 
 /**
- * Update an XMPP account
+ * Create a React Query mutation hook to update an XMPP account and keep related caches in sync.
+ *
+ * On successful mutation the hook sets the returned account data into the detail cache for the
+ * updated account id and invalidates the current XMPP account query to trigger a refetch.
+ *
+ * @returns A mutation result for performing XMPP account updates; the mutation function expects
+ * an object `{ id, data }` and resolves to the updated account data.
  */
 export function useUpdateXmppAccount() {
   const queryClient = useQueryClient();
@@ -89,7 +104,9 @@ export function useUpdateXmppAccount() {
 }
 
 /**
- * Delete an XMPP account
+ * Provides a React Query mutation hook to delete an XMPP account and keep related caches in sync.
+ *
+ * @returns A mutation object whose mutate/mutateAsync function accepts an XMPP account `id` (string) and, on success, invalidates XMPP account queries so related data is refetched.
  */
 export function useDeleteXmppAccount() {
   const queryClient = useQueryClient();
