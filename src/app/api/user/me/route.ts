@@ -34,7 +34,10 @@ export async function GET(request: NextRequest) {
       .limit(1);
 
     if (!userData) {
-      return Response.json({ ok: false, error: "User not found" }, { status: 404 });
+      return Response.json(
+        { ok: false, error: "User not found" },
+        { status: 404 }
+      );
     }
 
     return Response.json({ user: userData });
@@ -72,7 +75,10 @@ export async function PATCH(request: NextRequest) {
       });
 
     if (!updated) {
-      return Response.json({ ok: false, error: "User not found" }, { status: 404 });
+      return Response.json(
+        { ok: false, error: "User not found" },
+        { status: 404 }
+      );
     }
 
     return Response.json({ user: updated });
