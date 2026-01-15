@@ -37,18 +37,25 @@ export function DevTools(): React.ReactNode | null {
   // 1. CSP is in Report-Only mode, so nonces aren't enforced
   // 2. Passing nonces causes hydration mismatches between server/client
   // 3. Nonces will be added when CSP is switched to enforcing mode
+  //
+  // Scripts are only rendered client-side to prevent Next.js from auto-injecting
+  // nonces from headers during SSR, which causes hydration mismatches.
   return (
     <>
       {/* React Grab - Cursor tracking and interaction debugging */}
-      <Script
-        crossOrigin="anonymous"
-        src="//unpkg.com/react-grab/dist/index.global.js"
-        strategy="beforeInteractive"
-      />
-      <Script
-        src="//unpkg.com/@react-grab/cursor/dist/client.global.js"
-        strategy="lazyOnload"
-      />
+      {isClient && (
+        <>
+          <Script
+            crossOrigin="anonymous"
+            src="//unpkg.com/react-grab/dist/index.global.js"
+            strategy="afterInteractive"
+          />
+          <Script
+            src="//unpkg.com/@react-grab/cursor/dist/client.global.js"
+            strategy="lazyOnload"
+          />
+        </>
+      )}
 
       {/* React Scan - Performance profiling (client-side only) */}
       {isClient && <ReactScan />}
