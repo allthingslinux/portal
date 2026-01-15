@@ -66,4 +66,12 @@ export const queryKeys = {
     stats: () => [...queryKeys.admin.all, "stats"] as const,
     dashboard: () => [...queryKeys.admin.all, "dashboard"] as const,
   },
+
+  // XMPP Account queries
+  xmppAccounts: {
+    all: ["xmppAccounts"] as const,
+    current: () => [...queryKeys.xmppAccounts.all, "current"] as const,
+    details: () => [...queryKeys.xmppAccounts.all, "detail"] as const,
+    detail: (id: string) => [...queryKeys.xmppAccounts.details(), id] as const,
+  },
 } as const;
