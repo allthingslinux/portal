@@ -41,3 +41,4 @@ next-env.d.ts
 references
 
 .cursor/plans
+.cursor/hooks/logs/

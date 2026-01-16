@@ -112,6 +112,13 @@
       "label": "Settings"
     }
   },
+  "xmpp": {
+    "label": "XMPP",
+    "metadata": {
+      "title": "XMPP Account",
+      "description": "Manage your XMPP chat account"
+    }
+  },
   "admin": {
     "label": "Admin",
     "metadata": {
