@@ -8,6 +8,7 @@ export * from "./use-admin";
 export * from "./use-admin-actions";
 export * from "./use-admin-suspense";
 export * from "./use-api-keys";
+export * from "./use-integration";
 export * from "./use-oauth-clients";
 export * from "./use-permissions";
 export * from "./use-sessions";

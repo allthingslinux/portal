@@ -13,7 +13,7 @@ import {
 import type {
   CreateXmppAccountRequest,
   UpdateXmppAccountRequest,
-} from "@/lib/xmpp/types";
+} from "@/lib/integrations/xmpp/types";
 
 // ============================================================================
 // XMPP Account Hooks
