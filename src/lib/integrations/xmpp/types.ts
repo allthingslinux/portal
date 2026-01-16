@@ -14,6 +14,7 @@ export type XmppAccountStatus = "active" | "suspended" | "deleted";
 export interface XmppAccount {
   id: string;
   userId: string;
+  integrationId: "xmpp"; // Integration identifier
   jid: string; // Full JID: username@xmpp.atl.chat
   username: string; // XMPP localpart (username)
   status: XmppAccountStatus;
@@ -25,14 +26,14 @@ export interface XmppAccount {
 /**
  * Create XMPP account request
  */
-export interface CreateXmppAccountRequest {
+export interface CreateXmppAccountRequest extends Record<string, unknown> {
   username?: string; // Optional, defaults to email localpart
 }
 
 /**
  * Update XMPP account request
  */
-export interface UpdateXmppAccountRequest {
+export interface UpdateXmppAccountRequest extends Record<string, unknown> {
   username?: string; // Optional, must be unique
   status?: XmppAccountStatus; // Optional: "active" | "suspended" | "deleted"
   metadata?: Record<string, unknown>; // Optional JSONB

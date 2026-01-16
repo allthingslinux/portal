@@ -77,6 +77,17 @@ let nextConfig: NextConfig = {
   },
 
   // ============================================================================
+  // Server External Packages
+  // ============================================================================
+  // Packages that should not be bundled by Next.js
+  // These are resolved at runtime from node_modules
+  // Required for native modules and packages with dynamic requires
+  serverExternalPackages: [
+    "@sentry/node-native", // Native module with dynamic requires, cannot be bundled
+    "@sentry-internal/node-native-stacktrace", // Native stacktrace module
+  ],
+
+  // ============================================================================
   // Turbopack Configuration
   // ============================================================================
   // Customize Turbopack module resolution, loaders, and build behavior

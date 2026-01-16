@@ -37,10 +37,11 @@ export const xmppConfig = {
 } as const;
 
 /**
- * Validate XMPP configuration
- * Called at module load time to catch configuration errors early
+ * Validate XMPP configuration lazily
+ * Only validates when actually needed (when XMPP operations are attempted)
+ * This prevents blocking the entire application if XMPP is not configured
  */
-function validateXmppConfig(): void {
+export function validateXmppConfig(): void {
   if (!xmppConfig.prosody.password) {
     const error = new Error(
       "PROSODY_REST_PASSWORD or PROSODY_REST_SECRET environment variable is required"
@@ -82,8 +83,9 @@ function validateXmppConfig(): void {
   }
 }
 
-// Validate configuration at module load time
-// Errors are captured to Sentry before throwing so they're logged even if
-// they occur during module evaluation (before request handling)
-// Next.js will catch this in onRequestError if it occurs during request handling
-validateXmppConfig();
+/**
+ * Check if XMPP is configured (non-throwing)
+ */
+export function isXmppConfigured(): boolean {
+  return !!(xmppConfig.prosody.password && xmppConfig.prosody.restUrl);
+}

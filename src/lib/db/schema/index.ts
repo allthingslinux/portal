@@ -7,6 +7,7 @@ import {
   user,
   verification,
 } from "./auth";
+import { integrationAccount } from "./integrations/base";
 import {
   oauthAccessToken,
   oauthClient,
@@ -27,5 +28,6 @@ export const schema = {
   oauthAccessToken,
   oauthRefreshToken,
   jwks,
+  integrationAccount,
   xmppAccount,
 };

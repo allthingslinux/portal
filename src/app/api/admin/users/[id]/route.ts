@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { handleAPIError, requireAdminOrStaff } from "@/lib/api/utils";
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema/auth";
+import { cleanupIntegrationAccounts } from "@/lib/integrations/core/user-deletion";
 
 // Route handlers are dynamic by default, but we explicitly mark them as such
 // since they access database and request headers
@@ -80,6 +81,7 @@ export async function DELETE(
     await requireAdminOrStaff(request);
     const { id } = await ctx.params;
 
+    await cleanupIntegrationAccounts(id);
     await db.delete(user).where(eq(user.id, id));
 
     return Response.json({ success: true });

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { xmppConfig } from "./config";
+import { validateXmppConfig, xmppConfig } from "./config";
 import type { ProsodyRestAccountResponse, ProsodyRestError } from "./types";
 import { formatJid } from "./utils";
 
@@ -95,6 +95,7 @@ async function prosodyRequest<T>(
 export async function createProsodyAccount(
   username: string
 ): Promise<ProsodyRestAccountResponse> {
+  validateXmppConfig();
   const jid = formatJid(username, xmppConfig.domain);
 
   // mod_rest expects XMPP stanzas in XML format
@@ -145,6 +146,7 @@ export async function createProsodyAccount(
 export async function deleteProsodyAccount(
   username: string
 ): Promise<ProsodyRestAccountResponse> {
+  validateXmppConfig();
   // Delete account stanza: <iq type="set" to="prosody" id="delete">
   //   <query xmlns="jabber:iq:register">
   //     <remove/>
@@ -158,6 +160,7 @@ export async function deleteProsodyAccount(
 </iq>`;
 
   try {
+    // sourcery skip: inline-immediately-returned-variable
     const result = await prosodyRequest<ProsodyRestAccountResponse>(
       `/accounts/${encodeURIComponent(username)}`,
       {
@@ -192,6 +195,7 @@ export async function deleteProsodyAccount(
 export async function checkProsodyAccountExists(
   username: string
 ): Promise<boolean> {
+  validateXmppConfig();
   try {
     await prosodyRequest(`/accounts/${encodeURIComponent(username)}`, {
       method: "GET",
