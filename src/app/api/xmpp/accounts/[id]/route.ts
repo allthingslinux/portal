@@ -9,7 +9,7 @@ import { xmppAccount } from "@/lib/db/schema/xmpp";
 import {
   deleteProsodyAccount,
   ProsodyAccountNotFoundError,
-} from "@/lib/xmpp/client";
+} from "@/lib/integrations/xmpp/client";
 
 // Zod schema for update request validation
 const updateXmppAccountSchema = z.object({

@@ -11,13 +11,13 @@ import {
   checkProsodyAccountExists,
   createProsodyAccount,
   deleteProsodyAccount,
-} from "@/lib/xmpp/client";
-import { xmppConfig } from "@/lib/xmpp/config";
+} from "@/lib/integrations/xmpp/client";
+import { xmppConfig } from "@/lib/integrations/xmpp/config";
 import {
   formatJid,
   generateUsernameFromEmail,
   isValidXmppUsername,
-} from "@/lib/xmpp/utils";
+} from "@/lib/integrations/xmpp/utils";
 
 // Zod schema for create request validation
 const createXmppAccountSchema = z.object({
