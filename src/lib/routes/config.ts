@@ -9,7 +9,8 @@ import {
   SquareTerminal,
 } from "lucide-react";
 
-import type { RouteConfig } from "./types";
+import type { IntegrationPublicInfo } from "@/lib/integrations/core/types";
+import type { ProtectedRoute, RouteConfig } from "./types";
 
 /**
  * Single source of truth for all application routes
@@ -148,8 +149,8 @@ export const routeConfig = {
       },
     },
     {
-      id: "xmpp",
-      path: "/app/xmpp",
+      id: "integrations",
+      path: "/app/integrations",
       icon: MessageSquare,
       metadata: {
         robots: { index: false, follow: false },
@@ -200,3 +201,48 @@ export const routeConfig = {
     },
   ],
 } as RouteConfig;
+
+interface IntegrationRouteOptions {
+  basePath?: string;
+  pathOverrides?: Record<string, string>;
+}
+
+/**
+ * Build integration routes for dynamic navigation.
+ */
+export function buildIntegrationRoutes(
+  integrations: IntegrationPublicInfo[],
+  options: IntegrationRouteOptions = {}
+): ProtectedRoute[] {
+  const basePath = options.basePath ?? "/app/integrations";
+  const pathOverrides = options.pathOverrides ?? {};
+
+  return integrations.map((integration) => ({
+    id: `integration-${integration.id}`,
+    path: pathOverrides[integration.id] ?? `${basePath}/${integration.id}`,
+    icon: MessageSquare,
+    metadata: {
+      robots: { index: false, follow: false },
+    },
+    navigation: {
+      group: "platform",
+      order: 99,
+    },
+  }));
+}
+
+/**
+ * Merge integration routes into the base route configuration.
+ */
+export function getRouteConfigWithIntegrations(
+  integrations: IntegrationPublicInfo[],
+  options?: IntegrationRouteOptions
+): RouteConfig {
+  return {
+    ...routeConfig,
+    protected: [
+      ...routeConfig.protected,
+      ...buildIntegrationRoutes(integrations, options),
+    ],
+  };
+}
