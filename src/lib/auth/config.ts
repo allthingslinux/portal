@@ -19,8 +19,11 @@ import {
 
 import "server-only";
 
+import { eq } from "drizzle-orm";
+
 import { db } from "@/lib/db/client";
 import { schema } from "@/lib/db/schema";
+import { xmppAccount } from "@/lib/db/schema/xmpp";
 import {
   sendOTPEmail,
   sendResetPasswordEmail,
@@ -246,7 +249,7 @@ const oauthProviderConfig = {
   // clientRegistrationDefaultScopes: ["openid", "profile"], // Default scopes for new clients
   // clientRegistrationAllowedScopes: ["email", "offline_access"], // Additional allowed scopes for new clients
   // Scopes configuration
-  scopes: ["openid", "profile", "email", "offline_access"], // Supported scopes
+  scopes: ["openid", "profile", "email", "offline_access", "xmpp"], // Supported scopes
   // Valid audiences (resources) for this OAuth server
   validAudiences: [baseURL, `${baseURL}/api`],
   // Cached trusted clients (first-party applications)
@@ -275,11 +278,42 @@ const oauthProviderConfig = {
   //     "https://example.com/roles": ["editor"],
   //   };
   // },
-  // customUserInfoClaims: ({ user, scopes, jwt }) => {
-  //   return {
-  //     locale: "en-GB",
-  //   };
-  // },
+  customUserInfoClaims: async ({
+    user,
+    scopes,
+  }: {
+    user: { id: string };
+    scopes: string[];
+  }) => {
+    const claims: Record<string, unknown> = {};
+
+    // Add XMPP username when 'xmpp' scope is requested
+    if (scopes.includes("xmpp")) {
+      try {
+        const [xmppAccountRecord] = await db
+          .select({ username: xmppAccount.username })
+          .from(xmppAccount)
+          .where(eq(xmppAccount.userId, user.id))
+          .limit(1);
+
+        if (xmppAccountRecord) {
+          claims.xmpp_username = xmppAccountRecord.username;
+        }
+      } catch (error) {
+        // Capture error in Sentry but gracefully continue without XMPP claim
+        const Sentry = await import("@sentry/nextjs");
+        Sentry.captureException(error, {
+          tags: {
+            function: "customUserInfoClaims",
+            userId: user.id,
+          },
+        });
+        // Continue without XMPP claim on error
+      }
+    }
+
+    return claims;
+  },
   // Token expirations
   // accessTokenExpiresIn: "1h", // Default: 1 hour
   // m2mAccessTokenExpiresIn: "1h", // Default: 1 hour (machine-to-machine)

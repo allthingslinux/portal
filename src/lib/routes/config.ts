@@ -3,6 +3,7 @@ import {
   Bot,
   HelpCircle,
   LogOut,
+  MessageSquare,
   Settings2,
   Shield,
   SquareTerminal,
@@ -147,6 +148,18 @@ export const routeConfig = {
       },
     },
     {
+      id: "xmpp",
+      path: "/app/xmpp",
+      icon: MessageSquare,
+      metadata: {
+        robots: { index: false, follow: false },
+      },
+      navigation: {
+        group: "platform",
+        order: 5,
+      },
+    },
+    {
       id: "admin",
       path: "/app/admin",
       icon: Shield,
@@ -155,7 +168,7 @@ export const routeConfig = {
       },
       navigation: {
         group: "platform",
-        order: 5,
+        order: 6,
         permissions: ["canViewAdmin"], // Role-based access
       },
     },

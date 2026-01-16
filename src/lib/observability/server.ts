@@ -16,8 +16,11 @@ const FAVICON_PATTERN = /^GET \/favicon/;
 
 import {
   consoleLoggingIntegration,
+  extraErrorDataIntegration,
+  globalHandlersIntegration,
   httpIntegration,
   init,
+  nodeContextIntegration,
   zodErrorsIntegration,
 } from "@sentry/nextjs";
 
@@ -76,6 +79,16 @@ export const initializeSentry = (): ReturnType<typeof init> => {
   const isProduction = process.env.NODE_ENV === "production";
 
   const integrations = [
+    // Global error handlers - captures unhandled rejections and uncaught exceptions
+    // This is critical for catching module evaluation errors and other unhandled errors
+    globalHandlersIntegration({
+      onerror: true, // Capture window.onerror (client-side)
+      onunhandledrejection: true, // Capture unhandled promise rejections
+    }),
+
+    // Node.js context integration - adds Node.js-specific context to errors
+    nodeContextIntegration(),
+
     // Send console.log, console.error, and console.warn calls as logs to Sentry
     consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
 
@@ -105,17 +118,12 @@ export const initializeSentry = (): ReturnType<typeof init> => {
   ];
 
   // Add extra error data integration for richer error context
-  try {
-    const { extraErrorDataIntegration } = require("@sentry/nextjs");
-    integrations.push(
-      extraErrorDataIntegration({
-        depth: 5, // Capture deeper error object properties
-        captureErrorCause: true, // Capture error.cause chains
-      })
-    );
-  } catch {
-    // Integration not available
-  }
+  integrations.push(
+    extraErrorDataIntegration({
+      depth: 5, // Capture deeper error object properties
+      captureErrorCause: true, // Capture error.cause chains
+    })
+  );
 
   // Add Node profiling integration
   try {

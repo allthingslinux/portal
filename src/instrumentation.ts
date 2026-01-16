@@ -1,5 +1,7 @@
 import "server-only";
 
+import { captureException, captureRequestError } from "@sentry/nextjs";
+
 import { keys } from "@/lib/observability/keys";
 
 /**
@@ -17,12 +19,16 @@ import { keys } from "@/lib/observability/keys";
  */
 export function register() {
   // Runtime-specific instrumentation can be added here
-  // TODO: Add Node.js specific instrumentation (e.g., OpenTelemetry)
+  // Note: Sentry's globalHandlersIntegration automatically handles:
+  // - unhandledRejection (promise rejections)
+  // - uncaughtException (synchronous errors)
+  // Manual handlers are not needed and would cause double-reporting
+
   if (process.env.NEXT_RUNTIME === "nodejs") {
     // Node.js specific instrumentation
+    // Additional instrumentation can be added here if needed
   }
 
-  // TODO: Add Edge runtime specific instrumentation
   if (process.env.NEXT_RUNTIME === "edge") {
     // Edge runtime specific instrumentation
   }
@@ -41,7 +47,17 @@ const getCachedEnv = () => {
   return cachedEnv;
 };
 
-export const onRequestError = async (
+/**
+ * Called when the Next.js server captures an error during request handling.
+ * This includes errors from:
+ * - Route handlers (API routes)
+ * - Server Components
+ * - Server Actions
+ * - Middleware
+ *
+ * Uses Sentry's built-in captureRequestError for proper integration with Next.js.
+ */
+export const onRequestError = (
   error: unknown,
   request: {
     path: string;
@@ -62,16 +78,46 @@ export const onRequestError = async (
     return;
   }
 
-  // Use Sentry's built-in captureRequestError for better integration
-  const { captureRequestError } = await import("@sentry/nextjs");
-
-  // Create a RequestInfo-compatible object
-  const requestInfo = {
-    path: request.path || "/",
-    method: request.method || "GET",
-    headers: request.headers,
-  };
-
-  // biome-ignore lint/suspicious/noExplicitAny: Sentry API compatibility requires any types
-  captureRequestError(error, requestInfo as any, context as any);
+  try {
+    // Use Sentry's built-in captureRequestError for better integration
+    // This automatically includes request context, user info, and breadcrumbs
+    // Ensure headers is always defined to match RequestInfo type
+    const requestInfo = {
+      path: request.path || "/",
+      method: request.method || "GET",
+      headers: request.headers ?? {},
+    };
+    // Ensure all required ErrorContext fields are present
+    const errorContext = {
+      routerKind: context.routerKind,
+      routeType: context.routeType,
+      renderSource: context.renderSource,
+      routePath: context.routePath ?? request.path ?? "/",
+      revalidateReason: context.revalidateReason,
+    };
+    captureRequestError(error, requestInfo, errorContext);
+  } catch (sentryError) {
+    // Fallback: if captureRequestError fails, try direct captureException
+    try {
+      captureException(error, {
+        tags: {
+          type: "request_error",
+          path: request.path || "/",
+          method: request.method || "GET",
+          routerKind: context.routerKind,
+          routeType: context.routeType,
+        },
+        extra: {
+          request,
+          context,
+        },
+      });
+    } catch {
+      // Sentry not available or failed to capture
+      // eslint-disable-next-line no-console
+      console.error("Failed to capture error to Sentry:", sentryError);
+      // eslint-disable-next-line no-console
+      console.error("Original error:", error);
+    }
+  }
 };

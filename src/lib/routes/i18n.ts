@@ -1,3 +1,5 @@
+import { captureException } from "@sentry/nextjs";
+
 import type { RouteConfig } from "./types";
 
 /**
@@ -244,8 +246,33 @@ export function createRouteTranslationResolver(
       if (translated && translated !== translationKey) {
         return translated;
       }
-    } catch {
-      // Translation not found, return undefined to fall back to original
+    } catch (error) {
+      // Translation not found - capture to Sentry for monitoring
+      // Only capture if it's a missing message error (not other translation errors)
+      if (
+        error instanceof Error &&
+        (error.message.includes("MISSING_MESSAGE") ||
+          error.message.includes("Could not resolve"))
+      ) {
+        captureException(error, {
+          tags: {
+            type: "missing_translation",
+            routeId,
+            translationKey,
+          },
+          level: "warning", // Missing translations are warnings, not errors
+        });
+      } else {
+        // For other errors, still capture but as error level
+        captureException(error, {
+          tags: {
+            type: "translation_error",
+            routeId,
+            translationKey,
+          },
+        });
+      }
+      // Return undefined to fall back to original
     }
 
     return undefined;
