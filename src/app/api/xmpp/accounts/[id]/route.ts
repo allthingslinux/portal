@@ -26,11 +26,11 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  ctx: RouteContext<"/api/xmpp/accounts/[id]">
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { id } = params;
+    const { id } = await ctx.params;
 
     const [account] = await db
       .select()
@@ -79,11 +79,11 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  ctx: RouteContext<"/api/xmpp/accounts/[id]">
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { id } = params;
+    const { id } = await ctx.params;
 
     // Validate request body with Zod
     const parseResult = updateXmppAccountSchema.safeParse(await request.json());
@@ -191,11 +191,11 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  ctx: RouteContext<"/api/xmpp/accounts/[id]">
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { id } = params;
+    const { id } = await ctx.params;
 
     const [account] = await db
       .select()
