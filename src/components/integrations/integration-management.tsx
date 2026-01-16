@@ -1,0 +1,243 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { useState } from "react";
+import { AlertCircle, Loader2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  useCreateIntegrationAccount,
+  useDeleteIntegrationAccount,
+  useIntegrationAccount,
+} from "@/hooks/use-integration";
+
+interface IntegrationManagementProps<TAccount extends { id: string }> {
+  integrationId: string;
+  title: string;
+  description: string;
+  createLabel: string;
+  createInputLabel?: string;
+  createInputPlaceholder?: string;
+  createInputHelp?: string;
+  createInputToPayload?: (value: string) => Record<string, unknown>;
+  renderAccountDetails?: (account: TAccount) => ReactNode;
+}
+
+export function IntegrationManagement<TAccount extends { id: string }>({
+  integrationId,
+  title,
+  description,
+  createLabel,
+  createInputLabel,
+  createInputPlaceholder,
+  createInputHelp,
+  createInputToPayload,
+  renderAccountDetails,
+}: IntegrationManagementProps<TAccount>) {
+  const {
+    data: account,
+    isLoading,
+    error,
+  } = useIntegrationAccount<TAccount>(integrationId);
+  const createMutation = useCreateIntegrationAccount<TAccount>(integrationId);
+  const deleteMutation = useDeleteIntegrationAccount(integrationId);
+  const [inputValue, setInputValue] = useState("");
+
+  const handleCreate = async () => {
+    try {
+      const trimmed = inputValue.trim();
+      const payload =
+        createInputToPayload?.(trimmed) ??
+        (trimmed ? { identifier: trimmed } : {});
+
+      await createMutation.mutateAsync(payload);
+      toast.success(`${title} account created`, {
+        description: `Your ${title} account has been created successfully.`,
+      });
+      setInputValue("");
+    } catch (error) {
+      toast.error(`Failed to create ${title.toLowerCase()} account`, {
+        description:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while creating your account.",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!account) {
+      return;
+    }
+
+    try {
+      await deleteMutation.mutateAsync(account.id);
+      toast.success(`${title} account deleted`, {
+        description: `Your ${title} account has been deleted successfully.`,
+      });
+    } catch (error) {
+      toast.error(`Failed to delete ${title.toLowerCase()} account`, {
+        description:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while deleting your account.",
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="py-8">
+          <div className="flex items-center gap-2 text-destructive">
+            <AlertCircle className="h-5 w-5" />
+            <p>Failed to load integration account information.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!account) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="font-semibold text-lg">{title}</div>
+          <p className="text-muted-foreground text-sm">{description}</p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {createInputLabel ? (
+            <div className="space-y-2">
+              <Label htmlFor={`${integrationId}-identifier`}>
+                {createInputLabel}
+              </Label>
+              <Input
+                disabled={createMutation.isPending}
+                id={`${integrationId}-identifier`}
+                onChange={(event) => setInputValue(event.target.value)}
+                placeholder={createInputPlaceholder}
+                value={inputValue}
+              />
+              {createInputHelp ? (
+                <p className="text-muted-foreground text-sm">
+                  {createInputHelp}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+        </CardContent>
+        <CardFooter>
+          <Button
+            className="w-full"
+            disabled={createMutation.isPending}
+            onClick={handleCreate}
+          >
+            {createMutation.isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              createLabel
+            )}
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  const status =
+    "status" in account && typeof account.status === "string"
+      ? account.status
+      : null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="font-semibold text-lg">{title}</div>
+            <p className="text-muted-foreground text-sm">{description}</p>
+          </div>
+          {status ? (
+            <Badge variant={status === "deleted" ? "destructive" : "default"}>
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </Badge>
+          ) : null}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {renderAccountDetails ? renderAccountDetails(account) : null}
+      </CardContent>
+      <CardFooter className="flex justify-end">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button disabled={deleteMutation.isPending} variant="destructive">
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Account
+                </>
+              )}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete {title} Account?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete your {title} account. This action
+                cannot be undone. You will need to create a new account if you
+                want to use {title} again.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={handleDelete}
+              >
+                Delete Account
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardFooter>
+    </Card>
+  );
+}

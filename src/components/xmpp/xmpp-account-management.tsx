@@ -32,7 +32,7 @@ import {
   useDeleteXmppAccount,
   useXmppAccount,
 } from "@/hooks/use-xmpp-account";
-import type { XmppAccountStatus } from "@/lib/xmpp/types";
+import type { XmppAccountStatus } from "@/lib/integrations/xmpp/types";
 
 export function XmppAccountManagement() {
   const { data: account, isLoading, error } = useXmppAccount();
