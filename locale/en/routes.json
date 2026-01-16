@@ -112,11 +112,11 @@
       "label": "Settings"
     }
   },
-  "xmpp": {
-    "label": "XMPP",
+  "integrations": {
+    "label": "Integrations",
     "metadata": {
-      "title": "XMPP Account",
-      "description": "Manage your XMPP chat account"
+      "title": "Integrations",
+      "description": "Manage your service integrations including XMPP, IRC, and more"
     }
   },
   "admin": {
