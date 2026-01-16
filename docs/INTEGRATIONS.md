@@ -1,0 +1,816 @@
+# Integrations Framework Documentation
+
+## Overview
+
+The Portal integrations framework provides a unified, extensible system for managing external service integrations (XMPP, IRC, Discord, MediaWiki, SSH pubnix, Mailcow, etc.). It centralizes account management, API routes, database schema, and UI components into a single, reusable architecture.
+
+## Architecture
+
+### Core Components
+
+The integrations framework consists of several core modules:
+
+- **Types** (`src/lib/integrations/core/types.ts`): TypeScript interfaces and types
+- **Base Class** (`src/lib/integrations/core/base.ts`): Abstract base class for integrations
+- **Registry** (`src/lib/integrations/core/registry.ts`): Central registry for managing integrations
+- **Factory** (`src/lib/integrations/core/factory.ts`): Utility functions for accessing integrations
+- **Constants** (`src/lib/integrations/core/constants.ts`): Shared constants and labels
+- **User Deletion** (`src/lib/integrations/core/user-deletion.ts`): Cleanup logic for user deletion
+
+### Integration Structure
+
+Each integration lives in its own directory under `src/lib/integrations/{integration-id}/`:
+
+```text
+src/lib/integrations/
+├── core/              # Core framework code
+├── xmpp/              # XMPP integration implementation
+│   ├── keys.ts        # Environment variable validation
+│   ├── config.ts      # Configuration and validation
+│   ├── types.ts       # Integration-specific types
+│   ├── client.ts      # External service client (Prosody REST API)
+│   ├── utils.ts       # Utility functions
+│   ├── implementation.ts  # Integration class implementation
+│   └── index.ts        # Public exports
+└── index.ts           # Main entry point, registration
+```
+
+## Database Schema
+
+### Integration Accounts Table
+
+All integration accounts are stored in a unified `integration_accounts` table:
+
+```typescript
+// src/lib/db/schema/integrations/base.ts
+
+export const integrationAccountStatusEnum = pgEnum(
+  "integration_account_status",
+  ["active", "suspended", "deleted"]
+);
+
+export const integrationAccount = pgTable(
+  "integration_accounts",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    integrationType: text("integration_type").notNull(),
+    status: integrationAccountStatusEnum("status").default("active").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+    metadata: jsonb("metadata"),
+  },
+  (table) => [
+    index("integration_accounts_userId_idx").on(table.userId),
+    index("integration_accounts_type_idx").on(table.integrationType),
+    uniqueIndex("integration_accounts_userId_type_idx").on(
+      table.userId,
+      table.integrationType
+    ),
+  ]
+);
+```
+
+**Key Features:**
+
+- Polymorphic table supporting all integration types
+- One account per user per integration type (unique constraint)
+- Cascade deletion when users are deleted
+- JSON metadata field for integration-specific data
+- Status enum: `active`, `suspended`, `deleted`
+
+## Type System
+
+### Core Types
+
+```typescript
+// Integration identifier (string)
+type IntegrationId = string;
+
+// Account status
+type IntegrationStatus = "active" | "suspended" | "deleted";
+
+// Integration account interface
+interface IntegrationAccount<TMetadata = Record<string, unknown>> {
+  id: string;
+  userId: string;
+  integrationId: IntegrationId;
+  status: IntegrationStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  metadata?: TMetadata;
+}
+
+// Public integration info (exposed via API)
+interface IntegrationPublicInfo {
+  id: IntegrationId;
+  name: string;
+  description: string;
+  enabled: boolean;
+}
+
+// Input types for create/update operations
+type IntegrationCreateInput = Record<string, unknown>;
+type IntegrationUpdateInput = Record<string, unknown>;
+```
+
+### Integration Interface
+
+All integrations must implement the `Integration` interface:
+
+```typescript
+interface Integration<
+  TAccount extends IntegrationAccount = IntegrationAccount,
+  TCreateInput extends IntegrationCreateInput = IntegrationCreateInput,
+  TUpdateInput extends IntegrationUpdateInput = IntegrationUpdateInput,
+> {
+  id: IntegrationId;
+  name: string;
+  description: string;
+  enabled: boolean;
+
+  // Required methods
+  createAccount: (userId: string, input: TCreateInput) => Promise<TAccount>;
+  getAccount: (userId: string) => Promise<TAccount | null>;
+  updateAccount: (accountId: string, input: TUpdateInput) => Promise<TAccount>;
+  deleteAccount: (accountId: string) => Promise<void>;
+
+  // Optional methods
+  getAccountById?: (accountId: string) => Promise<TAccount | null>;
+  validateIdentifier?: (identifier: string) => boolean;
+  generateIdentifier?: (email: string) => string;
+  customOperations?: Record<string, IntegrationCustomOperation>;
+}
+```
+
+## API Routes
+
+### Base Routes
+
+All integration API routes follow a consistent pattern:
+
+#### List Integrations
+
+```text
+GET /api/integrations
+```
+
+Returns all available integrations (public info only).
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "integrations": [
+    {
+      "id": "xmpp",
+      "name": "XMPP",
+      "description": "XMPP chat accounts and provisioning",
+      "enabled": true
+    }
+  ]
+}
+```
+
+#### Get Current User's Account
+
+```text
+GET /api/integrations/{integrationId}/accounts
+```
+
+Returns the current authenticated user's account for the specified integration.
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "account": {
+    "id": "account-id",
+    "userId": "user-id",
+    "integrationId": "xmpp",
+    "status": "active",
+    "createdAt": "2026-01-16T00:00:00Z",
+    "updatedAt": "2026-01-16T00:00:00Z",
+    "metadata": {}
+  }
+}
+```
+
+**Errors:**
+
+- `404`: Account not found
+- `403`: Integration disabled
+- `404`: Unknown integration
+
+#### Create Account
+
+```text
+POST /api/integrations/{integrationId}/accounts
+```
+
+Creates a new integration account for the current user.
+
+**Request Body:**
+
+```json
+{
+  "username": "optional-username"
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "account": { /* account object */ }
+}
+```
+
+**Status Code:** `201 Created`
+
+**Errors:**
+
+- `400`: Invalid request body (Zod validation)
+- `403`: Integration disabled
+- `404`: Unknown integration
+- `409`: Account already exists
+
+#### Get Account by ID
+
+```text
+GET /api/integrations/{integrationId}/accounts/{id}
+```
+
+Gets a specific account by ID (admin or owner only).
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "account": { /* account object */ }
+}
+```
+
+**Errors:**
+
+- `400`: Integration does not support account lookup
+- `403`: Forbidden (not owner or admin)
+- `404`: Account not found
+
+#### Update Account
+
+```text
+PATCH /api/integrations/{integrationId}/accounts/{id}
+```
+
+Updates an integration account (admin or owner only).
+
+**Request Body:**
+
+```json
+{
+  "status": "suspended",
+  "metadata": { "custom": "data" }
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "account": { /* updated account object */ }
+}
+```
+
+**Errors:**
+
+- `400`: Integration does not support updates
+- `400`: Invalid request body
+- `403`: Forbidden (not owner or admin)
+- `404`: Account not found
+
+#### Delete Account
+
+```text
+DELETE /api/integrations/{integrationId}/accounts/{id}
+```
+
+Deletes an integration account and cleans up external services (admin or owner only).
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "message": "Integration account deleted successfully"
+}
+```
+
+**Errors:**
+
+- `400`: Integration does not support deletion
+- `403`: Forbidden (not owner or admin)
+- `404`: Account not found
+
+### Route Implementation
+
+All routes are implemented in:
+
+- `src/app/api/integrations/route.ts` - List integrations
+- `src/app/api/integrations/[integration]/accounts/route.ts` - GET/POST accounts
+- `src/app/api/integrations/[integration]/accounts/[id]/route.ts` - GET/PATCH/DELETE specific account
+
+**Key Features:**
+
+- Authentication required for all routes (`requireAuth`)
+- Admin or owner authorization for account-specific operations
+- Capability checks before calling integration methods
+- Zod validation for request bodies
+- Consistent error handling via `handleAPIError`
+- Sentry instrumentation for performance tracking
+
+## Client-Side API
+
+### API Functions
+
+Located in `src/lib/api/integrations.ts`:
+
+```typescript
+// Fetch available integrations
+fetchIntegrations(): Promise<IntegrationPublicInfo[]>
+
+// Fetch current user's account
+fetchIntegrationAccount<TAccount>(integrationId: string): Promise<TAccount | null>
+
+// Fetch account by ID
+fetchIntegrationAccountById<TAccount>(integrationId: string, id: string): Promise<TAccount>
+
+// Create account
+createIntegrationAccount<TAccount>(
+  integrationId: string,
+  input: Record<string, unknown>
+): Promise<TAccount>
+
+// Update account
+updateIntegrationAccount<TAccount>(
+  integrationId: string,
+  id: string,
+  input: Record<string, unknown>
+): Promise<TAccount>
+
+// Delete account
+deleteIntegrationAccount(integrationId: string, id: string): Promise<void>
+```
+
+**Note:** All integrations use these generic API functions. There are no integration-specific API client files. Simply pass the `integrationId` (e.g., `"xmpp"`) to use any integration.
+
+### React Query Hooks
+
+Located in `src/hooks/use-integration.ts`:
+
+```typescript
+// Fetch available integrations
+useIntegrations(): UseQueryResult<IntegrationPublicInfo[]>
+
+// Fetch current user's account
+useIntegrationAccount<TAccount>(integrationId: string): UseQueryResult<TAccount | null>
+
+// Fetch account by ID
+useIntegrationAccountById<TAccount>(
+  integrationId: string,
+  id: string
+): UseQueryResult<TAccount>
+
+// Create account mutation
+useCreateIntegrationAccount<TAccount>(integrationId: string): UseMutationResult
+
+// Update account mutation
+useUpdateIntegrationAccount<TAccount>(integrationId: string): UseMutationResult
+
+// Delete account mutation
+useDeleteIntegrationAccount(integrationId: string): UseMutationResult
+```
+
+**Features:**
+
+- Automatic cache invalidation on mutations
+- Type-safe with generics
+- Optimistic updates where applicable
+- Configurable stale times
+
+**Note:** All integrations use these generic hooks. There are no integration-specific hooks (e.g., `useXmppAccount`). Use `useIntegrationAccount("xmpp")` instead.
+
+## UI Components
+
+### IntegrationManagement
+
+Located in `src/components/integrations/integration-management.tsx`.
+
+A generic, reusable component for managing integration accounts.
+
+**Props:**
+
+```typescript
+interface IntegrationManagementProps<TAccount extends { id: string }> {
+  integrationId: string;
+  title: string;
+  description: string;
+  createLabel: string;
+  createInputLabel?: string;
+  createInputPlaceholder?: string;
+  createInputHelp?: string;
+  createInputToPayload?: (value: string) => Record<string, unknown>;
+  renderAccountDetails?: (account: TAccount) => ReactNode;
+}
+```
+
+**Features:**
+
+- Handles loading and error states
+- Create account form (with optional input field)
+- Display account details (customizable via `renderAccountDetails`)
+- Delete account with confirmation dialog
+- Status badge display
+- Toast notifications for success/error
+
+**Usage Example:**
+
+```tsx
+<IntegrationManagement<XmppAccount>
+  integrationId="xmpp"
+  title="XMPP"
+  description="XMPP chat accounts"
+  createLabel="Create XMPP Account"
+  createInputLabel="Username (optional)"
+  createInputPlaceholder="Leave empty to use your email username"
+  createInputToPayload={(value) =>
+    value.trim() ? { username: value.trim() } : {}
+  }
+  renderAccountDetails={(account) => (
+    <div>
+      <Label>JID: {account.jid}</Label>
+    </div>
+  )}
+/>
+```
+
+### IntegrationCard
+
+Located in `src/components/integrations/integration-card.tsx`.
+
+A simple card component for displaying integration information.
+
+**Props:**
+
+```typescript
+interface IntegrationCardProps {
+  integration: IntegrationPublicInfo;
+}
+```
+
+## Creating a New Integration
+
+### Step 1: Create Integration Directory
+
+Create a new directory under `src/lib/integrations/{integration-id}/`:
+
+```bash
+mkdir -p src/lib/integrations/{integration-id}
+```
+
+### Step 2: Define Types
+
+Create `types.ts`:
+
+```typescript
+import type { IntegrationAccount } from "@/lib/integrations/core/types";
+
+export interface {Integration}Account extends IntegrationAccount {
+  integrationId: "{integration-id}";
+  // Add integration-specific fields
+}
+
+export interface Create{Integration}AccountRequest
+  extends Record<string, unknown> {
+  // Define create input fields
+}
+
+export interface Update{Integration}AccountRequest
+  extends Record<string, unknown> {
+  // Define update input fields
+}
+```
+
+### Step 3: Define Environment Variables
+
+Create `keys.ts`:
+
+```typescript
+import { z } from "zod";
+import { createEnv } from "@t3-oss/env-nextjs";
+
+export const keys = () =>
+  createEnv({
+    server: {
+      {INTEGRATION}_API_URL: z.url().optional(),
+      {INTEGRATION}_API_KEY: z.string().optional(),
+    },
+    runtimeEnv: {
+      {INTEGRATION}_API_URL: process.env.{INTEGRATION}_API_URL,
+      {INTEGRATION}_API_KEY: process.env.{INTEGRATION}_API_KEY,
+    },
+  });
+```
+
+### Step 4: Create Configuration
+
+Create `config.ts`:
+
+```typescript
+import "server-only";
+import { keys } from "./keys";
+
+const env = keys();
+
+export const {integration}Config = {
+  apiUrl: env.{INTEGRATION}_API_URL,
+  apiKey: env.{INTEGRATION}_API_KEY,
+} as const;
+
+export function is{Integration}Configured(): boolean {
+  return !!(env.{INTEGRATION}_API_URL && env.{INTEGRATION}_API_KEY);
+}
+```
+
+### Step 5: Implement Integration Class
+
+Create `implementation.ts`:
+
+```typescript
+import "server-only";
+import { IntegrationBase } from "@/lib/integrations/core/base";
+import { db } from "@/lib/db";
+import { integrationAccount } from "@/lib/db/schema/integrations/base";
+import type {
+  {Integration}Account,
+  Create{Integration}AccountRequest,
+  Update{Integration}AccountRequest,
+} from "./types";
+import { is{Integration}Configured } from "./config";
+
+export class {Integration}Integration extends IntegrationBase<
+  {Integration}Account,
+  Create{Integration}AccountRequest,
+  Update{Integration}AccountRequest
+> {
+  constructor() {
+    super({
+      id: "{integration-id}",
+      name: "{Integration Name}",
+      description: "{Integration description}",
+      enabled: is{Integration}Configured(),
+    });
+  }
+
+  async createAccount(
+    userId: string,
+    input: Create{Integration}AccountRequest
+  ): Promise<{Integration}Account> {
+    // Implementation
+  }
+
+  async getAccount(userId: string): Promise<{Integration}Account | null> {
+    // Implementation
+  }
+
+  async updateAccount(
+    accountId: string,
+    input: Update{Integration}AccountRequest
+  ): Promise<{Integration}Account> {
+    // Implementation
+  }
+
+  async deleteAccount(accountId: string): Promise<void> {
+    // Implementation
+  }
+}
+
+export const {integration}Integration = new {Integration}Integration();
+
+export function register{Integration}Integration(): void {
+  getIntegrationRegistry().register({integration}Integration);
+}
+```
+
+### Step 6: Create Index File
+
+Create `index.ts`:
+
+```typescript
+// biome-ignore lint/performance/noBarrelFile: Public API for integration
+export { {integration}Integration, register{Integration}Integration } from "./implementation";
+export type {
+  {Integration}Account,
+  Create{Integration}AccountRequest,
+  Update{Integration}AccountRequest,
+} from "./types";
+export { {integration}Config, is{Integration}Configured } from "./config";
+```
+
+### Step 7: Register Integration
+
+Update `src/lib/integrations/index.ts`:
+
+```typescript
+import { registerXmppIntegration } from "./xmpp";
+import { register{Integration}Integration } from "./{integration-id}";
+
+let integrationsRegistered = false;
+
+export function registerIntegrations(): void {
+  if (integrationsRegistered) {
+    return;
+  }
+
+  registerXmppIntegration();
+  register{Integration}Integration();
+  integrationsRegistered = true;
+}
+```
+
+### Step 8: Add to Environment
+
+Update `src/env.ts`:
+
+```typescript
+import { keys as {integration} } from "@/lib/integrations/{integration-id}/keys";
+
+export const env = createEnv({
+  extends: [
+    auth(),
+    database(),
+    observability(),
+    xmpp(),
+    {integration}(),
+  ],
+  // ...
+});
+```
+
+### Step 9: Create UI Integration
+
+Add integration to the integrations page (`src/app/(dashboard)/app/integrations/integrations-content.tsx`):
+
+```tsx
+{integrations.map((integration) => {
+  if (integration.id === "{integration-id}") {
+    return (
+      <IntegrationManagement<{Integration}Account>
+        // ... props
+      />
+    );
+  }
+  // ...
+})}
+```
+
+## User Deletion Cleanup
+
+When a user is deleted, all their integration accounts are automatically cleaned up via the `cleanupIntegrationAccounts` function in `src/lib/integrations/core/user-deletion.ts`.
+
+This function:
+
+1. Iterates through all registered integrations
+2. Calls each integration's `deleteAccount` method
+3. Runs cleanup in parallel using `Promise.allSettled`
+4. Captures any errors to Sentry without blocking the deletion process
+
+The cleanup is triggered from:
+
+- Better Auth `beforeDelete` hook (`src/lib/auth/config.ts`)
+- Admin user deletion route (`src/app/api/admin/users/[id]/route.ts`)
+
+## Query Keys
+
+Integration query keys are defined in `src/lib/api/query-keys.ts`:
+
+```typescript
+integrations: {
+  list: () => ["integrations", "list"] as const,
+  accounts: {
+    all: (integrationId: string) =>
+      ["integrations", integrationId, "accounts"] as const,
+    current: (integrationId: string) =>
+      ["integrations", integrationId, "accounts", "current"] as const,
+    details: (integrationId: string) =>
+      ["integrations", integrationId, "accounts", "detail"] as const,
+    detail: (integrationId: string, id: string) =>
+      ["integrations", integrationId, "accounts", "detail", id] as const,
+  },
+}
+```
+
+**Usage Examples:**
+
+- List all integrations: `queryKeys.integrations.list()`
+- Current XMPP account: `queryKeys.integrations.accounts.current("xmpp")`
+- Specific account: `queryKeys.integrations.accounts.detail("xmpp", accountId)`
+
+All integrations use the same query key structure - there are no integration-specific query keys.
+
+## Environment Variable Management
+
+Each integration manages its own environment variables using the `t3-env` pattern:
+
+1. **Module-level `keys.ts`**: Defines and validates environment variables using Zod schemas
+2. **Central `env.ts`**: Extends all module keys for unified validation
+3. **Usage**: Modules import and use their own `keys()` function, not direct `process.env` access
+
+**Benefits:**
+
+- Type-safe environment variables
+- Runtime validation
+- Early error detection
+- Modular organization
+
+## Best Practices
+
+### Lazy Configuration Validation
+
+Integrations should use lazy validation to prevent blocking the entire application if they're not configured:
+
+```typescript
+// ✅ Good: Lazy validation
+export function validate{Integration}Config(): void {
+  if (!config.apiKey) {
+    throw new Error("Configuration required");
+  }
+}
+
+// ❌ Bad: Validation at module load time
+validate{Integration}Config(); // Blocks app startup
+```
+
+### Error Handling
+
+- Use Sentry for error tracking (`captureException`)
+- Use Sentry spans for performance tracking (`startSpan`)
+- Provide user-friendly error messages
+- Handle external service failures gracefully
+
+### Type Safety
+
+- Use TypeScript generics for type-safe account handling
+- Extend base types rather than redefining them
+- Use `Record<string, unknown>` for flexible input types
+
+### Database Queries
+
+- Always include `integrationId` when querying accounts
+- Use the unified `integration_accounts` table
+- Leverage unique constraints for one-account-per-user enforcement
+
+### API Design
+
+- Follow RESTful conventions
+- Use consistent response formats
+- Validate all inputs with Zod
+- Check capabilities before calling integration methods
+- Return appropriate HTTP status codes
+
+## Examples
+
+### XMPP Integration
+
+The XMPP integration serves as the reference implementation:
+
+- **Location**: `src/lib/integrations/xmpp/`
+- **External Service**: Prosody XMPP server (REST API)
+- **Features**:
+  - Username generation from email
+  - Username validation
+  - Prosody account provisioning
+  - Account deletion with cleanup
+
+See the XMPP implementation files for a complete example of how to build an integration.
+
+## Current State
+
+All integrations, including XMPP, use the unified integrations framework. There are no integration-specific API routes, hooks, or components - everything goes through the generic integration APIs and components.
+
+**All integrations use:**
+
+- Generic API routes: `/api/integrations/{integrationId}/accounts/*`
+- Generic hooks: `useIntegrationAccount()`, `useCreateIntegrationAccount()`, etc.
+- Generic components: `IntegrationManagement<TAccount>`
+- Unified query keys: `queryKeys.integrations.accounts.*`

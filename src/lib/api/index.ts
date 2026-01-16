@@ -12,4 +12,3 @@ export * from "./server-queries";
 export * from "./types";
 export * from "./user";
 export * from "./utils";
-export * from "./xmpp";
