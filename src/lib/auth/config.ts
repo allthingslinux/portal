@@ -24,6 +24,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { schema } from "@/lib/db/schema";
 import { xmppAccount } from "@/lib/db/schema/xmpp";
+import { cleanupIntegrationAccounts } from "@/lib/integrations/core/user-deletion";
 import {
   sendOTPEmail,
   sendResetPasswordEmail,
@@ -139,6 +140,10 @@ const user = {
   // Delete user configuration
   deleteUser: {
     enabled: true,
+    beforeDelete: async (user) => {
+      // Ensure external integrations are cleaned up before user deletion.
+      await cleanupIntegrationAccounts(user.id);
+    },
     // sendDeleteAccountVerification: async ({ user, url, token }, request) => {
     //   // Send verification email before account deletion
     //   await sendEmail({
