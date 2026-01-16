@@ -1,14 +1,22 @@
 import type { NextRequest } from "next/server";
-import { and, eq, ne } from "drizzle-orm";
+import { z } from "zod";
+import { eq } from "drizzle-orm";
 
 import { APIError, handleAPIError, requireAuth } from "@/lib/api/utils";
 import { isAdmin } from "@/lib/auth/check-role";
 import { db } from "@/lib/db";
 import { xmppAccount } from "@/lib/db/schema/xmpp";
-import { deleteProsodyAccount } from "@/lib/xmpp/client";
-import { xmppConfig } from "@/lib/xmpp/config";
-import type { UpdateXmppAccountRequest } from "@/lib/xmpp/types";
-import { formatJid, isValidXmppUsername } from "@/lib/xmpp/utils";
+import {
+  deleteProsodyAccount,
+  ProsodyAccountNotFoundError,
+} from "@/lib/xmpp/client";
+
+// Zod schema for update request validation
+const updateXmppAccountSchema = z.object({
+  username: z.string().optional(),
+  status: z.enum(["active", "suspended", "deleted"]).optional(),
+  metadata: z.record(z.string(), z.unknown()).nullable().optional(),
+});
 
 export const dynamic = "force-dynamic";
 
@@ -18,15 +26,17 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { id } = await params;
+    const { id } = params;
 
-    const account = await db.query.xmppAccount.findFirst({
-      where: eq(xmppAccount.id, id),
-    });
+    const [account] = await db
+      .select()
+      .from(xmppAccount)
+      .where(eq(xmppAccount.id, id))
+      .limit(1);
 
     if (!account) {
       return Response.json(
@@ -69,16 +79,31 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { id } = await params;
-    const body = (await request.json()) as UpdateXmppAccountRequest;
+    const { id } = params;
 
-    const account = await db.query.xmppAccount.findFirst({
-      where: eq(xmppAccount.id, id),
-    });
+    // Validate request body with Zod
+    const parseResult = updateXmppAccountSchema.safeParse(await request.json());
+    if (!parseResult.success) {
+      return Response.json(
+        {
+          ok: false,
+          error: "Invalid request body",
+          details: parseResult.error.flatten(),
+        },
+        { status: 400 }
+      );
+    }
+    const body = parseResult.data;
+
+    const [account] = await db
+      .select()
+      .from(xmppAccount)
+      .where(eq(xmppAccount.id, id))
+      .limit(1);
 
     if (!account) {
       return Response.json(
@@ -99,41 +124,17 @@ export async function PATCH(
 
     const updates: Partial<typeof xmppAccount.$inferInsert> = {};
 
-    // Update username (requires account recreation in Prosody)
+    // Update username - REJECTED: Username changes require Prosody account recreation
+    // which would cause authentication failures. Users must delete and recreate account.
     if (body.username && body.username !== account.username) {
-      const newUsername = body.username.toLowerCase();
-
-      if (!isValidXmppUsername(newUsername)) {
-        return Response.json(
-          {
-            ok: false,
-            error:
-              "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number.",
-          },
-          { status: 400 }
-        );
-      }
-
-      // Check username uniqueness (exclude current account)
-      const existingUsername = await db.query.xmppAccount.findFirst({
-        where: and(
-          eq(xmppAccount.username, newUsername),
-          ne(xmppAccount.id, id) // Exclude current account
-        ),
-      });
-
-      if (existingUsername) {
-        return Response.json(
-          { ok: false, error: "Username already taken" },
-          { status: 409 }
-        );
-      }
-
-      // Note: Changing username in XMPP typically requires recreating the account
-      // This is a limitation of XMPP - usernames are typically immutable
-      // For now, we'll update the database but note that Prosody may need manual intervention
-      updates.username = newUsername;
-      updates.jid = formatJid(newUsername, xmppConfig.domain);
+      return Response.json(
+        {
+          ok: false,
+          error:
+            "Username cannot be changed. Please delete your account and create a new one with the desired username.",
+        },
+        { status: 400 }
+      );
     }
 
     // Update status
@@ -190,15 +191,17 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { id } = await params;
+    const { id } = params;
 
-    const account = await db.query.xmppAccount.findFirst({
-      where: eq(xmppAccount.id, id),
-    });
+    const [account] = await db
+      .select()
+      .from(xmppAccount)
+      .where(eq(xmppAccount.id, id))
+      .limit(1);
 
     if (!account) {
       return Response.json(
@@ -222,13 +225,16 @@ export async function DELETE(
       await deleteProsodyAccount(account.username);
     } catch (error) {
       // If account doesn't exist in Prosody, that's okay - continue with soft delete
-      if (
-        error instanceof Error &&
-        !error.message.includes("not found") &&
-        !error.message.includes("404")
-      ) {
+      if (error instanceof ProsodyAccountNotFoundError) {
+        // Account doesn't exist in Prosody - continue with soft delete
+      } else if (error instanceof Error) {
         throw new APIError(
           `Failed to delete XMPP account from Prosody: ${error.message}`,
+          500
+        );
+      } else {
+        throw new APIError(
+          "Failed to delete XMPP account from Prosody: Unknown error",
           500
         );
       }

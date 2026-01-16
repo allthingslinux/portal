@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { NextRequest } from "next/server";
+import { z } from "zod";
 import { eq } from "drizzle-orm";
 
 import { APIError, handleAPIError, requireAuth } from "@/lib/api/utils";
@@ -12,14 +13,95 @@ import {
   deleteProsodyAccount,
 } from "@/lib/xmpp/client";
 import { xmppConfig } from "@/lib/xmpp/config";
-import type { CreateXmppAccountRequest } from "@/lib/xmpp/types";
 import {
   formatJid,
   generateUsernameFromEmail,
   isValidXmppUsername,
 } from "@/lib/xmpp/utils";
 
+// Zod schema for create request validation
+const createXmppAccountSchema = z.object({
+  username: z.string().optional(),
+});
+
 export const dynamic = "force-dynamic";
+
+/**
+ * Determine username from request body or user email
+ */
+function determineUsername(
+  providedUsername: string | undefined,
+  userEmail: string
+): { username: string } | { error: Response } {
+  if (providedUsername) {
+    if (!isValidXmppUsername(providedUsername)) {
+      return {
+        error: Response.json(
+          {
+            ok: false,
+            error:
+              "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number.",
+          },
+          { status: 400 }
+        ),
+      };
+    }
+    return { username: providedUsername.toLowerCase() };
+  }
+
+  try {
+    return { username: generateUsernameFromEmail(userEmail) };
+  } catch {
+    return {
+      error: Response.json(
+        {
+          ok: false,
+          error:
+            "Could not generate username from email. Please provide a custom username.",
+        },
+        { status: 400 }
+      ),
+    };
+  }
+}
+
+/**
+ * Check if username is available in both database and Prosody
+ */
+async function checkUsernameAvailability(
+  username: string
+): Promise<{ available: true } | { available: false; error: Response }> {
+  // Check database
+  const [existingUsername] = await db
+    .select()
+    .from(xmppAccount)
+    .where(eq(xmppAccount.username, username))
+    .limit(1);
+
+  if (existingUsername) {
+    return {
+      available: false,
+      error: Response.json(
+        { ok: false, error: "Username already taken" },
+        { status: 409 }
+      ),
+    };
+  }
+
+  // Check Prosody
+  const prosodyAccountExists = await checkProsodyAccountExists(username);
+  if (prosodyAccountExists) {
+    return {
+      available: false,
+      error: Response.json(
+        { ok: false, error: "Username already taken in XMPP server" },
+        { status: 409 }
+      ),
+    };
+  }
+
+  return { available: true };
+}
 
 /**
  * POST /api/xmpp/accounts
@@ -28,12 +110,27 @@ export const dynamic = "force-dynamic";
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await requireAuth(request);
-    const body = (await request.json()) as CreateXmppAccountRequest;
+
+    // Validate request body with Zod
+    const parseResult = createXmppAccountSchema.safeParse(await request.json());
+    if (!parseResult.success) {
+      return Response.json(
+        {
+          ok: false,
+          error: "Invalid request body",
+          details: parseResult.error.flatten(),
+        },
+        { status: 400 }
+      );
+    }
+    const body = parseResult.data;
 
     // Check if user already has an XMPP account (one per user)
-    const existingAccount = await db.query.xmppAccount.findFirst({
-      where: eq(xmppAccount.userId, userId),
-    });
+    const [existingAccount] = await db
+      .select()
+      .from(xmppAccount)
+      .where(eq(xmppAccount.userId, userId))
+      .limit(1);
 
     if (existingAccount) {
       return Response.json(
@@ -57,55 +154,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine username
-    let username: string;
-    if (body.username) {
-      // Validate provided username
-      if (!isValidXmppUsername(body.username)) {
-        return Response.json(
-          {
-            ok: false,
-            error:
-              "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number.",
-          },
-          { status: 400 }
-        );
-      }
-      username = body.username.toLowerCase();
-    } else {
-      // Generate username from email
-      try {
-        username = generateUsernameFromEmail(userData.email);
-      } catch (_error) {
-        return Response.json(
-          {
-            ok: false,
-            error:
-              "Could not generate username from email. Please provide a custom username.",
-          },
-          { status: 400 }
-        );
-      }
+    const usernameResult = determineUsername(body.username, userData.email);
+    if ("error" in usernameResult) {
+      return usernameResult.error;
     }
+    const { username } = usernameResult;
 
-    // Check username uniqueness in database
-    const existingUsername = await db.query.xmppAccount.findFirst({
-      where: eq(xmppAccount.username, username),
-    });
-
-    if (existingUsername) {
-      return Response.json(
-        { ok: false, error: "Username already taken" },
-        { status: 409 }
-      );
-    }
-
-    // Check username uniqueness in Prosody
-    const prosodyAccountExists = await checkProsodyAccountExists(username);
-    if (prosodyAccountExists) {
-      return Response.json(
-        { ok: false, error: "Username already taken in XMPP server" },
-        { status: 409 }
-      );
+    // Check username availability
+    const availabilityResult = await checkUsernameAvailability(username);
+    if (!availabilityResult.available) {
+      return availabilityResult.error;
     }
 
     // Create account in Prosody (no password - authentication via OAuth)
@@ -177,9 +235,11 @@ export async function GET(request: NextRequest) {
   try {
     const { userId } = await requireAuth(request);
 
-    const account = await db.query.xmppAccount.findFirst({
-      where: eq(xmppAccount.userId, userId),
-    });
+    const [account] = await db
+      .select()
+      .from(xmppAccount)
+      .where(eq(xmppAccount.userId, userId))
+      .limit(1);
 
     if (!account) {
       return Response.json(

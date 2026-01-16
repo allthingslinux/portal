@@ -40,7 +40,10 @@ async function createProsodyOAuthClient() {
       const client = existingClient[0];
       console.log("ℹ️  Prosody OAuth client already exists:");
       console.log("   Client ID:", client.clientId);
-      console.log("   Client Secret:", client.clientSecret || "(not set)");
+      console.log(
+        "   Client Secret:",
+        client.clientSecret ? "(set - not displayed for security)" : "(not set)"
+      );
       console.log("   Name:", client.name);
       console.log("   Disabled:", client.disabled);
       return;

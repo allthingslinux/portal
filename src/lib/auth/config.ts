@@ -278,18 +278,37 @@ const oauthProviderConfig = {
   //     "https://example.com/roles": ["editor"],
   //   };
   // },
-  customUserInfoClaims: async ({ user, scopes }) => {
+  customUserInfoClaims: async ({
+    user,
+    scopes,
+  }: {
+    user: { id: string };
+    scopes: string[];
+  }) => {
     const claims: Record<string, unknown> = {};
 
     // Add XMPP username when 'xmpp' scope is requested
     if (scopes.includes("xmpp")) {
-      const xmppAccountRecord = await db.query.xmppAccount.findFirst({
-        where: eq(xmppAccount.userId, user.id),
-        columns: { username: true },
-      });
+      try {
+        const [xmppAccountRecord] = await db
+          .select({ username: xmppAccount.username })
+          .from(xmppAccount)
+          .where(eq(xmppAccount.userId, user.id))
+          .limit(1);
 
-      if (xmppAccountRecord) {
-        claims.xmpp_username = xmppAccountRecord.username;
+        if (xmppAccountRecord) {
+          claims.xmpp_username = xmppAccountRecord.username;
+        }
+      } catch (error) {
+        // Capture error in Sentry but gracefully continue without XMPP claim
+        const Sentry = await import("@sentry/nextjs");
+        Sentry.captureException(error, {
+          tags: {
+            function: "customUserInfoClaims",
+            userId: user.id,
+          },
+        });
+        // Continue without XMPP claim on error
       }
     }
 

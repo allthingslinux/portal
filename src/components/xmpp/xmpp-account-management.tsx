@@ -189,11 +189,30 @@ export function XmppAccountManagement() {
               {account.jid}
             </code>
             <Button
-              onClick={() => {
-                navigator.clipboard.writeText(account.jid);
-                toast.success("Copied", {
-                  description: "JID copied to clipboard",
-                });
+              onClick={async () => {
+                try {
+                  if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(account.jid);
+                    toast.success("Copied", {
+                      description: "JID copied to clipboard",
+                    });
+                  } else {
+                    // Fallback for older browsers
+                    const textArea = document.createElement("textarea");
+                    textArea.value = account.jid;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textArea);
+                    toast.success("Copied", {
+                      description: "JID copied to clipboard",
+                    });
+                  }
+                } catch {
+                  toast.error("Failed to copy", {
+                    description: "Could not copy JID to clipboard",
+                  });
+                }
               }}
               size="sm"
               variant="ghost"

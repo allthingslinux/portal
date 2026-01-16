@@ -18,7 +18,7 @@ const XMPP_USERNAME_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,62}$/;
 const XMPP_USERNAME_MIN_LENGTH = 1;
 const XMPP_USERNAME_MAX_LENGTH = 63; // Reasonable limit for usernames
 const XMPP_USERNAME_SANITIZE_REGEX = /[^a-zA-Z0-9._-]/g;
-const XMPP_USERNAME_START_REGEX = /^[^a-zA-Z0-9]/;
+const XMPP_USERNAME_START_REGEX = /^[^a-zA-Z0-9]+/; // Remove ALL leading non-alphanumeric chars
 
 /**
  * Validate XMPP username (localpart)

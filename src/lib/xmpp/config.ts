@@ -15,7 +15,7 @@ export const xmppConfig = {
     // REST API endpoint URL
     // Use internal Docker network URL for same-network communication
     // or public URL if Prosody is on a different network
-    restUrl: process.env.PROSODY_REST_URL || "http://localhost:5281/rest",
+    restUrl: process.env.PROSODY_REST_URL,
 
     // Username for REST API authentication (admin JID)
     // Format: "admin@xmpp.atl.chat" or from PROSODY_ADMIN_JID

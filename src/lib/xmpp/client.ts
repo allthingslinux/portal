@@ -4,6 +4,29 @@ import { xmppConfig } from "./config";
 import type { ProsodyRestAccountResponse, ProsodyRestError } from "./types";
 import { formatJid } from "./utils";
 
+/**
+ * Custom error for Prosody account not found
+ */
+export class ProsodyAccountNotFoundError extends Error {
+  constructor(message = "Prosody account not found") {
+    super(message);
+    this.name = "ProsodyAccountNotFoundError";
+  }
+}
+
+/**
+ * Escape XML special characters for defense-in-depth
+ * Username is already validated, but this prevents XML injection if validation fails
+ */
+function escapeXml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 // ============================================================================
 // Prosody REST API Client
 // ============================================================================
@@ -83,7 +106,7 @@ export async function createProsodyAccount(
   const stanza = `<?xml version="1.0"?>
 <iq type="set" to="${xmppConfig.domain}" id="create_${Date.now()}">
   <query xmlns="jabber:iq:register">
-    <username>${username}</username>
+    <username>${escapeXml(username)}</username>
   </query>
 </iq>`;
 
@@ -152,7 +175,7 @@ export async function deleteProsodyAccount(
         error.message.includes("404")
       ) {
         // Account doesn't exist, but that's okay for deletion
-        return { success: true };
+        throw new ProsodyAccountNotFoundError();
       }
       throw error;
     }

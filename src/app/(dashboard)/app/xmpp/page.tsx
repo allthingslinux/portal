@@ -4,7 +4,6 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { PageHeader } from "@/components/layout/page/page-header";
 import { XmppAccountManagement } from "@/components/xmpp/xmpp-account-management";
 import { getServerQueryClient } from "@/lib/api/hydration";
-import { queryKeys } from "@/lib/api/query-keys";
 import { verifySession } from "@/lib/auth/dal";
 import { getServerRouteResolver, routeConfig } from "@/lib/routes";
 import { getRouteMetadata } from "@/lib/seo";
@@ -27,16 +26,10 @@ export default async function XmppPage() {
   // Create QueryClient for this request (isolated per request)
   const queryClient = getServerQueryClient();
 
-  // Prefetch XMPP account data for SSR
-  // This reduces loading flash by populating the cache before components mount
-  await queryClient.prefetchQuery({
-    queryKey: queryKeys.xmppAccounts.current(),
-    queryFn: async () => {
-      // We'll fetch on the client side since this is a user-specific endpoint
-      // that requires authentication cookies
-      return null;
-    },
-  });
+  // Note: We don't prefetch XMPP account data here because:
+  // 1. It requires authentication cookies which aren't available server-side
+  // 2. Prefetching with null would mark the query as successful and block refetch for 30s
+  // The client-side hook will fetch the data when the component mounts
 
   const resolver = await getServerRouteResolver();
 

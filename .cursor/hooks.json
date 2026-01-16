@@ -3,7 +3,7 @@
   "hooks": {
     "afterFileEdit": [
       {
-        "command": "pnpm run check"
+        "command": "pnpm run check && pnpm run type-check"
       }
     ]
   }
