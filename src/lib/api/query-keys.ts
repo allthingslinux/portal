@@ -67,6 +67,32 @@ export const queryKeys = {
     dashboard: () => [...queryKeys.admin.all, "dashboard"] as const,
   },
 
+  // Integration queries
+  integrations: {
+    all: ["integrations"] as const,
+    lists: () => [...queryKeys.integrations.all, "list"] as const,
+    list: () => [...queryKeys.integrations.lists()] as const,
+    accounts: {
+      all: (integrationId: string) =>
+        [...queryKeys.integrations.all, integrationId, "accounts"] as const,
+      current: (integrationId: string) =>
+        [
+          ...queryKeys.integrations.accounts.all(integrationId),
+          "current",
+        ] as const,
+      details: (integrationId: string) =>
+        [
+          ...queryKeys.integrations.accounts.all(integrationId),
+          "detail",
+        ] as const,
+      detail: (integrationId: string, id: string) =>
+        [
+          ...queryKeys.integrations.accounts.details(integrationId),
+          id,
+        ] as const,
+    },
+  },
+
   // XMPP Account queries
   xmppAccounts: {
     all: ["xmppAccounts"] as const,

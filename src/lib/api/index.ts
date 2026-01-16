@@ -5,6 +5,7 @@
 // biome-ignore lint/performance/noBarrelFile: Barrel file for API module
 export * from "./admin";
 export * from "./hydration";
+export * from "./integrations";
 export * from "./query-client";
 export * from "./query-keys";
 export * from "./server-queries";

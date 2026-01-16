@@ -3,137 +3,57 @@
 // ============================================================================
 // Client-side functions for calling XMPP account API endpoints
 
+import {
+  createIntegrationAccount,
+  deleteIntegrationAccount,
+  fetchIntegrationAccount,
+  fetchIntegrationAccountById,
+  updateIntegrationAccount,
+} from "@/lib/api/integrations";
 import type {
   CreateXmppAccountRequest,
   UpdateXmppAccountRequest,
   XmppAccount,
-} from "@/lib/xmpp/types";
+} from "@/lib/integrations/xmpp/types";
 
-/**
- * Response type from XMPP API endpoints
- */
-interface XmppApiResponse<T> {
-  ok: boolean;
-  error?: string;
-  account?: T;
-  message?: string;
-}
+const integrationId = "xmpp";
 
 /**
  * Fetch current user's XMPP account
  */
-export async function fetchXmppAccount(): Promise<XmppAccount | null> {
-  const response = await fetch("/api/xmpp/accounts");
-
-  if (!response.ok) {
-    if (response.status === 404) {
-      return null; // User doesn't have an XMPP account yet
-    }
-    const error = await response
-      .json()
-      .catch(() => ({ error: "Unknown error" }));
-    throw new Error(
-      error.error || `Failed to fetch XMPP account: ${response.statusText}`
-    );
-  }
-
-  const data = (await response.json()) as XmppApiResponse<XmppAccount>;
-  return data.account ?? null;
+export function fetchXmppAccount(): Promise<XmppAccount | null> {
+  return fetchIntegrationAccount<XmppAccount>(integrationId);
 }
 
 /**
  * Fetch a specific XMPP account by ID
  */
-export async function fetchXmppAccountById(id: string): Promise<XmppAccount> {
-  const response = await fetch(`/api/xmpp/accounts/${id}`);
-
-  if (!response.ok) {
-    const error = await response
-      .json()
-      .catch(() => ({ error: "Unknown error" }));
-    throw new Error(
-      error.error || `Failed to fetch XMPP account: ${response.statusText}`
-    );
-  }
-
-  const data = (await response.json()) as XmppApiResponse<XmppAccount>;
-  if (!data.account) {
-    throw new Error("XMPP account not found");
-  }
-  return data.account;
+export function fetchXmppAccountById(id: string): Promise<XmppAccount> {
+  return fetchIntegrationAccountById<XmppAccount>(integrationId, id);
 }
 
 /**
  * Create a new XMPP account for the current user
  */
-export async function createXmppAccount(
+export function createXmppAccount(
   data: CreateXmppAccountRequest
 ): Promise<XmppAccount> {
-  const response = await fetch("/api/xmpp/accounts", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const error = await response
-      .json()
-      .catch(() => ({ error: "Unknown error" }));
-    throw new Error(
-      error.error || `Failed to create XMPP account: ${response.statusText}`
-    );
-  }
-
-  const result = (await response.json()) as XmppApiResponse<XmppAccount>;
-  if (!result.account) {
-    throw new Error("Failed to create XMPP account: No account returned");
-  }
-  return result.account;
+  return createIntegrationAccount<XmppAccount>(integrationId, data);
 }
 
 /**
  * Update an XMPP account
  */
-export async function updateXmppAccount(
+export function updateXmppAccount(
   id: string,
   data: UpdateXmppAccountRequest
 ): Promise<XmppAccount> {
-  const response = await fetch(`/api/xmpp/accounts/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    const error = await response
-      .json()
-      .catch(() => ({ error: "Unknown error" }));
-    throw new Error(
-      error.error || `Failed to update XMPP account: ${response.statusText}`
-    );
-  }
-
-  const result = (await response.json()) as XmppApiResponse<XmppAccount>;
-  if (!result.account) {
-    throw new Error("Failed to update XMPP account: No account returned");
-  }
-  return result.account;
+  return updateIntegrationAccount<XmppAccount>(integrationId, id, data);
 }
 
 /**
  * Delete an XMPP account
  */
-export async function deleteXmppAccount(id: string): Promise<void> {
-  const response = await fetch(`/api/xmpp/accounts/${id}`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) {
-    const error = await response
-      .json()
-      .catch(() => ({ error: "Unknown error" }));
-    throw new Error(
-      error.error || `Failed to delete XMPP account: ${response.statusText}`
-    );
-  }
+export function deleteXmppAccount(id: string): Promise<void> {
+  return deleteIntegrationAccount(integrationId, id);
 }
