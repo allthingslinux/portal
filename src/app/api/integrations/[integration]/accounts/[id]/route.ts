@@ -83,6 +83,10 @@ export async function PATCH(
       throw new APIError("Integration does not support account lookup", 400);
     }
 
+    if (!integration.updateAccount) {
+      throw new APIError("Integration does not support account updates", 400);
+    }
+
     const account = await integration.getAccountById(id);
     if (!account) {
       return Response.json(
@@ -99,7 +103,20 @@ export async function PATCH(
       );
     }
 
-    const body = await request.json().catch(() => ({}));
+    let body: Record<string, unknown>;
+    try {
+      const rawBody = await request.json();
+      if (typeof rawBody !== "object" || rawBody === null) {
+        throw new APIError("Invalid request body", 400);
+      }
+      body = rawBody as Record<string, unknown>;
+    } catch (error) {
+      if (error instanceof APIError) {
+        throw error;
+      }
+      throw new APIError("Invalid JSON body", 400);
+    }
+
     const updated = await integration.updateAccount(id, body);
 
     return Response.json({ ok: true, account: updated });
@@ -133,6 +150,10 @@ export async function DELETE(
 
     if (!integration.getAccountById) {
       throw new APIError("Integration does not support account lookup", 400);
+    }
+
+    if (!integration.deleteAccount) {
+      throw new APIError("Integration does not support account deletion", 400);
     }
 
     const account = await integration.getAccountById(id);

@@ -2,11 +2,13 @@
 
 import { AlertCircle, CheckCircle2, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { captureException, startSpan } from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { IntegrationManagement } from "@/components/integrations/integration-management";
 import { useIntegrations } from "@/hooks/use-integration";
+import { integrationStatusLabels } from "@/lib/integrations/core/constants";
 import type { XmppAccount } from "@/lib/integrations/xmpp/types";
 
 // ============================================================================
@@ -61,31 +63,45 @@ export function IntegrationsContent() {
                         {account.jid}
                       </code>
                       <Button
+                        aria-label="Copy JID"
                         onClick={async () => {
-                          try {
-                            if (navigator.clipboard?.writeText) {
-                              await navigator.clipboard.writeText(account.jid);
-                              toast.success("Copied", {
-                                description: "JID copied to clipboard",
-                              });
-                            } else {
-                              // Fallback for older browsers
-                              const textArea =
-                                document.createElement("textarea");
-                              textArea.value = account.jid;
-                              document.body.appendChild(textArea);
-                              textArea.select();
-                              document.execCommand("copy");
-                              document.body.removeChild(textArea);
-                              toast.success("Copied", {
-                                description: "JID copied to clipboard",
-                              });
+                          await startSpan(
+                            {
+                              name: "Copy XMPP JID",
+                              op: "ui.action",
+                              attributes: { integrationId: integration.id },
+                            },
+                            async () => {
+                              try {
+                                if (navigator.clipboard?.writeText) {
+                                  await navigator.clipboard.writeText(
+                                    account.jid
+                                  );
+                                  toast.success("Copied", {
+                                    description: "JID copied to clipboard",
+                                  });
+                                } else {
+                                  // Fallback for older browsers
+                                  const textArea =
+                                    document.createElement("textarea");
+                                  textArea.value = account.jid;
+                                  document.body.appendChild(textArea);
+                                  textArea.select();
+                                  document.execCommand("copy");
+                                  document.body.removeChild(textArea);
+                                  toast.success("Copied", {
+                                    description: "JID copied to clipboard",
+                                  });
+                                }
+                              } catch (error) {
+                                captureException(error);
+                                toast.error("Failed to copy", {
+                                  description:
+                                    "Could not copy JID to clipboard",
+                                });
+                              }
                             }
-                          } catch {
-                            toast.error("Failed to copy", {
-                              description: "Could not copy JID to clipboard",
-                            });
-                          }
+                          );
                         }}
                         size="sm"
                         variant="ghost"
@@ -108,13 +124,19 @@ export function IntegrationsContent() {
                       {account.status === "active" ? (
                         <>
                           <CheckCircle2 className="h-4 w-4 text-green-500" />
-                          <span className="text-sm">Active</span>
+                          <span className="text-sm">
+                            {integrationStatusLabels[account.status]}
+                          </span>
                         </>
                       ) : (
                         <>
                           <AlertCircle className="h-4 w-4 text-yellow-500" />
-                          <span className="text-sm capitalize">
-                            {account.status}
+                          <span className="text-sm">
+                            {account.status in integrationStatusLabels
+                              ? integrationStatusLabels[
+                                  account.status as keyof typeof integrationStatusLabels
+                                ]
+                              : account.status}
                           </span>
                         </>
                       )}

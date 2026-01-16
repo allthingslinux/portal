@@ -14,7 +14,8 @@ export async function cleanupIntegrationAccounts(
   registerIntegrations();
   const integrations = getIntegrationRegistry().getAll();
 
-  for (const integration of integrations) {
+  // Run cleanup in parallel for better performance
+  const cleanupPromises = integrations.map(async (integration) => {
     try {
       const account = await integration.getAccount(userId);
       if (account) {
@@ -32,5 +33,8 @@ export async function cleanupIntegrationAccounts(
         // Ignore logging failures during cleanup.
       }
     }
-  }
+  });
+
+  // Use allSettled to ensure all cleanups are attempted even if some fail
+  await Promise.allSettled(cleanupPromises);
 }

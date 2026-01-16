@@ -140,7 +140,7 @@ const user = {
   // Delete user configuration
   deleteUser: {
     enabled: true,
-    beforeDelete: async (user) => {
+    beforeDelete: async (user: { id: string }) => {
       // Ensure external integrations are cleaned up before user deletion.
       await cleanupIntegrationAccounts(user.id);
     },

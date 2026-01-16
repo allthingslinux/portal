@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 import { APIError, handleAPIError, requireAuth } from "@/lib/api/utils";
 import { registerIntegrations } from "@/lib/integrations";
@@ -66,7 +67,18 @@ export async function POST(
       throw new APIError("Integration is disabled", 403);
     }
 
-    const body = await request.json().catch(() => ({}));
+    let body: Record<string, unknown>;
+    try {
+      const rawBody = await request.json();
+      const bodySchema = z.record(z.string(), z.unknown());
+      body = bodySchema.parse(rawBody);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw new APIError(`Invalid request body: ${error.message}`, 400);
+      }
+      throw new APIError("Invalid JSON body", 400);
+    }
+
     const account = await integration.createAccount(userId, body);
 
     return Response.json({ ok: true, account }, { status: 201 });

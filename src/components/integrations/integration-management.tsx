@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { AlertCircle, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { captureException } from "@sentry/nextjs";
 
 import {
   AlertDialog,
@@ -31,6 +32,7 @@ import {
   useDeleteIntegrationAccount,
   useIntegrationAccount,
 } from "@/hooks/use-integration";
+import { integrationStatusLabels } from "@/lib/integrations/core/constants";
 
 interface IntegrationManagementProps<TAccount extends { id: string }> {
   integrationId: string;
@@ -77,6 +79,7 @@ export function IntegrationManagement<TAccount extends { id: string }>({
       });
       setInputValue("");
     } catch (error) {
+      captureException(error);
       toast.error(`Failed to create ${title.toLowerCase()} account`, {
         description:
           error instanceof Error
@@ -97,6 +100,7 @@ export function IntegrationManagement<TAccount extends { id: string }>({
         description: `Your ${title} account has been deleted successfully.`,
       });
     } catch (error) {
+      captureException(error);
       toast.error(`Failed to delete ${title.toLowerCase()} account`, {
         description:
           error instanceof Error
@@ -182,6 +186,11 @@ export function IntegrationManagement<TAccount extends { id: string }>({
       ? account.status
       : null;
 
+  const statusLabel =
+    status && status in integrationStatusLabels
+      ? integrationStatusLabels[status as keyof typeof integrationStatusLabels]
+      : status;
+
   return (
     <Card>
       <CardHeader>
@@ -192,7 +201,7 @@ export function IntegrationManagement<TAccount extends { id: string }>({
           </div>
           {status ? (
             <Badge variant={status === "deleted" ? "destructive" : "default"}>
-              {status.charAt(0).toUpperCase() + status.slice(1)}
+              {statusLabel}
             </Badge>
           ) : null}
         </div>
