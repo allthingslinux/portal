@@ -10,11 +10,10 @@ import type { NextRequest } from "next/server";
 import { isAdmin, isAdminOrStaff } from "@/lib/auth/check-role";
 import { captureError, log, parseError } from "@/lib/observability";
 import { auth } from "@/auth";
+import type { AuthResult } from "@/types/auth";
 
-export interface AuthResult {
-  session: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
-  userId: string;
-}
+// Re-export for backward compatibility
+export type { AuthResult } from "@/types/auth";
 
 /**
  * Authenticate and authorize request - requires admin or staff role

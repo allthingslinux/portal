@@ -1,8 +1,19 @@
+import type { IntegrationStatus as IntegrationStatusType } from "@/lib/utils/constants";
+import { INTEGRATION_STATUSES } from "@/lib/utils/constants";
+
 export type IntegrationId = string;
 
-export type IntegrationStatus = "active" | "suspended" | "deleted";
+/**
+ * Integration account status type
+ * Re-exported from constants for convenience
+ */
+export type IntegrationStatus = IntegrationStatusType;
 
-export const integrationStatuses = ["active", "suspended", "deleted"] as const;
+/**
+ * Integration status values array
+ * Re-exported from constants for convenience
+ */
+export const integrationStatuses = INTEGRATION_STATUSES;
 
 export interface IntegrationAccount<TMetadata = Record<string, unknown>> {
   id: string;

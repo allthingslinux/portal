@@ -2,64 +2,34 @@
 // API Types
 // ============================================================================
 // Type definitions for API requests and responses
+// Note: Filter, input, and response types are now in @/types/api
+// This file contains Drizzle-inferred database entity types
 
 import type { apikey } from "@/lib/db/schema/api-keys";
 import type { session, user } from "@/lib/db/schema/auth";
 import type { oauthClient } from "@/lib/db/schema/oauth";
 
-// Filter types
-export interface UserListFilters {
-  role?: string;
-  banned?: boolean;
-  search?: string;
-  limit?: number;
-  offset?: number;
-}
-
-export interface SessionListFilters {
-  userId?: string;
-  active?: boolean;
-  limit?: number;
-  offset?: number;
-}
-
-export interface ApiKeyListFilters {
-  userId?: string;
-  enabled?: boolean;
-  limit?: number;
-  offset?: number;
-}
-
-export interface OAuthClientListFilters {
-  userId?: string;
-  disabled?: boolean;
-  limit?: number;
-  offset?: number;
-}
+// Re-export filter, input, and response types from centralized location
+export type {
+  UserListFilters,
+  SessionListFilters,
+  ApiKeyListFilters,
+  OAuthClientListFilters,
+  UpdateUserInput,
+  CreateApiKeyInput,
+  UpdateApiKeyInput,
+  UserListResponse,
+  SessionListResponse,
+  ApiKeyListResponse,
+  OAuthClientListResponse,
+  AdminStats,
+} from "@/types/api";
 
 // User types
 export type User = typeof user.$inferSelect;
 export type UserInsert = typeof user.$inferInsert;
 
-export interface UserListResponse {
-  users: User[];
-  pagination: {
-    total: number;
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
-}
-
-export interface UpdateUserInput {
-  name?: string;
-  email?: string;
-  role?: string;
-  banned?: boolean;
-  banReason?: string | null;
-  banExpires?: string | null;
-}
-
+// Database entity types (Drizzle-inferred - keep here due to schema coupling)
 // Session types
 export type Session = typeof session.$inferSelect & {
   user?: {
@@ -68,10 +38,6 @@ export type Session = typeof session.$inferSelect & {
     name: string | null;
   };
 };
-
-export interface SessionListResponse {
-  sessions: Session[];
-}
 
 // API Key types
 export type ApiKey = typeof apikey.$inferSelect & {
@@ -83,26 +49,6 @@ export type ApiKey = typeof apikey.$inferSelect & {
 };
 export type ApiKeyInsert = typeof apikey.$inferInsert;
 
-export interface ApiKeyListResponse {
-  apiKeys: ApiKey[];
-}
-
-export interface CreateApiKeyInput {
-  name?: string;
-  prefix?: string;
-  expiresAt?: string;
-  permissions?: string;
-  metadata?: string;
-}
-
-export interface UpdateApiKeyInput {
-  name?: string;
-  enabled?: boolean;
-  rateLimitEnabled?: boolean;
-  rateLimitMax?: number;
-  rateLimitTimeWindow?: number;
-}
-
 // OAuth Client types
 export type OAuthClient = typeof oauthClient.$inferSelect & {
   user?: {
@@ -112,30 +58,3 @@ export type OAuthClient = typeof oauthClient.$inferSelect & {
   };
 };
 export type OAuthClientInsert = typeof oauthClient.$inferInsert;
-
-export interface OAuthClientListResponse {
-  clients: OAuthClient[];
-}
-
-// Admin Stats types
-export interface AdminStats {
-  users: {
-    total: number;
-    admins: number;
-    staff: number;
-    banned: number;
-    regular: number;
-  };
-  sessions: {
-    total: number;
-    active: number;
-  };
-  apiKeys: {
-    total: number;
-    enabled: number;
-  };
-  oauthClients: {
-    total: number;
-    disabled: number;
-  };
-}

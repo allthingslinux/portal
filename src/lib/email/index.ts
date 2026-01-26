@@ -1,12 +1,7 @@
 // Email service placeholder - replace with your preferred email provider
 // Examples: Resend, SendGrid, Nodemailer, etc.
 
-interface EmailOptions {
-  to: string;
-  subject: string;
-  html?: string;
-  text?: string;
-}
+import type { EmailOptions } from "@/types/email";
 
 export function sendEmail(options: EmailOptions) {
   // TODO: Implement with your email provider

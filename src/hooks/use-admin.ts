@@ -24,6 +24,7 @@ import type {
   UpdateUserInput,
   UserListFilters,
 } from "@/lib/api/types";
+import { QUERY_CACHE } from "@/lib/utils/constants";
 
 // ============================================================================
 // Admin Hooks
@@ -35,7 +36,7 @@ export function useUsers(filters?: UserListFilters) {
   return useQuery({
     queryKey: queryKeys.users.list(filters),
     queryFn: () => fetchUsers(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -44,7 +45,7 @@ export function useUser(userId: string) {
     queryKey: queryKeys.users.detail(userId),
     queryFn: () => fetchUserById(userId),
     enabled: !!userId,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -86,7 +87,7 @@ export function useSessions(filters?: SessionListFilters) {
   return useQuery({
     queryKey: queryKeys.sessions.list(filters),
     queryFn: () => fetchSessions(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -95,7 +96,7 @@ export function useSession(sessionId: string) {
     queryKey: queryKeys.sessions.detail(sessionId),
     queryFn: () => fetchSessionById(sessionId),
     enabled: !!sessionId,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -124,7 +125,7 @@ export function useAdminStats() {
   return useQuery({
     queryKey: queryKeys.admin.stats(),
     queryFn: fetchAdminStats,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -136,7 +137,7 @@ export function useAdminApiKeys(filters?: {
   return useQuery({
     queryKey: queryKeys.apiKeys.list(filters?.userId),
     queryFn: () => fetchApiKeys(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -145,7 +146,7 @@ export function useAdminApiKey(keyId: string) {
     queryKey: queryKeys.apiKeys.detail(keyId),
     queryFn: () => fetchApiKeyById(keyId),
     enabled: !!keyId,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -177,7 +178,7 @@ export function useAdminOAuthClients(filters?: {
   return useQuery({
     queryKey: queryKeys.oauthClients.list(filters),
     queryFn: () => fetchOAuthClients(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -186,7 +187,7 @@ export function useAdminOAuthClient(clientId: string) {
     queryKey: queryKeys.oauthClients.detail(clientId),
     queryFn: () => fetchOAuthClientById(clientId),
     enabled: !!clientId,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 

@@ -1,4 +1,4 @@
-import type { IntegrationStatus } from "./types";
+import type { IntegrationStatus } from "@/lib/utils/constants";
 
 export const integrationStatusLabels: Record<IntegrationStatus, string> = {
   active: "Active",

@@ -66,6 +66,69 @@ import { usePermissions } from "@/hooks/use-permissions"; // Custom hooks
 - UI components use direct imports: `@/components/ui/button`
 - Most other modules use direct imports for performance
 
+## Type Organization (TLDR)
+
+**All major types are centralized in `src/types/` directory:**
+
+- `@/types/auth` - Authentication types (`SessionData`, `AuthResult`, `UserPermissions`, `Permission`)
+- `@/types/api` - API types (filters, inputs, responses, error types)
+- `@/types/routes` - Route configuration types (`RouteConfig`, `ProtectedRoute`, `BreadcrumbItem`, etc.)
+- `@/types/email` - Email service types (`EmailOptions`)
+- `@/types/common` - Domain DTOs (`UserDTO`, `SessionDTO`, `ApiKeyDTO`, etc.)
+
+**Backward compatibility:** Original locations (`@/lib/api/types`, `@/lib/routes/types`, etc.) re-export from centralized types.
+
+**Module-specific types stay in modules:**
+
+- Integration types (`@/lib/integrations/core/types`) - framework-specific
+- Drizzle-inferred types (`@/lib/api/types`) - tightly coupled to schema
+- Component prop types - stay with components
+- Internal utility types - stay in their modules
+
+**Import from centralized types:**
+
+```typescript
+import type { SessionData, AuthResult } from "@/types/auth";
+import type { UserListFilters, UpdateUserInput } from "@/types/api";
+import type { RouteConfig, ProtectedRoute } from "@/types/routes";
+import type { EmailOptions } from "@/types/email";
+```
+
+## Constants Organization (TLDR)
+
+**All major constants are centralized in `src/lib/utils/constants.ts`:**
+
+- `USER_ROLES`, `PERMISSIONS` - User and permission constants
+- `HTTP_STATUS`, `API_ERROR_CODES` - API and HTTP constants
+- `QUERY_CACHE` - TanStack Query cache time constants (`STALE_TIME_SHORT`, `STALE_TIME_DEFAULT`, `STALE_TIME_LONG`, `GC_TIME_DEFAULT`)
+- `RATE_LIMIT` - API rate limit defaults (`DEFAULT_TIME_WINDOW_MS`, `DEFAULT_MAX_REQUESTS`)
+- `INTEGRATION_STATUSES` - Integration account status values
+- `PAGINATION` - Pagination defaults
+- `VALIDATION_PATTERNS` - Regex patterns for validation
+- `MOBILE_BREAKPOINT`, `DATE_FORMATS` - UI/display constants
+
+**Backward compatibility:** Original locations re-export from centralized constants where applicable.
+
+**Module-specific constants stay in modules:**
+
+- App config (`@/lib/config/app.ts`) - Application-specific configuration
+- Query keys factory (`@/lib/api/query-keys.ts`) - TanStack Query factory pattern
+- Integration labels (`@/lib/integrations/core/constants.ts`) - UI-specific labels
+- Observability patterns (`@/lib/observability/server.ts`) - Module-specific regex
+- Route config (`@/lib/routes/config.ts`) - Route definitions
+
+**Import from centralized constants:**
+
+```typescript
+import { QUERY_CACHE, API_ERROR_CODES, RATE_LIMIT } from "@/lib/utils/constants";
+
+// Use in hooks
+staleTime: QUERY_CACHE.STALE_TIME_SHORT
+
+// Use in API code
+if (error.code === API_ERROR_CODES.UNAUTHORIZED) { ... }
+```
+
 ## Architecture Rules
 
 - **Module boundaries**: Clear separation between client/server code

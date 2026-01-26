@@ -26,6 +26,7 @@ import {
   updateUser,
 } from "@/lib/api/admin";
 import { queryKeys } from "@/lib/api/query-keys";
+import { QUERY_CACHE } from "@/lib/utils/constants";
 
 // ============================================================================
 // Admin Hooks with Suspense
@@ -45,7 +46,7 @@ export function useUsersSuspense(filters?: UserListFilters) {
   return useSuspenseQuery({
     queryKey: queryKeys.users.list(filters),
     queryFn: () => fetchUsers(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -53,7 +54,7 @@ export function useUserSuspense(userId: string) {
   return useSuspenseQuery({
     queryKey: queryKeys.users.detail(userId),
     queryFn: () => fetchUserById(userId),
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -98,7 +99,7 @@ export function useSessionsSuspense(filters?: SessionListFilters) {
   return useSuspenseQuery({
     queryKey: queryKeys.sessions.list(filters),
     queryFn: () => fetchSessions(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -128,7 +129,7 @@ export function useAdminStatsSuspense() {
   return useSuspenseQuery({
     queryKey: queryKeys.admin.stats(),
     queryFn: fetchAdminStats,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -139,17 +140,17 @@ export function useAdminDashboardSuspense() {
       {
         queryKey: queryKeys.admin.stats(),
         queryFn: fetchAdminStats,
-        staleTime: 60 * 1000,
+        staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
       },
       {
         queryKey: queryKeys.users.list({ limit: 50 }),
         queryFn: () => fetchUsers({ limit: 50 }),
-        staleTime: 30 * 1000,
+        staleTime: QUERY_CACHE.STALE_TIME_SHORT,
       },
       {
         queryKey: queryKeys.sessions.list({ limit: 100 }),
         queryFn: () => fetchSessions({ limit: 100 }),
-        staleTime: 30 * 1000,
+        staleTime: QUERY_CACHE.STALE_TIME_SHORT,
       },
     ],
   });
@@ -165,7 +166,7 @@ export function useAdminApiKeysSuspense(filters?: {
   return useSuspenseQuery({
     queryKey: queryKeys.apiKeys.list(filters?.userId),
     queryFn: () => fetchApiKeys(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -173,7 +174,7 @@ export function useAdminApiKeySuspense(keyId: string) {
   return useSuspenseQuery({
     queryKey: queryKeys.apiKeys.detail(keyId),
     queryFn: () => fetchApiKeyById(keyId),
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -187,7 +188,7 @@ export function useAdminOAuthClientsSuspense(filters?: {
   return useSuspenseQuery({
     queryKey: queryKeys.oauthClients.list(filters),
     queryFn: () => fetchOAuthClients(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -195,6 +196,6 @@ export function useAdminOAuthClientSuspense(clientId: string) {
   return useSuspenseQuery({
     queryKey: queryKeys.oauthClients.detail(clientId),
     queryFn: () => fetchOAuthClientById(clientId),
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }

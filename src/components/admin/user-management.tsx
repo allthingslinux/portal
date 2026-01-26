@@ -16,6 +16,8 @@ import {
   useUnbanUser,
   useUsers,
 } from "@/hooks";
+import type { User } from "@/lib/api/types";
+import type { UserListResponse } from "@/types/api";
 import { DataTable } from "./data-table";
 import { createUserColumns } from "./user-columns";
 
@@ -44,7 +46,7 @@ export function UserManagement() {
   );
 
   // Get users data
-  const users = data?.users ?? [];
+  const users: User[] = (data as UserListResponse<User> | undefined)?.users ?? [];
 
   if (error) {
     return (
@@ -73,7 +75,7 @@ export function UserManagement() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <DataTable
+        <DataTable<User, unknown>
           columns={columns}
           data={users}
           searchKey="email"

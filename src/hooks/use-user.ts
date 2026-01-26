@@ -9,6 +9,7 @@ import {
   fetchMySessions,
   updateCurrentUser,
 } from "@/lib/api/user";
+import { QUERY_CACHE } from "@/lib/utils/constants";
 
 // ============================================================================
 // User Hooks
@@ -22,7 +23,7 @@ export function useCurrentUser() {
   return useQuery({
     queryKey: queryKeys.users.current(),
     queryFn: fetchCurrentUser,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -53,6 +54,6 @@ export function useMySessions(filters?: { active?: boolean }) {
   return useQuery({
     queryKey: [...queryKeys.sessions.current(), { filters }],
     queryFn: () => fetchMySessions(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }

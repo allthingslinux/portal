@@ -13,6 +13,7 @@ import {
   fetchMySessions,
   updateCurrentUser,
 } from "@/lib/api/user";
+import { QUERY_CACHE } from "@/lib/utils/constants";
 
 // ============================================================================
 // User Hooks with Suspense
@@ -34,7 +35,7 @@ export function useCurrentUserSuspense() {
   return useSuspenseQuery({
     queryKey: queryKeys.users.current(),
     queryFn: fetchCurrentUser,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -67,6 +68,6 @@ export function useMySessionsSuspense(filters?: { active?: boolean }) {
   return useSuspenseQuery({
     queryKey: [...queryKeys.sessions.current(), { filters }],
     queryFn: () => fetchMySessions(filters),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }

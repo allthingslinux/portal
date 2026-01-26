@@ -65,20 +65,16 @@ export type HTTPStatusCode =
   | 500
   | 503;
 
-/**
- * Common API error codes
- */
-export const API_ERROR_CODES = {
-  UNAUTHORIZED: "UNAUTHORIZED",
-  FORBIDDEN: "FORBIDDEN",
-  NOT_FOUND: "NOT_FOUND",
-  VALIDATION_ERROR: "VALIDATION_ERROR",
-  INTERNAL_ERROR: "INTERNAL_ERROR",
-  RATE_LIMIT_EXCEEDED: "RATE_LIMIT_EXCEEDED",
-} as const;
+import type { APIErrorCode as APIErrorCodeType } from "@/lib/utils/constants";
 
-export type APIErrorCode =
-  (typeof API_ERROR_CODES)[keyof typeof API_ERROR_CODES];
+/**
+ * API error code type
+ * Re-exported from constants for convenience
+ */
+export type APIErrorCode = APIErrorCodeType;
+
+// Re-export constant for backward compatibility
+export { API_ERROR_CODES } from "@/lib/utils/constants";
 
 /**
  * Extended error response with code
@@ -102,4 +98,159 @@ export interface ListQueryParams {
  */
 export interface FilteredListQueryParams extends ListQueryParams {
   [key: string]: string | number | undefined;
+}
+
+// ============================================================================
+// Filter Types
+// ============================================================================
+
+/**
+ * Filter parameters for user list endpoints
+ */
+export interface UserListFilters {
+  role?: string;
+  banned?: boolean;
+  search?: string;
+  limit?: number;
+  offset?: number;
+}
+
+/**
+ * Filter parameters for session list endpoints
+ */
+export interface SessionListFilters {
+  userId?: string;
+  active?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+/**
+ * Filter parameters for API key list endpoints
+ */
+export interface ApiKeyListFilters {
+  userId?: string;
+  enabled?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+/**
+ * Filter parameters for OAuth client list endpoints
+ */
+export interface OAuthClientListFilters {
+  userId?: string;
+  disabled?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+// ============================================================================
+// Input Types
+// ============================================================================
+
+/**
+ * Input for updating a user
+ */
+export interface UpdateUserInput {
+  name?: string;
+  email?: string;
+  role?: string;
+  banned?: boolean;
+  banReason?: string | null;
+  banExpires?: string | null;
+}
+
+/**
+ * Input for creating an API key
+ */
+export interface CreateApiKeyInput {
+  name?: string;
+  prefix?: string;
+  expiresAt?: string;
+  permissions?: string;
+  metadata?: string;
+}
+
+/**
+ * Input for updating an API key
+ */
+export interface UpdateApiKeyInput {
+  name?: string;
+  enabled?: boolean;
+  rateLimitEnabled?: boolean;
+  rateLimitMax?: number;
+  rateLimitTimeWindow?: number;
+}
+
+// ============================================================================
+// Response Types
+// ============================================================================
+
+/**
+ * Pagination metadata for list responses
+ */
+export interface ListPaginationMeta {
+  total: number;
+  limit: number;
+  offset: number;
+  hasMore: boolean;
+}
+
+/**
+ * User list response
+ * Note: User type is defined in src/lib/api/types.ts as it uses Drizzle inference
+ */
+export interface UserListResponse<TUser = unknown> {
+  users: TUser[];
+  pagination: ListPaginationMeta;
+}
+
+/**
+ * Session list response
+ * Note: Session type is defined in src/lib/api/types.ts as it uses Drizzle inference
+ */
+export interface SessionListResponse<TSession = unknown> {
+  sessions: TSession[];
+}
+
+/**
+ * API key list response
+ * Note: ApiKey type is defined in src/lib/api/types.ts as it uses Drizzle inference
+ */
+export interface ApiKeyListResponse<TApiKey = unknown> {
+  apiKeys: TApiKey[];
+}
+
+/**
+ * OAuth client list response
+ * Note: OAuthClient type is defined in src/lib/api/types.ts as it uses Drizzle inference
+ */
+export interface OAuthClientListResponse<TOAuthClient = unknown> {
+  clients: TOAuthClient[];
+}
+
+/**
+ * Admin statistics response
+ */
+export interface AdminStats {
+  users: {
+    total: number;
+    admins: number;
+    staff: number;
+    banned: number;
+    regular: number;
+  };
+  sessions: {
+    total: number;
+    active: number;
+  };
+  apiKeys: {
+    total: number;
+    enabled: number;
+  };
+  oauthClients: {
+    total: number;
+    disabled: number;
+  };
 }

@@ -11,6 +11,7 @@ import {
   updateIntegrationAccount,
 } from "@/lib/api/integrations";
 import { queryKeys } from "@/lib/api/query-keys";
+import { QUERY_CACHE } from "@/lib/utils/constants";
 
 /**
  * Fetch available integrations.
@@ -19,7 +20,7 @@ export function useIntegrations() {
   return useQuery({
     queryKey: queryKeys.integrations.list(),
     queryFn: fetchIntegrations,
-    staleTime: 60 * 1000,
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -31,7 +32,7 @@ export function useIntegrationAccount<TAccount>(integrationId: string) {
     queryKey: queryKeys.integrations.accounts.current(integrationId),
     queryFn: () => fetchIntegrationAccount<TAccount>(integrationId),
     enabled: !!integrationId,
-    staleTime: 30 * 1000,
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -46,7 +47,7 @@ export function useIntegrationAccountById<TAccount>(
     queryKey: queryKeys.integrations.accounts.detail(integrationId, id),
     queryFn: () => fetchIntegrationAccountById<TAccount>(integrationId, id),
     enabled: !!integrationId && !!id,
-    staleTime: 60 * 1000,
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 

@@ -1,17 +1,10 @@
 import type { RouteTranslationResolver } from "./i18n";
 import { getTranslatedRouteConfig } from "./i18n";
-import type { Permission, ProtectedRoute, RouteConfig } from "./types";
+import type { ProtectedRoute, RouteConfig } from "@/types/routes";
+import type { Permission, UserPermissions } from "@/types/auth";
 
-/**
- * User permissions interface
- * Extend this based on your permission system
- */
-export interface UserPermissions {
-  canViewAdmin?: boolean;
-  canViewStaff?: boolean;
-  canViewAnalytics?: boolean;
-  [key: string]: boolean | undefined;
-}
+// Re-export for backward compatibility
+export type { Permission, UserPermissions } from "@/types/auth";
 
 /**
  * Check if user has required permission

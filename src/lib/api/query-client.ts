@@ -4,6 +4,8 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 
+import { QUERY_CACHE } from "@/lib/utils/constants";
+
 /**
  * Create a new QueryClient instance with default options for SSR
  * This configuration supports streaming with pending queries
@@ -14,8 +16,8 @@ function makeQueryClient() {
       queries: {
         // With SSR, we usually want to set some default staleTime
         // above 0 to avoid refetching immediately on the client
-        staleTime: 60 * 1000, // 1 minute
-        gcTime: 5 * 60 * 1000, // 5 minutes (default)
+        staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
+        gcTime: QUERY_CACHE.GC_TIME_DEFAULT,
         retry: 0, // No retries by default
         // Refetch on window focus is good for keeping data fresh
         refetchOnWindowFocus: true,

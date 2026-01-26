@@ -1,11 +1,9 @@
 import type { RouteTranslationResolver } from "./i18n";
 import { getTranslatedRouteConfig } from "./i18n";
-import type { ProtectedRoute, PublicRoute, RouteConfig } from "./types";
+import type { ProtectedRoute, PublicRoute, RouteConfig, BreadcrumbItem } from "@/types/routes";
 
-export interface BreadcrumbItem {
-  label: string;
-  href?: string;
-}
+// Re-export for backward compatibility
+export type { BreadcrumbItem } from "@/types/routes";
 
 /**
  * Find route by path in config

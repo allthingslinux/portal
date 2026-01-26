@@ -10,8 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useDeleteSession, useSessions } from "@/hooks/use-admin";
+import type { Session } from "@/lib/api/types";
 import { DataTable } from "./data-table";
 import { createSessionColumns } from "./session-columns";
+import type { SessionListResponse } from "@/types/api";
 
 export function SessionManagement() {
   const { data, error } = useSessions();
@@ -27,7 +29,8 @@ export function SessionManagement() {
   );
 
   // Get sessions data
-  const sessions = data?.sessions ?? [];
+  const sessions: Session[] =
+    (data as SessionListResponse<Session> | undefined)?.sessions ?? [];
 
   if (error) {
     return (
@@ -56,7 +59,7 @@ export function SessionManagement() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <DataTable
+        <DataTable<Session, unknown>
           columns={columns}
           data={sessions}
           searchKey="userId"

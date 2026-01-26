@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { CreateApiKeyInput, UpdateApiKeyInput } from "@/lib/api/types";
 import { authClient } from "@/lib/auth/client";
+import { QUERY_CACHE } from "@/lib/utils/constants";
 
 // ============================================================================
 // API Key Hooks (User-facing)
@@ -25,7 +26,7 @@ export function useApiKeys() {
       }
       return result.data ?? [];
     },
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -44,7 +45,7 @@ export function useApiKey(keyId: string) {
       return result.data ?? null;
     },
     enabled: !!keyId,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 

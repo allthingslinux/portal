@@ -25,6 +25,9 @@ export const apikey = pgTable(
     lastRefillAt: timestamp("last_refill_at"), // Optional: The date and time when the key was last refilled
     enabled: boolean("enabled").default(true), // Whether the API key is enabled
     rateLimitEnabled: boolean("rate_limit_enabled").default(true), // Whether the API key has rate limiting enabled
+    // Rate limit defaults reference RATE_LIMIT constants from @/lib/utils/constants
+    // DEFAULT_TIME_WINDOW_MS: 86_400_000 (1 day)
+    // DEFAULT_MAX_REQUESTS: 10
     rateLimitTimeWindow: integer("rate_limit_time_window").default(86_400_000), // Optional: The time window in milliseconds for the rate limit
     rateLimitMax: integer("rate_limit_max").default(10), // Optional: Maximum number of requests allowed within the time window
     requestCount: integer("request_count").default(0), // The number of requests made within the rate limit time window

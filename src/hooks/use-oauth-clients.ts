@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/lib/api/query-keys";
 import { authClient } from "@/lib/auth/client";
+import { QUERY_CACHE } from "@/lib/utils/constants";
 
 // ============================================================================
 // OAuth Client Hooks (User-facing)
@@ -24,7 +25,7 @@ export function useOAuthClients() {
       }
       return result.data ?? [];
     },
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 
@@ -44,7 +45,7 @@ export function useOAuthClient(clientId: string) {
       return result.data ?? null;
     },
     enabled: !!clientId,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 
@@ -64,7 +65,7 @@ export function useOAuthClientPublic(clientId: string) {
       return result.data ?? null;
     },
     enabled: !!clientId,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
 }
 

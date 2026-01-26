@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { getUserRole, isAdmin, isAdminOrStaff } from "@/lib/auth/check-role";
 import { auth } from "@/auth";
+import type { SessionData } from "@/types/auth";
 
 // ============================================================================
 // Data Access Layer (DAL)
@@ -19,12 +20,8 @@ import { auth } from "@/auth";
 // - Proper error handling and redirects
 // - Security by verifying sessions from the database (not just cookies)
 
-export interface SessionData {
-  isAuth: true;
-  userId: string;
-  session: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
-  role?: string;
-}
+// Re-export for backward compatibility
+export type { SessionData } from "@/types/auth";
 
 /**
  * Verify user session and return session data
