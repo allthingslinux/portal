@@ -1,0 +1,30 @@
+{
+  "branches": ["main"],
+  "tagFormat": "v${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["CHANGELOG.md", "package.json"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "npx @sentry/cli releases new ${nextRelease.version} || true",
+        "publishCmd": "npx @sentry/cli releases finalize ${nextRelease.version} && npx @sentry/cli releases set-commits ${nextRelease.version} --auto || true"
+      }
+    ],
+    "@semantic-release/github",
+    "semantic-release-major-tag"
+  ]
+}
