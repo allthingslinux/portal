@@ -16,7 +16,8 @@ export async function GET(
 ) {
   try {
     await requireAdminOrStaff(request);
-    const { id } = await ctx.params;
+    const params = await ctx.params;
+    const id = typeof params.id === "string" ? params.id : params.id[0];
 
     // Fetch OAuth client with user information
     // Note: id here is the database id, not clientId
@@ -62,7 +63,8 @@ export async function DELETE(
 ) {
   try {
     await requireAdminOrStaff(request);
-    const { id } = await ctx.params;
+    const params = await ctx.params;
+    const id = typeof params.id === "string" ? params.id : params.id[0];
 
     const [deleted] = await db
       .delete(oauthClient)

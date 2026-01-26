@@ -27,6 +27,15 @@ import { schema } from "./schema";
 
 const env = keys();
 
+// Validate DATABASE_URL is present at runtime
+// It's optional during build but required when the database is actually used
+if (!env.DATABASE_URL) {
+  throw new Error(
+    "DATABASE_URL environment variable is required but not set. " +
+      "Please configure DATABASE_URL in your environment variables."
+  );
+}
+
 // Pool configuration options
 // You can specify any property from node-postgres connection options
 // See: https://node-postgres.com/features/connecting

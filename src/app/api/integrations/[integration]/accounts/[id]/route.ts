@@ -17,7 +17,12 @@ export async function GET(
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { integration: integrationId, id } = await ctx.params;
+    const params = await ctx.params;
+    const integrationId =
+      typeof params.integration === "string"
+        ? params.integration
+        : params.integration[0];
+    const id = typeof params.id === "string" ? params.id : params.id[0];
 
     registerIntegrations();
     const integration = getIntegrationRegistry().get(integrationId);
@@ -66,7 +71,12 @@ export async function PATCH(
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { integration: integrationId, id } = await ctx.params;
+    const params = await ctx.params;
+    const integrationId =
+      typeof params.integration === "string"
+        ? params.integration
+        : params.integration[0];
+    const id = typeof params.id === "string" ? params.id : params.id[0];
 
     registerIntegrations();
     const integration = getIntegrationRegistry().get(integrationId);
@@ -135,7 +145,12 @@ export async function DELETE(
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { integration: integrationId, id } = await ctx.params;
+    const params = await ctx.params;
+    const integrationId =
+      typeof params.integration === "string"
+        ? params.integration
+        : params.integration[0];
+    const id = typeof params.id === "string" ? params.id : params.id[0];
 
     registerIntegrations();
     const integration = getIntegrationRegistry().get(integrationId);

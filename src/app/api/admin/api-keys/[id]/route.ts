@@ -16,7 +16,8 @@ export async function GET(
 ) {
   try {
     await requireAdminOrStaff(request);
-    const { id } = await ctx.params;
+    const params = await ctx.params;
+    const id = typeof params.id === "string" ? params.id : params.id[0];
 
     // Fetch API key with user information
     const [apiKeyData] = await db
@@ -58,7 +59,8 @@ export async function DELETE(
 ) {
   try {
     await requireAdminOrStaff(request);
-    const { id } = await ctx.params;
+    const params = await ctx.params;
+    const id = typeof params.id === "string" ? params.id : params.id[0];
 
     const [deleted] = await db
       .delete(apikey)

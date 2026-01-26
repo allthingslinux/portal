@@ -17,7 +17,11 @@ export async function GET(
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { integration: integrationId } = await ctx.params;
+    const params = await ctx.params;
+    const integrationId =
+      typeof params.integration === "string"
+        ? params.integration
+        : params.integration[0];
 
     registerIntegrations();
     const integration = getIntegrationRegistry().get(integrationId);
@@ -54,7 +58,11 @@ export async function POST(
 ) {
   try {
     const { userId } = await requireAuth(request);
-    const { integration: integrationId } = await ctx.params;
+    const params = await ctx.params;
+    const integrationId =
+      typeof params.integration === "string"
+        ? params.integration
+        : params.integration[0];
 
     registerIntegrations();
     const integration = getIntegrationRegistry().get(integrationId);

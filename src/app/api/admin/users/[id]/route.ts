@@ -16,7 +16,8 @@ export async function GET(
 ) {
   try {
     await requireAdminOrStaff(request);
-    const { id } = await ctx.params;
+    const params = await ctx.params;
+    const id = typeof params.id === "string" ? params.id : params.id[0];
 
     const [userData] = await db
       .select()
@@ -43,7 +44,8 @@ export async function PATCH(
 ) {
   try {
     await requireAdminOrStaff(request);
-    const { id } = await ctx.params;
+    const params = await ctx.params;
+    const id = typeof params.id === "string" ? params.id : params.id[0];
     const body = await request.json();
 
     const [updated] = await db
@@ -79,7 +81,8 @@ export async function DELETE(
 ) {
   try {
     await requireAdminOrStaff(request);
-    const { id } = await ctx.params;
+    const params = await ctx.params;
+    const id = typeof params.id === "string" ? params.id : params.id[0];
 
     await cleanupIntegrationAccounts(id);
     await db.delete(user).where(eq(user.id, id));
