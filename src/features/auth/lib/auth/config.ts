@@ -703,8 +703,8 @@ const advanced = {
   //   // Disable IP tracking (default: false)
   //   disableIpTracking: false,
   // },
-  // Use secure cookies (HTTPS only) (default: false)
-  // useSecureCookies: true,
+  // Use secure cookies (HTTPS only) - enabled in production
+  useSecureCookies: process.env.NODE_ENV === "production",
   // Disable CSRF check (⚠️ security risk - not recommended)
   // disableCSRFCheck: false,
   // Cross-subdomain cookie configuration
@@ -881,18 +881,14 @@ const telemetry = {
 
 const trustedOrigins = [
   "http://localhost:3000",
-  // Add production origins
+  // Add production origins from environment variable
+  ...(env.BETTER_AUTH_URL?.startsWith("https://")
+    ? [env.BETTER_AUTH_URL]
+    : []),
+  // Add additional production origins as needed
   // "https://portal.example.com",
   // Wildcard support for subdomains
   // "https://*.example.com",
-  // Dynamic origins (function)
-  // async (request) => {
-  //   if (!request) {
-  //     return ["https://my-frontend.com"];
-  //   }
-  //   // Dynamic logic based on request
-  //   return ["https://dynamic-origin.com"];
-  // },
 ];
 
 // ============================================================================
