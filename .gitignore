@@ -42,3 +42,4 @@ references
 
 .cursor/plans
 .cursor/hooks/logs/
+.pnpm-store
