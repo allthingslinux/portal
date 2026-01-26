@@ -1,5 +1,5 @@
 {
-  "name": "portal-v2",
+  "name": "portal",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
     "dev:turbo": "next dev --turbopack",
     "dev:https": "next dev --experimental-https",
     "scan": "NEXT_PUBLIC_REACT_SCAN_ENABLED=true next dev & pnpm dlx react-scan@latest localhost:3000",
-    "build": "next build",
+    "build": "next typegen && next build",
     "build:debug": "next build --debug",
     "build:profile": "next build --profile",
     "build:prerender-debug": "next build --debug-prerender",
