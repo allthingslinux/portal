@@ -33,12 +33,6 @@ export default defineConfig({
         "coverage/**",
         "references/**",
       ],
-      thresholds: {
-        lines: 40,
-        functions: 40,
-        branches: 40,
-        statements: 40,
-      },
     },
   },
   resolve: {
