@@ -17,10 +17,7 @@
     },
     "shadcn": {
       "command": "npx",
-      "args": [
-        "shadcn@latest",
-        "mcp"
-      ]
+      "args": ["shadcn@latest", "mcp"]
     },
     "betterauth": {
       "url": "https://mcp.chonkie.ai/better-auth/better-auth-builder/mcp",
@@ -28,18 +25,11 @@
     },
     "ultracite": {
       "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://www.ultracite.ai/api/mcp/mcp"
-      ]
+      "args": ["-y", "mcp-remote", "https://www.ultracite.ai/api/mcp/mcp"]
     },
     "next-devtools": {
       "command": "npx",
-      "args": [
-        "-y",
-        "next-devtools-mcp@latest"
-      ]
+      "args": ["-y", "next-devtools-mcp@latest"]
     },
     "sentry": {
       "url": "https://mcp.sentry.dev/mcp/allthingslinux/portal"
