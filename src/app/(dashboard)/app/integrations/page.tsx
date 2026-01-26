@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { PageHeader } from "@/components/layout/page/page-header";
-import { getServerQueryClient } from "@/lib/api/hydration";
-import { verifySession } from "@/lib/auth/dal";
-import { getServerRouteResolver, routeConfig } from "@/lib/routes";
-import { getRouteMetadata } from "@/lib/seo";
 import { IntegrationsContent } from "./integrations-content";
+import { verifySession } from "@/features/auth/lib/auth/dal";
+import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
+import { getServerQueryClient } from "@/shared/api/hydration";
+import { getRouteMetadata } from "@/shared/seo";
 
 // Metadata is automatically generated from route config
 export async function generateMetadata(): Promise<Metadata> {

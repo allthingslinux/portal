@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { keys } from "@/lib/observability/keys";
+import { keys } from "@/shared/observability/keys";
 
 /**
  * Sentry Tunnel Route Handler

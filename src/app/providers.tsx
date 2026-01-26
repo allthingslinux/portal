@@ -1,6 +1,6 @@
 "use client";
 
-import { initializeSentry } from "@/lib/observability/client";
+import { initializeSentry } from "@/shared/observability/client";
 
 // Initialize Sentry on client-side
 initializeSentry();
@@ -18,9 +18,10 @@ import { ThemeProvider } from "next-themes";
 import { CommandMenu } from "@/components/command-menu";
 import { ReactQueryDevtools } from "@/components/dev-tools";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { getQueryClient } from "@/lib/api/query-client";
-import { useBetterAuthUILocalization } from "@/lib/auth/localization";
-import { authClient } from "@/auth/client";
+import { authClient } from "@/features/auth/lib/auth/client";
+import { useBetterAuthUILocalization } from "@/features/auth/lib/auth/localization";
+import { SessionProvider } from "@/features/auth/lib/auth/session-context";
+import { getQueryClient } from "@/shared/api/query-client";
 
 // Note: We use our own QueryClientProvider for general data fetching hooks.
 // AuthQueryProvider is still needed for Better Auth's TanStack Query integration.
@@ -109,7 +110,11 @@ export function Providers({ children }: { children: ReactNode }) {
     >
       {/* QueryClientProvider for general data fetching hooks */}
       <QueryClientProvider client={queryClient}>
-        {/* AuthQueryProvider for Better Auth's TanStack Query integration */}
+        {/* AuthQueryProvider for Better Auth's TanStack Query integration
+            Note: In development with React Strict Mode, you may see multiple
+            /api/auth/get-session requests on initial load. This is expected
+            due to double mounting. TanStack Query automatically deduplicates
+            these requests, and in production this won't occur. */}
         <ErrorBoundary>
           <AuthQueryProvider>
             <AuthUIProviderTanstack
@@ -164,9 +169,12 @@ export function Providers({ children }: { children: ReactNode }) {
               //   fields: ["company"], // Include additional fields in settings
               // }}
             >
-              {children}
-              <Toaster />
-              <CommandMenu />
+              {/* SessionProvider consolidates session usage to a single query */}
+              <SessionProvider>
+                {children}
+                <Toaster />
+                <CommandMenu />
+              </SessionProvider>
             </AuthUIProviderTanstack>
             {/* React Query Devtools - Only included in development builds */}
             <ReactQueryDevtools

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { serverClient } from "../../../lib/auth";
-import { BASE_URL } from "../../../lib/config";
+import { serverClient } from "@/features/auth/lib/auth/server-client";
+import { BASE_URL } from "@/shared/config/app";
 
 // Force dynamic rendering to avoid database access during build
 export const dynamic = "force-dynamic";

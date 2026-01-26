@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/app-layout";
-import { isAdminOrStaff } from "@/lib/auth/check-role";
-import { verifySession } from "@/lib/auth/dal";
+import { isAdminOrStaff } from "@/features/auth/lib/auth/check-role";
+import { verifySession } from "@/features/auth/lib/auth/dal";
 
 export default async function DashboardLayout({
   children,

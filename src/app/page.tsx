@@ -4,7 +4,7 @@ import { SignedIn, SignedOut, UserButton } from "@daveyplate/better-auth-ui";
 import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
-import { createPageMetadata } from "@/lib/seo";
+import { createPageMetadata } from "@/shared/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();

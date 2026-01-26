@@ -1,10 +1,10 @@
 import type { NextRequest } from "next/server";
 import { and, desc, eq } from "drizzle-orm";
 
-import { handleAPIError, requireAdminOrStaff } from "@/lib/api/utils";
-import { db } from "@/lib/db";
-import { apikey } from "@/lib/db/schema/api-keys";
-import { user } from "@/lib/db/schema/auth";
+import { handleAPIError, requireAdminOrStaff } from "@/shared/api/utils";
+import { db } from "@/shared/db";
+import { apikey } from "@/shared/db/schema/api-keys";
+import { user } from "@/shared/db/schema/auth";
 
 // Route handlers are dynamic by default, but we explicitly mark them as such
 // since they access database and request headers

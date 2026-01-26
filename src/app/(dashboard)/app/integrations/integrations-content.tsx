@@ -6,10 +6,10 @@ import { captureException, startSpan } from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { IntegrationManagement } from "@/components/integrations/integration-management";
-import { useIntegrations } from "@/hooks/use-integration";
-import { integrationStatusLabels } from "@/lib/integrations/core/constants";
-import type { XmppAccount } from "@/lib/integrations/xmpp/types";
+import { IntegrationManagement } from "@/features/integrations/components/integrations/integration-management";
+import { useIntegrations } from "@/features/integrations/hooks/use-integration";
+import { integrationStatusLabels } from "@/features/integrations/lib/integrations/core/constants";
+import type { XmppAccount } from "@/features/integrations/lib/integrations/xmpp/types";
 
 // ============================================================================
 // Integrations Content Component

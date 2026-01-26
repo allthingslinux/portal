@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { AdminDashboard } from "@/components/admin/admin-dashboard";
-import { getServerQueryClient } from "@/lib/api/hydration";
-import { queryKeys } from "@/lib/api/query-keys";
+import { AdminDashboard } from "@/features/admin/components/admin/admin-dashboard";
+import { verifyAdminOrStaffSession } from "@/features/auth/lib/auth/dal";
+import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
+import { getServerQueryClient } from "@/shared/api/hydration";
+import { queryKeys } from "@/shared/api/query-keys";
 import {
   fetchAdminStatsServer,
   fetchSessionsServer,
   fetchUsersServer,
-} from "@/lib/api/server-queries";
-import { verifyAdminOrStaffSession } from "@/lib/auth/dal";
-import { getServerRouteResolver, routeConfig } from "@/lib/routes";
-import { getRouteMetadata } from "@/lib/seo";
+} from "@/shared/api/server-queries";
+import { getRouteMetadata } from "@/shared/seo";
 
 // Metadata is automatically generated from route config
 export async function generateMetadata(): Promise<Metadata> {

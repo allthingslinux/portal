@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { toNextJsHandler } from "better-auth/next-js";
 
-import { auth } from "@/auth";
+import { auth } from "@/features/auth/lib/auth";
 
 // Route handlers are dynamic by default, but we explicitly mark them as such
 // since they access request headers and handle authentication

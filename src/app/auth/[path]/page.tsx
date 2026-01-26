@@ -5,7 +5,7 @@ import { AuthView } from "@daveyplate/better-auth-ui";
 import { authViewPaths } from "@daveyplate/better-auth-ui/server";
 import { getMessages, getTranslations } from "next-intl/server";
 
-import { createPageMetadata } from "@/lib/seo";
+import { createPageMetadata } from "@/shared/seo";
 
 // ============================================================================
 // Metadata Generation

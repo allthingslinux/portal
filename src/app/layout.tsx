@@ -8,8 +8,8 @@ import { WebVitalsReporter } from "./web-vitals";
 
 import "@/styles/globals.css";
 
-import { createPageMetadata } from "@/lib/seo/metadata";
 import { geistMono, geistSans, inter } from "./fonts";
+import { createPageMetadata } from "@/shared/seo/metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
   // Add Sentry trace data for distributed tracing
