@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { serverClient } from "../../../lib/auth";
 import { BASE_URL } from "../../../lib/config";
 
+// Force dynamic rendering to avoid database access during build
+export const dynamic = "force-dynamic";
+
 export async function GET(): Promise<NextResponse> {
   const metadata = await serverClient.getProtectedResourceMetadata({
     resource: BASE_URL,
