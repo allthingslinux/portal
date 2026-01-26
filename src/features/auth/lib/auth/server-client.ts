@@ -1,0 +1,10 @@
+import "server-only";
+
+import { oauthProviderResourceClient } from "@better-auth/oauth-provider/resource-client";
+import { createAuthClient } from "better-auth/client";
+
+import { auth } from "./config";
+
+export const serverClient = createAuthClient({
+  plugins: [oauthProviderResourceClient(auth)],
+});
