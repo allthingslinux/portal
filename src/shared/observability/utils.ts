@@ -65,55 +65,128 @@ interface LogAttributes {
 }
 
 /**
+ * Get environment context that should be included in all logs.
+ * Captured once at module load for performance.
+ */
+const getEnvContext = (): Record<string, string | undefined> => {
+  return {
+    // Deployment info
+    commit_hash:
+      process.env.GIT_COMMIT_SHA ||
+      process.env.COMMIT_SHA ||
+      process.env.GIT_COMMIT,
+    version:
+      process.env.SENTRY_RELEASE ||
+      process.env.SERVICE_VERSION ||
+      process.env.npm_package_version,
+    deployment_id: process.env.DEPLOYMENT_ID,
+    deploy_time: process.env.DEPLOY_TIMESTAMP,
+
+    // Infrastructure
+    service: process.env.SERVICE_NAME || "portal",
+    region: process.env.AWS_REGION || process.env.REGION,
+    availability_zone: process.env.AWS_AVAILABILITY_ZONE,
+    instance_id: process.env.INSTANCE_ID || process.env.HOSTNAME,
+    container_id: process.env.CONTAINER_ID,
+
+    // Runtime
+    node_version: process.version,
+    runtime: process.env.AWS_EXECUTION_ENV || "node",
+    memory_limit_mb: process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE,
+
+    // Environment type
+    environment: process.env.NODE_ENV || process.env.ENVIRONMENT,
+    stage: process.env.STAGE,
+  };
+};
+
+// Capture environment context once at module load
+const envContext = getEnvContext();
+
+/**
+ * Merge attributes with environment context for structured logging.
+ * Environment context is automatically included in all log entries.
+ */
+const enrichWithEnvContext = (attributes?: LogAttributes): LogAttributes => {
+  // Filter out undefined values from env context
+  const filteredEnvContext: Record<string, string> = {};
+  for (const [key, value] of Object.entries(envContext)) {
+    if (value !== undefined) {
+      filteredEnvContext[key] = value;
+    }
+  }
+
+  return {
+    ...filteredEnvContext,
+    ...attributes,
+  };
+};
+
+/**
  * Structured logging using Sentry's logger
  * Provides consistent, queryable logs across all environments
+ *
+ * All logs automatically include environment context (commit hash, version, etc.)
+ * for powerful debugging and analytics.
+ *
+ * @example
+ * ```ts
+ * log.info("User logged in", { userId: "123", email: "user@example.com" });
+ * // Automatically includes: commit_hash, version, service, environment, etc.
+ * ```
  */
 export const log = {
   trace: (message: string, attributes?: LogAttributes) => {
+    const enriched = enrichWithEnvContext(attributes);
     if (sentryLogger) {
-      sentryLogger.trace(message, attributes);
+      sentryLogger.trace(message, enriched);
     } else {
-      console.log("[TRACE]", message, attributes);
+      console.log("[TRACE]", message, enriched);
     }
   },
 
   debug: (message: string, attributes?: LogAttributes) => {
+    const enriched = enrichWithEnvContext(attributes);
     if (sentryLogger) {
-      sentryLogger.debug(message, attributes);
+      sentryLogger.debug(message, enriched);
     } else if (process.env.NODE_ENV === "development") {
-      console.log("[DEBUG]", message, attributes);
+      console.log("[DEBUG]", message, enriched);
     }
   },
 
   info: (message: string, attributes?: LogAttributes) => {
+    const enriched = enrichWithEnvContext(attributes);
     if (sentryLogger) {
-      sentryLogger.info(message, attributes);
+      sentryLogger.info(message, enriched);
     } else {
-      console.info("[INFO]", message, attributes);
+      console.info("[INFO]", message, enriched);
     }
   },
 
   warn: (message: string, attributes?: LogAttributes) => {
+    const enriched = enrichWithEnvContext(attributes);
     if (sentryLogger) {
-      sentryLogger.warn(message, attributes);
+      sentryLogger.warn(message, enriched);
     } else {
-      console.warn("[WARN]", message, attributes);
+      console.warn("[WARN]", message, enriched);
     }
   },
 
   error: (message: string, attributes?: LogAttributes) => {
+    const enriched = enrichWithEnvContext(attributes);
     if (sentryLogger) {
-      sentryLogger.error(message, attributes);
+      sentryLogger.error(message, enriched);
     } else {
-      console.error("[ERROR]", message, attributes);
+      console.error("[ERROR]", message, enriched);
     }
   },
 
   fatal: (message: string, attributes?: LogAttributes) => {
+    const enriched = enrichWithEnvContext(attributes);
     if (sentryLogger) {
-      sentryLogger.fatal(message, attributes);
+      sentryLogger.fatal(message, enriched);
     } else {
-      console.error("[FATAL]", message, attributes);
+      console.error("[FATAL]", message, enriched);
     }
   },
 };

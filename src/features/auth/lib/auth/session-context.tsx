@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { createContext, type ReactNode, useContext, useMemo } from "react";
 
 import { authClient } from "./client";
 
@@ -17,7 +17,9 @@ interface SessionContextValue {
   };
 }
 
-const SessionContext = createContext<SessionContextValue | undefined>(undefined);
+const SessionContext = createContext<SessionContextValue | undefined>(
+  undefined
+);
 
 /**
  * Session Provider Component

@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserAvatar } from "@daveyplate/better-auth-ui";
 
-import { useSession } from "@/features/auth/lib/auth/session-context";
 import { authClient } from "@/features/auth/lib/auth/client";
+import { useSession } from "@/features/auth/lib/auth/session-context";
 import type { FooterAction } from "@/features/routing/lib/routes/types";
 import {
   SidebarMenu,

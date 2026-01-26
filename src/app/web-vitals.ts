@@ -201,7 +201,7 @@ function logWebVitalsMetric(metric: WebVitalsMetric): void {
  * Tracks reported metric IDs to prevent duplicate logging
  * Each metric.id is unique per page load, so this prevents the same metric
  * from being logged multiple times if the callback is somehow called again
- * 
+ *
  * Uses a combination of metric.id and metric.name to handle edge cases where
  * the same metric might be reported multiple times (e.g., React Strict Mode)
  */
@@ -226,13 +226,13 @@ function getMetricKey(metric: WebVitalsMetric): string {
  *
  * This callback is defined outside the component to ensure a stable reference,
  * preventing duplicate reporting as recommended by Next.js documentation.
- * 
+ *
  * Note: In development with React Strict Mode, components mount twice, which can
  * cause metrics to be reported multiple times. The duplicate detection handles this.
  */
 const handleReportWebVitals: ReportWebVitalsCallback = (metric) => {
   const metricKey = getMetricKey(metric);
-  
+
   // Prevent duplicate reporting (handles React Strict Mode double-mounting)
   if (reportedMetricIds.has(metricKey)) {
     // Only log warning in development, and only once per metric
@@ -325,7 +325,7 @@ const handleReportWebVitals: ReportWebVitalsCallback = (metric) => {
  * Web Vitals Reporter Component
  * Uses Next.js built-in useReportWebVitals hook for optimal performance
  * This component should be placed in the root layout to collect metrics across all pages
- * 
+ *
  * Note: In development with React Strict Mode, this component mounts twice,
  * but the duplicate detection in handleReportWebVitals prevents duplicate metrics.
  */
