@@ -2,9 +2,9 @@ import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { usePermissions } from "@/hooks/use-permissions";
-import { authClient } from "@/lib/auth/client";
+import { authClient } from "@/features/auth/lib/auth/client";
 
-vi.mock("@/lib/auth/client", () => ({
+vi.mock("@/features/auth/lib/auth/client", () => ({
   authClient: {
     useSession: vi.fn(),
     admin: {

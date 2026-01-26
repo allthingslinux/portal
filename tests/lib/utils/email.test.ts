@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { sendEmail } from "@/lib/utils/email";
+import { sendEmail } from "@/shared/utils/email";
 
 describe("sendEmail", () => {
   it("should log email details in development", () => {

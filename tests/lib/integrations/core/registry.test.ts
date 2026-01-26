@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { IntegrationRegistry } from "@/lib/integrations/core/registry";
+import { IntegrationRegistry } from "@/features/integrations/lib/integrations/core/registry";
 import type {
   Integration,
   IntegrationPublicInfo,
-} from "@/lib/integrations/core/types";
+} from "@/features/integrations/lib/integrations/core/types";
 
 // Mock integration for testing
 const createMockIntegration = (id: string, enabled = true): Integration => ({

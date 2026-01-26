@@ -7,11 +7,11 @@ vi.mock("@/env", () => ({
 }));
 
 // Mock auth keys and config to prevent server-only env access
-vi.mock("@/lib/auth/keys", () => ({
+vi.mock("@/features/auth/lib/auth/keys", () => ({
   keys: () => ({}),
 }));
 
-vi.mock("@/lib/auth/config", () => ({
+vi.mock("@/features/auth/lib/auth/config", () => ({
   auth: {
     api: {
       getSession: vi.fn(),
@@ -19,7 +19,7 @@ vi.mock("@/lib/auth/config", () => ({
   },
 }));
 
-vi.mock("@/auth", () => ({
+vi.mock("@/features/auth/lib/auth", () => ({
   auth: {
     api: {
       getSession: vi.fn(),
@@ -29,43 +29,43 @@ vi.mock("@/auth", () => ({
 }));
 
 // Mock XMPP integration modules to prevent server-only env access
-vi.mock("@/lib/integrations/xmpp/keys", () => ({
+vi.mock("@/features/integrations/lib/integrations/xmpp/keys", () => ({
   keys: () => ({}),
 }));
 
-vi.mock("@/lib/integrations/xmpp/config", () => ({
+vi.mock("@/features/integrations/lib/integrations/xmpp/config", () => ({
   xmppConfig: {},
   isXmppConfigured: () => false,
   // biome-ignore lint/suspicious/noEmptyBlockStatements: Suppress empty block in tests
   validateXmppConfig: () => {},
 }));
 
-vi.mock("@/lib/integrations/xmpp/client", () => ({
+vi.mock("@/features/integrations/lib/integrations/xmpp/client", () => ({
   checkProsodyAccountExists: vi.fn(),
   createProsodyAccount: vi.fn(),
   deleteProsodyAccount: vi.fn(),
   ProsodyAccountNotFoundError: class extends Error {},
 }));
 
-vi.mock("@/lib/integrations/xmpp", () => ({
+vi.mock("@/features/integrations/lib/integrations/xmpp", () => ({
   registerXmppIntegration: vi.fn(),
 }));
 
-vi.mock("@/lib/integrations", () => ({
+vi.mock("@/features/integrations/lib/integrations", () => ({
   registerIntegrations: vi.fn(),
 }));
 
 // Mock db client and its dependencies before any imports that use them
 // This prevents the relations file from trying to access schema properties
-vi.mock("@/lib/db/client", () => ({
+vi.mock("@/shared/db/client", () => ({
   db: {},
 }));
 
-vi.mock("@/lib/db/relations", () => ({
+vi.mock("@/shared/db/relations", () => ({
   relations: {},
 }));
 
-vi.mock("@/lib/db/schema/auth", () => ({
+vi.mock("@/shared/db/schema/auth", () => ({
   user: {
     id: "id",
     name: "name",
@@ -94,7 +94,7 @@ vi.mock("@/lib/db/schema/auth", () => ({
   },
 }));
 
-vi.mock("@/lib/db/schema/api-keys", () => ({
+vi.mock("@/shared/db/schema/api-keys", () => ({
   apikey: {
     id: "id",
     userId: "userId",
@@ -102,7 +102,7 @@ vi.mock("@/lib/db/schema/api-keys", () => ({
   jwks: {},
 }));
 
-vi.mock("@/lib/db/schema/oauth", () => ({
+vi.mock("@/shared/db/schema/oauth", () => ({
   oauthClient: {
     id: "id",
     clientId: "clientId",
@@ -128,15 +128,15 @@ vi.mock("@/lib/db/schema/oauth", () => ({
   },
 }));
 
-vi.mock("@/lib/db/schema/integrations/base", () => ({
+vi.mock("@/shared/db/schema/integrations/base", () => ({
   integrationAccount: {},
 }));
 
-vi.mock("@/lib/db/schema/xmpp", () => ({
+vi.mock("@/shared/db/schema/xmpp", () => ({
   xmppAccount: {},
 }));
 
-vi.mock("@/lib/db/schema", () => ({
+vi.mock("@/shared/db/schema", () => ({
   schema: {},
 }));
 
@@ -145,7 +145,7 @@ const mockFrom = vi.fn();
 const mockWhere = vi.fn();
 const mockLimit = vi.fn();
 
-vi.mock("@/lib/db", () => ({
+vi.mock("@/shared/db", () => ({
   db: {
     select: () => mockSelect(),
   },
@@ -156,9 +156,11 @@ vi.mock("@/lib/db", () => ({
 const mockRequireAuth = vi.fn();
 const mockHandleAPIError = vi.fn();
 
-vi.mock("@/lib/api/utils", async () => {
+vi.mock("@/shared/api/utils", async () => {
   const actual =
-    await vi.importActual<typeof import("@/lib/api/utils")>("@/lib/api/utils");
+    await vi.importActual<typeof import("@/shared/api/utils")>(
+      "@/shared/api/utils"
+    );
   return {
     ...actual,
     requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
@@ -166,8 +168,8 @@ vi.mock("@/lib/api/utils", async () => {
   };
 });
 
-import { APIError } from "@/lib/api/utils";
 import { GET } from "@/app/api/user/me/route";
+import { APIError } from "@/shared/api/utils";
 
 describe("GET /api/user/me", () => {
   beforeEach(() => {

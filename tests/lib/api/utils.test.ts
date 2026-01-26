@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
 // Mock database and auth before importing utils
-vi.mock("@/lib/db", () => ({
+vi.mock("@/shared/db", () => ({
   db: {},
 }));
 
-vi.mock("@/auth", () => ({
+vi.mock("@/features/auth/lib/auth", () => ({
   auth: {
     api: {
       getSession: vi.fn(),
@@ -13,7 +13,7 @@ vi.mock("@/auth", () => ({
   },
 }));
 
-vi.mock("@/lib/observability", () => ({
+vi.mock("@/shared/observability", () => ({
   captureError: vi.fn(),
   log: {
     error: vi.fn(),
@@ -23,7 +23,7 @@ vi.mock("@/lib/observability", () => ({
   })),
 }));
 
-import { APIError, handleAPIError } from "@/lib/api/utils";
+import { APIError, handleAPIError } from "@/shared/api/utils";
 
 describe("APIError", () => {
   it("should create error with message and status", () => {
@@ -45,7 +45,7 @@ describe("handleAPIError", () => {
     const response = handleAPIError(error);
 
     expect(response.status).toBe(404);
-    return response.json().then((data) => {
+    return response.json().then((data: unknown) => {
       expect(data).toEqual({
         ok: false,
         error: "Not found",
@@ -58,7 +58,7 @@ describe("handleAPIError", () => {
     const response = handleAPIError(error);
 
     expect(response.status).toBe(500);
-    return response.json().then((data) => {
+    return response.json().then((data: unknown) => {
       expect(data).toEqual({
         ok: false,
         error: "Internal server error",
