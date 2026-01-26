@@ -63,21 +63,28 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: Containerfile
+          target: runner
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.env.outputs.tag }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: |
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+            type=gha
+          cache-to: |
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+            type=gha,mode=max
           build-args: |
             NODE_ENV=production
             GIT_COMMIT_SHA=${{ github.sha }}
 
   deploy:
-    name: Deploy to ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'staging' }}
+    name: Deploy
     needs: build
+    if: success()
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
-      name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'staging' }}
+      name: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'staging' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
