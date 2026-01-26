@@ -2,7 +2,7 @@ import "server-only";
 
 import { captureException, captureRequestError } from "@sentry/nextjs";
 
-import { keys } from "@/lib/observability/keys";
+import { keys } from "@/shared/observability/keys";
 
 /**
  * Next.js instrumentation hook

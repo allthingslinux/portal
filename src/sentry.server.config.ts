@@ -4,6 +4,6 @@
  * https://docs.sentry.io/platforms/javascript/guides/nextjs/
  */
 
-import { initializeSentry } from "@/lib/observability/server";
+import { initializeSentry } from "@/shared/observability/server";
 
 initializeSentry();
