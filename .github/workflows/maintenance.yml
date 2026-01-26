@@ -1,0 +1,36 @@
+name: Maintenance
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  todo-to-issue:
+    name: Convert TODOs to Issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - name: TODO to Issue
+        uses: alstr/todo-to-issue-action@v5
+        with:
+          CLOSE_ISSUES: "true"
+          IDENTIFIERS: |
+            [
+              {"name": "TODO", "labels": []},
+              {"name": "FIXME", "labels": ["bug"]},
+              {"name": "XXX", "labels": ["bug"]},
+              {"name": "HACK", "labels": ["technical-debt"]},
+              {"name": "NOTE", "labels": []}
+            ]
+          IGNORE: "node_modules/**,.next/**,dist/**,build/**,coverage/**,.git/**"
+          AUTO_P: "true"
+          ESCAPE: "true"

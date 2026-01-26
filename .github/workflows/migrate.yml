@@ -1,0 +1,73 @@
+name: Database Migration
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to run migrations on"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      dry_run:
+        description: "Dry run (preview SQL without executing)"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    name: Run Database Migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # Need full history for migrations
+
+      - name: Determine compose file
+        id: env
+        run: |
+          ENV="${{ github.event.inputs.environment }}"
+          echo "compose_file=compose.$ENV.yaml" >> $GITHUB_OUTPUT
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+
+      - name: Run database migrations
+        uses: appleboy/ssh-action@v1
+        env:
+          COMPOSE_FILE: ${{ steps.env.outputs.compose_file }}
+          ENVIRONMENT: ${{ steps.env.outputs.environment }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          timeout: 10m
+          envs: COMPOSE_FILE,ENVIRONMENT,DRY_RUN,DATABASE_URL
+          script_path: .github/scripts/migrate.sh
+
+      - name: Migration summary
+        run: |
+          echo "## Migration Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Dry Run: ${{ github.event.inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Compose File: \`${{ steps.env.outputs.compose_file }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+            echo "⚠️ This was a dry run. No migrations were applied." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Migrations have been applied to the database." >> $GITHUB_STEP_SUMMARY
+          fi
