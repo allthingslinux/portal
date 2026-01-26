@@ -7,6 +7,7 @@ initializeSentry();
 
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
+import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthQueryProvider } from "@daveyplate/better-auth-tanstack";
@@ -90,12 +91,13 @@ export function Providers({ children }: { children: ReactNode }) {
 
   // Type-safe wrappers for Better Auth UI compatibility with Next.js typed routes
   // Better Auth UI expects string types, but Next.js 16 typed routes use RouteImpl
+  // Cast non-literal strings to Route type as per Next.js documentation
   const navigate = (href: string) => {
-    router.push(href);
+    router.push(href as Route);
   };
 
   const replace = (href: string) => {
-    router.replace(href);
+    router.replace(href as Route);
   };
 
   return (
