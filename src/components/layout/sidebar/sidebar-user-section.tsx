@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserAvatar } from "@daveyplate/better-auth-ui";
 
-import type { FooterAction } from "@/lib/routes/types";
-import { authClient } from "@/auth/client";
+import { useSession } from "@/features/auth/lib/auth/session-context";
+import { authClient } from "@/features/auth/lib/auth/client";
+import type { FooterAction } from "@/features/routing/lib/routes/types";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -20,7 +21,7 @@ interface SidebarUserSectionProps {
 export function SidebarUserSection({ actions }: SidebarUserSectionProps) {
   const router = useRouter();
   const { state } = useSidebar();
-  const { data: session } = authClient.useSession();
+  const { session } = useSession();
 
   if (!session?.user) {
     return null;

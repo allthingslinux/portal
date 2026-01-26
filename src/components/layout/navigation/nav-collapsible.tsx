@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import type { ProtectedRoute } from "@/lib/routes/types";
+import type { ProtectedRoute } from "@/features/routing/lib/routes/types";
 import {
   Collapsible,
   CollapsibleContent,

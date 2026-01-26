@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import type { RouteTranslationResolver } from "@/lib/routes";
-import { getUIDisplay, routeConfig } from "@/lib/routes";
+import type { RouteTranslationResolver } from "@/features/routing/lib";
+import { getUIDisplay, routeConfig } from "@/features/routing/lib";
 
 interface PageHeaderProps {
   title?: ReactNode;

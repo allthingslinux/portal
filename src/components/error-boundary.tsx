@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { formatError } from "@/lib/utils";
+import { formatError } from "@/shared/utils";
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   // Format error to handle unknown error types

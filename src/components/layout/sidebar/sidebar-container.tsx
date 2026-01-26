@@ -1,11 +1,14 @@
 "use client";
 
 import { usePermissions } from "@/hooks/use-permissions";
-import { useTranslatedRoutes } from "@/hooks/use-translated-routes";
-import { getFooterActions, getNavigationItems } from "@/lib/routes/permissions";
 import { SidebarBrand } from "./sidebar-brand";
 import { SidebarNavigation } from "./sidebar-navigation";
 import { SidebarUserSection } from "./sidebar-user-section";
+import { useTranslatedRoutes } from "@/features/routing/hooks/use-translated-routes";
+import {
+  getFooterActions,
+  getNavigationItems,
+} from "@/features/routing/lib/routes/permissions";
 import {
   Sidebar,
   SidebarContent,

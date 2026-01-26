@@ -1,8 +1,11 @@
 "use client";
 
-import type { NavigationGroup, ProtectedRoute } from "@/lib/routes/types";
 import { NavCollapsible } from "./nav-collapsible";
 import { NavItem } from "./nav-item";
+import type {
+  NavigationGroup,
+  ProtectedRoute,
+} from "@/features/routing/lib/routes/types";
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu } from "@/ui/sidebar";
 
 interface NavGroupProps {

@@ -3,13 +3,13 @@
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+import { BreadcrumbTrail } from "./breadcrumb-trail";
+import { ThemeToggle } from "./theme-toggle";
 import {
   createRouteTranslationResolver,
   generateBreadcrumbs,
   routeConfig,
-} from "@/lib/routes";
-import { BreadcrumbTrail } from "./breadcrumb-trail";
-import { ThemeToggle } from "./theme-toggle";
+} from "@/features/routing/lib";
 import { Separator } from "@/ui/separator";
 import { SidebarTrigger } from "@/ui/sidebar";
 
