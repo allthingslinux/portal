@@ -1,0 +1,94 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+.nyc_output
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+tests
+vitest.config.ts
+vitest.setup.ts
+vitest.server-only-mock.ts
+
+# Next.js
+.next
+out
+build
+dist
+
+# Production
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Misc
+.DS_Store
+*.pem
+.env
+.env*.local
+.env.production
+.env.staging
+
+# Debug
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.cursor
+.husky
+
+# Documentation
+*.md
+docs
+!README.md
+
+# Docker
+Containerfile*
+Dockerfile*
+docker-compose*.yml
+compose.yaml
+.dockerignore
+
+# Database
+drizzle
+*.db
+*.sqlite
+
+# Scripts (keep only what's needed at runtime)
+scripts
+!scripts/seed.ts
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.json
+
+# Linting
+.eslintrc*
+.prettierrc*
+biome.jsonc
+.lintstagedrc.json
+.commitlintrc.json
+
+# Other
+.cache
+.turbo
+.vercel
+.releaserc.json
