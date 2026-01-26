@@ -48,6 +48,11 @@ let nextConfig: NextConfig = {
   // Build Configuration
   // ============================================================================
 
+  // Enable standalone output for Docker deployments
+  // Creates a minimal server.js file with only necessary dependencies
+  // Reduces Docker image size and improves startup time
+  output: "standalone",
+
   // Generate consistent build IDs for multi-container deployments
   // Ensures the same build ID is used across all containers in a deployment
   // Priority: GIT_HASH env var > git rev-parse > timestamp fallback
