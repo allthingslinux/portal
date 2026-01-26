@@ -1,0 +1,75 @@
+# ============================================================================
+# Docker Compose Configuration for Production Environment
+# ============================================================================
+# Usage: docker compose -f compose.production.yaml up -d
+# ============================================================================
+
+services:
+  portal-app:
+    image: ghcr.io/${GITHUB_REPOSITORY:-allthingslinux/portal}:${IMAGE_TAG:-production-latest}
+    container_name: portal-app-production
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      portal-db-production:
+        condition: service_healthy
+    networks:
+      - portal-production
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 512M
+
+  portal-db-production:
+    image: postgres:18-alpine
+    container_name: portal-db-production
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-portal}
+    ports:
+      - "5432:5432"
+    volumes:
+      - portal-db-production-data:/var/lib/postgresql/data
+    networks:
+      - portal-production
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+volumes:
+  portal-db-production-data:
+    name: portal-db-production-data
+
+networks:
+  portal-production:
+    name: portal-production
+    driver: bridge
