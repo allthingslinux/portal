@@ -1,7 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
+import type { FallbackProps } from "react-error-boundary";
 import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";
 
 import { Button } from "@/components/ui/button";
@@ -13,13 +14,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatError } from "@/lib/utils";
 
-interface ErrorFallbackProps {
-  error: Error;
-  resetErrorBoundary: () => void;
-}
+function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  // Format error to handle unknown error types
+  const errorMessage = formatError(error);
+  const errorStack = error instanceof Error ? error.stack : undefined;
 
-function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
   return (
     <Card className="m-4">
       <CardHeader>
@@ -31,15 +32,15 @@ function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
       <CardContent>
         <div className="space-y-2">
           <p className="font-mono text-muted-foreground text-sm">
-            {error.message}
+            {errorMessage}
           </p>
-          {process.env.NODE_ENV === "development" && error.stack && (
+          {process.env.NODE_ENV === "development" && errorStack && (
             <details className="mt-4">
               <summary className="cursor-pointer text-muted-foreground text-sm">
                 Stack trace (development only)
               </summary>
               <pre className="mt-2 overflow-auto rounded bg-muted p-4 text-xs">
-                {error.stack}
+                {errorStack}
               </pre>
             </details>
           )}
@@ -56,7 +57,7 @@ function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
 
 interface ErrorBoundaryProps {
   children: ReactNode;
-  fallback?: (props: ErrorFallbackProps) => ReactNode;
+  fallback?: ComponentType<FallbackProps>;
 }
 
 /**
