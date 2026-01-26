@@ -1,8 +1,8 @@
-// ============================================================================
-// Utils Barrel Export
-// ============================================================================
-// This file re-exports utilities for @/lib/utils imports.
-// The main utility is the `cn` function for className merging.
+/** biome-ignore-all lint/performance/noBarrelFile: Barrel file for utils module */
 
-// biome-ignore lint/performance/noBarrelFile: Required for @/lib/utils path alias
+export * from "./constants";
+export * from "./date";
+export { sendEmail } from "./email";
+export * from "./error";
+export * from "./string";
 export { cn } from "./utils";
