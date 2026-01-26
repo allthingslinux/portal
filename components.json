@@ -13,13 +13,13 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "utils": "@/lib/utils",
+    "utils": "@/shared/utils",
     "ui": "@/ui",
-    "lib": "@/lib",
+    "lib": "@/shared",
     "hooks": "@/hooks",
     "styles": "@/styles",
-    "db": "@/db",
-    "auth": "@/auth"
+    "db": "@/shared/db",
+    "auth": "@/features/auth/lib/auth"
   },
   "menuColor": "default",
   "menuAccent": "bold",

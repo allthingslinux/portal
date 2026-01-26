@@ -2,9 +2,9 @@ import { execSync } from "node:child_process";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-import { config } from "@/lib/next-config";
-import { withAnalyzer } from "@/lib/next-config/with-analyzer";
-import { withObservability } from "@/lib/next-config/with-observability";
+import { config } from "@/shared/next-config";
+import { withAnalyzer } from "@/shared/next-config/with-analyzer";
+import { withObservability } from "@/shared/next-config/with-observability";
 
 const withNextIntl = createNextIntlPlugin();
 
@@ -188,7 +188,7 @@ let nextConfig: NextConfig = {
     try {
       // Import keys() helper for validated env access
       const { keys: observabilityKeys } = await import(
-        "@/lib/observability/keys"
+        "@/shared/observability/keys"
       );
       const env = observabilityKeys();
       sentryDsn = env.NEXT_PUBLIC_SENTRY_DSN;

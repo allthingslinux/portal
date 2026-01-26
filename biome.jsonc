@@ -62,7 +62,8 @@
       "!src/components/react-scan.tsx",
       "!references",
       "!src/components/ui",
-      "!drizzle"
+      "!drizzle",
+      "!.cursor/skills"
     ]
   }
 }

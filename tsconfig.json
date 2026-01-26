@@ -19,10 +19,10 @@
       }
     ],
     "paths": {
-      "@/auth/*": ["./src/lib/auth/*"],
-      "@/auth": ["./src/lib/auth"],
-      "@/db": ["./src/lib/db"],
-      "@/config": ["./src/lib/config"],
+      "@/auth/*": ["./src/features/auth/lib/*"],
+      "@/auth": ["./src/features/auth/lib"],
+      "@/db": ["./src/shared/db"],
+      "@/config": ["./src/shared/config"],
       "@/ui/*": ["./src/components/ui/*"],
       "@/*": ["./src/*"]
     }
@@ -35,10 +35,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": [
-    "node_modules/**",
-    "references/**",
-    "src/components/ui/**",
-    "src/lib/db/auth-schema.ts"
-  ]
+  "exclude": ["node_modules/**", "references/**", "src/components/ui/**"]
 }
