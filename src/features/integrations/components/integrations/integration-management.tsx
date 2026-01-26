@@ -59,7 +59,7 @@ export function IntegrationManagement<TAccount extends { id: string }>({
 }: IntegrationManagementProps<TAccount>) {
   const {
     data: account,
-    isLoading,
+    isPending,
     error,
   } = useIntegrationAccount<TAccount>(integrationId);
   const createMutation = useCreateIntegrationAccount<TAccount>(integrationId);
@@ -110,7 +110,7 @@ export function IntegrationManagement<TAccount extends { id: string }>({
     }
   };
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <Card>
         <CardContent className="flex items-center justify-center py-8">

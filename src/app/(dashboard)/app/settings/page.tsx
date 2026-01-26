@@ -39,18 +39,19 @@ export async function generateMetadata(): Promise<Metadata> {
 //   <SettingsCards view="API_KEYS" />
 
 export default async function SettingsPage() {
-  // Use DAL to verify session
-  await verifySession();
+  // Use DAL to verify session (returns session data)
+  const sessionData = await verifySession();
 
   // Create QueryClient for this request (isolated per request)
   const queryClient = getServerQueryClient();
 
   // Prefetch current user data for SSR
+  // Pass session from verifySession to avoid duplicate getSession call
   // This reduces loading flash by populating the cache before Better Auth UI
   // components mount and fetch data
   await queryClient.prefetchQuery({
     queryKey: queryKeys.users.current(),
-    queryFn: fetchCurrentUserServer,
+    queryFn: () => fetchCurrentUserServer(sessionData.session),
   });
 
   const resolver = await getServerRouteResolver();

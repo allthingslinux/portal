@@ -246,23 +246,32 @@ export async function fetchApiKeysServer(
  * Fetch current user's profile (server-side)
  * Used for prefetching user data in Server Components to reduce loading flash
  * Returns a DTO with only necessary fields matching the API route response
+ *
+ * @param session - Optional session object to avoid duplicate getSession calls.
+ *                  If provided, uses this session instead of fetching a new one.
  */
-export async function fetchCurrentUserServer(): Promise<
+export async function fetchCurrentUserServer(
+  session?: Awaited<ReturnType<typeof import("@/features/auth/lib/auth").auth.api.getSession>>
+): Promise<
   Pick<
     User,
     "id" | "name" | "email" | "image" | "role" | "emailVerified" | "createdAt"
   >
 > {
-  // Import here to avoid circular dependencies
-  const { headers } = await import("next/headers");
-  const { auth } = await import("@/features/auth/lib/auth");
+  // If session not provided, fetch it (but prefer passing from verifySession)
+  let userSession = session;
+  if (!userSession) {
+    // Import here to avoid circular dependencies
+    const { headers } = await import("next/headers");
+    const { auth } = await import("@/features/auth/lib/auth");
 
-  const requestHeaders = await headers();
-  const session = await auth.api.getSession({
-    headers: requestHeaders,
-  });
+    const requestHeaders = await headers();
+    userSession = await auth.api.getSession({
+      headers: requestHeaders,
+    });
+  }
 
-  if (!session?.user?.id) {
+  if (!userSession?.user?.id) {
     throw new Error("Not authenticated");
   }
 
@@ -278,7 +287,7 @@ export async function fetchCurrentUserServer(): Promise<
       createdAt: user.createdAt,
     })
     .from(user)
-    .where(eq(user.id, session.user.id))
+    .where(eq(user.id, userSession.user.id))
     .limit(1);
 
   if (!userData) {

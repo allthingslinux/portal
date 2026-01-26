@@ -16,17 +16,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AppPage() {
-  // Verify session (lightweight - just checks auth, doesn't fetch user)
-  await verifySession();
+  // Verify session (returns session data)
+  const sessionData = await verifySession();
 
   // Create QueryClient for this request (isolated per request)
   const queryClient = getServerQueryClient();
 
-  // Prefetch current user data in parallel with session verification
+  // Prefetch current user data
+  // Pass session from verifySession to avoid duplicate getSession call
   // This populates the TanStack Query cache and gives us user data for SSR
   const user = await queryClient.fetchQuery({
     queryKey: queryKeys.users.current(),
-    queryFn: fetchCurrentUserServer,
+    queryFn: () => fetchCurrentUserServer(sessionData.session),
   });
 
   const resolver = await getServerRouteResolver();

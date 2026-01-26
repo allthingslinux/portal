@@ -17,9 +17,9 @@ import type { XmppAccount } from "@/features/integrations/lib/integrations/xmpp/
 // Client component to render all integrations
 
 export function IntegrationsContent() {
-  const { data: integrations, isLoading } = useIntegrations();
+  const { data: integrations, isPending } = useIntegrations();
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="space-y-4">
         <p className="text-muted-foreground">Loading integrations...</p>
