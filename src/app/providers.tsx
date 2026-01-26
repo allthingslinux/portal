@@ -91,12 +91,10 @@ export function Providers({ children }: { children: ReactNode }) {
   // Type-safe wrappers for Better Auth UI compatibility with Next.js typed routes
   // Better Auth UI expects string types, but Next.js 16 typed routes use RouteImpl
   const navigate = (href: string) => {
-    // @ts-expect-error - Better Auth UI passes strings, but Next.js typed routes expect RouteImpl
     router.push(href);
   };
 
   const replace = (href: string) => {
-    // @ts-expect-error - Better Auth UI passes strings, but Next.js typed routes expect RouteImpl
     router.replace(href);
   };
 
