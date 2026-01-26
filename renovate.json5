@@ -1,0 +1,1020 @@
+{
+  // Renovate configuration for Portal application
+  // Uses JSON5 format for comments and trailing commas
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  
+  // ============================================================================
+  // STRING PATTERN MATCHING
+  // ============================================================================
+  // Renovate supports two types of string pattern matching:
+  // 
+  // 1. Glob patterns (minimatch): Case-insensitive, easier to read
+  //    - Example: 'next', 'react', 'typescript' (exact matches, case-insensitive)
+  //    - Example: 'abc*' (matches abc, abc123, ABCabc)
+  //    - Example: 'abc**/**' (matches abc/def and abc/def/ghi)
+  //    - Always case-insensitive (cannot be changed)
+  // 
+  // 2. Regex patterns (re2 syntax): Case-sensitive by default, more powerful
+  //    - Must start with '/' or '!/' and end with '/' or '/i'
+  //    - Example: '/^@types\\//' (matches @types/* packages, case-sensitive)
+  //    - Example: '/-types$/' (matches packages ending in -types, case-sensitive)
+  //    - Example: '/^abc/i' (matches abc in any case - note the 'i' flag)
+  //    - Uses re2 library (different from full regex spec)
+  //    - Case-sensitive by default, use '/i' flag for case-insensitive
+  // 
+  // Special case: '*' matches everything (cannot combine with other patterns)
+  // 
+  // Negative matching: Patterns starting with '!' exclude matches
+  // - Example: ['/^abc/', '!/^abcd/'] matches 'abc' and 'abcf' but not 'abcd'
+  // - For arrays: at least one positive match must match, and no negative matches must match
+  // 
+  // Usage in this config:
+  // - Exact matches (glob): Used for specific package names (e.g., 'next', 'react')
+  // - Regex patterns: Used for pattern matching (e.g., '/^@types\\//' for all @types/*)
+  // 
+  // Testing:
+  // - Regex: Use regex101.com (remember to escape backslashes: \n\s → \\n\\s)
+  // - Glob: Use Digital Ocean's glob tool
+  // ============================================================================
+  
+  // ============================================================================
+  // DEFAULT BEHAVIOR OVERRIDES
+  // ============================================================================
+  // Renovate's default behavior (what we override):
+  // - Separate branches/PRs for each dependency (we group related packages)
+  // - Separate branches for each major version (we keep this: separateMajorMinor: true)
+  // - Pin devDependencies to single version (we keep this via :pinDevDependencies preset)
+  // - Pin dependencies if not a library (we use rangeStrategy: 'update-lockfile' instead)
+  // - Create PRs immediately after branch creation (we use prCreation: 'not-pending')
+  // 
+  // Our overrides (noise reduction and automation):
+  // ✅ Grouping: Related packages grouped into single PRs (reduces PR count)
+  // ✅ Automerge: Safe updates (patch, minor, dev) merged automatically
+  // ✅ Branch automerge: Silent updates (no PR notifications for passing tests)
+  // ✅ PR creation: Wait for tests to pass (prCreation: 'not-pending')
+  // ✅ Separate major/minor: Major updates separate from minor (prevents immortal PRs)
+  // ✅ Range strategy: Preserve SemVer ranges, update lock file (not pinning)
+  // ✅ Dashboard approval: Major updates require manual approval
+  // 
+  // See FAQ: https://docs.renovatebot.com/faq/ for more details on default behavior
+  // ============================================================================
+  
+  // ============================================================================
+  // UPGRADE BEST PRACTICES ALIGNMENT
+  // ============================================================================
+  // This configuration follows Renovate's upgrade best practices:
+  // 
+  // ✅ Uses config:best-practices preset (includes):
+  //    - config:recommended (base configuration)
+  //    - docker:pinDigests (pin Docker image digests)
+  //    - helpers:pinGitHubActionDigests (pin GitHub Actions to commit SHA)
+  //      * Automatically pins all GitHub Actions to full-length commit SHA
+  //      * Recommended by GitHub security guidelines
+  //      * Prevents supply chain attacks from tag manipulation
+  //      * Example: actions/checkout@v6 → actions/checkout@abc123def456...
+  //    - :pinDevDependencies (pin dev dependencies for reproducibility)
+  //    - :configMigration (automatic config migration PRs)
+  //    - abandonments:recommended (detect abandoned packages)
+  //      * Treats packages without a release for 1 year as abandoned
+  //      * Uses community-sourced overrides (e.g., lodash: 6 years, @types/*: never)
+  //      * Helps identify packages that may need replacement or migration
+  // 
+  // ✅ Dependency Dashboard enabled (visibility and control)
+  // ✅ Regular updates via scheduling (Monday mornings)
+  // ✅ Changelogs included in PRs (fetchChangeLogs: 'pr')
+  // ✅ Major updates require dashboard approval (dependencyDashboardApproval)
+  // ✅ Separate multiple major releases (:separateMultipleMajorReleases)
+  // ✅ Automerge for safe updates (patch, minor, dev dependencies)
+  // ✅ Minimum release age for supply chain security (7 days)
+  // 
+  // Note: Best practices recommend 14 days minimumReleaseAge for automerging
+  //       third-party dependencies. We use 7 days as a balance between security
+  //       and update frequency. Security updates bypass this check automatically.
+  // ============================================================================
+  
+  // Extend from recommended presets
+  // 
+  // Abandonment Detection (via abandonments:recommended in config:best-practices):
+  // - Detects packages that haven't been updated for extended periods
+  // - Default threshold: 1 year without releases
+  // - Community overrides: Some packages have custom thresholds (e.g., lodash: 6 years)
+  // - Type definitions (@types/*) are excluded from abandonment detection
+  // - Helps identify packages that may need replacement or migration planning
+  // 
+  // When a package is detected as abandoned:
+  // - Renovate will mark it in the Dependency Dashboard
+  // - You can review and plan migration to alternative packages
+  // - Consider security implications of using unmaintained packages
+  extends: [
+    'config:best-practices',
+    ':semanticCommits',
+    ':separateMultipleMajorReleases',
+    ':prNotPending', // Wait for branch tests to pass before creating PR
+    ':prConcurrentLimitNone', // No limit on concurrent PRs
+    ':prHourlyLimitNone', // No limit on PRs per hour
+    ':dependencyDashboard', // Enable dependency dashboard
+    ':updateNotScheduled', // Keep existing branches updated even when not scheduled
+    'schedule:earlyMondays', // Schedule updates for Monday mornings (before 4am)
+    // Custom Manager: GitHub Actions Version Variables
+    // Updates _VERSION environment variables in GitHub Actions workflows
+    // 
+    // This preset enables Renovate to detect and update version variables like:
+    //   NODE_VERSION: "22"  # renovate: datasource=node-version depName=node
+    //   PYTHON_VERSION: "3.11"  # renovate: datasource=python-version depName=python
+    // 
+    // Usage in workflows:
+    //   env:
+    //     NODE_VERSION: "22"  # renovate: datasource=node-version depName=node
+    //   steps:
+    //     - uses: actions/setup-node@v6
+    //       with:
+    //         node-version: ${{ env.NODE_VERSION }}
+    // 
+    // Benefits:
+    // - Centralize version management in env section
+    // - Renovate can update versions automatically
+    // - Consistent versions across multiple steps
+    // 
+    // Note: Currently not used in our workflows (we use direct version strings)
+    // This preset is included for future use or if we refactor to use version variables
+    'customManagers:githubActionsVersions',
+    // Security: OpenSSF Scorecard
+    // Shows OpenSSF security scorecard badge on pull requests for GitHub-hosted packages
+    // The badge links to the OpenSSF Scorecard viewer showing security metrics
+    // Helps assess the security posture of dependencies before updating
+    'security:openssf-scorecard',
+    // Note: We don't use workarounds:all preset because:
+    // - Most workarounds are for Java/Maven/Gradle (we don't use these)
+    // - Some workarounds conflict with our setup (e.g., nodeDockerVersioning can't handle -alpine)
+    // - We prefer explicit configuration over blanket workarounds
+    // 
+    // Relevant workarounds available (not used):
+    // - workarounds:typesNodeVersioning: Uses node versioning for @types/node
+    //   Could be useful, but we group all type definitions together
+    // - workarounds:nodeDockerVersioning: Uses node versioning for 'node' docker images
+    //   ⚠️ Cannot be used for images with suffixes like '-alpine' (we use node:22-alpine)
+    // - workarounds:doNotUpgradeFromAlpineStableToEdge: Prevents Alpine stable→edge upgrades
+    //   Could be useful if we use alpine base images directly
+  ],
+  
+  // ============================================================================
+  // NOISE REDUCTION STRATEGIES
+  // ============================================================================
+  // We use multiple strategies to reduce PR volume and notifications:
+  // 1. Scheduling - Updates only during off-hours
+  // 2. Grouping - Related packages grouped into single PRs
+  // 3. Automerge - Safe updates merged automatically
+  // 4. Branch automerging - Silent updates (no PR notifications for passing tests)
+  // 5. Lock file maintenance - Regular lock file updates
+  // ============================================================================
+  
+  // Schedule updates for Monday mornings (before 4am)
+  // Enabled via schedule:earlyMondays preset in extends array
+  // This reduces interruptions during working hours and keeps CI free for developers
+  // 
+  // The preset sets: schedule: ['* 0-3 * * 1'] (Monday mornings before 4am)
+  // We don't need to set it explicitly here since the preset handles it
+  // 
+  // Other schedule presets available:
+  // - schedule:daily: Daily before 4 AM
+  // - schedule:weekly: Weekly on early Monday mornings (same as earlyMondays)
+  // - schedule:monthly: First day of month before 4 AM
+  // - schedule:nonOfficeHours: 10 PM - 5 AM weekdays, anytime weekends
+  // - schedule:weekends: Anytime on weekends
+  // - schedule:quarterly: First day of each quarter
+  // 
+  // To override the preset schedule, uncomment and modify:
+  // schedule: [
+  //   '* 0-3 * * 1', // Monday mornings before 4am
+  // ],
+  timezone: 'America/New_York',
+  
+  // Dependency dashboard configuration
+  // Enabled via :dependencyDashboard preset
+  // The dashboard shows all pending, open, closed, and ignored updates
+  // You can approve updates, retry failed ones, or recreate closed PRs
+  dependencyDashboardOSVVulnerabilitySummary: 'unresolved', // Show unresolved OSV vulnerabilities
+  dependencyDashboardAutoclose: false, // Keep dashboard open even when no updates pending
+  
+  // Only process these package managers
+  // Using enabledManagers disables all other managers (Bundler, Composer, Maven, etc.)
+  // This limits Renovate to only the managers we actually use in this project
+  // 
+  // Note: Preview presets (preview:dockerCompose, preview:dockerVersions) are not needed
+  // because we enable docker-compose and dockerfile managers directly via enabledManagers.
+  // Preview presets were used when these managers were experimental, but they're now stable.
+  enabledManagers: [
+    'npm', // JavaScript/TypeScript dependencies in package.json
+    'github-actions', // GitHub Actions workflows (.github/workflows/*.yml)
+    'docker-compose', // Docker Compose files (compose.*.yaml) - stable, no preview preset needed
+    'dockerfile', // Dockerfiles (Containerfile, Dockerfile, *.dockerfile) - stable, no preview preset needed
+  ],
+  
+  // Use platform-native automerge (GitHub/GitLab built-in automerge)
+  platformAutomerge: true,
+  
+  // Branch rebasing configuration
+  // 
+  // rebaseWhen: 'conflicted' - Only rebase when there are merge conflicts
+  // This reduces noise by not rebasing PRs that are simply "behind" the base branch
+  // 
+  // Note: Renovate uses its own "rebasing" mechanism - it reapplies all updates
+  // into a new commit based off the head of the base branch (not git rebase)
+  // Each Renovate branch will always have exactly 1 commit
+  // 
+  // Renovate will still rebase in these cases:
+  // 1. When PR has merge conflicts (due to changes on base branch)
+  // 2. When a newer version of the dependency is released (updates the PR)
+  // 3. When you manually request a rebase (via checkbox or rebase label)
+  // 4. When GitHub requires branches to be up-to-date before merging (if enabled)
+  // 
+  // Renovate will NOT rebase if:
+  // - You've pushed your own commits to the Renovate branch
+  //   (Renovate stops managing branches you've edited)
+  //   ⚠️ Warning: Do NOT amend Renovate's commits - always push new commits
+  // 
+  // Manual rebasing:
+  // - Use the rebase/retry checkbox on GitHub PRs
+  // - Or add a "rebase" label to the PR (label name configurable via rebaseLabel)
+  // 
+  // Alternative options:
+  // - 'never': Never rebase (not recommended, conflicts won't be resolved)
+  // - 'behind-base-branch': Always rebase when behind base branch
+  // - 'auto': Auto-detect (rebases if automerge enabled or branch protection requires it)
+  rebaseWhen: 'conflicted', // Only rebase when there are conflicts (reduces noise)
+  
+  // Security: OSV Vulnerability Alerts
+  // 
+  // OSV (Open Source Vulnerabilities) database integration
+  // - Detects vulnerabilities in direct dependencies
+  // - Uses the OSV.dev database (Google's open source vulnerability database)
+  // - Complements GitHub's Dependabot alerts
+  // - Shows unresolved vulnerabilities in Dependency Dashboard
+  // 
+  // Note: We don't use security:only-security-updates preset because we want
+  // regular updates, not just security updates. We handle security updates via
+  // vulnerabilityAlerts configuration and osvVulnerabilityAlerts.
+  osvVulnerabilityAlerts: true,
+  
+  // Minimum Release Age - Security feature to reduce supply chain risks
+  // 
+  // What it does:
+  // - Requires packages to be released for a minimum duration before suggesting updates
+  // - Allows time for security researchers and automated tools to detect malicious packages
+  // - Prevents unpublishing issues (npm allows unpublishing within 72 hours)
+  // 
+  // Our configuration:
+  // - Global: 7 days for most packages (more conservative than security:minimumReleaseAgeNpm which uses 3 days)
+  // - Node.js patches: 3 days (well-tested releases, shorter wait time)
+  // - Security updates: Automatically bypass minimumReleaseAge checks
+  // 
+  // How it works:
+  // - Each version is checked separately - Renovate waits for each version to pass the age threshold
+  // - With internalChecksFilter=strict, branches/PRs are not created until minimumReleaseAge passes
+  // - Updates appear in Dependency Dashboard with "pending" status until age threshold passes
+  // 
+  // Available security presets (not used):
+  // - security:minimumReleaseAgeNpm: Uses 3 days for npm packages (we use 7 days for more security)
+  // - security:only-security-updates: Only update when vulnerabilities detected (too restrictive)
+  // 
+  // Best practices recommend 14 days for automerging, but we use 7 as a balance
+  internalChecksFilter: 'strict', // Don't create branches/PRs until minimumReleaseAge passes
+  
+  // Docker digest pinning (Best Practice: Pin Docker digests)
+  // 
+  // Enabled via:
+  // 1. docker:pinDigests preset (included in config:best-practices)
+  // 2. Global pinDigests: true (explicit setting for clarity)
+  // 
+  // What it does:
+  // - Pins Docker images to SHA256 digests instead of just tags
+  // - Example: postgres:18-alpine@sha256:abc123... (instead of just postgres:18-alpine)
+  // - Ensures immutable builds - same digest always refers to same image
+  // - Prevents supply chain attacks from tag manipulation
+  // 
+  // Benefits:
+  // - Security: Prevents tag-based attacks (malicious updates to existing tags)
+  // - Reproducibility: Same digest = same image, always
+  // - Best practice: Recommended by Renovate and Docker security guidelines
+  // 
+  // Note: The docker:pinDigests preset also excludes some managers (argocd, devcontainer,
+  // helmv3, pyenv) from digest pinning, but we don't use those managers.
+  pinDigests: true, // Pin Docker image digests globally
+  
+  // Semantic commit configuration
+  // Enabled via :semanticCommits preset
+  // 
+  // Renovate automatically detects semantic commits by examining the last 10 commit messages
+  // in the base branch. If Angular-style conventional commits are found, Renovate uses them.
+  // 
+  // Commit message format: <type>(<scope>): <subject>
+  // Example: "chore(deps): update react to v18.2.0"
+  // 
+  // Commit type behavior (with config:best-practices):
+  // - Default: 'chore' for most dependency updates
+  // - 'fix' for production dependencies (dependencies, require, etc.)
+  // - 'fix' for Maven production types (compile, provided, runtime, etc.)
+  // 
+  // Commit scope: 'deps' (customized from default)
+  // This groups all dependency updates under the 'deps' scope
+  // 
+  // Note: semanticCommitScope takes priority over any preset scope settings
+  semanticCommitScope: 'deps', // All dependency updates use 'deps' scope
+  
+  // Changelog configuration (Best Practice: Read changelogs for updates)
+  // Changelogs are included in PR bodies to help review updates
+  // Best practices recommend reading changelogs before merging, especially for major updates
+  fetchChangeLogs: 'pr', // Include changelogs in PR body
+  commitBodyTable: true, // Include table in commit body showing what changed
+  
+  // PR creation and limits
+  // prConcurrentLimit: 0 set via :prConcurrentLimitNone preset
+  // prHourlyLimit: 0 set via :prHourlyLimitNone preset
+  // PR creation behavior
+  // 
+  // Default behavior: Renovate creates PRs immediately after branch creation
+  // 
+  // Our setting: prCreation: 'not-pending' (set via :prNotPending preset)
+  // - Wait for tests to pass before creating PR
+  // - Branches with failing tests remain in Git and get updated if needed
+  // - PR is created once tests pass (or after prNotPendingHours if still pending)
+  // - Reduces noise from failing PRs
+  // 
+  // Alternative options:
+  // - 'immediate': Create PR immediately (default behavior)
+  // - 'status-success': Only create PR when tests pass (stricter than 'not-pending')
+  //   ⚠️ Branches with failing tests will never get PRs created
+  // 
+  // See FAQ:
+  // - https://docs.renovatebot.com/faq/#wait-until-tests-have-passed-before-creating-the-pr
+  // - https://docs.renovatebot.com/faq/#wait-until-tests-have-passed-before-creating-a-pr-but-create-the-pr-even-if-they-fail
+  // prCreation: 'not-pending' set via :prNotPending preset
+  prNotPendingHours: 24, // Timeout for waiting on status checks (custom, not in preset)
+  // Vulnerability alert configuration
+  // 
+  // GitHub Dependabot vulnerability alerts integration
+  // - Detects vulnerabilities reported by GitHub's security advisories
+  // - Creates PRs for security updates automatically
+  // - Requires manual review (automerge: false) for security-critical updates
+  // 
+  // Note: We don't use security:only-security-updates preset because we want
+  // regular updates in addition to security updates. That preset would disable
+  // all non-security updates, which is too restrictive for our workflow.
+  vulnerabilityAlerts: {
+    enabled: true,
+    labels: [
+      'deps: security',
+    ],
+    automerge: false, // Require manual review for security updates (best practice)
+  },
+  packageRules: [
+    {
+      // Mark major version bumps with breaking label
+      matchUpdateTypes: [
+        'major',
+      ],
+      addLabels: [
+        'breaking',
+      ],
+    },
+    {
+      // Critical packages - core dependencies
+      // 
+      // Note: We manually group these instead of using package presets like:
+      // - packages:react (for react, react-dom, @types/react, etc.)
+      // 
+      // Manual grouping allows us to:
+      // - Include non-React critical packages (next, better-auth, drizzle, etc.)
+      // - Customize behavior (minimumReleaseAge, prPriority, etc.)
+      // - Group related packages that work together
+      // 
+      // Warning: Grouping these together may create "immortal PRs" if packages have different versions
+      // If you frequently close these PRs, consider removing the groupName to create separate PRs
+      matchPackageNames: [
+        'next',
+        'react', // Could use packages:react preset
+        'react-dom', // Could use packages:react preset
+        'better-auth',
+        '@better-auth/oauth-provider',
+        '@better-auth/passkey',
+        '@daveyplate/better-auth-tanstack',
+        '@daveyplate/better-auth-ui',
+        'drizzle-orm',
+        'drizzle-kit',
+        'drizzle-seed',
+        '@sentry/nextjs',
+        '@sentry/node-native',
+        '@sentry/profiling-node',
+        '@tanstack/react-query',
+        '@tanstack/react-table',
+        '@t3-oss/env-nextjs',
+        'next-intl',
+        'zod',
+        'pg',
+        'pg-native',
+        'postgres',
+      ],
+      groupName: 'critical',
+      addLabels: [
+        'deps: critical',
+      ],
+      // Wait 7 days after release before suggesting updates (reduces supply chain risk)
+      // Security updates bypass this check automatically
+      minimumReleaseAge: '7 days',
+      prPriority: 10,
+    },
+    {
+      // Patch updates - grouped together for efficiency
+      // These are safe to group as patch updates are typically compatible
+      // 
+      // Noise reduction:
+      // - Grouped: All patch updates in one PR (reduces PR count)
+      // - Automerge: Automatically merged if tests pass (saves manual review)
+      // - Branch automerge: Silent updates (no PR notifications for passing tests)
+      // - Minimum release age: 7 days (reduces risk, also reduces update frequency)
+      //   Note: Best practices recommend 14 days for automerging third-party dependencies
+      //   We use 7 days as a balance. You can request updates immediately via Dashboard.
+      matchUpdateTypes: [
+        'patch',
+      ],
+      groupName: 'patch',
+      automerge: true,
+      automergeType: 'branch', // Silent automerge - no PR notifications for passing tests
+      // Wait 7 days after release before suggesting updates (reduces supply chain risk)
+      // Security updates bypass this check automatically
+      // Best practices recommend 14 days for automerging - we use 7 as a balance
+      minimumReleaseAge: '7 days',
+      addLabels: [
+        'deps: patch',
+      ],
+    },
+    {
+      // Minor updates - grouped together for efficiency
+      // Excludes 0.x versions which may have breaking changes
+      // 
+      // Noise reduction:
+      // - Grouped: All minor updates in one PR (reduces PR count)
+      // - Automerge: Automatically merged if tests pass (saves manual review)
+      // - Branch automerge: Silent updates (no PR notifications for passing tests)
+      // - Minimum release age: 7 days (reduces risk, also reduces update frequency)
+      //   Note: Best practices recommend 14 days for automerging third-party dependencies
+      //   We use 7 days as a balance. You can request updates immediately via Dashboard.
+      matchUpdateTypes: [
+        'minor',
+      ],
+      matchCurrentVersion: '!/^0/', // Exclude 0.x versions (may have breaking changes)
+      groupName: 'minor',
+      automerge: true,
+      automergeType: 'branch', // Silent automerge - no PR notifications for passing tests
+      // Wait 7 days after release before suggesting updates (reduces supply chain risk)
+      // Security updates bypass this check automatically
+      // Best practices recommend 14 days for automerging - we use 7 as a balance
+      minimumReleaseAge: '7 days',
+      addLabels: [
+        'deps: minor',
+      ],
+    },
+    {
+      // Major updates require dashboard approval
+      // This gives visibility into pending major updates without creating PRs automatically
+      // 
+      // Best practices alignment:
+      // - Major updates require manual approval (dependencyDashboardApproval: true)
+      // - Updates appear in Dependency Dashboard for review before PR creation
+      // - Separate multiple major releases (:separateMultipleMajorReleases preset)
+      // - Read changelogs before merging (fetchChangeLogs: 'pr')
+      // 
+      // Workflow: Review in dashboard → Approve → PR created → Review changelogs → Merge
+      matchUpdateTypes: [
+        'major',
+      ],
+      groupName: 'major',
+      automerge: false, // Never automerge major updates - always require review
+      dependencyDashboardApproval: true, // Require approval from dashboard before creating PR
+      addLabels: [
+        'deps: major',
+        'deps: needs-review',
+      ],
+    },
+    {
+      // Development and tooling packages
+      // 
+      // Note: We manually group these packages instead of using package presets like:
+      // - packages:jsUnitTest (for vitest, @testing-library/react, etc.)
+      // - packages:linters (for ESLint, Prettier, etc. - we use Biome instead)
+      // 
+      // Manual grouping gives us more control over which packages are grouped together
+      // and allows us to customize behavior (automerge, priority, etc.) per group
+      // 
+      // Available package presets we could use (but don't):
+      // - packages:jsUnitTest: Matches vitest, @testing-library/react, jest, mocha, chai, sinon, etc.
+      // - packages:linters: Matches ESLint, Prettier, stylelint, ember-template-lint, etc. (we use Biome)
+      // - packages:react: Matches react, react-dom, @types/react, @types/react-dom, etc.
+      // - packages:test: General test packages (extends packages:unitTest)
+      // 
+      // To use a preset, you would extend it in packageRules, e.g.:
+      //   { "extends": ["packages:jsUnitTest"], "groupName": "test", "automerge": true }
+      // 
+      // Noise reduction:
+      // - Grouped: All dev tools in one PR (reduces PR count)
+      // - Automerge: Automatically merged if tests pass (dev tools rarely break production)
+      // - Branch automerge: Silent updates (no PR notifications for passing tests)
+      // - Low priority: prPriority -1 (processed after production dependencies)
+      matchPackageNames: [
+        'typescript',
+        // Note: @types/* packages are handled by the types group (regex pattern /^@types\\//)
+        // Removing explicit @types/node, @types/react, @types/react-dom to avoid conflicts
+        '@biomejs/biome', // Linter (not ESLint, but similar - could use packages:linters if we used ESLint)
+        'vitest', // Test framework (could use packages:jsUnitTest preset)
+        '@vitest/coverage-v8', // Test coverage (could use packages:jsUnitTest preset)
+        '@testing-library/jest-dom',
+        '@testing-library/react',
+        'ultracite',
+        'tsx',
+        'husky',
+        'lint-staged',
+        '@commitlint/cli',
+        '@commitlint/config-conventional',
+        'jsdom',
+        'tailwindcss',
+        '@tailwindcss/postcss',
+        'shadcn',
+        'next-devtools-mcp',
+        '@tanstack/react-query-devtools',
+        '@react-grab/cursor',
+      ],
+      groupName: 'dev',
+      automerge: true,
+      automergeType: 'branch', // Silent automerge - no PR notifications for passing tests
+      addLabels: [
+        'deps: dev',
+      ],
+      prPriority: -1, // Lower priority - process after production dependencies
+    },
+    {
+      // Semantic release packages - grouped together
+      // These work together for automated releases
+      matchPackageNames: [
+        '@semantic-release/changelog',
+        '@semantic-release/exec',
+        '@semantic-release/git',
+        'semantic-release-major-tag',
+      ],
+      groupName: 'semantic-release',
+      automerge: true,
+      automergeType: 'branch',
+      addLabels: [
+        'deps: dev',
+      ],
+      prPriority: -1,
+    },
+    {
+      // Catch-all for remaining devDependencies not explicitly listed
+      matchDepTypes: [
+        'devDependencies',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      groupName: 'dev-deps',
+      addLabels: [
+        'deps: dev',
+      ],
+      prPriority: -1,
+    },
+    {
+      // Type definitions
+      // 
+      // Note: workarounds:typesNodeVersioning preset could be used for @types/node
+      // It uses node versioning for @types/node to align with Node.js LTS releases
+      // We don't use it because we group all type definitions together
+      // 
+      // Noise reduction:
+      // - Grouped: All type definitions in one PR (reduces PR count)
+      // - Automerge: Automatically merged if tests pass (type definitions are low risk)
+      // - Branch automerge: Silent updates (no PR notifications for passing tests)
+      // - Monthly schedule: Only update once per month (reduces frequency)
+      // - Low priority: prPriority -2 (lowest priority)
+      matchPackageNames: [
+        // Regex pattern: matches all @types/* packages (case-sensitive)
+        // Uses re2 syntax: starts with /, ends with /
+        // Escaped backslash: \\/ matches literal forward slash
+        '/^@types\\//', // @types/* (includes @types/node)
+        // Regex pattern: matches packages ending with -types (case-sensitive)
+        // $ means end of string
+        '/-types$/', // *-types
+      ],
+      groupName: 'types',
+      automerge: true,
+      automergeType: 'branch', // Silent automerge - no PR notifications for passing tests
+      addLabels: [
+        'deps: types',
+      ],
+      // Schedule type definition updates monthly (before 4am on the 1st of each month)
+      // Using schedule:monthly preset (equivalent to cron: * 0-3 1 * *)
+      // Selective scheduling reduces noise for low-priority updates
+      // 
+      // This overrides the global schedule:earlyMondays for type definitions only
+      schedule: [
+        '* 0-3 1 * *', // First day of month before 4am (matches schedule:monthly preset)
+      ],
+      prPriority: -2, // Lowest priority - process last
+    },
+    {
+      // GitHub Actions updates
+      // 
+      // Digest pinning (via helpers:pinGitHubActionDigests in config:best-practices):
+      // - Automatically pins GitHub Actions to full-length commit SHA
+      // - Example: actions/checkout@v6 → actions/checkout@abc123def456...
+      // - Recommended by GitHub security guidelines
+      // - Prevents supply chain attacks from tag manipulation
+      // 
+      // Security benefits:
+      // - Immutable references: Same SHA = same action code, always
+      // - Prevents malicious updates: Tags can be changed, SHAs cannot
+      // - Best practice: GitHub recommends pinning third-party actions to commit SHA
+      // 
+      // How it works:
+      // - Renovate detects actions using version tags (e.g., @v6)
+      // - Automatically converts them to commit SHA digests
+      // - Updates both tag and digest when new versions are released
+      // 
+      // Current actions in workflows:
+      // - actions/checkout@v6
+      // - docker/setup-buildx-action@v3
+      // - docker/login-action@v3
+      // - docker/build-push-action@v6
+      // - appleboy/ssh-action@v1
+      // - pnpm/action-setup@v4
+      // - actions/setup-node@v6
+      // - actions/cache@v4
+      // - codecov/codecov-action@v5
+      // 
+      // All of these will be automatically pinned to commit SHAs by Renovate
+      matchManagers: [
+        'github-actions',
+      ],
+      groupName: 'actions',
+      automerge: true,
+      automergeType: 'branch',
+      addLabels: [
+        'deps: github-actions',
+      ],
+      // Customize commit message topic for GitHub Actions
+      // Default would be something like "actions/setup-node action"
+      // Custom: just the action name (e.g., "actions/setup-node")
+      commitMessageTopic: '{{depName}}',
+    },
+    {
+      // Docker updates (Dockerfile and docker-compose)
+      // 
+      // Digest pinning (via docker:pinDigests preset + global pinDigests: true):
+      // - All Docker images are pinned to SHA256 digests
+      // - Example: postgres:18-alpine@sha256:abc123def456...
+      // - Ensures immutable builds and prevents supply chain attacks
+      // - Same digest always refers to the same image content
+      // 
+      // Docker versioning behavior:
+      // - Docker uses "tags" not versions (e.g., postgres:18-alpine, node:22-alpine)
+      // - Tags after the first hyphen are treated as platform/compatibility indicators
+      //   Example: postgres:18-alpine will only update to postgres:19-alpine (not postgres:18 or postgres:18-stretch)
+      // - No range support: postgres:18 is a specific tag, not a range like 18.x
+      // - Renovate tries to follow SemVer-like conventions but Docker tags are a "wild west"
+      // 
+      // Workaround presets available (not used):
+      // - workarounds:nodeDockerVersioning: Uses node versioning for 'node' docker images
+      //   ⚠️ Cannot be used for images with suffixes like '-alpine' (we use node:22-alpine)
+      // - workarounds:doNotUpgradeFromAlpineStableToEdge: Prevents upgrading Alpine stable to edge
+      //   Could be useful if we use alpine base images directly (we use -alpine variants)
+      // - workarounds:ubuntuDockerVersioning: Uses ubuntu versioning for ubuntu images
+      //   Not applicable (we don't use ubuntu base images)
+      // 
+      // Release timestamp support (for minimumReleaseAge):
+      // - Docker Hub (index.docker.io): ✅ Supports release timestamps (from tag_last_pushed)
+      //   Example: postgres:18-alpine from Docker Hub can use minimumReleaseAge
+      // - GHCR (ghcr.io): ❌ Does NOT support release timestamps
+      //   Example: ghcr.io/allthingslinux/portal images won't benefit from minimumReleaseAge
+      // - Quay.io: ❌ Does NOT support release timestamps
+      // 
+      // Note: Digests may receive the same timestamp as the tag (known issue #38659)
+      // This means digests may appear newer than they actually are
+      // 
+      // We don't set minimumReleaseAge here because:
+      // 1. GHCR (used for our app images) doesn't support release timestamps
+      // 2. Mixed registries in the same group would have inconsistent behavior
+      // To add minimumReleaseAge for Docker Hub images specifically, create a separate
+      // packageRule matching Docker Hub images (e.g., matchPackageNames: ['/^postgres:/'])
+      matchManagers: [
+        'docker-compose',
+        'dockerfile',
+      ],
+      groupName: 'docker',
+      automerge: true,
+      automergeType: 'branch',
+      addLabels: [
+        'deps: docker',
+      ],
+    },
+    {
+      // Node.js runtime - groups package.json engines and Dockerfile
+      // 
+      // Node.js versioning behavior:
+      // - npm manager: Uses 'node' versioning (wrapper around npm versioning with LTS awareness)
+      //   - Removes 'v' prefixes from semantic versions
+      //   - LTS awareness: odd releases are unstable, even releases don't reach LTS immediately
+      //   - Example: package.json engines.node = ">=22.18.0"
+      // - dockerfile manager: Uses 'docker' versioning (NOT 'node' versioning)
+      //   - Cannot use 'node' versioning for Docker images with suffixes like '-alpine'
+      //   - Example: node:22-alpine uses docker versioning, maintains '-alpine' suffix
+      // - github-actions manager: Uses 'docker' versioning for actions/setup-node
+      // 
+      // Language constraints and upgrading:
+      // - By default, Renovate does NOT apply language constraints to upgrades
+      //   This means Renovate will propose "any" stable upgrade, regardless of whether
+      //   the package's declared Node.js version support matches our engines.node
+      // - We have engines.node = ">=22.18.0" in package.json
+      // - We do NOT use constraintsFiltering: 'strict' because:
+      //   1. Strict filtering can hide many available updates if language constraints
+      //      aren't updated first (e.g., if a package drops Node.js 22 support in v3,
+      //      Renovate won't propose v3 until we update engines.node)
+      //   2. Transitive constraints are complex - a library may declare narrower
+      //      constraints than its dependencies, causing false negatives
+      //   3. Many ecosystems document breaking changes in release notes, making
+      //      default behavior acceptable (we review major updates manually)
+      //   4. Renovate cannot automatically update language constraints in all cases,
+      //      which could leave us with outdated dependencies silently
+      // - Trade-off: We may see PRs for packages that technically require newer
+      //   Node.js versions, but we review major updates manually anyway
+      // - If we wanted strict filtering, we would add: constraintsFiltering: 'strict'
+      //   But this is NOT recommended unless you understand the limitations
+      matchManagers: [
+        'npm',
+        'dockerfile',
+        'github-actions',
+      ],
+      matchPackageNames: [
+        'node',
+      ],
+      groupName: 'node runtime',
+      addLabels: [
+        'deps: node',
+      ],
+      prPriority: 10,
+    },
+    {
+      // Node.js patch updates auto-merge
+      // Node.js releases are well-tested, so shorter wait time (3 days vs 7 days)
+      matchManagers: [
+        'npm',
+        'dockerfile',
+        'github-actions',
+      ],
+      matchPackageNames: [
+        'node',
+      ],
+      matchUpdateTypes: [
+        'patch',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      // Wait 3 days after release before suggesting updates (shorter for well-tested Node.js releases)
+      // Security updates bypass this check automatically
+      minimumReleaseAge: '3 days',
+    },
+    {
+      // Node.js minor/major need review
+      matchManagers: [
+        'npm',
+        'dockerfile',
+        'github-actions',
+      ],
+      matchPackageNames: [
+        'node',
+      ],
+      matchUpdateTypes: [
+        'minor',
+        'major',
+      ],
+      automerge: false,
+      addLabels: [
+        'deps: needs-review',
+      ],
+    },
+    {
+      // pnpm version updates (packageManager field only)
+      // 
+      // Renovate automatically detects the packageManager field in package.json
+      // We have: "packageManager": "pnpm@10.27.0"
+      // 
+      // Note: The engines.pnpm field is NOT supported by Renovate's npm manager
+      // According to Renovate docs, engines depType only supports: node, npm, yarn
+      // The volta depType supports: node, npm, pnpm, yarn (but we don't use volta)
+      // So we only handle the packageManager field, not engines.pnpm
+      // 
+      // pnpm versioning behavior:
+      // - Uses npm versioning (SemVer-based)
+      // - pnpm follows semantic versioning (major.minor.patch)
+      // - Example: pnpm@10.27.0 → pnpm@10.28.0 (minor), pnpm@11.0.0 (major)
+      // 
+      // Update strategy:
+      // - Patch/minor: Automerge (pnpm is well-tested, safe to update)
+      // - Major: Require review (may have breaking changes)
+      // - Group with Node.js runtime for visibility (both are runtime tools)
+      matchManagers: [
+        'npm', // packageManager field is handled by npm manager
+      ],
+      matchPackageNames: [
+        'pnpm',
+      ],
+      matchDepTypes: [
+        'packageManager', // Only packageManager field is supported (not engines.pnpm)
+      ],
+      groupName: 'node runtime', // Group with Node.js for visibility
+      addLabels: [
+        'deps: pnpm',
+      ],
+      prPriority: 10, // High priority - runtime tool
+    },
+    {
+      // pnpm patch updates auto-merge
+      matchManagers: [
+        'npm',
+      ],
+      matchPackageNames: [
+        'pnpm',
+      ],
+      matchDepTypes: [
+        'packageManager',
+      ],
+      matchUpdateTypes: [
+        'patch',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      minimumReleaseAge: '3 days', // Shorter wait for well-tested pnpm releases
+    },
+    {
+      // pnpm minor updates auto-merge
+      matchManagers: [
+        'npm',
+      ],
+      matchPackageNames: [
+        'pnpm',
+      ],
+      matchDepTypes: [
+        'packageManager',
+      ],
+      matchUpdateTypes: [
+        'minor',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      minimumReleaseAge: '7 days',
+    },
+    {
+      // pnpm major updates need review
+      matchManagers: [
+        'npm',
+      ],
+      matchPackageNames: [
+        'pnpm',
+      ],
+      matchDepTypes: [
+        'packageManager',
+      ],
+      matchUpdateTypes: [
+        'major',
+      ],
+      automerge: false,
+      addLabels: [
+        'deps: needs-review',
+      ],
+    },
+    {
+      // npm range strategy configuration
+      // 
+      // Default behavior: Renovate pins dependencies to exact versions if not a library
+      // Example: package.json has "^1.0.0", Renovate changes it to "1.0.0"
+      // 
+      // Our strategy: 'update-lockfile' (preserves SemVer ranges in package.json)
+      // - package.json uses SemVer ranges (e.g., "^1.1.0")
+      // - pnpm-lock.yaml locks exact versions
+      // - Renovate updates lock file when in-range updates are available
+      // - Benefits: Easier to review updates, clearer intent, follows SemVer conventions
+      // 
+      // Alternative: 'pin' (pins exact versions in package.json) - This is Renovate's default
+      // - Recommended for apps (not libraries) for greatest reliability/predictability
+      // - Provides better visibility and easier rollback
+      // - Increases PR volume (but we mitigate with scheduling, grouping, automerge)
+      // 
+      // Why we use 'update-lockfile':
+      // - Reduces PR noise while still maintaining lock file consistency
+      // - Lock file provides protection against automatic in-range updates
+      // - We have scheduling, grouping, and automerge to manage update volume
+      // 
+      // See FAQ: https://docs.renovatebot.com/faq/#keep-using-semver-ranges-instead-of-pinning-dependencies
+      // 
+      // To switch to pinning (Renovate default), change to: rangeStrategy: 'pin'
+      // This would pin all dependencies to exact versions (e.g., "1.1.0" instead of "^1.1.0")
+      matchManagers: [
+        'npm',
+      ],
+      rangeStrategy: 'update-lockfile', // Preserve SemVer ranges, update lock file
+    },
+  ],
+  // Lock file maintenance - refresh lock files weekly
+  // Uses same schedule as global updates (Monday mornings before 4am)
+  // 
+  // Lock file maintenance helps reduce conflicts:
+  // - Regular updates prevent lock files from getting too far out of sync
+  // - Automerge enabled so passing updates are silent
+  // - Scheduled on same day as other updates to batch changes
+  // 
+  // Note: Using lock files increases chance of conflicts when merging PRs
+  // Grouping and automerge help reduce concurrent PRs and conflicts
+  // 
+  // Schedule presets available:
+  // - schedule:weekly: Weekly on early Monday mornings (same as our schedule)
+  // - schedule:monthly: First day of month before 4 AM
+  // - schedule:daily: Daily before 4 AM
+  lockFileMaintenance: {
+    enabled: true,
+    automerge: true,
+    schedule: [
+      '* 0-3 * * 1', // Monday mornings before 4am (matches schedule:earlyMondays preset)
+    ],
+  },
+  
+  // Suppress certain notifications
+  suppressNotifications: [
+    'prIgnoreNotification',
+  ],
+  
+  // PR recreation and update behavior
+  // recreateWhen: 'auto' means Renovate will recreate "immortal PRs" (grouped updates with different versions)
+  // If you want to prevent immortal PRs from being recreated, set to 'never'
+  // However, 'auto' is recommended as it handles lock file maintenance and pinning correctly
+  recreateWhen: 'auto', // Auto-detect when to recreate PRs (handles immortal PRs correctly)
+  // Separate patch from minor releases
+  // 
+  // Default behavior: Renovate groups patch and minor releases together
+  // Example: If you're on 0.8.0 and 0.8.1 (patch) and 0.9.0 (minor) are released,
+  //          Renovate creates one PR for 0.9.0 (patch is included in minor PR)
+  // 
+  // Our setting: separateMinorPatch: false (default behavior)
+  // - Patch and minor updates are grouped together (reduces PR count)
+  // - This is fine because we automerge both patch and minor updates
+  // 
+  // Alternative: Set to true to create separate PRs for patch releases
+  // - Useful if you want daily patch updates (automerged) and weekly minor/major updates
+  // - Example: Get patch PRs daily (automerged), minor/major PRs weekly (manual review)
+  // 
+  // See FAQ: https://docs.renovatebot.com/faq/#separate-patch-releases-from-minor-releases
+  separateMinorPatch: false, // Group minor and patch together (reduces PR count)
+  
+  // Separate major from minor releases
+  // 
+  // Default behavior: Renovate separates major and minor releases
+  // Example: If you're on 0.8.0 and 0.9.0 (minor) and 1.0.0 (major) are released,
+  //          Renovate creates two PRs: one for 0.9.0 and one for 1.0.0
+  // 
+  // Our setting: separateMajorMinor: true (default behavior, kept explicit)
+  // - Major updates are separate from minor updates (prevents "immortal PRs")
+  // - Major updates require dashboard approval (dependencyDashboardApproval: true)
+  // - Minor updates are automerged (automerge: true)
+  // 
+  // Alternative: Set to false to group major and minor together
+  // - ⚠️ Not recommended: Can create "immortal PRs" if major update is never merged
+  // - Example: If major PR is never merged, minor updates won't be created either
+  // 
+  // See FAQ: https://docs.renovatebot.com/faq/#use-separate-branches-per-dependency-but-not-one-per-major-release
+  separateMajorMinor: true, // Separate major from minor updates (prevents immortal PRs for majors)
+  // updateNotScheduled: true set via :updateNotScheduled preset
+  
+  // PR Body customization
+  // Customize the columns shown in the PR body table
+  // This table shows what packages are being updated and their details
+  prBodyColumns: [
+    'Package', // Package name
+    'Update', // Version being updated to
+    'Type', // Update type (major, minor, patch, etc.)
+    'Change', // Version change (e.g., "1.0.0 -> 1.1.0")
+    'Age', // How old the new version is
+    'Confidence', // Confidence level of the update
+    'References', // Links to changelogs, release notes, etc.
+  ],
+  
+  // Branch naming: Uses default 'renovate/' prefix
+  // Branch names follow pattern: renovate/<package>-<version>
+  // Example: renovate/react-18.x, renovate/next-14.x
+  // Changing branchPrefix would require re-onboarding to avoid duplicate PRs
+  
+  // Commit messages and PR titles:
+  // - Enabled via :semanticCommits preset
+  // - Format: <type>(deps): <action> <topic> <extra>
+  // - Example: "chore(deps): update react to v18.2.0"
+  // - Example: "fix(deps): update next to v14.1.0" (production dependencies use 'fix')
+  // - PR titles match commit messages by default (prTitle defaults to null)
+  // 
+  // Renovate automatically detects semantic commits from the last 10 commits in base branch
+  // If Angular-style conventional commits are found, Renovate uses them
+}
