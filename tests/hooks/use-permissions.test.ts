@@ -1,10 +1,10 @@
-import { renderHook } from "@testing-library/react";
 import { createElement, type ReactNode } from "react";
+import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { SessionProvider } from "@/auth/session-context";
 import { usePermissions } from "@/hooks/use-permissions";
 import { authClient } from "@/auth/client";
+import { SessionProvider } from "@/auth/session-context";
 
 vi.mock("@/auth/client", () => ({
   authClient: {
