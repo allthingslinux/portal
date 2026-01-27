@@ -475,6 +475,42 @@
       ],
     },
     {
+      // Critical packages keep their own group for minor/patch (override from above)
+      // Placed after patch/minor rules so this groupName wins for critical packages
+      matchPackageNames: [
+        'next',
+        'react',
+        'react-dom',
+        'better-auth',
+        '@better-auth/oauth-provider',
+        '@better-auth/passkey',
+        '@daveyplate/better-auth-tanstack',
+        '@daveyplate/better-auth-ui',
+        'drizzle-orm',
+        'drizzle-kit',
+        'drizzle-seed',
+        '@sentry/nextjs',
+        '@sentry/node-native',
+        '@sentry/profiling-node',
+        '@tanstack/react-query',
+        '@tanstack/react-table',
+        '@t3-oss/env-nextjs',
+        'next-intl',
+        'zod',
+        'pg',
+        'pg-native',
+        'postgres',
+      ],
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+      ],
+      groupName: 'critical',
+      addLabels: [
+        'deps: critical',
+      ],
+    },
+    {
       // Major updates require dashboard approval
       // This gives visibility into pending major updates without creating PRs automatically
       // 
