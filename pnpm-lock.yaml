@@ -291,6 +291,9 @@ importers:
       next-devtools-mcp:
         specifier: ^0.3.10
         version: 0.3.10
+      semantic-release:
+        specifier: ^25.0.2
+        version: 25.0.2(typescript@5.9.3)
       semantic-release-major-tag:
         specifier: ^0.3.2
         version: 0.3.2

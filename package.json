@@ -43,7 +43,8 @@
     "compose:staging": "docker compose --profile staging up -d",
     "compose:staging:down": "docker compose --profile staging down",
     "compose:adminer": "docker compose --profile adminer up -d",
-    "compose:adminer:down": "docker compose --profile adminer down"
+    "compose:adminer:down": "docker compose --profile adminer down",
+    "release": "semantic-release"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
@@ -142,6 +143,7 @@
     "jsdom": "^27.4.0",
     "lint-staged": "^16.2.7",
     "next-devtools-mcp": "^0.3.10",
+    "semantic-release": "^25.0.2",
     "semantic-release-major-tag": "^0.3.2",
     "shadcn": "^3.7.0",
     "tailwindcss": "^4.1.18",
