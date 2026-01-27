@@ -1,42 +1,68 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "@/auth": [
+        "./src/features/auth/lib"
+      ],
+      "@/auth/*": [
+        "./src/features/auth/lib/*"
+      ],
+      "@/db": [
+        "./src/shared/db"
+      ],
+      "@/db/*": [
+        "./src/shared/db/*"
+      ],
+      "@/config": [
+        "./src/shared/config"
+      ],
+      "@/config/*": [
+        "./src/shared/config/*"
+      ],
+      "@/ui/*": [
+        "./src/components/ui/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    },
     "target": "ESNext",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "allowJs": true,
+    "noEmit": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
     "incremental": true,
+    "esModuleInterop": true,
     "plugins": [
       {
         "name": "next"
       }
-    ],
-    "paths": {
-      "@/auth/*": ["./src/features/auth/lib/*"],
-      "@/auth": ["./src/features/auth/lib"],
-      "@/db": ["./src/shared/db"],
-      "@/db/*": ["./src/shared/db/*"],
-      "@/config": ["./src/shared/config"],
-      "@/config/*": ["./src/shared/config/*"],
-      "@/ui/*": ["./src/components/ui/*"],
-      "@/*": ["./src/*"]
-    }
+    ]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.mts",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules/**", "references/**", "src/components/ui/**"]
+  "exclude": [
+    "node_modules/**",
+    "references/**",
+    "src/components/ui/**"
+  ]
 }
