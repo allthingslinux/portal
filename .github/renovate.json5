@@ -693,7 +693,7 @@
       automerge: true,
       automergeType: 'branch',
       addLabels: [
-        'deps: github-actions',
+        'deps: actions',
       ],
       // Customize commit message topic for GitHub Actions
       // Default would be something like "actions/setup-node action"
