@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/allthingslinux/portal/compare/v1.0.1...v1.1.0) (2026-01-27)
+
+
+### Features
+
+* **auth:** implement script-only auth and db modules for admin user creation ([8780248](https://github.com/allthingslinux/portal/commit/87802486dc45f24459fec4a886b4100d0a43b5a7))
+
 ## [1.0.1](https://github.com/allthingslinux/portal/compare/v1.0.0...v1.0.1) (2026-01-27)
 
 
