@@ -18,8 +18,8 @@
     "lib": "@/shared",
     "hooks": "@/hooks",
     "styles": "@/styles",
-    "db": "@/shared/db",
-    "auth": "@/features/auth/lib/auth"
+    "db": "@/db",
+    "auth": "@/auth"
   },
   "menuColor": "default",
   "menuAccent": "bold",

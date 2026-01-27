@@ -1,12 +1,12 @@
 import type { MetadataRoute } from "next";
 
+import { BASE_URL } from "@/config";
 import type {
   ProtectedRoute,
   PublicRoute,
   RouteChild,
   RouteConfig,
 } from "@/features/routing/lib/types";
-import { BASE_URL } from "@/shared/config";
 
 function createSitemapEntry(
   path: string,

@@ -3,8 +3,8 @@ import "dotenv/config";
 import { eq } from "drizzle-orm";
 
 import { auth } from "@/auth";
-import { db } from "@/shared/db";
-import { user } from "@/shared/db/schema/auth";
+import { db } from "@/db";
+import { user } from "@/db/schema/auth";
 
 // ============================================================================
 // Create Admin User Script

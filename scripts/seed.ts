@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { reset, seed } from "drizzle-seed";
 
-import { db } from "@/shared/db/client";
-import { schema } from "@/shared/db/schema";
+import { db } from "@/db/client";
+import { schema } from "@/db/schema";
 
 // ============================================================================
 // Database Seeding Script

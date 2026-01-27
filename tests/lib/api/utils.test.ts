@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 // Mock database and auth before importing utils
-vi.mock("@/shared/db", () => ({
+vi.mock("@/db", () => ({
   db: {},
 }));
 

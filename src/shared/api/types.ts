@@ -5,9 +5,9 @@
 // Note: Filter, input, and response types are now in @/shared/types/api
 // This file contains Drizzle-inferred database entity types
 
-import type { apikey } from "@/shared/db/schema/api-keys";
-import type { session, user } from "@/shared/db/schema/auth";
-import type { oauthClient } from "@/shared/db/schema/oauth";
+import type { apikey } from "@/db/schema/api-keys";
+import type { session, user } from "@/db/schema/auth";
+import type { oauthClient } from "@/db/schema/oauth";
 
 // Re-export filter, input, and response types from centralized location
 export type {

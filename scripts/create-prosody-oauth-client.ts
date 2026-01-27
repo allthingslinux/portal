@@ -3,8 +3,8 @@ import "dotenv/config";
 import { randomBytes, randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
 
-import { db } from "@/shared/db";
-import { oauthClient } from "@/shared/db/schema/oauth";
+import { db } from "@/db";
+import { oauthClient } from "@/db/schema/oauth";
 
 // ============================================================================
 // Create Prosody OAuth Client Script

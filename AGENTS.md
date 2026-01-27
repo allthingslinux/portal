@@ -55,14 +55,16 @@ Portal is a centralized hub and identity management system for the AllThingsLinu
 ```typescript
 import { auth, authClient } from "@/auth";        // Authentication
 import { db } from "@/db";                        // Database
-import { Button } from "@/components/ui/button";  // UI components
+import { BASE_URL } from "@/config";              // App config (or @/config/app)
+import { Button } from "@/components/ui/button"; // UI components
 import { usePermissions } from "@/hooks/use-permissions"; // Custom hooks
 ```
 
 **Current Implementation:**
 
 - Auth module uses barrel exports via `@/auth` index file
-- Database uses barrel exports via `@/db` index file  
+- Database uses barrel exports via `@/db` index file
+- Config uses barrel exports via `@/config` (or `@/config/app` for app-specific config)
 - UI components use direct imports: `@/components/ui/button`
 - Most other modules use direct imports for performance
 

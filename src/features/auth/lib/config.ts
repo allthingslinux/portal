@@ -21,6 +21,9 @@ import "server-only";
 
 import { eq } from "drizzle-orm";
 
+import { db } from "@/db/client";
+import { schema } from "@/db/schema";
+import { xmppAccount } from "@/db/schema/xmpp";
 import {
   sendOTPEmail,
   sendResetPasswordEmail,
@@ -34,9 +37,6 @@ import {
   user as userRole,
 } from "./permissions";
 import { cleanupIntegrationAccounts } from "@/features/integrations/lib/core/user-deletion";
-import { db } from "@/shared/db/client";
-import { schema } from "@/shared/db/schema";
-import { xmppAccount } from "@/shared/db/schema/xmpp";
 
 // ============================================================================
 // Constants

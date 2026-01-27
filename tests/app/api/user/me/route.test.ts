@@ -57,15 +57,15 @@ vi.mock("@/features/integrations/lib", () => ({
 
 // Mock db client and its dependencies before any imports that use them
 // This prevents the relations file from trying to access schema properties
-vi.mock("@/shared/db/client", () => ({
+vi.mock("@/db/client", () => ({
   db: {},
 }));
 
-vi.mock("@/shared/db/relations", () => ({
+vi.mock("@/db/relations", () => ({
   relations: {},
 }));
 
-vi.mock("@/shared/db/schema/auth", () => ({
+vi.mock("@/db/schema/auth", () => ({
   user: {
     id: "id",
     name: "name",
@@ -94,7 +94,7 @@ vi.mock("@/shared/db/schema/auth", () => ({
   },
 }));
 
-vi.mock("@/shared/db/schema/api-keys", () => ({
+vi.mock("@/db/schema/api-keys", () => ({
   apikey: {
     id: "id",
     userId: "userId",
@@ -102,7 +102,7 @@ vi.mock("@/shared/db/schema/api-keys", () => ({
   jwks: {},
 }));
 
-vi.mock("@/shared/db/schema/oauth", () => ({
+vi.mock("@/db/schema/oauth", () => ({
   oauthClient: {
     id: "id",
     clientId: "clientId",
@@ -128,15 +128,15 @@ vi.mock("@/shared/db/schema/oauth", () => ({
   },
 }));
 
-vi.mock("@/shared/db/schema/integrations/base", () => ({
+vi.mock("@/db/schema/integrations/base", () => ({
   integrationAccount: {},
 }));
 
-vi.mock("@/shared/db/schema/xmpp", () => ({
+vi.mock("@/db/schema/xmpp", () => ({
   xmppAccount: {},
 }));
 
-vi.mock("@/shared/db/schema", () => ({
+vi.mock("@/db/schema", () => ({
   schema: {},
 }));
 
@@ -145,7 +145,7 @@ const mockFrom = vi.fn();
 const mockWhere = vi.fn();
 const mockLimit = vi.fn();
 
-vi.mock("@/shared/db", () => ({
+vi.mock("@/db", () => ({
   db: {
     select: () => mockSelect(),
   },

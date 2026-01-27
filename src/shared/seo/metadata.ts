@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import merge from "lodash/merge";
 
-import type { RouteTranslationResolver } from "@/features/routing/lib/i18n";
-import { getTranslatedRouteConfig } from "@/features/routing/lib/i18n";
-import type { RouteConfig } from "@/features/routing/lib/types";
 import {
   APP_AUTHOR,
   APP_CREATOR,
@@ -12,7 +9,10 @@ import {
   APP_PUBLISHER,
   APP_TITLE,
   BASE_URL,
-} from "@/shared/config";
+} from "@/config";
+import type { RouteTranslationResolver } from "@/features/routing/lib/i18n";
+import { getTranslatedRouteConfig } from "@/features/routing/lib/i18n";
+import type { RouteConfig } from "@/features/routing/lib/types";
 
 // ============================================================================
 // Default Metadata Configuration

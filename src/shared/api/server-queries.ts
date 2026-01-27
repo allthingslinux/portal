@@ -8,6 +8,10 @@ import "server-only";
 
 import { and, count, desc, eq, gt, ilike, or, sql } from "drizzle-orm";
 
+import { db } from "@/db";
+import { apikey } from "@/db/schema/api-keys";
+import { session, user } from "@/db/schema/auth";
+import { oauthClient } from "@/db/schema/oauth";
 import type {
   AdminStats,
   ApiKeyListFilters,
@@ -20,10 +24,6 @@ import type {
   UserListFilters,
   UserListResponse,
 } from "./types";
-import { db } from "@/shared/db";
-import { apikey } from "@/shared/db/schema/api-keys";
-import { session, user } from "@/shared/db/schema/auth";
-import { oauthClient } from "@/shared/db/schema/oauth";
 
 /**
  * Fetch users list (server-side)

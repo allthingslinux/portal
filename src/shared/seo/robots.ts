@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
+import { BASE_URL } from "@/config";
 import type { RouteConfig } from "@/features/routing/lib/types";
-import { BASE_URL } from "@/shared/config";
 
 /**
  * Generate robots.txt from route configuration

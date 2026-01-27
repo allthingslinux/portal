@@ -3,6 +3,9 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { eq } from "drizzle-orm";
 
+import { db } from "@/db";
+import { user } from "@/db/schema/auth";
+import { xmppAccount } from "@/db/schema/xmpp";
 import {
   checkProsodyAccountExists,
   createProsodyAccount,
@@ -22,9 +25,6 @@ import {
 } from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
-import { db } from "@/shared/db";
-import { user } from "@/shared/db/schema/auth";
-import { xmppAccount } from "@/shared/db/schema/xmpp";
 
 /**
  * XMPP integration implementation.

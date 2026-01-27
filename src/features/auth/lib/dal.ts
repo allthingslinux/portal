@@ -109,8 +109,8 @@ export const getUser = cache(async () => {
 
   try {
     // Import here to avoid circular dependencies
-    const { db } = await import("@/shared/db");
-    const { user } = await import("@/shared/db/schema/auth");
+    const { db } = await import("@/db");
+    const { user } = await import("@/db/schema/auth");
     const { eq } = await import("drizzle-orm");
 
     const [userData] = await db

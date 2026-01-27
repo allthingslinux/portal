@@ -2,8 +2,8 @@ import "server-only";
 
 import { eq } from "drizzle-orm";
 
-import { db } from "@/shared/db";
-import { user } from "@/shared/db/schema/auth";
+import { db } from "@/db";
+import { user } from "@/db/schema/auth";
 
 // ============================================================================
 // Server-Side Role Checking Utility

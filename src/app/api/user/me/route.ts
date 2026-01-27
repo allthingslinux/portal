@@ -1,9 +1,9 @@
 import type { NextRequest } from "next/server";
 import { eq } from "drizzle-orm";
 
+import { db } from "@/db";
+import { user } from "@/db/schema/auth";
 import { requireAuth } from "@/shared/api/utils";
-import { db } from "@/shared/db";
-import { user } from "@/shared/db/schema/auth";
 import {
   enrichWideEventWithUser,
   type WideEvent,

@@ -22,7 +22,9 @@
       "@/auth/*": ["./src/features/auth/lib/*"],
       "@/auth": ["./src/features/auth/lib"],
       "@/db": ["./src/shared/db"],
+      "@/db/*": ["./src/shared/db/*"],
       "@/config": ["./src/shared/config"],
+      "@/config/*": ["./src/shared/config/*"],
       "@/ui/*": ["./src/components/ui/*"],
       "@/*": ["./src/*"]
     }
