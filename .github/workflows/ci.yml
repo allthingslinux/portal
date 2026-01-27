@@ -127,7 +127,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
       - name: Cache Next.js build
-        uses: actions/cache@v4
+        uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5
         with:
           path: |
             .next/cache
