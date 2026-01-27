@@ -37,7 +37,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@/auth/client": path.resolve(__dirname, "./src/features/auth/lib/client.ts"),
+      "@/auth/client": path.resolve(
+        __dirname,
+        "./src/features/auth/lib/client.ts"
+      ),
       "@/auth": path.resolve(__dirname, "./src/features/auth/lib"),
       "@/db": path.resolve(__dirname, "./src/shared/db"),
       "@/config": path.resolve(__dirname, "./src/shared/config"),
