@@ -113,6 +113,9 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+    env:
+      # Placeholder so db client loads during Next.js build; routes that use DB are force-dynamic
+      DATABASE_URL: postgresql://localhost:5432/__build_placeholder__
     steps:
       - name: Checkout
         uses: actions/checkout@v6

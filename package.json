@@ -35,7 +35,15 @@
     "db:studio": "drizzle-kit studio --config src/lib/db/config.ts",
     "db:seed": "tsx scripts/seed.ts",
     "db:seed:reset": "tsx scripts/seed.ts reset",
-    "create-admin": "tsx scripts/create-admin.ts"
+    "create-admin": "tsx scripts/create-admin.ts",
+    "compose:db": "docker compose up -d portal-db",
+    "compose:db:down": "docker compose down",
+    "compose:production": "docker compose --profile production up -d",
+    "compose:production:down": "docker compose --profile production down",
+    "compose:staging": "docker compose --profile staging up -d",
+    "compose:staging:down": "docker compose --profile staging down",
+    "compose:adminer": "docker compose --profile adminer up -d",
+    "compose:adminer:down": "docker compose --profile adminer down"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",

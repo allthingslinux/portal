@@ -142,13 +142,13 @@ cd ~/portal
 # Pull latest image
 docker pull ghcr.io/allthingslinux/portal:staging-<commit-sha>
 
-# Deploy
+# Deploy (single compose.yaml; use profile for staging or production)
 export GITHUB_REPOSITORY="allthingslinux/portal"
 export GIT_COMMIT_SHA="<commit-sha>"
-docker compose -f compose.staging.yaml up -d
+docker compose --profile staging up -d
 
 # Or for production
-docker compose -f compose.production.yaml up -d
+docker compose --profile production up -d
 ```
 
 ## Database Migrations
@@ -157,11 +157,11 @@ Migrations run automatically during production deployments. For manual migration
 
 ```bash
 # On VPS
-docker compose -f compose.production.yaml exec portal-app pnpm db:migrate
+docker compose --profile production exec portal-app-production pnpm db:migrate
 ```
 
 **Before production migrations:**
-1. Backup database: `docker compose -f compose.production.yaml exec portal-db-production pg_dump -U postgres portal > backup.sql`
+1. Backup database: `docker compose --profile production exec portal-db-production pg_dump -U postgres portal > backup.sql`
 2. Test migrations on staging first
 3. Review migration files in `drizzle/` directory
 
@@ -171,13 +171,13 @@ docker compose -f compose.production.yaml exec portal-app pnpm db:migrate
 
 ```bash
 # Application logs
-docker compose -f compose.production.yaml logs -f portal-app
+docker compose --profile production logs -f portal-app-production
 
 # Database logs
-docker compose -f compose.production.yaml logs -f portal-db-production
+docker compose --profile production logs -f portal-db-production
 
 # All logs
-docker compose -f compose.production.yaml logs -f
+docker compose --profile production logs -f
 ```
 
 ### Health Checks
@@ -187,7 +187,7 @@ The application includes health check endpoints:
 
 Check container health:
 ```bash
-docker compose -f compose.production.yaml ps
+docker compose --profile production ps
 ```
 
 ### Rollback
@@ -196,14 +196,14 @@ If deployment fails or you need to rollback:
 
 ```bash
 # Stop current containers
-docker compose -f compose.production.yaml down
+docker compose --profile production down
 
 # Pull previous image
 docker pull ghcr.io/allthingslinux/portal:production-<previous-commit-sha>
 
-# Update compose file with previous tag and restart
-export GIT_COMMIT_SHA="<previous-commit-sha>"
-docker compose -f compose.production.yaml up -d
+# Restart with previous tag
+export IMAGE_TAG=production-<previous-commit-sha>
+docker compose --profile production up -d
 ```
 
 ## Cloudflare Configuration
@@ -257,35 +257,35 @@ With Cloudflare in front, this is usually not necessary.
 
 ```bash
 # Check logs
-docker compose -f compose.production.yaml logs portal-app
+docker compose --profile production logs portal-app-production
 
 # Check container status
-docker compose -f compose.production.yaml ps
+docker compose --profile production ps
 
 # Verify environment variables
-docker compose -f compose.production.yaml exec portal-app env
+docker compose --profile production exec portal-app-production env
 ```
 
 ### Database connection issues
 
 ```bash
 # Check database is running
-docker compose -f compose.production.yaml ps portal-db-production
+docker compose --profile production ps portal-db-production
 
 # Test connection
-docker compose -f compose.production.yaml exec portal-db-production psql -U postgres -d portal
+docker compose --profile production exec portal-db-production psql -U postgres -d portal
 
 # Check database logs
-docker compose -f compose.production.yaml logs portal-db-production
+docker compose --profile production logs portal-db-production
 ```
 
 ### Port conflicts
 
-Staging and production use different ports:
+Staging and production use different ports (see `compose.yaml` profiles):
 - Staging: App on 3001, DB on 5433
 - Production: App on 3000, DB on 5432
 
-If you need to change ports, update the compose files.
+If you need to change ports, update `compose.yaml` for the relevant profile.
 
 ### Out of disk space
 
@@ -316,11 +316,11 @@ docker volume prune -f
 
 ```bash
 # Create backup
-docker compose -f compose.production.yaml exec portal-db-production \
+docker compose --profile production exec portal-db-production \
   pg_dump -U postgres portal > backup-$(date +%Y%m%d-%H%M%S).sql
 
 # Restore backup
-docker compose -f compose.production.yaml exec -T portal-db-production \
+docker compose --profile production exec -T portal-db-production \
   psql -U postgres portal < backup-20240126-120000.sql
 ```
 
@@ -330,7 +330,7 @@ Set up a cron job for daily backups:
 
 ```bash
 # Add to crontab (crontab -e)
-0 2 * * * cd ~/portal && docker compose -f compose.production.yaml exec -T portal-db-production pg_dump -U postgres portal > /backups/portal-$(date +\%Y\%m\%d).sql
+0 2 * * * cd ~/portal && docker compose --profile production exec -T portal-db-production pg_dump -U postgres portal > /backups/portal-$(date +\%Y\%m\%d).sql
 ```
 
 ## Scaling
@@ -342,13 +342,12 @@ For higher traffic, consider:
 3. **Caching**: Redis for session storage
 4. **CDN**: Cloudflare already provides this
 
-Update compose files to add more app replicas:
+Update `compose.yaml` (e.g. `portal-app-production` under the production profile) to add more app replicas:
 
 ```yaml
-services:
-  portal-app:
-    deploy:
-      replicas: 3
+portal-app-production:
+  deploy:
+    replicas: 3
 ```
 
 ## Support

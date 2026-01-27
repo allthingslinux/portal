@@ -1,16 +1,200 @@
+# Docker Compose — Development, Staging, and Production
+#
+# One file, three modes via profiles. portal-db has no profile and is for local dev.
+# See: https://docs.docker.com/compose/how-tos/profiles/
+#
+#   Local development (DB only; run app with pnpm dev):
+#     docker compose up -d
+#     docker compose up -d portal-db
+#
+#   Production (pre-built image, resource limits, hardened):
+#     docker compose --profile production up -d
+#     COMPOSE_PROFILES=production docker compose up -d
+#
+#   Staging (pre-built image, different ports/DB):
+#     docker compose --profile staging up -d
+#     COMPOSE_PROFILES=staging docker compose up -d
+#
+#   Add Adminer (DB UI): use --profile adminer with dev or standalone.
+#
+# Do not use --profile production and --profile staging together (different ports/containers).
+# Set RESTART_POLICY=unless-stopped in .env for production.
+#
+name: portal
+
 services:
+  # --------------------------------------------------------------------------
+  # Local dev DB — no profile; always available. Used by pnpm dev / db:studio.
+  # --------------------------------------------------------------------------
   portal-db:
     image: postgres:18
     container_name: portal-db
+    hostname: portal-db
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-portal}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - portal-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-portal} -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # --------------------------------------------------------------------------
+  # Production app + DB — use: docker compose --profile production up -d
+  # --------------------------------------------------------------------------
+  portal-db-production:
+    image: postgres:18-alpine
+    container_name: portal-db-production
+    hostname: portal-db-production
+    profiles: [production]
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: portal
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-portal}
     volumes:
-      - portal-db-data:/var/lib/postgresql
+      - portal-db-production-data:/var/lib/postgresql/data
+    networks:
+      - portal-production
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+        reservations:
+          cpus: "0.5"
+          memory: 1G
+
+  portal-app-production:
+    image: ghcr.io/${GITHUB_REPOSITORY:-allthingslinux/portal}:${IMAGE_TAG:-production-latest}
+    container_name: portal-app-production
+    hostname: portal-app-production
+    profiles: [production]
+    restart: unless-stopped
+    env_file:
+      - path: .env.production
+        required: true
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      portal-db-production:
+        condition: service_healthy
+    networks:
+      - portal-production
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 512M
+
+  # --------------------------------------------------------------------------
+  # Staging app + DB — use: docker compose --profile staging up -d
+  # --------------------------------------------------------------------------
+  portal-db-staging:
+    image: postgres:18-alpine
+    container_name: portal-db-staging
+    hostname: portal-db-staging
+    profiles: [staging]
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-portal_staging}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - portal-db-staging-data:/var/lib/postgresql/data
+    networks:
+      - portal-staging
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  portal-app-staging:
+    image: ghcr.io/${GITHUB_REPOSITORY:-allthingslinux/portal}:${IMAGE_TAG:-staging-latest}
+    container_name: portal-app-staging
+    hostname: portal-app-staging
+    profiles: [staging]
+    restart: unless-stopped
+    env_file:
+      - path: .env.staging
+        required: true
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    ports:
+      - "127.0.0.1:3001:3000"
+    depends_on:
+      portal-db-staging:
+        condition: service_healthy
+    networks:
+      - portal-staging
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # --------------------------------------------------------------------------
+  # Adminer (DB UI) — use with dev or alone: docker compose --profile adminer up -d
+  # --------------------------------------------------------------------------
+  portal-adminer:
+    image: adminer:latest
+    container_name: portal-adminer
+    hostname: portal-adminer
+    profiles: [adminer]
+    restart: "no"
+    ports:
+      - "127.0.0.1:${ADMINER_PORT:-8080}:8080"
+    environment:
+      ADMINER_DEFAULT_SYSTEM: pgsql
+      ADMINER_DEFAULT_SERVER: portal-db
+      ADMINER_DEFAULT_DATABASE: ${POSTGRES_DB:-portal}
+    depends_on:
+      portal-db:
+        condition: service_healthy
 
 volumes:
   portal-db-data:
+    name: portal-db-data
+  portal-db-production-data:
+    name: portal-db-production-data
+  portal-db-staging-data:
+    name: portal-db-staging-data
+
+networks:
+  portal-production:
+    name: portal-production
+    driver: bridge
+  portal-staging:
+    name: portal-staging
+    driver: bridge

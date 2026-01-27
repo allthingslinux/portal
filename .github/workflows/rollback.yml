@@ -37,17 +37,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Determine compose file
+      - name: Determine compose profile
         id: env
         run: |
           ENV="${{ github.event.inputs.environment }}"
-          echo "compose_file=compose.$ENV.yaml" >> $GITHUB_OUTPUT
+          echo "compose_profile=$ENV" >> $GITHUB_OUTPUT
           echo "environment=$ENV" >> $GITHUB_OUTPUT
 
       - name: Rollback deployment
         uses: appleboy/ssh-action@v1
         env:
-          COMPOSE_FILE: ${{ steps.env.outputs.compose_file }}
+          COMPOSE_PROFILES: ${{ steps.env.outputs.compose_profile }}
           ENVIRONMENT: ${{ steps.env.outputs.environment }}
           PREVIOUS_COMMIT: ${{ github.event.inputs.previous_commit }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -60,7 +60,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
           timeout: 5m
-          envs: COMPOSE_FILE,ENVIRONMENT,PREVIOUS_COMMIT,GITHUB_REPOSITORY,GITHUB_ACTOR,GITHUB_TOKEN,IMAGE_NAME
+          envs: COMPOSE_PROFILES,ENVIRONMENT,PREVIOUS_COMMIT,GITHUB_REPOSITORY,GITHUB_ACTOR,GITHUB_TOKEN,IMAGE_NAME
           script_path: .github/scripts/rollback.sh
 
       - name: Rollback summary
@@ -68,6 +68,6 @@ jobs:
           echo "## Rollback Summary" >> $GITHUB_STEP_SUMMARY
           echo "- Environment: ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
           echo "- Rolled back to: \`${{ github.event.inputs.previous_commit }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Compose File: \`${{ steps.env.outputs.compose_file }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Compose profile: \`${{ steps.env.outputs.compose_profile }}\` (compose.yaml)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "⚠️ Verify the rollback was successful by checking application health and logs." >> $GITHUB_STEP_SUMMARY

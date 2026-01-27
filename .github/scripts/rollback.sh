@@ -4,7 +4,7 @@
 # ============================================================================
 # This script rolls back the Portal application to a previous version
 # It expects the following environment variables:
-#   - COMPOSE_FILE: Docker Compose file to use (e.g., compose.staging.yaml)
+#   - COMPOSE_PROFILES: Compose profile (staging or production); use compose.yaml
 #   - ENVIRONMENT: Deployment environment (staging or production)
 #   - PREVIOUS_COMMIT: Git commit SHA or image tag to rollback to
 #   - GITHUB_REPOSITORY: GitHub repository (e.g., owner/repo)
@@ -48,18 +48,19 @@ export IMAGE_TAG="$IMAGE_TAG"
 
 # Stop existing containers
 echo "Stopping existing containers..."
-docker compose -f "$COMPOSE_FILE" down --timeout 30 || true
+docker compose --profile "${COMPOSE_PROFILES:-$ENVIRONMENT}" down --timeout 30 || true
 
 # Start containers with previous image
 echo "Starting containers with previous image..."
-docker compose -f "$COMPOSE_FILE" up -d
+docker compose --profile "${COMPOSE_PROFILES:-$ENVIRONMENT}" up -d
 
-# Wait for health check
+# Wait for health check (service name: portal-app-production or portal-app-staging)
+APP_SVC="portal-app-${ENVIRONMENT}"
 echo "Waiting for application to be healthy..."
 timeout=120
 elapsed=0
 while [ $elapsed -lt $timeout ]; do
-  if docker compose -f "$COMPOSE_FILE" ps portal-app | grep -q "healthy"; then
+  if docker compose --profile "${COMPOSE_PROFILES:-$ENVIRONMENT}" ps "$APP_SVC" | grep -q "healthy"; then
     echo "Application is healthy after rollback!"
     break
   fi
@@ -74,4 +75,4 @@ if [ $elapsed -ge $timeout ]; then
 fi
 
 echo "Rollback completed to: $IMAGE_TAG"
-echo "Current image: $(docker compose -f $COMPOSE_FILE ps portal-app | grep portal-app || echo 'Not found')"
+echo "Current image: $(docker compose --profile "${COMPOSE_PROFILES:-$ENVIRONMENT}" ps "$APP_SVC" | grep "$APP_SVC" || echo 'Not found')"

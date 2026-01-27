@@ -37,10 +37,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@/auth/client": path.resolve(__dirname, "./src/lib/auth/client.ts"),
-      "@/auth": path.resolve(__dirname, "./src/lib/auth/index.ts"),
-      "@/db": path.resolve(__dirname, "./src/lib/db"),
-      "@/config": path.resolve(__dirname, "./src/lib/config"),
+      "@/auth/client": path.resolve(__dirname, "./src/features/auth/lib/client.ts"),
+      "@/auth": path.resolve(__dirname, "./src/features/auth/lib"),
+      "@/db": path.resolve(__dirname, "./src/shared/db"),
+      "@/config": path.resolve(__dirname, "./src/shared/config"),
       "@/ui": path.resolve(__dirname, "./src/components/ui"),
       "@": path.resolve(__dirname, "./src"),
       "server-only": path.resolve(__dirname, "./vitest.server-only-mock.ts"),

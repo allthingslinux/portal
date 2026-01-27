@@ -5,7 +5,7 @@
 # This script handles the deployment of the Portal application to a VPS
 # It expects the following environment variables:
 #   - IMAGE_TAG: Docker image tag to deploy
-#   - COMPOSE_FILE: Docker Compose file to use (e.g., compose.staging.yaml)
+#   - COMPOSE_PROFILES: Compose profile (staging or production); use compose.yaml
 #   - ENVIRONMENT: Deployment environment (staging or production)
 #   - GIT_COMMIT_SHA: Git commit SHA being deployed
 #   - GITHUB_REPOSITORY: GitHub repository (e.g., owner/repo)
@@ -33,18 +33,19 @@ export IMAGE_TAG="$IMAGE_TAG"
 
 # Stop existing containers gracefully
 echo "Stopping existing containers..."
-docker compose -f "$COMPOSE_FILE" down --timeout 30 || true
+docker compose --profile "${COMPOSE_PROFILES:-$ENVIRONMENT}" down --timeout 30 || true
 
 # Start new containers
 echo "Starting new containers..."
-docker compose -f "$COMPOSE_FILE" up -d
+docker compose --profile "${COMPOSE_PROFILES:-$ENVIRONMENT}" up -d
 
-# Wait for health check
+# Wait for health check (service name: portal-app-production or portal-app-staging)
+APP_SVC="portal-app-${ENVIRONMENT}"
 echo "Waiting for application to be healthy..."
 timeout=120
 elapsed=0
 while [ $elapsed -lt $timeout ]; do
-  if docker compose -f "$COMPOSE_FILE" ps portal-app | grep -q "healthy"; then
+  if docker compose --profile "${COMPOSE_PROFILES:-$ENVIRONMENT}" ps "$APP_SVC" | grep -q "healthy"; then
     echo "Application is healthy!"
     break
   fi
@@ -55,14 +56,14 @@ done
 # Check if health check timed out
 if [ $elapsed -ge $timeout ]; then
   echo "Health check timeout! Rolling back..."
-  docker compose -f "$COMPOSE_FILE" down
+  docker compose --profile "${COMPOSE_PROFILES:-$ENVIRONMENT}" down
   exit 1
 fi
 
 # Handle database migrations for production
 if [ "$ENVIRONMENT" == "production" ]; then
   echo "Note: Database migrations should be run manually or via a separate migration step."
-  echo "Run: docker compose -f $COMPOSE_FILE run --rm portal-app sh -c \"pnpm install && pnpm db:migrate\""
+  echo "Run: docker compose --profile production exec portal-app-production pnpm db:migrate"
   echo "Or run migrations from host machine with database connection."
 fi
 

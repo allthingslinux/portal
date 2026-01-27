@@ -4,7 +4,7 @@
 # ============================================================================
 # This script runs database migrations directly on the VPS using drizzle-kit
 # It expects the following environment variables:
-#   - COMPOSE_FILE: Docker Compose file to use (e.g., compose.staging.yaml)
+#   - COMPOSE_PROFILES: Compose profile when using compose.yaml (staging or production)
 #   - ENVIRONMENT: Deployment environment (staging or production)
 #   - DATABASE_URL: Database connection string
 #   - DRY_RUN: If "true", preview SQL without executing

@@ -27,20 +27,18 @@ import { schema } from "./schema";
 
 const env = keys();
 
-// Validate DATABASE_URL is present at runtime
-// It's optional during build but required when the database is actually used
-if (!env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL environment variable is required but not set. " +
-      "Please configure DATABASE_URL in your environment variables."
-  );
-}
+// Use placeholder when DATABASE_URL is missing so the module loads during Next.js
+// build (e.g. when route modules are loaded for /.well-known/* and auth). The
+// placeholder is never used at runtime—routes that need the DB are force-dynamic.
+// Runtime without DATABASE_URL will fail on first connection (connection refused).
+const BUILD_PLACEHOLDER_URL = "postgresql://localhost:5432/__build_placeholder__";
+const connectionString = env.DATABASE_URL ?? BUILD_PLACEHOLDER_URL;
 
 // Pool configuration options
 // You can specify any property from node-postgres connection options
 // See: https://node-postgres.com/features/connecting
 const poolConfig: PoolConfig = {
-  connectionString: env.DATABASE_URL,
+  connectionString,
   // SSL configuration (uncomment and configure for production)
   // ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
   // Connection pool settings (optional)

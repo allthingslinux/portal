@@ -20,7 +20,7 @@ Portal is a centralized hub and identity management system for the AllThingsLinu
 - Open DB studio: `pnpm db:studio`
 - Seed database: `pnpm db:seed`
 - Create admin user: `pnpm create-admin`
-- Start database: `docker compose up -d portal-db`
+- Start database: `pnpm compose:db` or `docker compose up -d portal-db`
 
 ## Tech Stack
 
@@ -225,7 +225,7 @@ export const xmppConfig = {
 - Use Suspense for loading states
 - Optimize images with next/image
 - Format code with `pnpm fix`
-- Database setup uses Docker Compose (`docker compose up -d portal-db`)
+- Database setup uses Docker Compose (`pnpm compose:db` or `docker compose up -d portal-db`); `pnpm compose:production`, `pnpm compose:staging`, `pnpm compose:adminer` for other profiles
 - Available MCP tools: shadcn, Better Auth, llms.txt documentation, Next.js Devtools, GitHub, Sentry, Trigger.dev
 - Use TanStack Query for all server state management
 - Internationalization handled via next-intl with locale files in `locale/` directory

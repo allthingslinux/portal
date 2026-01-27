@@ -99,13 +99,13 @@ jobs:
           fi
           echo "environment=$ENV" >> $GITHUB_OUTPUT
           echo "tag=$ENV-${{ github.sha }}" >> $GITHUB_OUTPUT
-          echo "compose_file=compose.$ENV.yaml" >> $GITHUB_OUTPUT
+          echo "compose_profile=$ENV" >> $GITHUB_OUTPUT
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1
         env:
           IMAGE_TAG: ${{ steps.env.outputs.tag }}
-          COMPOSE_FILE: ${{ steps.env.outputs.compose_file }}
+          COMPOSE_PROFILES: ${{ steps.env.outputs.compose_profile }}
           ENVIRONMENT: ${{ steps.env.outputs.environment }}
           GIT_COMMIT_SHA: ${{ github.sha }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -118,7 +118,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
           timeout: 5m
-          envs: IMAGE_TAG,COMPOSE_FILE,ENVIRONMENT,GIT_COMMIT_SHA,GITHUB_REPOSITORY,GITHUB_ACTOR,GITHUB_TOKEN,IMAGE_NAME
+          envs: IMAGE_TAG,COMPOSE_PROFILES,ENVIRONMENT,GIT_COMMIT_SHA,GITHUB_REPOSITORY,GITHUB_ACTOR,GITHUB_TOKEN,IMAGE_NAME
           script_path: .github/scripts/deploy.sh
 
       - name: Deployment summary
@@ -128,11 +128,11 @@ jobs:
           echo "- Image: \`ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.env.outputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- Branch: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Compose File: \`${{ steps.env.outputs.compose_file }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Compose profile: \`${{ steps.env.outputs.compose_profile }}\` (compose.yaml)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
           echo "- Verify deployment at your VPS" >> $GITHUB_STEP_SUMMARY
-          echo "- Check application logs: \`docker compose -f ${{ steps.env.outputs.compose_file }} logs portal-app\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Check application logs: \`docker compose --profile ${{ steps.env.outputs.compose_profile }} logs portal-app-${{ steps.env.outputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.env.outputs.environment }}" == "production" ]; then
             echo "- ⚠️ Verify database migrations completed successfully" >> $GITHUB_STEP_SUMMARY
           fi
