@@ -208,6 +208,7 @@
     'github-actions', // GitHub Actions workflows (.github/workflows/*.yml)
     'docker-compose', // Docker Compose files (compose.*.yaml) - stable, no preview preset needed
     'dockerfile', // Dockerfiles (Containerfile, Dockerfile, *.dockerfile) - stable, no preview preset needed
+    'mise', // mise-en-place tool versions (mise.toml, .mise.toml, .rtx.toml)
   ],
   
   // Use platform-native automerge (GitHub/GitLab built-in automerge)
@@ -748,6 +749,22 @@
       automergeType: 'branch',
       addLabels: [
         'deps: docker',
+      ],
+    },
+    {
+      // mise-en-place updates (mise.toml, .mise.toml, .rtx.toml)
+      //
+      // Renovate's mise manager updates the primary (first) version listed per tool.
+      // Supports node, python, go, etc. via node-version, pypi, go datasources.
+      // See https://docs.renovatebot.com/modules/manager/mise/
+      matchManagers: [
+        'mise',
+      ],
+      groupName: 'mise',
+      automerge: true,
+      automergeType: 'branch',
+      addLabels: [
+        'deps: mise',
       ],
     },
     {
