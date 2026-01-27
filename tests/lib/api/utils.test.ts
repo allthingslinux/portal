@@ -40,29 +40,27 @@ describe("APIError", () => {
 });
 
 describe("handleAPIError", () => {
-  it("should handle APIError correctly", () => {
+  it("should handle APIError correctly", async () => {
     const error = new APIError("Not found", 404);
     const response = handleAPIError(error);
 
     expect(response.status).toBe(404);
-    return response.json().then((data: unknown) => {
-      expect(data).toEqual({
-        ok: false,
-        error: "Not found",
-      });
+    const data = (await response.json()) as { ok: boolean; error: string };
+    expect(data).toEqual({
+      ok: false,
+      error: "Not found",
     });
   });
 
-  it("should handle generic errors", () => {
+  it("should handle generic errors", async () => {
     const error = new Error("Something went wrong");
     const response = handleAPIError(error);
 
     expect(response.status).toBe(500);
-    return response.json().then((data: unknown) => {
-      expect(data).toEqual({
-        ok: false,
-        error: "Internal server error",
-      });
+    const data = (await response.json()) as { ok: boolean; error: string };
+    expect(data).toEqual({
+      ok: false,
+      error: "Internal server error",
     });
   });
 });

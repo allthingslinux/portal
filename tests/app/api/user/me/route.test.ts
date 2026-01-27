@@ -188,7 +188,7 @@ describe("GET /api/user/me", () => {
   it("should return user data for authenticated user", async () => {
     mockRequireAuth.mockResolvedValue({
       userId: "user-1",
-      session: {} as never,
+      session: { user: { id: "user-1", email: "test@example.com" } } as never,
     });
 
     mockLimit.mockResolvedValue([
@@ -227,7 +227,7 @@ describe("GET /api/user/me", () => {
   it("should return 404 when user is not found", async () => {
     mockRequireAuth.mockResolvedValue({
       userId: "user-1",
-      session: {} as never,
+      session: { user: { id: "user-1", email: "test@example.com" } } as never,
     });
 
     mockLimit.mockResolvedValue([]);
@@ -267,7 +267,7 @@ describe("GET /api/user/me", () => {
   it("should handle database errors", async () => {
     mockRequireAuth.mockResolvedValue({
       userId: "user-1",
-      session: {} as never,
+      session: { user: { id: "user-1", email: "test@example.com" } } as never,
     });
 
     mockSelect.mockImplementation(() => {

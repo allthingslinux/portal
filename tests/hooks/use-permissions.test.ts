@@ -1,6 +1,8 @@
 import { renderHook } from "@testing-library/react";
+import { createElement, type ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { SessionProvider } from "@/auth/session-context";
 import { usePermissions } from "@/hooks/use-permissions";
 import { authClient } from "@/auth/client";
 
@@ -12,6 +14,10 @@ vi.mock("@/auth/client", () => ({
     },
   },
 }));
+
+function TestWrapper({ children }: { children: ReactNode }) {
+  return createElement(SessionProvider, null, children);
+}
 
 describe("usePermissions", () => {
   beforeEach(() => {
@@ -25,7 +31,9 @@ describe("usePermissions", () => {
       error: null,
     } as never);
 
-    const { result } = renderHook(() => usePermissions());
+    const { result } = renderHook(() => usePermissions(), {
+      wrapper: TestWrapper,
+    });
 
     expect(result.current).toEqual({
       canManageUsers: false,
@@ -41,7 +49,9 @@ describe("usePermissions", () => {
       error: null,
     } as never);
 
-    const { result } = renderHook(() => usePermissions());
+    const { result } = renderHook(() => usePermissions(), {
+      wrapper: TestWrapper,
+    });
 
     expect(result.current).toEqual({
       canManageUsers: false,
@@ -64,7 +74,9 @@ describe("usePermissions", () => {
 
     vi.mocked(authClient.admin.checkRolePermission).mockReturnValue(true);
 
-    const { result } = renderHook(() => usePermissions());
+    const { result } = renderHook(() => usePermissions(), {
+      wrapper: TestWrapper,
+    });
 
     expect(result.current).toEqual({
       canManageUsers: true,
@@ -94,7 +106,9 @@ describe("usePermissions", () => {
 
     vi.mocked(authClient.admin.checkRolePermission).mockReturnValue(false);
 
-    const { result } = renderHook(() => usePermissions());
+    const { result } = renderHook(() => usePermissions(), {
+      wrapper: TestWrapper,
+    });
 
     expect(result.current).toEqual({
       canManageUsers: false,
@@ -122,20 +136,24 @@ describe("usePermissions", () => {
     // biome-ignore lint/suspicious/noEmptyBlockStatements: Suppress console.error in tests
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    const { result } = renderHook(() => usePermissions());
+    try {
+      const { result } = renderHook(() => usePermissions(), {
+        wrapper: TestWrapper,
+      });
 
-    expect(result.current).toEqual({
-      canManageUsers: false,
-      canViewAdmin: false,
-      loading: false,
-    });
+      expect(result.current).toEqual({
+        canManageUsers: false,
+        canViewAdmin: false,
+        loading: false,
+      });
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "Failed to check permissions:",
-      expect.any(Error)
-    );
-
-    consoleSpy.mockRestore();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Failed to check permissions:",
+        expect.any(Error)
+      );
+    } finally {
+      consoleSpy.mockRestore();
+    }
   });
 
   it("should default to user role when role is undefined", () => {
@@ -152,7 +170,9 @@ describe("usePermissions", () => {
 
     vi.mocked(authClient.admin.checkRolePermission).mockReturnValue(false);
 
-    const { result } = renderHook(() => usePermissions());
+    const { result } = renderHook(() => usePermissions(), {
+      wrapper: TestWrapper,
+    });
 
     expect(authClient.admin.checkRolePermission).toHaveBeenCalledWith({
       role: "user",

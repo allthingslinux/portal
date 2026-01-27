@@ -1,8 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { sendEmail } from "@/shared/utils/email";
 
 describe("sendEmail", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("should log email details in development", () => {
     // biome-ignore lint/suspicious/noEmptyBlockStatements: Suppress console.log in tests
     const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
@@ -21,8 +25,6 @@ describe("sendEmail", () => {
         content: "<p>Test content</p>",
       })
     );
-
-    consoleSpy.mockRestore();
   });
 
   it("should handle text content", () => {
@@ -43,7 +45,5 @@ describe("sendEmail", () => {
         content: "Plain text content",
       })
     );
-
-    consoleSpy.mockRestore();
   });
 });
