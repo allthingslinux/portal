@@ -20,6 +20,12 @@
 # Do not use --profile production and --profile staging together (different ports/containers).
 # Set RESTART_POLICY=unless-stopped in .env for production.
 #
+# PostgreSQL 18+ uses /var/lib/postgresql (not .../data) for the volume mount;
+# the image stores data in a versioned subdir. See docker-library/postgres#1259.
+# If you see "PostgreSQL data in /var/lib/postgresql/data (unused mount)" after
+# upgrading, remove the old volume and start fresh, or run pg_upgrade:
+#   docker compose down && docker volume rm portal-db-data && docker compose up -d portal-db
+#
 name: portal
 
 services:
@@ -38,7 +44,7 @@ services:
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - portal-db-data:/var/lib/postgresql/data
+      - portal-db-data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-portal} -h localhost"]
       interval: 10s
@@ -60,7 +66,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-portal}
     volumes:
-      - portal-db-production-data:/var/lib/postgresql/data
+      - portal-db-production-data:/var/lib/postgresql
     networks:
       - portal-production
     healthcheck:
@@ -128,7 +134,7 @@ services:
     ports:
       - "127.0.0.1:5433:5432"
     volumes:
-      - portal-db-staging-data:/var/lib/postgresql/data
+      - portal-db-staging-data:/var/lib/postgresql
     networks:
       - portal-staging
     healthcheck:
