@@ -45,11 +45,13 @@ All services are accessible across multiple domains: `atl.dev`, `atl.sh`, `atl.t
 pnpm install
 
 # Set up environment variables
-# Create a .env file with your configuration
-# Required variables include database connection, BetterAuth configuration, etc.
+# Create a .env file with your configuration. Required variables include
+# DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, etc. Environment is
+# validated via @t3-oss/env-nextjs in src/env.ts (extends module keys).
 
-# Start PostgreSQL database (using Docker Compose)
-docker compose up -d portal-db
+# Start PostgreSQL database (Docker Compose)
+pnpm compose:db
+# or: docker compose up -d portal-db
 
 # Run database migrations
 pnpm db:migrate
@@ -70,6 +72,7 @@ pnpm dev
 # Alternative development commands:
 pnpm dev:turbo        # Use Turbopack for faster builds
 pnpm dev:https        # Run with HTTPS enabled
+pnpm dev:grab         # React Grab + dev (cursor integration)
 pnpm scan             # Start dev server with React Scan (performance profiling)
 ```
 
@@ -82,8 +85,9 @@ The application will be available at [http://localhost:3000](http://localhost:30
 - `pnpm dev` - Start development server
 - `pnpm dev:turbo` - Start dev server with Turbopack
 - `pnpm dev:https` - Start dev server with HTTPS
+- `pnpm dev:grab` - Start dev server with React Grab (cursor integration)
 - `pnpm scan` - Start dev server with React Scan (performance profiling)
-- `pnpm build` - Build for production
+- `pnpm build` - Build for production (runs typegen then build)
 - `pnpm build:debug` - Build with debug output
 - `pnpm build:profile` - Build with profiling
 - `pnpm build:prerender-debug` - Build with prerender debugging
@@ -94,8 +98,7 @@ The application will be available at [http://localhost:3000](http://localhost:30
 - `pnpm check` - Run linting and type checking (Ultracite)
 - `pnpm fix` - Auto-fix linting and formatting issues
 - `pnpm type-check` - Type check without linting
-- `pnpm type-check:full` - Full type check with Next.js type generation
-- `pnpm typegen` - Generate Next.js types
+- `pnpm typegen` - Generate Next.js types (run before build for full type checking)
 - `pnpm analyze` - Analyze bundle size
 - `pnpm analyze:output` - Analyze and output bundle report
 - `pnpm deduplicate` - Deduplicate dependencies
@@ -120,39 +123,53 @@ The application will be available at [http://localhost:3000](http://localhost:30
 - `pnpm auth:init-schema` - Generate BetterAuth database schema
 - `pnpm create-admin` - Create an admin user
 
+### Docker Compose
+
+- `pnpm compose:db` - Start PostgreSQL container (portal-db)
+- `pnpm compose:db:down` - Stop database stack
+- `pnpm compose:production` - Start production profile
+- `pnpm compose:staging` - Start staging profile
+- `pnpm compose:adminer` - Start Adminer for DB management
+- `pnpm compose:adminer:down` / `compose:production:down` / `compose:staging:down` - Stop respective profiles
+
 ### Utilities
 
 - `pnpm info` - Show Next.js environment information
 - `pnpm upgrade` - Upgrade Next.js and dependencies
 - `pnpm telemetry:enable` - Enable Next.js telemetry
 - `pnpm telemetry:disable` - Disable Next.js telemetry
+- `pnpm release` - Run semantic-release for versioning and changelog
 
 ## Project Structure
 
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── (dashboard)/        # Protected dashboard routes
-│   │   └── app/            # Main application routes
-│   ├── api/                # API routes
-│   ├── auth/               # Authentication pages
+│   ├── (dashboard)/app/    # Protected dashboard routes (overview, admin, integrations, settings)
+│   ├── .well-known/        # OAuth/OpenID discovery endpoints
+│   ├── api/                # API routes (admin, auth, integrations, monitoring, user)
+│   └── auth/               # Authentication pages and consent
 ├── components/             # Reusable React components
-│   ├── ui/                 # shadcn/ui
-│   └── layout/             # Layout components
-├── lib/                    # Core business logic
-│   ├── auth/               # Authentication module
-│   ├── db/                 # Database configuration
-│   ├── api/                # API client utilities
+│   ├── ui/                 # shadcn/ui components
+│   └── layout/             # Layout (header, sidebar, navigation, page)
+├── features/               # Feature modules (auth, admin, integrations, routing, user)
+│   └── [name]/lib/         # Feature-specific logic (e.g. auth, integrations registry)
+├── shared/                 # Shared business logic and config
+│   ├── api/                # API client, query keys, server queries
 │   ├── config/             # Application configuration
-│   ├── email/              # Email configuration
-│   ├── routes/             # Route utilities and i18n routes
-│   ├── seo/                # SEO utilities
-│   └── utils/              # General utilities
+│   ├── db/                 # Database client, schema, migrations config
+│   ├── types/              # Centralized types (auth, api, routes, common, email)
+│   ├── utils/              # Constants, date, error, string helpers
+│   ├── observability/      # Logging and monitoring
+│   └── seo/                # Metadata, JSON-LD, robots, sitemap
 ├── hooks/                  # Custom React hooks
 ├── i18n/                   # Internationalization setup
 ├── styles/                 # Global styles
+├── env.ts                  # t3-env validated environment (extends module keys)
 └── proxy.ts                # Development proxy configuration
 ```
+
+Path aliases: `@/auth` → `src/features/auth/lib`, `@/db` → `src/shared/db`, `@/config` → `src/shared/config`, `@/ui/*` → `src/components/ui/*`. See [docs/PATH_ALIASES.md](./docs/PATH_ALIASES.md).
 
 ## Database Setup
 
@@ -160,7 +177,8 @@ The project includes a Docker Compose configuration for local PostgreSQL develop
 
 ```bash
 # Start PostgreSQL container
-docker compose up -d portal-db
+pnpm compose:db
+# or: docker compose up -d portal-db
 
 # The database will be available at:
 # - Host: localhost
@@ -180,19 +198,22 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/portal
 
 ### Import Aliases
 
-The project uses TypeScript path aliases for clean imports:
+The project uses TypeScript path aliases for clean imports (`@/auth` → `src/features/auth/lib`, `@/db` → `src/shared/db`, `@/config` → `src/shared/config`). See [docs/PATH_ALIASES.md](./docs/PATH_ALIASES.md).
 
 ```typescript
 import { auth, authClient } from "@/auth";                 // Authentication
 import { db } from "@/db";                                 // Database
+import { BASE_URL } from "@/config";                       // App config
 import { Button } from "@/components/ui/button";           // UI components
 import { usePermissions } from "@/hooks/use-permissions";  // Custom hooks
 ```
 
 ### Module Organization
 
-- **Barrel Exports**: Core modules (`@/auth`, `@/db`) use barrel exports for convenience
-- **Direct Imports**: UI components and utilities use direct imports for performance
+- **Barrel Exports**: Core modules (`@/auth`, `@/db`, `@/config`) use barrel exports for convenience
+- **Direct Imports**: UI components (`@/components/ui/*`) and shared utils use direct imports for performance
+- **Types**: Centralized in `src/shared/types/` (auth, api, routes, common, email); constants in `src/shared/utils/constants.ts`
+- **Environment**: Validated via `@t3-oss/env-nextjs` in `src/env.ts`, extending module-level `keys()` functions
 - **Clear Boundaries**: Strict separation between client and server code
 - **Type Safety**: Full TypeScript coverage with strict mode enabled
 
@@ -237,26 +258,31 @@ The project uses `next-intl` for multi-language support:
 
 Portal follows a clear module organization pattern:
 
-- **`src/lib/`**: Core business logic modules
-  - `auth/` - Authentication and authorization
-  - `db/` - Database configuration and schemas
-  - `api/` - API utilities and helpers
-  - `integrations/` - Integration framework
-  - `utils/` - Shared utilities
+- **`src/shared/`**: Shared business logic and configuration
+  - `db/` - Database client, schema, and migration config
+  - `api/` - API client, query keys, server queries
+  - `config/` - Application configuration
+  - `types/` - Centralized types (auth, api, routes, common, email)
+  - `utils/` - Constants, date, error, string helpers
+  - `observability/` - Logging and monitoring
+  - `seo/` - Metadata, JSON-LD, robots, sitemap
+
+- **`src/features/`**: Feature modules (auth, admin, integrations, routing, user)
+  - Each feature may have `lib/`, `components/`, `hooks/`, `api/`
+  - Auth lives at `@/auth` → `src/features/auth/lib`
+  - Integrations registry at `src/features/integrations/lib/core/registry.ts`
 
 - **`src/components/`**: React components
   - `ui/` - Base shadcn/ui components
-  - `layout/` - Layout components (Sidebar, Header)
-  - Feature-specific components (admin, integrations)
+  - `layout/` - Layout components (header, sidebar, navigation, page)
 
-- **`src/hooks/`**: Custom React hooks
-  - Data fetching hooks (use-user, use-admin)
-  - UI hooks (use-mobile, use-permissions)
+- **`src/hooks/`**: Custom React hooks (e.g. use-mobile, use-permissions, use-image-preview)
 
 - **`src/app/`**: Next.js App Router
   - `api/` - API route handlers
-  - `(dashboard)/` - Protected routes
-  - `auth/` - Authentication pages
+  - `(dashboard)/app/` - Protected routes (overview, admin, integrations, settings)
+  - `auth/` - Authentication and consent pages
+  - `.well-known/` - OAuth/OpenID discovery endpoints
 
 ### Server/Client Code Separation
 
@@ -266,7 +292,7 @@ Portal follows a clear module organization pattern:
 - API route handlers (`src/app/api/`)
 - Server actions
 - Database queries
-- Auth utilities (`src/lib/auth/server-client.ts`)
+- Auth utilities (`src/features/auth/lib/server-client.ts`, imported via `@/auth`)
 
 **Client Code**:
 
@@ -291,17 +317,17 @@ import { authClient } from "@/auth/client"
 
 Portal uses a registry pattern for integrations:
 
-- **Registry**: `src/lib/integrations/registry.ts`
-- **Factory**: Integration factory for creating instances
-- **Base Class**: `BaseIntegration` provides common functionality
+- **Registry**: `src/features/integrations/lib/core/registry.ts`
+- **Factory**: `src/features/integrations/lib/core/factory.ts`
+- **Base Class**: `BaseIntegration` in `src/features/integrations/lib/core/base.ts`
 - **Registration**: Integrations register themselves on module load
 
 **Adding a New Integration**:
 
-1. Create integration module in `src/lib/integrations/[name]/`
+1. Create integration module in `src/features/integrations/lib/[name]/`
 2. Implement `BaseIntegration` interface
-3. Register in `src/lib/integrations/index.ts`
-4. Add environment variables in `keys.ts`
+3. Register in `src/features/integrations/lib/index.ts`
+4. Add environment variables in the integration’s `keys.ts`
 
 ### API Design Conventions
 
@@ -374,7 +400,7 @@ export async function GET(request: NextRequest) {
 
 **Schema Organization**:
 
-- Modular schemas in `src/lib/db/schema/`
+- Modular schemas in `src/shared/db/schema/`
 - One file per domain (auth.ts, oauth.ts, api-keys.ts)
 - Relations defined in `relations.ts`
 - Use Drizzle ORM for type-safe queries
@@ -458,11 +484,15 @@ export async function GET(request: NextRequest) {
 
 ## Documentation
 
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution guidelines and development workflow
+- **[.github/CONTRIBUTING.md](./.github/CONTRIBUTING.md)** - Contribution guidelines and development workflow
 - **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Architecture overview and design patterns
 - **[docs/API.md](./docs/API.md)** - REST API documentation and endpoints
 - **[docs/COMPONENTS.md](./docs/COMPONENTS.md)** - Component conventions and usage
 - **[docs/ACCESSIBILITY.md](./docs/ACCESSIBILITY.md)** - Accessibility guidelines and best practices
 - **[docs/TESTING.md](./docs/TESTING.md)** - Testing patterns and best practices
 - **[docs/CI_CD.md](./docs/CI_CD.md)** - CI/CD workflows and deployment guide
+- **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)** - Deployment guide
 - **[docs/INTEGRATIONS.md](./docs/INTEGRATIONS.md)** - Integration framework documentation
+- **[docs/LOGGING.md](./docs/LOGGING.md)** - Logging and observability
+- **[docs/PATH_ALIASES.md](./docs/PATH_ALIASES.md)** - TypeScript path alias usage
+- **[docs/TSCONFIG.md](./docs/TSCONFIG.md)** - TypeScript configuration reference
