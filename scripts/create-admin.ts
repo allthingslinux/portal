@@ -3,7 +3,6 @@ import "dotenv/config";
 import { eq } from "drizzle-orm";
 
 import { user } from "@/db/schema/auth";
-
 import { auth } from "./lib/auth-for-script";
 import { db } from "./lib/db";
 
