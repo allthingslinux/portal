@@ -31,7 +31,8 @@ const env = keys();
 // build (e.g. when route modules are loaded for /.well-known/* and auth). The
 // placeholder is never used at runtime—routes that need the DB are force-dynamic.
 // Runtime without DATABASE_URL will fail on first connection (connection refused).
-const BUILD_PLACEHOLDER_URL = "postgresql://localhost:5432/__build_placeholder__";
+const BUILD_PLACEHOLDER_URL =
+  "postgresql://localhost:5432/__build_placeholder__";
 const connectionString = env.DATABASE_URL ?? BUILD_PLACEHOLDER_URL;
 
 // Pool configuration options
