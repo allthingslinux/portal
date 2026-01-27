@@ -2,22 +2,26 @@ import "dotenv/config";
 
 import { eq } from "drizzle-orm";
 
-import { auth } from "@/auth";
-import { db } from "@/db";
 import { user } from "@/db/schema/auth";
+
+import { auth } from "./lib/auth-for-script";
+import { db } from "./lib/db";
 
 // ============================================================================
 // Create Admin User Script
 // ============================================================================
 // This script creates the initial admin user for the Portal application.
-// It uses Better Auth's signUpEmail API to create the user, then directly
-// updates the database to set the role to "admin" (since we don't have
-// an admin yet to use the admin API's setRole method).
+// It uses script-only db and auth (scripts/lib/) so it can run under tsx
+// without pulling in "server-only" modules. It calls Better Auth's signUpEmail
+// then updates the user role to "admin" in the database.
 //
 // Usage:
 //   pnpm create-admin
 //
 // Environment Variables:
+//   DATABASE_URL - Required. PostgreSQL connection string.
+//   BETTER_AUTH_SECRET - Required. Same secret as the app.
+//   BETTER_AUTH_URL - Optional (default: http://localhost:3000).
 //   ADMIN_EMAIL - Email for the admin user (default: "admin@portal.com")
 //   ADMIN_PASSWORD - Password for the admin user (default: "admin123")
 //   ADMIN_NAME - Name for the admin user (default: "Admin User")
