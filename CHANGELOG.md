@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/allthingslinux/portal/compare/v1.0.0...v1.0.1) (2026-01-27)
+
+
+### Bug Fixes
+
+* **db:** update PostgreSQL volume mount path in Docker Compose configuration ([638ef42](https://github.com/allthingslinux/portal/commit/638ef42041db7a0fc7d9fb6ed86619dfab71b3ea))
+
 # 1.0.0 (2026-01-27)
 
 
