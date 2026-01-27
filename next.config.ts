@@ -2,9 +2,10 @@ import { execSync } from "node:child_process";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-import { config } from "@/shared/next-config";
-import { withAnalyzer } from "@/shared/next-config/with-analyzer";
-import { withObservability } from "@/shared/next-config/with-observability";
+// Use relative paths so the compiled config resolves in Docker/Node (no @/ alias at config load time)
+import { config } from "./src/shared/next-config";
+import { withAnalyzer } from "./src/shared/next-config/with-analyzer";
+import { withObservability } from "./src/shared/next-config/with-observability";
 
 const withNextIntl = createNextIntlPlugin();
 
@@ -84,9 +85,9 @@ let nextConfig: NextConfig = {
   // ============================================================================
   // Server External Packages
   // ============================================================================
-  // Packages that should not be bundled by Next.js
-  // These are resolved at runtime from node_modules
-  // Required for native modules and packages with dynamic requires
+  // Opt-out deps from Server Components/Route Handler bundling; they use Node
+  // require at runtime. Next.js auto opt-outs many packages (pg, @sentry/profiling-node,
+  // etc.)—only list packages not in that built-in list.
   serverExternalPackages: [
     "@sentry/node-native", // Native module with dynamic requires, cannot be bundled
     "@sentry-internal/node-native-stacktrace", // Native stacktrace module
@@ -281,6 +282,10 @@ let nextConfig: NextConfig = {
   //   - Build cache is experimental but can significantly improve build times
 
   experimental: {
+    // Only load modules actually used from multi-export packages (lucide-react, date-fns,
+    // recharts, etc. are optimized by default). Add packages not in that list here.
+    optimizePackageImports: ["lodash"],
+
     // Cache fetch responses during HMR to speed up Server Component reloads
     // This is especially useful when Server Components make API calls or
     // database queries, as it avoids re-fetching on every file change
