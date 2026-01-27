@@ -76,9 +76,8 @@ drizzle
 scripts
 !scripts/seed.ts
 
-# TypeScript
+# TypeScript (keep tsconfig.json - Next.js needs it for path alias resolution during build)
 *.tsbuildinfo
-tsconfig.json
 
 # Linting
 .eslintrc*
