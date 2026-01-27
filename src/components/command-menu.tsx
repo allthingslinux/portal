@@ -21,14 +21,25 @@ import { getNavigationItems } from "@/features/routing/lib/permissions";
 /**
  * Global command menu component (Cmd+K / Ctrl+K)
  * Provides quick navigation to all accessible routes
+ *
+ * Renders only after client mount to avoid hydration mismatch: the Radix
+ * Dialog tree uses useId() for aria-labelledby/etc.; when the dialog is
+ * in the initial tree (even closed), server and client can produce
+ * different DOM/IDs. Mounting the dialog only on the client avoids that.
  */
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const translatedConfig = useTranslatedRoutes();
   const permissions = usePermissions();
   const t = useTranslations();
   const resolver = createRouteTranslationResolver(t);
+
+  // Defer rendering the dialog until after hydration to prevent mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Get navigation items filtered by permissions
   const navigationGroups = getNavigationItems(
@@ -55,6 +66,10 @@ export function CommandMenu() {
     setOpen(false);
     router.push(path as Parameters<typeof router.push>[0]);
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <CommandDialog onOpenChange={setOpen} open={open}>
