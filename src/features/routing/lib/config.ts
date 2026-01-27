@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import type { ProtectedRoute, RouteConfig } from "./types";
-import type { IntegrationPublicInfo } from "@/features/integrations/lib/integrations/core/types";
+import type { IntegrationPublicInfo } from "@/features/integrations/lib/core/types";
 
 /**
  * Single source of truth for all application routes

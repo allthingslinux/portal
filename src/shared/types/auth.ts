@@ -2,7 +2,7 @@
  * Authentication and authorization types
  */
 
-import type { auth } from "@/features/auth/lib/auth";
+import type { auth } from "@/auth";
 
 /**
  * Session data returned from verifySession

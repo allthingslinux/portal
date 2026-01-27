@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
-import { registerIntegrations } from "@/features/integrations/lib/integrations";
-import { getIntegrationRegistry } from "@/features/integrations/lib/integrations/core/registry";
+import { registerIntegrations } from "@/features/integrations/lib";
+import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
 import { APIError, handleAPIError, requireAuth } from "@/shared/api/utils";
 
 export const dynamic = "force-dynamic";

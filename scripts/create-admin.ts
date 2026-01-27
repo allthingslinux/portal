@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import { eq } from "drizzle-orm";
 
-import { auth } from "@/features/auth/lib/auth";
+import { auth } from "@/auth";
 import { db } from "@/shared/db";
 import { user } from "@/shared/db/schema/auth";
 

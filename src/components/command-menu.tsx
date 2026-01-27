@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/command";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useTranslatedRoutes } from "@/features/routing/hooks/use-translated-routes";
-import { createRouteTranslationResolver } from "@/features/routing/lib/routes/i18n";
-import { getNavigationItems } from "@/features/routing/lib/routes/permissions";
+import { createRouteTranslationResolver } from "@/features/routing/lib/i18n";
+import { getNavigationItems } from "@/features/routing/lib/permissions";
 
 /**
  * Global command menu component (Cmd+K / Ctrl+K)

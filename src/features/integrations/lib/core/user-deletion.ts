@@ -3,7 +3,7 @@ import "server-only";
 import { captureException } from "@sentry/nextjs";
 
 import { getIntegrationRegistry } from "./registry";
-import { registerIntegrations } from "@/features/integrations/lib/integrations";
+import { registerIntegrations } from "@/features/integrations/lib";
 
 /**
  * Cleanup all integration accounts for a user before deletion.

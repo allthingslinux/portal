@@ -18,9 +18,9 @@ import { ThemeProvider } from "next-themes";
 import { CommandMenu } from "@/components/command-menu";
 import { ReactQueryDevtools } from "@/components/dev-tools";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { authClient } from "@/features/auth/lib/auth/client";
-import { useBetterAuthUILocalization } from "@/features/auth/lib/auth/localization";
-import { SessionProvider } from "@/features/auth/lib/auth/session-context";
+import { authClient } from "@/auth/client";
+import { useBetterAuthUILocalization } from "@/auth/localization";
+import { SessionProvider } from "@/auth/session-context";
 import { getQueryClient } from "@/shared/api/query-client";
 
 // Note: We use our own QueryClientProvider for general data fetching hooks.

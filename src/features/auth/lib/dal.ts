@@ -3,12 +3,8 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { auth } from "@/features/auth/lib/auth";
-import {
-  getUserRole,
-  isAdmin,
-  isAdminOrStaff,
-} from "@/features/auth/lib/auth/check-role";
+import { auth } from "@/auth";
+import { getUserRole, isAdmin, isAdminOrStaff } from "@/auth/check-role";
 import type { SessionData } from "@/shared/types/auth";
 
 // ============================================================================

@@ -8,7 +8,7 @@ import { useTranslatedRoutes } from "@/features/routing/hooks/use-translated-rou
 import {
   getFooterActions,
   getNavigationItems,
-} from "@/features/routing/lib/routes/permissions";
+} from "@/features/routing/lib/permissions";
 import {
   Sidebar,
   SidebarContent,

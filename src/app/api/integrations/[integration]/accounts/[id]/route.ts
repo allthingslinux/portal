@@ -1,8 +1,8 @@
 import type { NextRequest } from "next/server";
 
-import { isAdmin } from "@/features/auth/lib/auth/check-role";
-import { registerIntegrations } from "@/features/integrations/lib/integrations";
-import { getIntegrationRegistry } from "@/features/integrations/lib/integrations/core/registry";
+import { isAdmin } from "@/auth/check-role";
+import { registerIntegrations } from "@/features/integrations/lib";
+import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
 import { APIError, handleAPIError, requireAuth } from "@/shared/api/utils";
 
 export const dynamic = "force-dynamic";

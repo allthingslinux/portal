@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getIntegrationOrThrow } from "@/features/integrations/lib/integrations/core/factory";
-import { getIntegrationRegistry } from "@/features/integrations/lib/integrations/core/registry";
-import type { Integration } from "@/features/integrations/lib/integrations/core/types";
+import { getIntegrationOrThrow } from "@/features/integrations/lib/core/factory";
+import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
+import type { Integration } from "@/features/integrations/lib/core/types";
 
 // Mock the registry
-vi.mock("@/features/integrations/lib/integrations/core/registry", () => {
+vi.mock("@/features/integrations/lib/core/registry", () => {
   const mockRegistry = {
     get: vi.fn(),
   };

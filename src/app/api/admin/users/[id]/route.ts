@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { eq } from "drizzle-orm";
 
-import { cleanupIntegrationAccounts } from "@/features/integrations/lib/integrations/core/user-deletion";
+import { cleanupIntegrationAccounts } from "@/features/integrations/lib/core/user-deletion";
 import { handleAPIError, requireAdminOrStaff } from "@/shared/api/utils";
 import { db } from "@/shared/db";
 import { user } from "@/shared/db/schema/auth";

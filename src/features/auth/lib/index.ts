@@ -1,10 +1,10 @@
-/** biome-ignore-all lint/performance/noBarrelFile: Required for @/features/auth/lib path alias */
+/** biome-ignore-all lint/performance/noBarrelFile: Required for @/auth path alias */
 
 // ============================================================================
 // Auth Module Exports
 // ============================================================================
 // Central export point for Better Auth configuration and client
-// This barrel file is necessary for the @/features/auth/lib path alias to work
+// This barrel file enables the @/auth path alias (configured in tsconfig.json)
 
 export type { AuthClient } from "./client";
 export { authClient } from "./client";

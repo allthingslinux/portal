@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { auth } from "@/features/auth/lib/auth";
+import { auth } from "@/auth";
 
 // ============================================================================
 // Next.js Proxy (Next.js 16+)

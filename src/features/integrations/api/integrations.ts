@@ -1,4 +1,4 @@
-import type { IntegrationPublicInfo } from "@/features/integrations/lib/integrations/core/types";
+import type { IntegrationPublicInfo } from "@/features/integrations/lib/core/types";
 
 /**
  * Response type from integration API endpoints

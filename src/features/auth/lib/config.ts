@@ -33,7 +33,7 @@ import {
   staff as staffRole,
   user as userRole,
 } from "./permissions";
-import { cleanupIntegrationAccounts } from "@/features/integrations/lib/integrations/core/user-deletion";
+import { cleanupIntegrationAccounts } from "@/features/integrations/lib/core/user-deletion";
 import { db } from "@/shared/db/client";
 import { schema } from "@/shared/db/schema";
 import { xmppAccount } from "@/shared/db/schema/xmpp";
@@ -882,9 +882,7 @@ const telemetry = {
 const trustedOrigins = [
   "http://localhost:3000",
   // Add production origins from environment variable
-  ...(env.BETTER_AUTH_URL?.startsWith("https://")
-    ? [env.BETTER_AUTH_URL]
-    : []),
+  ...(env.BETTER_AUTH_URL?.startsWith("https://") ? [env.BETTER_AUTH_URL] : []),
   // Add additional production origins as needed
   // "https://portal.example.com",
   // Wildcard support for subdomains

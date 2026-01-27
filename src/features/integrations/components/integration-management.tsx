@@ -32,7 +32,7 @@ import {
   useDeleteIntegrationAccount,
   useIntegrationAccount,
 } from "@/features/integrations/hooks/use-integration";
-import { integrationStatusLabels } from "@/features/integrations/lib/integrations/core/constants";
+import { integrationStatusLabels } from "@/features/integrations/lib/core/constants";
 
 interface IntegrationManagementProps<TAccount extends { id: string }> {
   integrationId: string;

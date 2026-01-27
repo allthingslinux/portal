@@ -5,7 +5,7 @@ import type {
   PublicRoute,
   RouteChild,
   RouteConfig,
-} from "@/features/routing/lib/routes/types";
+} from "@/features/routing/lib/types";
 import { BASE_URL } from "@/shared/config";
 
 function createSitemapEntry(

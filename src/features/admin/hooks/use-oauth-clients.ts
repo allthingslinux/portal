@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { authClient } from "@/features/auth/lib/auth/client";
+import { authClient } from "@/auth/client";
 import { queryKeys } from "@/shared/api/query-keys";
 import { QUERY_CACHE } from "@/shared/utils/constants";
 

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { AdminDashboard } from "@/features/admin/components/admin/admin-dashboard";
-import { verifyAdminOrStaffSession } from "@/features/auth/lib/auth/dal";
+import { verifyAdminOrStaffSession } from "@/auth/dal";
+import { AdminDashboard } from "@/features/admin/components/admin-dashboard";
 import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
 import { getServerQueryClient } from "@/shared/api/hydration";
 import { queryKeys } from "@/shared/api/query-keys";

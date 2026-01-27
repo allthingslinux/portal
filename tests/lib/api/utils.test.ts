@@ -5,7 +5,7 @@ vi.mock("@/shared/db", () => ({
   db: {},
 }));
 
-vi.mock("@/features/auth/lib/auth", () => ({
+vi.mock("@/auth", () => ({
   auth: {
     api: {
       getSession: vi.fn(),

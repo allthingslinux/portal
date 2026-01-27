@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { serverClient } from "@/features/auth/lib/auth/server-client";
+import { serverClient } from "@/auth/server-client";
 import { BASE_URL } from "@/shared/config/app";
 
 // Force dynamic rendering to avoid database access during build

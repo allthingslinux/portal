@@ -251,7 +251,7 @@ export async function fetchApiKeysServer(
  *                  If provided, uses this session instead of fetching a new one.
  */
 export async function fetchCurrentUserServer(
-  session?: Awaited<ReturnType<typeof import("@/features/auth/lib/auth").auth.api.getSession>>
+  session?: Awaited<ReturnType<typeof import("@/auth").auth.api.getSession>>
 ): Promise<
   Pick<
     User,
@@ -263,7 +263,7 @@ export async function fetchCurrentUserServer(
   if (!userSession) {
     // Import here to avoid circular dependencies
     const { headers } = await import("next/headers");
-    const { auth } = await import("@/features/auth/lib/auth");
+    const { auth } = await import("@/auth");
 
     const requestHeaders = await headers();
     userSession = await auth.api.getSession({

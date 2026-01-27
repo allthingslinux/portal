@@ -20,8 +20,8 @@ import {
   generateUsernameFromEmail,
   isValidXmppUsername,
 } from "./utils";
-import { IntegrationBase } from "@/features/integrations/lib/integrations/core/base";
-import { getIntegrationRegistry } from "@/features/integrations/lib/integrations/core/registry";
+import { IntegrationBase } from "@/features/integrations/lib/core/base";
+import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
 import { db } from "@/shared/db";
 import { user } from "@/shared/db/schema/auth";
 import { xmppAccount } from "@/shared/db/schema/xmpp";

@@ -3,7 +3,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/layout/page/page-header";
-import { verifySession } from "@/features/auth/lib/auth/dal";
+import { verifySession } from "@/auth/dal";
 import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
 import { getServerQueryClient } from "@/shared/api/hydration";
 import { queryKeys } from "@/shared/api/query-keys";

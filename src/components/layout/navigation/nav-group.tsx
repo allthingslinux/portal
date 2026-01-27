@@ -5,7 +5,7 @@ import { NavItem } from "./nav-item";
 import type {
   NavigationGroup,
   ProtectedRoute,
-} from "@/features/routing/lib/routes/types";
+} from "@/features/routing/lib/types";
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu } from "@/ui/sidebar";
 
 interface NavGroupProps {

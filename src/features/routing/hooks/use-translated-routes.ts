@@ -7,7 +7,7 @@ import {
   getTranslatedRouteConfig,
   routeConfig,
 } from "@/features/routing/lib";
-import type { RouteConfig } from "@/features/routing/lib/routes/types";
+import type { RouteConfig } from "@/features/routing/lib/types";
 
 /**
  * Hook to get translated route configuration

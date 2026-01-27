@@ -7,11 +7,11 @@ vi.mock("@/env", () => ({
 }));
 
 // Mock auth keys and config to prevent server-only env access
-vi.mock("@/features/auth/lib/auth/keys", () => ({
+vi.mock("@/auth/keys", () => ({
   keys: () => ({}),
 }));
 
-vi.mock("@/features/auth/lib/auth/config", () => ({
+vi.mock("@/auth/config", () => ({
   auth: {
     api: {
       getSession: vi.fn(),
@@ -19,7 +19,7 @@ vi.mock("@/features/auth/lib/auth/config", () => ({
   },
 }));
 
-vi.mock("@/features/auth/lib/auth", () => ({
+vi.mock("@/auth", () => ({
   auth: {
     api: {
       getSession: vi.fn(),
@@ -29,29 +29,29 @@ vi.mock("@/features/auth/lib/auth", () => ({
 }));
 
 // Mock XMPP integration modules to prevent server-only env access
-vi.mock("@/features/integrations/lib/integrations/xmpp/keys", () => ({
+vi.mock("@/features/integrations/lib/xmpp/keys", () => ({
   keys: () => ({}),
 }));
 
-vi.mock("@/features/integrations/lib/integrations/xmpp/config", () => ({
+vi.mock("@/features/integrations/lib/xmpp/config", () => ({
   xmppConfig: {},
   isXmppConfigured: () => false,
   // biome-ignore lint/suspicious/noEmptyBlockStatements: Suppress empty block in tests
   validateXmppConfig: () => {},
 }));
 
-vi.mock("@/features/integrations/lib/integrations/xmpp/client", () => ({
+vi.mock("@/features/integrations/lib/xmpp/client", () => ({
   checkProsodyAccountExists: vi.fn(),
   createProsodyAccount: vi.fn(),
   deleteProsodyAccount: vi.fn(),
   ProsodyAccountNotFoundError: class extends Error {},
 }));
 
-vi.mock("@/features/integrations/lib/integrations/xmpp", () => ({
+vi.mock("@/features/integrations/lib/xmpp", () => ({
   registerXmppIntegration: vi.fn(),
 }));
 
-vi.mock("@/features/integrations/lib/integrations", () => ({
+vi.mock("@/features/integrations/lib", () => ({
   registerIntegrations: vi.fn(),
 }));
 

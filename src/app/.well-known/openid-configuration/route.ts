@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { oauthProviderOpenIdConfigMetadata } from "@better-auth/oauth-provider";
 
-import { auth } from "@/features/auth/lib/auth";
+import { auth } from "@/auth";
 
 // Force dynamic rendering to avoid database access during build
 export const dynamic = "force-dynamic";

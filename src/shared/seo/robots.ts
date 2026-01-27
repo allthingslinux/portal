@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import type { RouteConfig } from "@/features/routing/lib/routes/types";
+import type { RouteConfig } from "@/features/routing/lib/types";
 import { BASE_URL } from "@/shared/config";
 
 /**

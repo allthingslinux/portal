@@ -7,8 +7,8 @@ import "server-only";
 
 import type { NextRequest } from "next/server";
 
-import { auth } from "@/features/auth/lib/auth";
-import { isAdmin, isAdminOrStaff } from "@/features/auth/lib/auth/check-role";
+import { auth } from "@/auth";
+import { isAdmin, isAdminOrStaff } from "@/auth/check-role";
 import { captureError, log, parseError } from "@/shared/observability";
 import type { AuthResult } from "@/shared/types/auth";
 
