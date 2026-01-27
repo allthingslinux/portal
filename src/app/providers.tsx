@@ -118,12 +118,16 @@ export function Providers({ children }: { children: ReactNode }) {
         <ErrorBoundary>
           <AuthQueryProvider>
             <AuthUIProviderTanstack
+              // Account settings: fields default to ["image", "name"]. Avatar card
+              // is shown only when avatar is set; true = base64 in DB, or pass
+              // { upload, delete } for custom storage.
+              apiKey
               // API Key management
               // Can be boolean (true) or object with configuration
               // Example object: { prefix: "app_", metadata: { environment: "production" } }
-              apiKey
-              // Better Auth client instance
               authClient={authClient}
+              // Better Auth client instance
+              avatar
               // Email/password authentication
               credentials
               // Localization: Maps next-intl translations to Better Auth UI format
