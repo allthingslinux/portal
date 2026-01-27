@@ -50,11 +50,11 @@ export default defineConfig({
   // Schema file paths (glob-based)
   // Can be a string, array of strings, or glob pattern
   // Examples:
-  //   "./src/lib/db/schema.ts"           - Single file
-  //   "./src/lib/db/schema/*"           - All files in schema folder
-  //   ["./src/lib/db/schema/*.ts"]      - Array of glob patterns
-  //   "./src/**/schema.ts"              - All schema.ts files recursively
-  schema: "./src/lib/db/schema/*",
+  //   "./src/shared/db/schema.ts"       - Single file
+  //   "./src/shared/db/schema/*"        - All files in schema folder
+  //   ["./src/shared/db/schema/*.ts"]  - Array of glob patterns
+  //   "./src/**/schema.ts"               - All schema.ts files recursively
+  schema: "./src/shared/db/schema/*",
 
   // Output folder for migrations, snapshots, and pulled schemas
   // Default: "./drizzle"
