@@ -1,11 +1,6 @@
 "use client";
 
-import { initializeSentry } from "@/shared/observability/client";
-
-// Initialize Sentry on client-side
-initializeSentry();
-
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 import { Toaster } from "sonner";
 import type { Route } from "next";
 import Link from "next/link";
@@ -102,93 +97,110 @@ export function Providers({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      disableTransitionOnChange
-      enableSystem
-    >
-      {/* QueryClientProvider for general data fetching hooks */}
-      <QueryClientProvider client={queryClient}>
-        {/* AuthQueryProvider for Better Auth's TanStack Query integration
+    <>
+      <SentryClientInit />
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        disableTransitionOnChange
+        enableSystem
+      >
+        {/* QueryClientProvider for general data fetching hooks */}
+        <QueryClientProvider client={queryClient}>
+          {/* AuthQueryProvider for Better Auth's TanStack Query integration
             Note: In development with React Strict Mode, you may see multiple
             /api/auth/get-session requests on initial load. This is expected
             due to double mounting. TanStack Query automatically deduplicates
             these requests, and in production this won't occur. */}
-        <ErrorBoundary>
-          <AuthQueryProvider>
-            <AuthUIProviderTanstack
-              // Account settings: fields default to ["image", "name"]. Avatar card
-              // is shown only when avatar is set; true = base64 in DB, or pass
-              // { upload, delete } for custom storage.
-              apiKey
-              // API Key management
-              // Can be boolean (true) or object with configuration
-              // Example object: { prefix: "app_", metadata: { environment: "production" } }
-              authClient={authClient}
-              // Better Auth client instance
-              avatar
-              // Email/password authentication
-              credentials
-              // Localization: Maps next-intl translations to Better Auth UI format
-              // All strings are automatically translated using our locale files
-              Link={LinkWrapper}
-              // Next.js Link component for client-side navigation
-              // Wrapper needed for Better Auth UI compatibility with Next.js typed routes
-              localization={localization}
-              // Multiple device session management
-              multiSession
-              // Programmatic navigation function
-              navigate={navigate}
-              // Callback when session changes (refreshes server components)
-              onSessionChange={() => router.refresh()}
-              // Persist client for offline auth (set to true if using persistQueryClient)
-              passkey
-              // WebAuthn/passkey authentication
-              persistClient={false}
-              // Redirect URL after successful authentication
-              redirectTo="/app"
-              // Replace current history entry instead of pushing
-              replace={replace}
-              // Two-factor authentication methods
-              // Options: ["otp", "totp"] or boolean (true for both)
-              twoFactor={["otp", "totp"]}
-              // Additional configuration options (uncomment if needed):
-              // additionalFields={{
-              //   company: {
-              //     label: "Company",
-              //     placeholder: "Your company name",
-              //     description: "Enter your company name",
-              //     required: true,
-              //     type: "string",
-              //   },
-              // }}
-              // account={{
-              //   basePath: "/account",
-              // }}
-              // signUp={{
-              //   fields: ["company"], // Include additional fields in signup
-              // }}
-              // settings={{
-              //   fields: ["company"], // Include additional fields in settings
-              // }}
-            >
-              {/* SessionProvider consolidates session usage to a single query */}
-              <SessionProvider>
-                {children}
-                <Toaster />
-                <CommandMenu />
-              </SessionProvider>
-            </AuthUIProviderTanstack>
-            {/* React Query Devtools - Only included in development builds */}
-            <ReactQueryDevtools
-              buttonPosition="bottom-right"
-              initialIsOpen={false}
-              position="bottom"
-            />
-          </AuthQueryProvider>
-        </ErrorBoundary>
-      </QueryClientProvider>
-    </ThemeProvider>
+          <ErrorBoundary>
+            <AuthQueryProvider>
+              <AuthUIProviderTanstack
+                // Account settings: fields default to ["image", "name"]. Avatar card
+                // is shown only when avatar is set; true = base64 in DB, or pass
+                // { upload, delete } for custom storage.
+                apiKey
+                // API Key management
+                // Can be boolean (true) or object with configuration
+                // Example object: { prefix: "app_", metadata: { environment: "production" } }
+                authClient={authClient}
+                // Better Auth client instance
+                avatar
+                // Email/password authentication
+                credentials
+                // Localization: Maps next-intl translations to Better Auth UI format
+                // All strings are automatically translated using our locale files
+                Link={LinkWrapper}
+                // Next.js Link component for client-side navigation
+                // Wrapper needed for Better Auth UI compatibility with Next.js typed routes
+                localization={localization}
+                // Multiple device session management
+                multiSession
+                // Programmatic navigation function
+                navigate={navigate}
+                // Callback when session changes (refreshes server components)
+                onSessionChange={() => router.refresh()}
+                // Persist client for offline auth (set to true if using persistQueryClient)
+                passkey
+                // WebAuthn/passkey authentication
+                persistClient={false}
+                // Redirect URL after successful authentication
+                redirectTo="/app"
+                // Replace current history entry instead of pushing
+                replace={replace}
+                // Two-factor authentication methods
+                // Options: ["otp", "totp"] or boolean (true for both)
+                twoFactor={["otp", "totp"]}
+                // Additional configuration options (uncomment if needed):
+                // additionalFields={{
+                //   company: {
+                //     label: "Company",
+                //     placeholder: "Your company name",
+                //     description: "Enter your company name",
+                //     required: true,
+                //     type: "string",
+                //   },
+                // }}
+                // account={{
+                //   basePath: "/account",
+                // }}
+                // signUp={{
+                //   fields: ["company"], // Include additional fields in signup
+                // }}
+                // settings={{
+                //   fields: ["company"], // Include additional fields in settings
+                // }}
+              >
+                {/* SessionProvider consolidates session usage to a single query */}
+                <SessionProvider>
+                  {children}
+                  <Toaster />
+                  <CommandMenu />
+                </SessionProvider>
+              </AuthUIProviderTanstack>
+              {/* React Query Devtools - Only included in development builds */}
+              <ReactQueryDevtools
+                buttonPosition="bottom-right"
+                initialIsOpen={false}
+                position="bottom"
+              />
+            </AuthQueryProvider>
+          </ErrorBoundary>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </>
   );
+}
+
+/** Loads and runs client Sentry init only in the browser. Avoids pulling in @sentry/nextjs during server render (next-prerender-crypto). */
+function SentryClientInit() {
+  useEffect(() => {
+    import("@/shared/observability/client")
+      .then(({ initializeSentry }) => {
+        initializeSentry();
+      })
+      .catch(() => {
+        // Best-effort; ignore load errors (e.g. missing DSN in dev)
+      });
+  }, []);
+  return null;
 }
