@@ -44,9 +44,23 @@ import { getQueryClient } from "@/shared/api/query-client";
 //   - persistClient: Set to false (set to true if using persistQueryClient)
 //   - AuthQueryProvider wraps everything to provide query context
 //
+// Custom account settings:
+//   - account.basePath: "/app/settings"; viewPaths: { SETTINGS: "account" } so links
+//     are /app/settings/account, /app/settings/security, /app/settings/api-keys
+//     (avoids redundant settings/settings).
+//   - We use "Build custom layouts" per https://better-auth-ui.com/advanced/custom-settings:
+//     one route /app/settings with nuqs ?tab=account|security|api-keys and our own
+//     Tabs + AccountSettingsCards, SecuritySettingsCards, ApiKeysCard.
+//   - app/settings/[segment]/page redirects those segments to /app/settings?tab=...
+//
+// Custom auth paths (optional):
+//   - viewPaths: Custom auth URLs (e.g. SIGN_IN: "login" → /auth/login).
+//   - account.viewPaths: Custom account segment names (SETTINGS, SECURITY, API_KEYS).
+//   See: https://better-auth-ui.com/advanced/custom-auth-paths
+//
 // Additional configuration options (commented):
 //   - additionalFields: Custom fields for signup/settings
-//   - account: Account settings configuration
+//   - account: Account settings configuration (basePath, viewPaths)
 //   - organization: Organization management (if needed)
 //   - signUp: Sign up form configuration
 //   - signIn: Sign in form configuration
@@ -118,38 +132,41 @@ export function Providers({ children }: { children: ReactNode }) {
                 // Account settings: fields default to ["image", "name"]. Avatar card
                 // is shown only when avatar is set; true = base64 in DB, or pass
                 // { upload, delete } for custom storage.
-                apiKey
+                account={{
+                  basePath: "/app/settings",
+                  viewPaths: { SETTINGS: "account" },
+                }}
                 // API Key management
                 // Can be boolean (true) or object with configuration
                 // Example object: { prefix: "app_", metadata: { environment: "production" } }
-                authClient={authClient}
+                apiKey
                 // Better Auth client instance
-                avatar
+                authClient={authClient}
                 // Email/password authentication
-                credentials
+                avatar
                 // Localization: Maps next-intl translations to Better Auth UI format
                 // All strings are automatically translated using our locale files
-                Link={LinkWrapper}
+                credentials
                 // Next.js Link component for client-side navigation
                 // Wrapper needed for Better Auth UI compatibility with Next.js typed routes
-                localization={localization}
+                Link={LinkWrapper}
                 // Multiple device session management
-                multiSession
+                localization={localization}
                 // Programmatic navigation function
-                navigate={navigate}
+                multiSession
                 // Callback when session changes (refreshes server components)
-                onSessionChange={() => router.refresh()}
+                navigate={navigate}
                 // Persist client for offline auth (set to true if using persistQueryClient)
-                passkey
+                onSessionChange={() => router.refresh()}
                 // WebAuthn/passkey authentication
-                persistClient={false}
+                passkey
                 // Redirect URL after successful authentication
-                redirectTo="/app"
+                persistClient={false}
                 // Replace current history entry instead of pushing
-                replace={replace}
+                redirectTo="/app"
                 // Two-factor authentication methods
                 // Options: ["otp", "totp"] or boolean (true for both)
-                twoFactor={["otp", "totp"]}
+                replace={replace}
                 // Additional configuration options (uncomment if needed):
                 // additionalFields={{
                 //   company: {
@@ -160,9 +177,8 @@ export function Providers({ children }: { children: ReactNode }) {
                 //     type: "string",
                 //   },
                 // }}
-                // account={{
-                //   basePath: "/account",
-                // }}
+                twoFactor={["otp", "totp"]}
+                // viewPaths={{ SIGN_IN: "login", SIGN_UP: "register", FORGOT_PASSWORD: "forgot", ... }}
                 // signUp={{
                 //   fields: ["company"], // Include additional fields in signup
                 // }}
