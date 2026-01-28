@@ -15,6 +15,14 @@ export const withObservability = (sourceConfig: NextConfig): NextConfig => {
     return sourceConfig;
   }
 
+  // Skip Sentry config in development to avoid next-prerender-crypto: Sentry’s
+  // instrumentation runs during MetadataOutlet and uses crypto.randomUUID() before
+  // request data is read. See https://nextjs.org/docs/messages/next-prerender-crypto
+  // and https://github.com/vercel/next.js/issues/72904
+  if (process.env.NODE_ENV === "development") {
+    return sourceConfig;
+  }
+
   const sentryConfig: Parameters<typeof withSentryConfig>[1] = {
     org: env.SENTRY_ORG,
     project: env.SENTRY_PROJECT,

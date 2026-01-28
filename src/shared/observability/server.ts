@@ -34,6 +34,14 @@ export const initializeSentry = (): ReturnType<typeof init> => {
     return undefined as ReturnType<typeof init>;
   }
 
+  // Skip server init in development to avoid next-prerender-crypto: Sentry's
+  // scope/trace creation uses crypto.randomUUID() during MetadataOutlet before
+  // request data is read. See https://nextjs.org/docs/messages/next-prerender-crypto
+  // and https://github.com/vercel/next.js/issues/72904
+  if (process.env.NODE_ENV === "development") {
+    return undefined as ReturnType<typeof init>;
+  }
+
   // Derive the Sentry hostname from the configured DSN, if possible
   let sentryHostname: string | null = null;
   try {

@@ -5,6 +5,7 @@ export {
   createPageMetadata,
   defaultMetadata,
   getRouteMetadata,
+  getStaticRouteMetadataCached,
 } from "./metadata";
 export { generateRobots } from "./robots";
 export { generateSitemap } from "./sitemap";

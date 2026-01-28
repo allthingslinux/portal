@@ -32,6 +32,12 @@ export const initializeSentry = (): ReturnType<typeof init> => {
     return undefined as ReturnType<typeof init>;
   }
 
+  // Skip init in development to avoid next-prerender-crypto (scope/trace use
+  // crypto.randomUUID() during MetadataOutlet). See server.ts for details.
+  if (process.env.NODE_ENV === "development") {
+    return undefined as ReturnType<typeof init>;
+  }
+
   // Environment-based sample rates
   const isProduction = process.env.NODE_ENV === "production";
 

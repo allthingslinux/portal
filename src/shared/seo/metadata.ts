@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cacheLife, cacheTag } from "next/cache";
 import merge from "lodash/merge";
 
 import {
@@ -10,6 +11,7 @@ import {
   APP_TITLE,
   BASE_URL,
 } from "@/config";
+import { routeConfig } from "@/features/routing/lib";
 import type { RouteTranslationResolver } from "@/features/routing/lib/i18n";
 import { getTranslatedRouteConfig } from "@/features/routing/lib/i18n";
 import type { RouteConfig } from "@/features/routing/lib/types";
@@ -133,4 +135,22 @@ export function getRouteMetadata(
     openGraph: route.metadata.openGraph,
     twitter: route.metadata.twitter,
   });
+}
+
+/**
+ * Cached route metadata for a pathname (no i18n resolver).
+ * Use when locale-agnostic metadata is enough (e.g. robots, structural SEO).
+ * For translated metadata, use getRouteMetadata(pathname, config, resolver).
+ *
+ * Requires cacheComponents: true in next.config.
+ */
+export async function getStaticRouteMetadataCached(
+  pathname: string
+): Promise<Metadata> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("route-metadata", pathname);
+  return await Promise.resolve(
+    getRouteMetadata(pathname, routeConfig, undefined)
+  );
 }

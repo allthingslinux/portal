@@ -36,16 +36,13 @@ const BUILD_PLACEHOLDER_URL =
 const connectionString = env.DATABASE_URL ?? BUILD_PLACEHOLDER_URL;
 
 // Pool configuration options
-// You can specify any property from node-postgres connection options
 // See: https://node-postgres.com/features/connecting
 const poolConfig: PoolConfig = {
   connectionString,
-  // SSL configuration (uncomment and configure for production)
-  // ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
-  // Connection pool settings (optional)
-  // max: 20, // Maximum number of clients in the pool
-  // idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-  // connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection cannot be established
+  // Fail fast if DB is unreachable (default 0 = OS timeout, often 20–120s)
+  connectionTimeoutMillis: 10_000,
+  idleTimeoutMillis: 30_000,
+  // max: 20,
 };
 
 const pool = new Pool(poolConfig);

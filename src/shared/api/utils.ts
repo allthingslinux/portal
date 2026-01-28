@@ -6,6 +6,7 @@
 import "server-only";
 
 import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 import { auth } from "@/auth";
 import { isAdmin, isAdminOrStaff } from "@/auth/check-role";
@@ -77,6 +78,24 @@ export async function requireAuth(request: NextRequest): Promise<AuthResult> {
     session,
     userId: session.user.id,
   };
+}
+
+/**
+ * Schema for [id] route params. Reject empty, oversize, or non-string values.
+ * Use before DB or downstream logic (Data security checklist).
+ */
+const routeIdSchema = z.string().min(1).max(128);
+
+/**
+ * Parse and validate an [id] route param. Throws APIError(400) on invalid format.
+ */
+export function parseRouteId(value: string | string[] | undefined): string {
+  const raw = typeof value === "string" ? value : value?.[0];
+  const result = routeIdSchema.safeParse(raw);
+  if (!result.success) {
+    throw new APIError("Invalid id format", 400);
+  }
+  return result.data;
 }
 
 /**
