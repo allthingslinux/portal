@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 
 import {
   Card,
@@ -50,7 +50,7 @@ type StatusValue = (typeof STATUS_OPTIONS)[number]["value"];
 
 const SEARCH_DEBOUNCE_MS = 300;
 
-export function UserManagement() {
+function UserManagementInner() {
   const [urlState, setUrlState] = useUsersListSearchParams();
   const debouncedSearch = useDebouncedValue(
     urlState.search,
@@ -219,3 +219,5 @@ export function UserManagement() {
     </Card>
   );
 }
+
+export const UserManagement = memo(UserManagementInner);

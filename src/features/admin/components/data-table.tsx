@@ -60,7 +60,7 @@ interface DataTableProps<TData, TValue> {
   toolbarContent?: React.ReactNode;
 }
 
-export function DataTable<TData, TValue>({
+function DataTableInner<TData, TValue>({
   columns,
   data,
   searchKey,
@@ -299,3 +299,5 @@ export function DataTable<TData, TValue>({
     </div>
   );
 }
+
+export const DataTable = React.memo(DataTableInner) as typeof DataTableInner;

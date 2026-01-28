@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 
 import {
   Card,
@@ -18,7 +18,7 @@ import {
 import type { Session } from "@/shared/api/types";
 import type { SessionListResponse } from "@/shared/types/api";
 
-export function SessionManagement() {
+function SessionManagementInner() {
   const { data, error } = useSessions();
   const deleteSession = useDeleteSession();
 
@@ -31,9 +31,11 @@ export function SessionManagement() {
     [deleteSession]
   );
 
-  // Get sessions data
-  const sessions: Session[] =
-    (data as SessionListResponse<Session> | undefined)?.sessions ?? [];
+  // Stable data reference for table (TanStack Table: memoize data to prevent unnecessary re-renders)
+  const sessions = useMemo(
+    () => (data as SessionListResponse<Session> | undefined)?.sessions ?? [],
+    [data]
+  );
 
   if (error) {
     return (
@@ -72,3 +74,5 @@ export function SessionManagement() {
     </Card>
   );
 }
+
+export const SessionManagement = memo(SessionManagementInner);
