@@ -51,8 +51,17 @@ export async function proxy(request: NextRequest) {
   // Generate CSP nonce for this request (used for all routes)
   const nonce = generateNonce();
 
-  // Get session using Better Auth's API for optimistic validation
-  // This checks the session cookie - full validation happens in pages/routes
+  // Get session using Better Auth's API for optimistic validation.
+  // Full validation happens in pages/route handlers.
+  //
+  // Verification (Better Auth source): getSession can resolve from cookie cache
+  // (no DB) when session.session.cookieCache is enabled and session data is
+  // present and valid in cookies. When cache is disabled or missing/invalid,
+  // it calls internalAdapter.findSession(sessionToken) and may call
+  // updateSession/deleteSession — i.e. DB lookups. Next.js guidance is proxy
+  // should use cookie-only checks. If strict cookie-only proxy is required,
+  // use a custom cookie-presence + verify/sign check or a dedicated Better Auth
+  // option; until then we rely on getSession for consistency.
   const session = await auth.api.getSession({
     headers: request.headers,
   });
@@ -127,12 +136,13 @@ export const config = {
   // - API routes (handled separately by route handlers)
   // - Sentry tunnel route (/monitoring - handled by Sentry SDK)
   // - Prefetch requests (from next/link)
+  // - opengraph-image (Next.js OG image route; next-intl recommends bypassing proxy)
   matcher: [
     {
-      // Match /app routes but exclude static files and Next.js internals
+      // Match /app routes but exclude static files, Next.js internals, opengraph-image
       // Note: /monitoring is automatically excluded as it's not under /app
       source:
-        "/app/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+        "/app/((?!_next|.*opengraph-image|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },
