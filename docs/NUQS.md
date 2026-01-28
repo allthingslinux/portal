@@ -116,6 +116,7 @@ Then the client’s `useUsers(filters)` will hydrate from that prefetch when the
 - Admin list params live under `/app/admin`; keys like `role`, `search`, `limit`, `offset` are fine and won’t clash with other routes.
 - If you add nuqs to more areas (e.g. integrations list, audit log), use distinct key names or prefixes per feature (e.g. `usersRole` vs `sessionsActive`) if they ever share a layout.
 - For “tab” state (Users / Sessions / API keys / OAuth clients), you can use a literal parser, e.g. `parseAsStringLiteral(["users", "sessions", "api-keys", "oauth-clients"]).withDefault("users")`, and drive the visible panel from that.
+- **Account settings** (`/app/settings`): Tab state for Account / Security / API Keys lives in `src/app/(dashboard)/app/settings/settings-search-params.ts` (parsers + `loadSettingsSearchParams`) and `use-settings-search-params.ts` (hook). `SettingsContent` uses `useSettingsSearchParams()` and drives Tabs with `value={urlState.tab}` and `onValueChange`. Canonical is set to `/app/settings` in `generateMetadata`.
 
 ## 8. Testing and accessibility
 
@@ -138,6 +139,7 @@ Then the client’s `useUsers(filters)` will hydrate from that prefetch when the
 5. Wire filter UI (role, banned, search, limit, offset) to the nuqs setters so the URL updates.
 6. (Optional) Add `createLoader(usersListParsers)` and use it in the admin page to prefetch with URL-derived filters.
 7. (Optional) Add tab parsing and drive Users/Sessions/API keys/OAuth panels from a single `tab` param.
+8. **Settings**: Account settings uses nuqs for the tab (`?tab=account|security|api-keys`). Parsers in `app/settings/settings-search-params.ts`, hook in `use-settings-search-params.ts`.
 
 ## References
 
