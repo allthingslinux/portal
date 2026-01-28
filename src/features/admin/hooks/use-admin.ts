@@ -18,6 +18,7 @@ import {
   fetchUsers,
   updateUser,
 } from "@/features/admin/api/admin";
+import { usersListQueryOptions } from "@/features/admin/lib/users-query-options";
 import { queryKeys } from "@/shared/api/query-keys";
 import type {
   SessionListFilters,
@@ -34,9 +35,8 @@ import { QUERY_CACHE } from "@/shared/utils/constants";
 // Users
 export function useUsers(filters?: UserListFilters) {
   return useQuery({
-    queryKey: queryKeys.users.list(filters),
+    ...usersListQueryOptions(filters),
     queryFn: () => fetchUsers(filters),
-    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { debounce } from "nuqs";
 
 import {
   Card,
@@ -19,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { DataTable } from "./data-table";
 import { createUserColumns } from "./user-columns";
 import { useUsers } from "@/features/admin/hooks/use-admin";
@@ -34,26 +33,49 @@ import type { User } from "@/shared/api/types";
 import type { UserListResponse } from "@/shared/types/api";
 
 const ROLE_OPTIONS = [
+  { value: "all", label: "All" },
   { value: "user", label: "User" },
   { value: "staff", label: "Staff" },
   { value: "admin", label: "Admin" },
 ] as const;
 
+const STATUS_OPTIONS = [
+  { value: "all", label: "All" },
+  { value: "active", label: "Active" },
+  { value: "banned", label: "Banned" },
+] as const;
+
+type RoleValue = (typeof ROLE_OPTIONS)[number]["value"];
+type StatusValue = (typeof STATUS_OPTIONS)[number]["value"];
+
+const SEARCH_DEBOUNCE_MS = 300;
+
 export function UserManagement() {
   const [urlState, setUrlState] = useUsersListSearchParams();
+  const debouncedSearch = useDebouncedValue(
+    urlState.search,
+    SEARCH_DEBOUNCE_MS
+  );
 
   const filters = useMemo(
     () => ({
-      role: urlState.role,
-      banned: urlState.banned,
-      search: urlState.search || undefined,
+      role: urlState.role === "all" ? undefined : urlState.role,
+      banned:
+        urlState.status === "all" ? undefined : urlState.status === "banned",
+      search: debouncedSearch || undefined,
       limit: urlState.limit,
       offset: urlState.offset,
     }),
-    [urlState]
+    [
+      urlState.role,
+      urlState.status,
+      urlState.limit,
+      urlState.offset,
+      debouncedSearch,
+    ]
   );
 
-  const { data, error } = useUsers(filters);
+  const { data, error, isPending } = useUsers(filters);
 
   // Mutations
   const setRole = useSetUserRole();
@@ -73,9 +95,11 @@ export function UserManagement() {
     [setRole, banUser, unbanUser, impersonateUser]
   );
 
-  // Get users data
-  const users: User[] =
-    (data as UserListResponse<User> | undefined)?.users ?? [];
+  // Stable data reference for table (TanStack Table: memoize data to prevent infinite re-renders)
+  const users = useMemo(
+    () => (data as UserListResponse<User> | undefined)?.users ?? [],
+    [data]
+  );
 
   if (error) {
     return (
@@ -95,6 +119,24 @@ export function UserManagement() {
     );
   }
 
+  if (isPending && !data) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>User Management</CardTitle>
+          <CardDescription>
+            Manage user accounts, roles, and permissions.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-muted-foreground">
+            Loading users…
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -104,72 +146,75 @@ export function UserManagement() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <search
-          aria-label="Filter users"
-          className="flex flex-wrap items-end gap-4"
-        >
-          <div className="min-w-[200px] space-y-2">
-            <Label htmlFor="users-search">Search by email</Label>
-            <Input
-              aria-describedby="users-search-desc"
-              autoComplete="off"
-              id="users-search"
-              onChange={(e) => {
-                const { value } = e.target;
-                setUrlState(
-                  { search: value },
-                  {
-                    limitUrlUpdates: value === "" ? undefined : debounce(500),
-                  }
-                );
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const { value } = e.currentTarget;
-                  setUrlState({ search: value });
-                }
-              }}
-              placeholder="Search users by email..."
-              type="search"
-              value={urlState.search}
-            />
-            <span className="sr-only" id="users-search-desc">
-              Filters the list by email; updates on change
-            </span>
-          </div>
-          <div className="min-w-[140px] space-y-2">
-            <Label htmlFor="users-role">Role</Label>
-            <Select
-              onValueChange={(value) =>
-                setUrlState({ role: value as "user" | "staff" | "admin" })
-              }
-              value={urlState.role}
+        <DataTable<User, unknown>
+          columns={columns}
+          data={users}
+          toolbarContent={
+            <search
+              aria-label="Filter users"
+              className="grid gap-x-4 gap-y-2 sm:grid-cols-[minmax(180px,1fr)_140px_140px]"
             >
-              <SelectTrigger id="users-role">
-                <SelectValue placeholder="Role" />
-              </SelectTrigger>
-              <SelectContent>
-                {ROLE_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2 space-y-2">
-            <Switch
-              aria-label="Show banned users only"
-              checked={urlState.banned}
-              id="users-banned"
-              onCheckedChange={(checked) => setUrlState({ banned: checked })}
-            />
-            <Label className="cursor-pointer" htmlFor="users-banned">
-              Banned only
-            </Label>
-          </div>
-        </search>
-        <DataTable<User, unknown> columns={columns} data={users} />
+              <Label className="self-end" htmlFor="users-search">
+                Search by email
+              </Label>
+              <Label className="self-end" htmlFor="users-role">
+                Role
+              </Label>
+              <Label className="self-end" htmlFor="users-status">
+                Status
+              </Label>
+              <div className="min-w-0">
+                <Input
+                  aria-describedby="users-search-desc"
+                  autoComplete="off"
+                  className="h-9 w-full"
+                  id="users-search"
+                  onChange={(e) => setUrlState({ search: e.target.value })}
+                  placeholder="Search users by email..."
+                  type="search"
+                  value={urlState.search}
+                />
+                <span className="sr-only" id="users-search-desc">
+                  Filters the list by email; updates on change
+                </span>
+              </div>
+              <Select
+                onValueChange={(value) =>
+                  setUrlState({ role: value as RoleValue })
+                }
+                value={urlState.role}
+              >
+                <SelectTrigger className="h-9 w-full" id="users-role">
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROLE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                onValueChange={(value) =>
+                  setUrlState({ status: value as StatusValue })
+                }
+                value={urlState.status}
+              >
+                <SelectTrigger className="h-9 w-full" id="users-status">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </search>
+          }
+        />
       </CardContent>
     </Card>
   );

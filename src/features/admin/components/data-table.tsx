@@ -56,6 +56,8 @@ interface DataTableProps<TData, TValue> {
   searchKey?: string;
   searchPlaceholder?: string;
   enableColumnVisibility?: boolean;
+  /** Rendered on the same row as the Columns button (left side). Use for filters. */
+  toolbarContent?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -64,6 +66,7 @@ export function DataTable<TData, TValue>({
   searchKey,
   searchPlaceholder = "Search...",
   enableColumnVisibility = true,
+  toolbarContent,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -89,11 +92,18 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const showToolbar = Boolean(
+    searchKey || enableColumnVisibility || toolbarContent
+  );
+
   return (
     <div className="space-y-4">
-      {(searchKey || enableColumnVisibility) && (
-        <div className="flex items-center gap-4">
-          {searchKey && (
+      {showToolbar && (
+        <div className="flex flex-wrap items-end gap-4">
+          {toolbarContent && (
+            <div className="min-w-0 flex-1">{toolbarContent}</div>
+          )}
+          {searchKey && !toolbarContent && (
             <Input
               className="max-w-sm"
               onChange={(event) =>
@@ -108,7 +118,7 @@ export function DataTable<TData, TValue>({
           {enableColumnVisibility && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="ml-auto" variant="outline">
+                <Button className="shrink-0" variant="outline">
                   Columns
                 </Button>
               </DropdownMenuTrigger>
@@ -233,7 +243,7 @@ export function DataTable<TData, TValue>({
             }}
             value={`${table.getState().pagination.pageSize}`}
           >
-            <SelectTrigger className="h-8 w-[70px]">
+            <SelectTrigger className="h-8 min-w-[4rem]">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">

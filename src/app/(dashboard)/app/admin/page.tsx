@@ -4,6 +4,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { verifyAdminOrStaffSession } from "@/auth/dal";
 import { AdminDashboard } from "@/features/admin/components/admin-dashboard";
 import { loadUsersListSearchParams } from "@/features/admin/lib/search-params";
+import { usersListQueryOptions } from "@/features/admin/lib/users-query-options";
 import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
 import { getServerQueryClient } from "@/shared/api/hydration";
 import { queryKeys } from "@/shared/api/query-keys";
@@ -45,8 +46,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   // Parse URL search params so prefetch matches UserManagement useQueryStates(usersListParsers)
   const urlState = await loadUsersListSearchParams(searchParams);
   const usersListFilters = {
-    role: urlState.role,
-    banned: urlState.banned,
+    role: urlState.role === "all" ? undefined : urlState.role,
+    banned:
+      urlState.status === "all" ? undefined : urlState.status === "banned",
     search: urlState.search || undefined,
     limit: urlState.limit,
     offset: urlState.offset,
@@ -63,7 +65,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     }),
     // Prefetch users list; filters from URL so hydration matches UserManagement
     queryClient.prefetchQuery({
-      queryKey: queryKeys.users.list(usersListFilters),
+      ...usersListQueryOptions(usersListFilters),
       queryFn: () => fetchUsersServer(usersListFilters),
     }),
     // Prefetch sessions (first page)

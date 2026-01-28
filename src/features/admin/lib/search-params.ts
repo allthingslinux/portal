@@ -7,15 +7,16 @@
 import {
   createLoader,
   type inferParserType,
-  parseAsBoolean,
   parseAsInteger,
   parseAsString,
   parseAsStringLiteral,
 } from "nuqs/server";
 
 export const usersListParsers = {
-  role: parseAsStringLiteral(["user", "staff", "admin"]).withDefault("user"),
-  banned: parseAsBoolean.withDefault(false),
+  role: parseAsStringLiteral(["user", "staff", "admin", "all"]).withDefault(
+    "all"
+  ),
+  status: parseAsStringLiteral(["all", "active", "banned"]).withDefault("all"),
   search: parseAsString.withDefault(""),
   limit: parseAsInteger.withDefault(100),
   offset: parseAsInteger.withDefault(0),
