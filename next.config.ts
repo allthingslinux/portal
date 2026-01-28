@@ -31,6 +31,10 @@ let nextConfig: NextConfig = {
   // Requires TypeScript to be used in the project
   typedRoutes: true,
 
+  // Enable Cache Components (Next.js 16+) for opt-in caching and PPR
+  // Use "use cache" + cacheLife/cacheTag in server components or data helpers
+  cacheComponents: true,
+
   // ============================================================================
   // TypeScript Configuration
   // ============================================================================
@@ -216,8 +220,8 @@ let nextConfig: NextConfig = {
 
         const reportUri = `https://${orgDomain}/api/${projectId}/security/?sentry_key=${publicKey}&sentry_environment=${process.env.NODE_ENV}&sentry_release=${sentryRelease || "unknown"}`;
 
-        // Note: CSP headers with nonce support are set dynamically in middleware.ts
-        // The middleware generates per-request nonces and sets CSP using 'strict-dynamic'
+        // Note: CSP headers with nonce support are set dynamically in proxy.ts
+        // The proxy generates per-request nonces and sets CSP using 'strict-dynamic'
         // This static Report-Only header is kept for monitoring/reporting purposes only
         // TODO: Once all inline scripts/styles use nonces, remove unsafe-eval and unsafe-inline
         securityHeaders.push({
@@ -322,6 +326,12 @@ let nextConfig: NextConfig = {
     // Types are generated based on environment variables loaded at development runtime
     // To include production-specific variables, run: NODE_ENV=production next dev
     typedEnv: true,
+
+    // Extra safeguard against passing sensitive objects/values to Client Components.
+    // Enables React experimental_taintObjectReference / experimental_taintUniqueValue.
+    // Use in DAL or server code to mark values that must not cross the server–client boundary.
+    // Additive to DTOs and server-only; not a substitute for sanitization.
+    taint: true,
   },
 
   // ============================================================================
