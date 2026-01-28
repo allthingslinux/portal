@@ -286,6 +286,10 @@ let nextConfig: NextConfig = {
   //   - Build cache is experimental but can significantly improve build times
 
   experimental: {
+    // Workaround for Turbopack "No link element found for chunk [root-of-the-server]...css"
+    // in dev. Disables CSS merge/reorder so fewer chunks are emitted; remove when fixed upstream.
+    cssChunking: false,
+
     // Only load modules actually used from multi-export packages (lucide-react, date-fns,
     // recharts, etc. are optimized by default). Add packages not in that list here.
     optimizePackageImports: ["lodash"],
