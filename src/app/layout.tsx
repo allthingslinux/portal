@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 
@@ -11,46 +13,59 @@ import "@/styles/globals.css";
 import { geistMono, geistSans, inter } from "./fonts";
 import { createPageMetadata } from "@/shared/seo/metadata";
 
-export async function generateMetadata(): Promise<Metadata> {
-  // Add Sentry trace data for distributed tracing
-  const { getTraceData } = await import("@sentry/nextjs");
-  const traceData = getTraceData();
+/** Default lang for prerender shell when locale is not yet resolved. */
+const DEFAULT_LANG = "en";
 
-  // Filter out undefined values using Object.fromEntries
-  const validTraceData = Object.fromEntries(
-    Object.entries(traceData).filter(([, v]) => v !== undefined)
-  ) as Record<string, string>;
+// Static metadata so prerender never runs uncached code in generateMetadata.
+// With cacheComponents, layout generateMetadata runs during build-time validation;
+// connection()/getTraceData() would trigger "Uncached data outside Suspense".
+// Trace metadata can be added by request-time layers if needed.
+export const metadata: Metadata = createPageMetadata({});
 
-  // Use createPageMetadata for consistent deep merging
-  return createPageMetadata({
-    other: validTraceData,
-  });
-}
-
-export default async function RootLayout({
+async function RootLayoutContent({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
+  await connection();
   const locale = await getLocale();
   const messages = await getMessages();
 
   return (
+    <>
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <Providers>{children}</Providers>
+      </NextIntlClientProvider>
+      <WebVitalsReporter />
+    </>
+  );
+}
+
+/** Shown while RootLayoutContent (connection + i18n) resolves. */
+function RootLayoutFallback() {
+  return (
+    <div className="flex min-h-svh items-center justify-center bg-background">
+      <span className="text-muted-foreground text-sm">Loading…</span>
+    </div>
+  );
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
     <html
       className={`${inter.variable} ${geistSans.variable} ${geistMono.variable}`}
-      lang={locale}
+      lang={DEFAULT_LANG}
       suppressHydrationWarning
     >
       <head>
-        {/* DevTools handles all development scripts (React Grab, React Scan) */}
-        {/* DevTools is a client component, so it handles SSR checks internally */}
         <DevTools />
       </head>
       <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers>{children}</Providers>
-        </NextIntlClientProvider>
-        <WebVitalsReporter />
+        <Suspense fallback={<RootLayoutFallback />}>
+          <RootLayoutContent>{children}</RootLayoutContent>
+        </Suspense>
       </body>
     </html>
   );
