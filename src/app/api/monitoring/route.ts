@@ -18,9 +18,8 @@ import { keys } from "@/shared/observability/keys";
  * @see https://docs.sentry.io/platforms/javascript/guides/nextjs/troubleshooting.md#dealing-with-ad-blockers
  */
 
-// Mark as dynamic since we need to forward requests to external Sentry API
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
+// With cacheComponents, route handlers are dynamic by default.
+// This handler forwards requests to the external Sentry API.
 
 export async function POST(request: NextRequest) {
   const env = keys();

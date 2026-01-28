@@ -10,9 +10,7 @@ import {
   withWideEvent,
 } from "@/shared/observability";
 
-// Route handlers are dynamic by default, but we explicitly mark them as such
-// since they access database and request headers
-export const dynamic = "force-dynamic";
+// With cacheComponents, route handlers are dynamic by default.
 
 /**
  * GET /api/user/me

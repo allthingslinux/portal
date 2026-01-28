@@ -3,11 +3,13 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { session, user } from "@/db/schema/auth";
-import { handleAPIError, requireAdminOrStaff } from "@/shared/api/utils";
+import {
+  handleAPIError,
+  parseRouteId,
+  requireAdminOrStaff,
+} from "@/shared/api/utils";
 
-// Route handlers are dynamic by default, but we explicitly mark them as such
-// since they access database and request headers
-export const dynamic = "force-dynamic";
+// With cacheComponents, route handlers are dynamic by default.
 
 export async function GET(
   request: NextRequest,
@@ -16,7 +18,7 @@ export async function GET(
   try {
     await requireAdminOrStaff(request);
     const params = await ctx.params;
-    const id = typeof params.id === "string" ? params.id : params.id[0];
+    const id = parseRouteId(params.id);
 
     // Fetch session with user information
     const [sessionData] = await db
@@ -59,7 +61,7 @@ export async function DELETE(
   try {
     await requireAdminOrStaff(request);
     const params = await ctx.params;
-    const id = typeof params.id === "string" ? params.id : params.id[0];
+    const id = parseRouteId(params.id);
 
     const [deleted] = await db
       .delete(session)

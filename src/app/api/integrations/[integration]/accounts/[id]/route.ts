@@ -3,9 +3,14 @@ import type { NextRequest } from "next/server";
 import { isAdmin } from "@/auth/check-role";
 import { registerIntegrations } from "@/features/integrations/lib";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
-import { APIError, handleAPIError, requireAuth } from "@/shared/api/utils";
+import {
+  APIError,
+  handleAPIError,
+  parseRouteId,
+  requireAuth,
+} from "@/shared/api/utils";
 
-export const dynamic = "force-dynamic";
+// With cacheComponents, route handlers are dynamic by default.
 
 /**
  * GET /api/integrations/[integration]/accounts/[id]
@@ -22,7 +27,8 @@ export async function GET(
       typeof params.integration === "string"
         ? params.integration
         : params.integration[0];
-    const id = typeof params.id === "string" ? params.id : params.id[0];
+    // [integration] is validated via getIntegrationRegistry().get() (allowlist)
+    const id = parseRouteId(params.id);
 
     registerIntegrations();
     const integration = getIntegrationRegistry().get(integrationId);
@@ -76,7 +82,7 @@ export async function PATCH(
       typeof params.integration === "string"
         ? params.integration
         : params.integration[0];
-    const id = typeof params.id === "string" ? params.id : params.id[0];
+    const id = parseRouteId(params.id);
 
     registerIntegrations();
     const integration = getIntegrationRegistry().get(integrationId);
@@ -150,7 +156,7 @@ export async function DELETE(
       typeof params.integration === "string"
         ? params.integration
         : params.integration[0];
-    const id = typeof params.id === "string" ? params.id : params.id[0];
+    const id = parseRouteId(params.id);
 
     registerIntegrations();
     const integration = getIntegrationRegistry().get(integrationId);

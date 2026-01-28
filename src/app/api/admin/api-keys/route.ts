@@ -6,9 +6,7 @@ import { apikey } from "@/db/schema/api-keys";
 import { user } from "@/db/schema/auth";
 import { handleAPIError, requireAdminOrStaff } from "@/shared/api/utils";
 
-// Route handlers are dynamic by default, but we explicitly mark them as such
-// since they access database and request headers
-export const dynamic = "force-dynamic";
+// With cacheComponents, route handlers are dynamic by default.
 
 export async function GET(request: NextRequest) {
   try {

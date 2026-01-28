@@ -5,7 +5,8 @@ import { registerIntegrations } from "@/features/integrations/lib";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
 import { APIError, handleAPIError, requireAuth } from "@/shared/api/utils";
 
-export const dynamic = "force-dynamic";
+// With cacheComponents, route handlers are dynamic by default.
+// [integration] is validated via getIntegrationRegistry().get() (allowlist).
 
 /**
  * GET /api/integrations/[integration]/accounts
