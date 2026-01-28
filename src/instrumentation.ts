@@ -1,7 +1,5 @@
 import "server-only";
 
-import { captureException, captureRequestError } from "@sentry/nextjs";
-
 import { keys } from "@/shared/observability/keys";
 
 /**
@@ -11,6 +9,11 @@ import { keys } from "@/shared/observability/keys";
  * For Sentry-specific initialization, see:
  * - sentry.server.config.ts (Node.js runtime)
  * - sentry.edge.config.ts (Edge runtime)
+ *
+ * Sentry is loaded only via dynamic import in onRequestError when not in
+ * development. A top-level import would load Sentry at server startup and
+ * trigger next-prerender-crypto during MetadataOutlet (Sentry scope/trace
+ * uses crypto.randomUUID()). See https://nextjs.org/docs/messages/next-prerender-crypto
  */
 
 /**
@@ -57,7 +60,7 @@ const getCachedEnv = () => {
  *
  * Uses Sentry's built-in captureRequestError for proper integration with Next.js.
  */
-export const onRequestError = (
+export const onRequestError = async (
   error: unknown,
   request: {
     path: string;
@@ -71,23 +74,25 @@ export const onRequestError = (
     routePath?: string;
     revalidateReason?: string;
   }
-) => {
-  // Only capture if Sentry is configured
+): Promise<void> => {
+  // Skip Sentry in development to avoid loading @sentry/nextjs at all,
+  // which would trigger next-prerender-crypto during MetadataOutlet
+  if (process.env.NODE_ENV === "development") {
+    return;
+  }
+
   const env = getCachedEnv();
   if (!env.NEXT_PUBLIC_SENTRY_DSN) {
     return;
   }
 
   try {
-    // Use Sentry's built-in captureRequestError for better integration
-    // This automatically includes request context, user info, and breadcrumbs
-    // Ensure headers is always defined to match RequestInfo type
+    const { captureRequestError } = await import("@sentry/nextjs");
     const requestInfo = {
       path: request.path || "/",
       method: request.method || "GET",
       headers: request.headers ?? {},
     };
-    // Ensure all required ErrorContext fields are present
     const errorContext = {
       routerKind: context.routerKind,
       routeType: context.routeType,
@@ -97,8 +102,8 @@ export const onRequestError = (
     };
     captureRequestError(error, requestInfo, errorContext);
   } catch (sentryError) {
-    // Fallback: if captureRequestError fails, try direct captureException
     try {
+      const { captureException } = await import("@sentry/nextjs");
       captureException(error, {
         tags: {
           type: "request_error",
@@ -107,13 +112,9 @@ export const onRequestError = (
           routerKind: context.routerKind,
           routeType: context.routeType,
         },
-        extra: {
-          request,
-          context,
-        },
+        extra: { request, context },
       });
     } catch {
-      // Sentry not available or failed to capture
       // eslint-disable-next-line no-console
       console.error("Failed to capture error to Sentry:", sentryError);
       // eslint-disable-next-line no-console
