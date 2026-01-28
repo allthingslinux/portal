@@ -5,10 +5,14 @@
 // ============================================================================
 // Client Component wrapper for Better Auth UI settings components.
 // Uses dynamic imports with ssr: false to prevent hydration mismatches.
+// Tab (account / security / api-keys) is synced to URL via nuqs so deep links
+// and back/forward work.
 
 import dynamic from "next/dynamic";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { SettingsTabUrlState } from "./settings-search-params";
+import { useSettingsSearchParams } from "./use-settings-search-params";
 
 // ============================================================================
 // Settings Content Component
@@ -47,9 +51,16 @@ const ApiKeysCard = dynamic(
 );
 
 export function SettingsContent() {
+  const [urlState, setUrlState] = useSettingsSearchParams();
+
   return (
     <div className="max-w-4xl">
-      <Tabs defaultValue="account">
+      <Tabs
+        onValueChange={(value) =>
+          setUrlState({ tab: value as SettingsTabUrlState["tab"] })
+        }
+        value={urlState.tab}
+      >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
