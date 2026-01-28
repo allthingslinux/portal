@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 
 import { serverClient } from "@/auth/server-client";
 import { BASE_URL } from "@/config/app";
 
-// Force dynamic rendering to avoid database access during build
-export const dynamic = "force-dynamic";
-
+// With cacheComponents, GET handlers are prerendered unless they opt out.
+// connection() defers this handler to request time (auth/server context required).
 export async function GET(): Promise<NextResponse> {
+  await connection();
   const metadata = await serverClient.getProtectedResourceMetadata({
     resource: BASE_URL,
     authorization_servers: [BASE_URL],

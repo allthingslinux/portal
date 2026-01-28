@@ -3,8 +3,7 @@ import { oauthProviderAuthServerMetadata } from "@better-auth/oauth-provider";
 
 import { auth } from "@/auth";
 
-// Force dynamic rendering to avoid database access during build
-export const dynamic = "force-dynamic";
+// With cacheComponents, route handlers are dynamic by default.
 
 // Type assertion needed because TypeScript doesn't infer the plugin API methods
 // The oauthProvider plugin is configured, so this will work at runtime
