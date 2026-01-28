@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { DevTools } from "@/components/dev-tools";
 import { Providers } from "./providers";
@@ -63,9 +64,11 @@ export default function RootLayout({
         <DevTools />
       </head>
       <body>
-        <Suspense fallback={<RootLayoutFallback />}>
-          <RootLayoutContent>{children}</RootLayoutContent>
-        </Suspense>
+        <NuqsAdapter>
+          <Suspense fallback={<RootLayoutFallback />}>
+            <RootLayoutContent>{children}</RootLayoutContent>
+          </Suspense>
+        </NuqsAdapter>
       </body>
     </html>
   );
