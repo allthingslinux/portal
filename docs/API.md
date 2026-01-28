@@ -696,6 +696,13 @@ Common error messages:
 }
 ```
 
+### Route parameters
+
+Dynamic segments (`[id]`, `[integration]`) are user input and are validated before use:
+
+- **`[id]`**: Validated with `parseRouteId()` from `@/shared/api/utils`. Invalid format (empty, oversize, or non-string) returns `400` with error `"Invalid id format"`.
+- **`[integration]`**: Validated via the integration registry; unknown or disabled integration returns `404` or `403` as appropriate.
+
 ## Rate Limiting
 
 Rate limiting may be applied to prevent abuse. Check response headers:

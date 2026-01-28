@@ -43,9 +43,9 @@ Validates that pull request titles follow Conventional Commits format.
 - Validates on: opened, reopened, edited, synchronize
 - Requires PR titles to match commitlint configuration
 
-### Dependency Review (`.github/workflows/dependency-review.yml`)
+### Dependency Review (optional)
 
-Automatically reviews dependency changes in pull requests.
+If present, a workflow such as `.github/workflows/dependency-review.yml` can automatically review dependency changes in pull requests.
 
 **Features:**
 
@@ -86,9 +86,9 @@ Automatically creates pull requests for dependency updates using Renovate.
 - Reviewers: AllThingsLinux team
 - Labels: Applied automatically based on update type
 
-### Renovate Auto-merge Workflow (`.github/workflows/renovate-auto-merge.yml`)
+### Renovate Auto-merge Workflow (optional)
 
-Automatically tests and merges Renovate PRs when all checks pass.
+If Renovate is used and a workflow such as `.github/workflows/renovate-auto-merge.yml` is present, it can automatically test and merge Renovate PRs when all checks pass.
 
 **Features:**
 

@@ -75,7 +75,8 @@ Reference: [TypeScript TSConfig Reference](https://www.typescriptlang.org/tsconf
 
 - `node_modules/**` — Default; avoids pulling in dependency sources.
 - `references/**` — Project-specific; exclude if that directory holds non-app code or legacy refs.
-- `src/components/ui/**` — Shadcn UI components; excluded when they are treated as pre-built or are type-checked elsewhere.
+
+(Shadcn UI under `src/components/ui/` is included and type-checked; no separate exclude in the current tsconfig.)
 
 ---
 

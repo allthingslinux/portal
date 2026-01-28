@@ -8,31 +8,30 @@ The Portal integrations framework provides a unified, extensible system for mana
 
 ### Core Components
 
-The integrations framework consists of several core modules:
+The integrations framework lives under `src/features/integrations/lib/`. Core modules:
 
-- **Types** (`src/lib/integrations/core/types.ts`): TypeScript interfaces and types
-- **Base Class** (`src/lib/integrations/core/base.ts`): Abstract base class for integrations
-- **Registry** (`src/lib/integrations/core/registry.ts`): Central registry for managing integrations
-- **Factory** (`src/lib/integrations/core/factory.ts`): Utility functions for accessing integrations
-- **Constants** (`src/lib/integrations/core/constants.ts`): Shared constants and labels
-- **User Deletion** (`src/lib/integrations/core/user-deletion.ts`): Cleanup logic for user deletion
+- **Types** (`src/features/integrations/lib/core/types.ts`): TypeScript interfaces and types
+- **Registry** (`src/features/integrations/lib/core/registry.ts`): Central registry for managing integrations
+- **Factory** (`src/features/integrations/lib/core/factory.ts`): Utility for accessing integrations by id
+- **Constants** (`src/features/integrations/lib/core/constants.ts`): Shared constants and labels
+- **User Deletion** (`src/features/integrations/lib/core/user-deletion.ts`): Cleanup logic when users are deleted
 
 ### Integration Structure
 
-Each integration lives in its own directory under `src/lib/integrations/{integration-id}/`:
+Each integration lives in its own directory under `src/features/integrations/lib/{integration-id}/`:
 
 ```text
-src/lib/integrations/
-├── core/              # Core framework code
+src/features/integrations/lib/
+├── core/              # Types, registry, factory, constants, user-deletion
 ├── xmpp/              # XMPP integration implementation
-│   ├── keys.ts        # Environment variable validation
+│   ├── keys.ts        # Environment variable validation (t3-env)
 │   ├── config.ts      # Configuration and validation
 │   ├── types.ts       # Integration-specific types
 │   ├── client.ts      # External service client (Prosody REST API)
 │   ├── utils.ts       # Utility functions
-│   ├── implementation.ts  # Integration class implementation
-│   └── index.ts        # Public exports
-└── index.ts           # Main entry point, registration
+│   ├── implementation.ts  # Integration instance and registration
+│   └── index.ts       # Public exports
+└── index.ts           # registerIntegrations() and public API
 ```
 
 ## Database Schema
@@ -42,7 +41,7 @@ src/lib/integrations/
 All integration accounts are stored in a unified `integration_accounts` table:
 
 ```typescript
-// src/lib/db/schema/integrations/base.ts
+// src/shared/db/schema/integrations/base.ts (or @/db/schema/integrations/base)
 
 export const integrationAccountStatusEnum = pgEnum(
   "integration_account_status",
@@ -482,10 +481,10 @@ interface IntegrationCardProps {
 
 ### Step 1: Create Integration Directory
 
-Create a new directory under `src/lib/integrations/{integration-id}/`:
+Create a new directory under `src/features/integrations/lib/{integration-id}/`:
 
 ```bash
-mkdir -p src/lib/integrations/{integration-id}
+mkdir -p src/features/integrations/lib/{integration-id}
 ```
 
 ### Step 2: Define Types
@@ -493,7 +492,7 @@ mkdir -p src/lib/integrations/{integration-id}
 Create `types.ts`:
 
 ```typescript
-import type { IntegrationAccount } from "@/lib/integrations/core/types";
+import type { IntegrationAccount } from "@/features/integrations/lib/core/types";
 
 export interface {Integration}Account extends IntegrationAccount {
   integrationId: "{integration-id}";
@@ -558,9 +557,10 @@ Create `implementation.ts`:
 
 ```typescript
 import "server-only";
-import { IntegrationBase } from "@/lib/integrations/core/base";
-import { db } from "@/lib/db";
-import { integrationAccount } from "@/lib/db/schema/integrations/base";
+import { IntegrationBase } from "@/features/integrations/lib/core/base";
+import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
+import { db } from "@/db";
+import { integrationAccount } from "@/db/schema/integrations/base";
 import type {
   {Integration}Account,
   Create{Integration}AccountRequest,
@@ -629,43 +629,11 @@ export { {integration}Config, is{Integration}Configured } from "./config";
 
 ### Step 7: Register Integration
 
-Update `src/lib/integrations/index.ts`:
-
-```typescript
-import { registerXmppIntegration } from "./xmpp";
-import { register{Integration}Integration } from "./{integration-id}";
-
-let integrationsRegistered = false;
-
-export function registerIntegrations(): void {
-  if (integrationsRegistered) {
-    return;
-  }
-
-  registerXmppIntegration();
-  register{Integration}Integration();
-  integrationsRegistered = true;
-}
-```
+Ensure your integration’s `register{Integration}Integration()` is called from the app’s registration path. The app calls `registerIntegrations()` from `src/features/integrations/lib/index.ts` (or wherever the registry is used); add your integration’s registration there so it runs before API routes use the registry.
 
 ### Step 8: Add to Environment
 
-Update `src/env.ts`:
-
-```typescript
-import { keys as {integration} } from "@/lib/integrations/{integration-id}/keys";
-
-export const env = createEnv({
-  extends: [
-    auth(),
-    database(),
-    observability(),
-    xmpp(),
-    {integration}(),
-  ],
-  // ...
-});
-```
+Add your integration’s env keys to the app. Either extend the main `src/env.ts` with your integration’s `keys()` (from `@/features/integrations/lib/{integration-id}/keys`), or ensure the module that needs them imports and uses that `keys()` function. The project uses `@t3-oss/env-nextjs` and per-module `keys()`; see existing integrations (e.g. XMPP) for the pattern.
 
 ### Step 9: Create UI Integration
 

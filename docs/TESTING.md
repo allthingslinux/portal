@@ -31,7 +31,7 @@ pnpm test:coverage
 
 - Place test files in the `tests/` directory, mirroring the `src/` structure
 - Use `.test.ts` or `.test.tsx` extension
-- Example: `src/lib/utils/utils.ts` → `tests/lib/utils/utils.test.ts`
+- Example: `src/shared/utils/date.ts` → `tests/shared/utils/date.test.ts` (mirror `src/` under `tests/`)
 
 ### Test Structure
 

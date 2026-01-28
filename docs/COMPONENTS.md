@@ -92,7 +92,7 @@ function Button({ variant, size, ...props }: VariantProps<typeof buttonVariants>
 
 ```typescript
 import type * as React from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/shared/utils"
 
 function Component({
   className,
