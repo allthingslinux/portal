@@ -2,7 +2,6 @@
   // Renovate configuration for Portal application
   // Uses JSON5 format for comments and trailing commas
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  
   // ============================================================================
   // STRING PATTERN MATCHING
   // ============================================================================
@@ -36,7 +35,6 @@
   // - Regex: Use regex101.com (remember to escape backslashes: \n\s → \\n\\s)
   // - Glob: Use Digital Ocean's glob tool
   // ============================================================================
-  
   // ============================================================================
   // DEFAULT BEHAVIOR OVERRIDES
   // ============================================================================
@@ -58,7 +56,6 @@
   // 
   // See FAQ: https://docs.renovatebot.com/faq/ for more details on default behavior
   // ============================================================================
-  
   // ============================================================================
   // UPGRADE BEST PRACTICES ALIGNMENT
   // ============================================================================
@@ -91,7 +88,6 @@
   //       third-party dependencies. We use 7 days as a balance between security
   //       and update frequency. Security updates bypass this check automatically.
   // ============================================================================
-  
   // Extend from recommended presets
   // 
   // Abandonment Detection (via abandonments:recommended in config:best-practices):
@@ -156,7 +152,6 @@
     // - workarounds:doNotUpgradeFromAlpineStableToEdge: Prevents Alpine stable→edge upgrades
     //   Could be useful if we use alpine base images directly
   ],
-  
   // ============================================================================
   // NOISE REDUCTION STRATEGIES
   // ============================================================================
@@ -167,7 +162,6 @@
   // 4. Branch automerging - Silent updates (no PR notifications for passing tests)
   // 5. Lock file maintenance - Regular lock file updates
   // ============================================================================
-  
   // Schedule updates for Monday mornings (before 4am)
   // Enabled via schedule:earlyMondays preset in extends array
   // This reduces interruptions during working hours and keeps CI free for developers
@@ -188,14 +182,12 @@
   //   '* 0-3 * * 1', // Monday mornings before 4am
   // ],
   timezone: 'America/New_York',
-  
   // Dependency dashboard configuration
   // Enabled via :dependencyDashboard preset
   // The dashboard shows all pending, open, closed, and ignored updates
   // You can approve updates, retry failed ones, or recreate closed PRs
   dependencyDashboardOSVVulnerabilitySummary: 'unresolved', // Show unresolved OSV vulnerabilities
   dependencyDashboardAutoclose: false, // Keep dashboard open even when no updates pending
-  
   // Only process these package managers
   // Using enabledManagers disables all other managers (Bundler, Composer, Maven, etc.)
   // This limits Renovate to only the managers we actually use in this project
@@ -210,10 +202,13 @@
     'dockerfile', // Dockerfiles (Containerfile, Dockerfile, *.dockerfile) - stable, no preview preset needed
     'mise', // mise-en-place tool versions (mise.toml, .mise.toml, .rtx.toml)
   ],
-  
+  // Paths to exclude from Renovate scanning (no PRs/alerts for these)
+  // .cursor/skills contains template package.json files; we don't want dependency PRs for them
+  ignorePaths: [
+    '.cursor/skills/**'
+  ],
   // Use platform-native automerge (GitHub/GitLab built-in automerge)
   platformAutomerge: true,
-  
   // Branch rebasing configuration
   // 
   // rebaseWhen: 'conflicted' - Only rebase when there are merge conflicts
@@ -243,7 +238,6 @@
   // - 'behind-base-branch': Always rebase when behind base branch
   // - 'auto': Auto-detect (rebases if automerge enabled or branch protection requires it)
   rebaseWhen: 'conflicted', // Only rebase when there are conflicts (reduces noise)
-  
   // Security: OSV Vulnerability Alerts
   // 
   // OSV (Open Source Vulnerabilities) database integration
@@ -256,7 +250,6 @@
   // regular updates, not just security updates. We handle security updates via
   // vulnerabilityAlerts configuration and osvVulnerabilityAlerts.
   osvVulnerabilityAlerts: true,
-  
   // Minimum Release Age - Security feature to reduce supply chain risks
   // 
   // What it does:
@@ -280,7 +273,6 @@
   // 
   // Best practices recommend 14 days for automerging, but we use 7 as a balance
   internalChecksFilter: 'strict', // Don't create branches/PRs until minimumReleaseAge passes
-  
   // Docker digest pinning (Best Practice: Pin Docker digests)
   // 
   // Enabled via:
@@ -301,7 +293,6 @@
   // Note: The docker:pinDigests preset also excludes some managers (argocd, devcontainer,
   // helmv3, pyenv) from digest pinning, but we don't use those managers.
   pinDigests: true, // Pin Docker image digests globally
-  
   // Semantic commit configuration
   // Enabled via :semanticCommits preset
   // 
@@ -321,13 +312,11 @@
   // 
   // Note: semanticCommitScope takes priority over any preset scope settings
   semanticCommitScope: 'deps', // All dependency updates use 'deps' scope
-  
   // Changelog configuration (Best Practice: Read changelogs for updates)
   // Changelogs are included in PR bodies to help review updates
   // Best practices recommend reading changelogs before merging, especially for major updates
   fetchChangeLogs: 'pr', // Include changelogs in PR body
   commitBodyTable: true, // Include table in commit body showing what changed
-  
   // PR creation and limits
   // prConcurrentLimit: 0 set via :prConcurrentLimitNone preset
   // prHourlyLimit: 0 set via :prHourlyLimitNone preset
@@ -996,12 +985,10 @@
       '* 0-3 * * 1', // Monday mornings before 4am (matches schedule:earlyMondays preset)
     ],
   },
-  
   // Suppress certain notifications
   suppressNotifications: [
     'prIgnoreNotification',
   ],
-  
   // PR recreation and update behavior
   // recreateWhen: 'auto' means Renovate will recreate "immortal PRs" (grouped updates with different versions)
   // If you want to prevent immortal PRs from being recreated, set to 'never'
@@ -1023,7 +1010,6 @@
   // 
   // See FAQ: https://docs.renovatebot.com/faq/#separate-patch-releases-from-minor-releases
   separateMinorPatch: false, // Group minor and patch together (reduces PR count)
-  
   // Separate major from minor releases
   // 
   // Default behavior: Renovate separates major and minor releases
@@ -1042,7 +1028,6 @@
   // See FAQ: https://docs.renovatebot.com/faq/#use-separate-branches-per-dependency-but-not-one-per-major-release
   separateMajorMinor: true, // Separate major from minor updates (prevents immortal PRs for majors)
   // updateNotScheduled: true set via :updateNotScheduled preset
-  
   // PR Body customization
   // Customize the columns shown in the PR body table
   // This table shows what packages are being updated and their details
@@ -1055,12 +1040,10 @@
     'Confidence', // Confidence level of the update
     'References', // Links to changelogs, release notes, etc.
   ],
-  
   // Branch naming: Uses default 'renovate/' prefix
   // Branch names follow pattern: renovate/<package>-<version>
   // Example: renovate/react-18.x, renovate/next-14.x
   // Changing branchPrefix would require re-onboarding to avoid duplicate PRs
-  
   // Commit messages and PR titles:
   // - Enabled via :semanticCommits preset
   // - Format: <type>(deps): <action> <topic> <extra>
