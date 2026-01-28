@@ -33,6 +33,7 @@ export default async function IntegrationsPage() {
 
   const resolver = await getServerRouteResolver();
 
+  // Empty dehydrate kept for consistency with other app pages; integrations fetch client-side.
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

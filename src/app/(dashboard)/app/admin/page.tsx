@@ -13,7 +13,7 @@ import {
 } from "@/shared/api/server-queries";
 import { getRouteMetadata } from "@/shared/seo";
 
-// Metadata is automatically generated from route config
+// Metadata is automatically generated from route config.
 export async function generateMetadata(): Promise<Metadata> {
   const resolver = await getServerRouteResolver();
   return getRouteMetadata("/app/admin", routeConfig, resolver);
@@ -36,11 +36,10 @@ export default async function AdminPage() {
       queryKey: queryKeys.admin.stats(),
       queryFn: fetchAdminStatsServer,
     }),
-    // Prefetch users list (first page)
-    // Match the filters used in UserManagement component
+    // Prefetch users list (first page); limit must match UserManagement useUsers({ limit: 100 })
     queryClient.prefetchQuery({
-      queryKey: queryKeys.users.list({ limit: 50 }),
-      queryFn: () => fetchUsersServer({ limit: 50 }),
+      queryKey: queryKeys.users.list({ limit: 100 }),
+      queryFn: () => fetchUsersServer({ limit: 100 }),
     }),
     // Prefetch sessions (first page)
     queryClient.prefetchQuery({

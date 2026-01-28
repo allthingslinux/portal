@@ -6,8 +6,6 @@ import { verifySession } from "@/auth/dal";
 import { SettingsContent } from "./settings-content";
 import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
 import { getServerQueryClient } from "@/shared/api/hydration";
-import { queryKeys } from "@/shared/api/query-keys";
-import { fetchCurrentUserServer } from "@/shared/api/server-queries";
 import { getRouteMetadata } from "@/shared/seo";
 
 // Metadata is automatically generated from route config
@@ -30,8 +28,9 @@ export async function generateMetadata(): Promise<Metadata> {
 // The SettingsContent component is a Client Component that uses dynamic
 // imports with ssr: false to prevent hydration mismatches.
 //
-// We prefetch user data on the server to reduce loading flash and improve UX.
-// This populates the TanStack Query cache that Better Auth UI components use.
+// We do not prefetch our user API here. Better Auth UI reads session from
+// Better Auth TanStack's useSession at key ["session"]; useCurrentUser /
+// queryKeys.users.current() are for other pages (e.g. overview).
 //
 // Alternative: You can use SettingsCards component with view prop:
 //   <SettingsCards view="ACCOUNT" />
@@ -39,21 +38,9 @@ export async function generateMetadata(): Promise<Metadata> {
 //   <SettingsCards view="API_KEYS" />
 
 export default async function SettingsPage() {
-  // Use DAL to verify session (returns session data)
-  const sessionData = await verifySession();
+  await verifySession();
 
-  // Create QueryClient for this request (isolated per request)
   const queryClient = getServerQueryClient();
-
-  // Prefetch current user data for SSR
-  // Pass session from verifySession to avoid duplicate getSession call
-  // This reduces loading flash by populating the cache before Better Auth UI
-  // components mount and fetch data
-  await queryClient.prefetchQuery({
-    queryKey: queryKeys.users.current(),
-    queryFn: () => fetchCurrentUserServer(sessionData.session),
-  });
-
   const resolver = await getServerRouteResolver();
 
   return (

@@ -22,16 +22,15 @@ export default async function AppPage() {
   // Create QueryClient for this request (isolated per request)
   const queryClient = getServerQueryClient();
 
-  // Prefetch current user data
-  // Pass session from verifySession to avoid duplicate getSession call
-  // This populates the TanStack Query cache and gives us user data for SSR
-  const user = await queryClient.fetchQuery({
-    queryKey: queryKeys.users.current(),
-    queryFn: () => fetchCurrentUserServer(sessionData.session),
-  });
-
-  const resolver = await getServerRouteResolver();
-  const t = await getTranslations();
+  // Run independent async work in parallel to avoid waterfalls
+  const [user, resolver, t] = await Promise.all([
+    queryClient.fetchQuery({
+      queryKey: queryKeys.users.current(),
+      queryFn: () => fetchCurrentUserServer(sessionData.session),
+    }),
+    getServerRouteResolver(),
+    getTranslations(),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
