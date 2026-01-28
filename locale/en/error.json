@@ -7,6 +7,7 @@
   "stackTrace": "Stack trace (development only)",
   "unknownError": "An unknown error occurred",
   "pageError": "An error occurred while loading this page. Please try again.",
+  "backToDashboard": "Back to dashboard",
   "criticalError": "A critical error occurred. Please try refreshing the page.",
   "notFound": {
     "title": "Page Not Found",
