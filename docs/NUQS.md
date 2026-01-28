@@ -106,7 +106,7 @@ Then the client’s `useUsers(filters)` will hydrate from that prefetch when the
 
 ## 6. Limits and URL length
 
-- nuqs throttles URL updates (default 50ms; Safari uses 120ms+). Custom throttle/debounce: see [Rate-limiting URL updates](https://nuqs.dev/docs/options#rate-limiting-url-updates). Our admin search input uses per-call `debounce(500)` for typing.
+- nuqs throttles URL updates (default 50ms; Safari uses 120ms+). Custom throttle/debounce: see [Rate-limiting URL updates](https://nuqs.dev/docs/options#rate-limiting-url-updates). For client-side data fetching (e.g. TanStack Query), do not use `limitUrlUpdates: debounce`—that is for SSR with `shallow: false` (see [NUQS-422](https://nuqs.dev/NUQS-422)). Rely on the default throttle or debounce the *state* passed to your fetch hook (e.g. `useDebouncedValue`) if you want fewer requests while typing.
 - Browsers cap URL length (~2 MB Chrome, ~2k chars practical before issues; Safari/IE lower). Social and email clients often truncate long URLs. Keep URL state small; if you approach ~2k characters, prefer other state (e.g. session or DB) for heavy payloads.
 - For building links (e.g. “Copy filter link”, pre-filled `<Link>` hrefs), use [createSerializer](https://nuqs.dev/docs/utilities#serializer-helper) with the same parsers (and optional `urlKeys`).
 - **SEO:** When query params are local-only (filters, view state), set `metadata.alternates.canonical` to the path *without* the query string so crawlers index the base URL. The admin page does this in `generateMetadata`. If the query string defines the content (e.g. watch?v=), canonical should include relevant params—use parsers + `createSerializer` to build it. See [nuqs SEO](https://nuqs.dev/docs/seo).
