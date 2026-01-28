@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { SignedIn, SignedOut, UserButton } from "@daveyplate/better-auth-ui";
 import { getTranslations } from "next-intl/server";
 
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { createPageMetadata } from "@/shared/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
+  await connection();
   const t = await getTranslations();
   return createPageMetadata({
     title: t("marketing.homePage.metadataTitle"),
@@ -35,6 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
 //   if (!session) { ... } else { ... }
 
 export default async function Page() {
+  await connection();
   const t = await getTranslations();
 
   return (
