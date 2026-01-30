@@ -15,6 +15,7 @@ import { DataTable } from "./data-table";
 import { useAdminIrcAccounts } from "@/features/admin/hooks/use-admin";
 import { integrationStatusLabels } from "@/features/integrations/lib/core/constants";
 import type { IrcAccountWithUser } from "@/shared/api/types";
+import { formatDate } from "@/shared/utils/date";
 
 const columnHelper = createColumnHelper<IrcAccountWithUser>();
 
@@ -61,7 +62,7 @@ function createIrcAccountColumns() {
     columnHelper.accessor("createdAt", {
       header: "Created",
       sortingFn: "datetime",
-      cell: ({ getValue }) => new Date(getValue() as Date).toLocaleDateString(),
+      cell: ({ getValue }) => formatDate(getValue() as string),
     }),
   ] as ColumnDef<IrcAccountWithUser, unknown>[];
 }
