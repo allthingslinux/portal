@@ -22,6 +22,7 @@ import {
 } from "@/features/admin/api/admin";
 import { queryKeys } from "@/shared/api/query-keys";
 import type {
+  AdminUserDetailResponse,
   SessionListFilters,
   UpdateUserInput,
   UserListFilters,
@@ -65,8 +66,14 @@ export function useUpdateUserSuspense() {
     mutationFn: ({ id, data }: { id: string; data: UpdateUserInput }) =>
       updateUser(id, data),
     onSuccess: (data, variables) => {
-      // Update specific user in cache
-      queryClient.setQueryData(queryKeys.users.detail(variables.id), data);
+      // Merge updated user into existing user detail cache (preserve ircAccount, xmppAccount)
+      queryClient.setQueryData<AdminUserDetailResponse>(
+        queryKeys.users.detail(variables.id),
+        (prev) =>
+          prev
+            ? { ...prev, user: data }
+            : { user: data, ircAccount: null, xmppAccount: null }
+      );
       // Invalidate users list to refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
       // Invalidate stats
