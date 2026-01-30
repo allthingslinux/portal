@@ -1,19 +1,17 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-import { captureException } from "@sentry/nextjs";
-import { eq } from "drizzle-orm";
+import { z } from "zod";
+// biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
+import * as Sentry from "@sentry/nextjs";
+import { and, eq, ne } from "drizzle-orm";
 
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
 import { ircAccount } from "@/db/schema/irc";
 import { AthemeFaultError, registerNick } from "./atheme/client";
 import { ircConfig, isIrcConfigured } from "./config";
-import type {
-  CreateIrcAccountRequest,
-  IrcAccount,
-  UpdateIrcAccountRequest,
-} from "./types";
+import type { IrcAccount, UpdateIrcAccountRequest } from "./types";
 import {
   generateIrcPassword,
   IRC_NICK_MAX_LENGTH,
@@ -22,6 +20,18 @@ import {
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
 import type { IntegrationCreateInput } from "@/features/integrations/lib/core/types";
+
+const CreateIrcAccountSchema = z.object({
+  nick: z
+    .string()
+    .trim()
+    .min(1, "Nick is required")
+    .max(IRC_NICK_MAX_LENGTH)
+    .refine(
+      isValidIrcNick,
+      `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
+    ),
+});
 
 /**
  * IRC integration implementation (Atheme NickServ provisioning, soft-delete only).
@@ -52,15 +62,14 @@ export class IrcIntegration extends IntegrationBase<
       throw new Error("IRC integration is not configured");
     }
 
-    const nick = (input as CreateIrcAccountRequest)?.nick?.trim();
-    if (!nick) {
-      throw new Error("Nick is required");
+    const parsed = CreateIrcAccountSchema.safeParse(input);
+    if (!parsed.success) {
+      const msg =
+        parsed.error.issues[0]?.message ??
+        "Invalid input: nick is required and must be valid";
+      throw new Error(msg);
     }
-    if (!isValidIrcNick(nick)) {
-      throw new Error(
-        `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
-      );
-    }
+    const { nick } = parsed.data;
 
     await this.ensureUserCanCreateIrcAccount(userId, nick);
 
@@ -77,23 +86,45 @@ export class IrcIntegration extends IntegrationBase<
     const temporaryPassword = generateIrcPassword();
     await this.registerNickWithAtheme(nick, temporaryPassword, userRow.email);
 
+    const [deletedAccount] = await db
+      .select()
+      .from(ircAccount)
+      .where(
+        and(eq(ircAccount.userId, userId), eq(ircAccount.status, "deleted"))
+      )
+      .limit(1);
+
     let newRow: typeof ircAccount.$inferSelect | undefined;
     try {
-      [newRow] = await db
-        .insert(ircAccount)
-        .values({
-          id: randomUUID(),
-          userId,
-          nick,
-          server: ircConfig.server,
-          port: ircConfig.port,
-          status: "active",
-        })
-        .returning();
+      if (deletedAccount) {
+        [newRow] = await db
+          .update(ircAccount)
+          .set({
+            nick,
+            server: ircConfig.server,
+            port: ircConfig.port,
+            status: "active",
+            updatedAt: new Date(),
+          })
+          .where(eq(ircAccount.id, deletedAccount.id))
+          .returning();
+      } else {
+        [newRow] = await db
+          .insert(ircAccount)
+          .values({
+            id: randomUUID(),
+            userId,
+            nick,
+            server: ircConfig.server,
+            port: ircConfig.port,
+            status: "active",
+          })
+          .returning();
+      }
     } catch (dbError) {
-      // DB insert failed after Atheme registration; nick is orphaned on Atheme.
+      // DB insert/update failed after Atheme registration; nick is orphaned on Atheme.
       // Atheme has no unauthenticated DROP API; user must contact admin to recover.
-      captureException(dbError, {
+      Sentry.captureException(dbError, {
         tags: { integration: "irc", step: "db_insert_after_atheme" },
         extra: { userId, nick },
       });
@@ -127,13 +158,15 @@ export class IrcIntegration extends IntegrationBase<
     userId: string,
     nick: string
   ): Promise<void> {
-    const [existingAccount] = await db
+    const [existingActiveAccount] = await db
       .select()
       .from(ircAccount)
-      .where(eq(ircAccount.userId, userId))
+      .where(
+        and(eq(ircAccount.userId, userId), ne(ircAccount.status, "deleted"))
+      )
       .limit(1);
 
-    if (existingAccount) {
+    if (existingActiveAccount) {
       throw new Error("You already have an IRC account");
     }
 
@@ -156,6 +189,13 @@ export class IrcIntegration extends IntegrationBase<
     try {
       await registerNick(nick, password, email);
     } catch (error) {
+      Sentry.captureException(error, {
+        tags: { integration: "irc", operation: "registerNick" },
+        extra: {
+          nick,
+          faultCode: error instanceof AthemeFaultError ? error.code : undefined,
+        },
+      });
       if (error instanceof AthemeFaultError) {
         if (error.code === 8) {
           throw new Error("Nick is already registered on the IRC network");
