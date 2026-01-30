@@ -8,6 +8,7 @@ import {
   verification,
 } from "./auth";
 import { integrationAccount } from "./integrations/base";
+import { ircAccount } from "./irc";
 import {
   oauthAccessToken,
   oauthClient,
@@ -29,5 +30,6 @@ export const schema = {
   oauthRefreshToken,
   jwks,
   integrationAccount,
+  ircAccount,
   xmppAccount,
 };
