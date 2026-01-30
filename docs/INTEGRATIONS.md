@@ -815,11 +815,16 @@ The IRC integration provisions NickServ accounts on atl.chat via Atheme JSON-RPC
   - Nick required on create (user must enter; no auto-generate in v1).
   - One-time password generated and shown once; user saves it for `/msg NickServ IDENTIFY`.
   - **⚠️ Delete is soft-delete only** (NickServ account remains registered on Atheme). This means:
-    - Deleted accounts cannot be immediately re-registered with the same nick
-    - Manual Atheme cleanup may be needed for true account removal
-    - Portal marks the account as deleted but Atheme retains the registration
+    - Portal marks the record as `status='deleted'` but retains the database row
+    - The nick remains registered on Atheme's NickServ
+    - Re-registration with the same nick fails at the Portal level (nick uniqueness check finds the deleted record) and would fail at Atheme (fault code 8 "already exists") if attempted
+    - Manual Atheme cleanup (NickServ DROP) is required to fully remove the registration and free the nick
   - Connect instructions: server:port (TLS), same for all users from env (`IRC_SERVER`, `IRC_PORT`).
-- **Environment**: `IRC_ATHEME_JSONRPC_URL` (required for provisioning), `IRC_SERVER`, `IRC_PORT`, optional `IRC_ATHEME_INSECURE_SKIP_VERIFY`. For admin “who’s online” / channel list: `IRC_UNREAL_JSONRPC_URL`, `IRC_UNREAL_RPC_USER`, `IRC_UNREAL_RPC_PASSWORD`, optional `IRC_UNREAL_INSECURE_SKIP_VERIFY`.
+- **Environment**:
+  - **Required for provisioning**: `IRC_ATHEME_JSONRPC_URL`
+  - **Required for user connections**: `IRC_SERVER`, `IRC_PORT`
+  - **Optional security**: `IRC_ATHEME_INSECURE_SKIP_VERIFY`
+  - **Optional admin features**: `IRC_UNREAL_JSONRPC_URL`, `IRC_UNREAL_RPC_USER`, `IRC_UNREAL_RPC_PASSWORD`, `IRC_UNREAL_INSECURE_SKIP_VERIFY`
 - **Auth**: Optional `irc` scope and `irc_nick` claim in `customUserInfoClaims` when user has an IRC account.
 - **Unreal (admin)**: When Unreal env is set, use `isUnrealConfigured()` and `unrealRpcClient` from `@/features/integrations/lib/irc`: `userList()`, `userGet(nick)`, `channelList()`, `channelGet(channel)`. HTTPS POST to `/api` with Basic Auth (rpc-user). Use for admin “IRC online” or channel list views.
 
