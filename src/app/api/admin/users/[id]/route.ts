@@ -3,6 +3,8 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
+import { ircAccount } from "@/db/schema/irc";
+import { xmppAccount } from "@/db/schema/xmpp";
 import { cleanupIntegrationAccounts } from "@/features/integrations/lib/core/user-deletion";
 import {
   handleAPIError,
@@ -34,7 +36,23 @@ export async function GET(
       );
     }
 
-    return Response.json({ user: userData });
+    const [ircRow] = await db
+      .select()
+      .from(ircAccount)
+      .where(eq(ircAccount.userId, id))
+      .limit(1);
+
+    const [xmppRow] = await db
+      .select()
+      .from(xmppAccount)
+      .where(eq(xmppAccount.userId, id))
+      .limit(1);
+
+    return Response.json({
+      user: userData,
+      ircAccount: ircRow ?? null,
+      xmppAccount: xmppRow ?? null,
+    });
   } catch (error) {
     return handleAPIError(error);
   }
