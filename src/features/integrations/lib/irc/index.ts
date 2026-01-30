@@ -2,7 +2,7 @@
 import "server-only";
 
 export { AthemeFaultError, registerNick } from "./atheme/client";
-export { ircConfig, isIrcConfigured } from "./config";
+export { ircConfig, isIrcConfigured, isUnrealConfigured } from "./config";
 export { ircIntegration, registerIrcIntegration } from "./implementation";
 export type {
   AthemeFault,
@@ -13,6 +13,14 @@ export type {
   IrcAccountStatus,
   UpdateIrcAccountRequest,
 } from "./types";
+export { unrealRpcClient } from "./unreal/client";
+export type {
+  UnrealChannel,
+  UnrealClient,
+  UnrealJsonRpcError,
+  UnrealJsonRpcSuccess,
+  UnrealObjectDetailLevel,
+} from "./unreal/types";
 export {
   generateIrcPassword,
   IRC_NICK_MAX_LENGTH,
