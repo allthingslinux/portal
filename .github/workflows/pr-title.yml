@@ -14,13 +14,14 @@ permissions:
 jobs:
   validate-pr-title:
     name: Validate PR Title
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim  # Lightweight runner per action README
     timeout-minutes: 5
     permissions:
       pull-requests: read
+      statuses: write  # Required for action to post check result and WIP pending state
     steps:
       - name: Validate PR title
-        uses: amannn/action-semantic-pull-request@v6
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
