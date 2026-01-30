@@ -36,17 +36,10 @@ export async function GET(
       );
     }
 
-    const [ircRow] = await db
-      .select()
-      .from(ircAccount)
-      .where(eq(ircAccount.userId, id))
-      .limit(1);
-
-    const [xmppRow] = await db
-      .select()
-      .from(xmppAccount)
-      .where(eq(xmppAccount.userId, id))
-      .limit(1);
+    const [[ircRow], [xmppRow]] = await Promise.all([
+      db.select().from(ircAccount).where(eq(ircAccount.userId, id)).limit(1),
+      db.select().from(xmppAccount).where(eq(xmppAccount.userId, id)).limit(1),
+    ]);
 
     return Response.json({
       user: userData,
