@@ -1,10 +1,13 @@
 import type { NextRequest } from "next/server";
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
 import { ircAccount } from "@/db/schema/irc";
 import { handleAPIError, requireAdminOrStaff } from "@/shared/api/utils";
+
+const DEFAULT_LIMIT = 50;
+const MAX_LIMIT = 100;
 
 // With cacheComponents, route handlers are dynamic by default.
 
@@ -14,8 +17,13 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const statusParam = searchParams.get("status");
-    const limit = Number.parseInt(searchParams.get("limit") || "50", 10);
-    const offset = Number.parseInt(searchParams.get("offset") || "0", 10);
+    const rawLimit = Number.parseInt(searchParams.get("limit") ?? "", 10);
+    const rawOffset = Number.parseInt(searchParams.get("offset") ?? "", 10);
+    const limit =
+      Number.isFinite(rawLimit) && rawLimit > 0
+        ? Math.min(rawLimit, MAX_LIMIT)
+        : DEFAULT_LIMIT;
+    const offset = Number.isFinite(rawOffset) && rawOffset >= 0 ? rawOffset : 0;
 
     const validStatuses = ["active", "suspended", "deleted"] as const;
     const statusFilter =
@@ -46,10 +54,12 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .offset(offset);
 
-    const total = await db
-      .select({ id: ircAccount.id })
+    const [totalResult] = await db
+      .select({ count: count() })
       .from(ircAccount)
       .where(whereClause);
+
+    const total = Number(totalResult?.count ?? 0);
 
     const ircAccounts = rows.map((row) => ({
       ...row.ircAccount,
@@ -59,10 +69,10 @@ export async function GET(request: NextRequest) {
     return Response.json({
       ircAccounts,
       pagination: {
-        total: total.length,
+        total,
         limit,
         offset,
-        hasMore: offset + limit < total.length,
+        hasMore: offset + limit < total,
       },
     });
   } catch (error) {
