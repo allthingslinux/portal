@@ -19,6 +19,7 @@ import { IntegrationManagement } from "@/features/integrations/components/integr
 import { useIntegrations } from "@/features/integrations/hooks/use-integration";
 import { integrationStatusLabels } from "@/features/integrations/lib/core/constants";
 import type { IrcAccount } from "@/features/integrations/lib/irc/types";
+import { IRC_NICK_MAX_LENGTH } from "@/features/integrations/lib/irc/utils";
 import type { XmppAccount } from "@/features/integrations/lib/xmpp/types";
 
 // ============================================================================
@@ -90,10 +91,17 @@ export function IntegrationsContent() {
                           await navigator.clipboard.writeText(
                             ircPasswordDialog.temporaryPassword
                           );
-                          toast.success("Copied", {
-                            description: "Password copied to clipboard",
-                          });
+                        } else {
+                          const ta = document.createElement("textarea");
+                          ta.value = ircPasswordDialog.temporaryPassword;
+                          document.body.appendChild(ta);
+                          ta.select();
+                          document.execCommand("copy");
+                          document.body.removeChild(ta);
                         }
+                        toast.success("Copied", {
+                          description: "Password copied to clipboard",
+                        });
                       } catch (err) {
                         captureException(err);
                         toast.error("Failed to copy");
@@ -128,7 +136,7 @@ export function IntegrationsContent() {
         if (integration.id === "irc") {
           return (
             <IntegrationManagement<IrcAccount & { temporaryPassword?: string }>
-              createInputHelp="Letters, digits, or [ ] \\ ^ _ ` { | } ~ - (max 50 characters)."
+              createInputHelp={`Letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`}
               createInputLabel="Nick (required)"
               createInputPlaceholder="Enter your IRC nick"
               createInputRequired
@@ -176,10 +184,17 @@ export function IntegrationsContent() {
                             const text = `${account.server}:${account.port}`;
                             if (navigator.clipboard?.writeText) {
                               await navigator.clipboard.writeText(text);
-                              toast.success("Copied", {
-                                description: "Connect string copied",
-                              });
+                            } else {
+                              const ta = document.createElement("textarea");
+                              ta.value = text;
+                              document.body.appendChild(ta);
+                              ta.select();
+                              document.execCommand("copy");
+                              document.body.removeChild(ta);
                             }
+                            toast.success("Copied", {
+                              description: "Connect string copied",
+                            });
                           } catch (err) {
                             captureException(err);
                             toast.error("Failed to copy");
