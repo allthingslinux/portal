@@ -18,7 +18,7 @@ const IRC_NICK_REGEX = new RegExp(
 );
 
 /**
- * Validate IRC nick (RFC 1459 style). Password must not equal nick (Atheme).
+ * Validate IRC nick format (RFC 1459 style). Does not check password rules.
  */
 export function isValidIrcNick(nick: string): boolean {
   if (!nick || typeof nick !== "string") {
