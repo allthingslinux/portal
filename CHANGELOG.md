@@ -1,3 +1,30 @@
+# [1.2.0](https://github.com/allthingslinux/portal/compare/v1.1.0...v1.2.0) (2026-01-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency next to v16.1.5 [security] ([e821803](https://github.com/allthingslinux/portal/commit/e82180395b87b4c44ab4a9140024f9234b115c94))
+* **instrumentation:** optimize Sentry integration for production ([38dd8ee](https://github.com/allthingslinux/portal/commit/38dd8ee857b9e7f33138053ea15120270705c403))
+* **next.config:** disable CSS chunking as a workaround for Turbopack issue in development ([cb5309f](https://github.com/allthingslinux/portal/commit/cb5309f9ca4c58344b0355c32ced714c66782a55))
+
+
+### Features
+
+* **admin:** enhance user management with improved filters and query options ([79a1381](https://github.com/allthingslinux/portal/commit/79a13811c68c85f7241c9544d0676b8ea76347bd))
+* **admin:** enhance user management with URL state and filters ([3afb4e6](https://github.com/allthingslinux/portal/commit/3afb4e627e5385ab41f97dfe5bfcb0bcd910f8d4))
+* **api:** add route ID validation and parsing utility ([7deb7c9](https://github.com/allthingslinux/portal/commit/7deb7c9adc40d773beb2f9d6c5d932c6fbdce7ed))
+* **config:** enable component caching and enhance security features ([54d941e](https://github.com/allthingslinux/portal/commit/54d941edd75dacefb3b354c2519981d968417af0))
+* **error:** create dedicated AppError component and lazy-load error boundary ([b4f316d](https://github.com/allthingslinux/portal/commit/b4f316de7875e6a46ba9e7f5f78c2fb87e9b5215))
+* **error:** implement lazy-loaded error boundary component ([6067afd](https://github.com/allthingslinux/portal/commit/6067afd5c32872a8d4b1c44a01cf9e8237efde7b))
+* **hooks:** add useDebouncedValue hook for improved input handling ([327f0d2](https://github.com/allthingslinux/portal/commit/327f0d21a5cfd096ba2b64f73170026b317e5d0b))
+* **layout:** implement Suspense for loading state and establish connection in RootLayout ([d481bea](https://github.com/allthingslinux/portal/commit/d481bea3f9687aeaa94b51e0721920ba327f7bf3))
+* **loading:** add loading UI component for root segment ([ab4c740](https://github.com/allthingslinux/portal/commit/ab4c7405522cdbb9b5de25c53de0b0c3f075bf34))
+* **not-found:** establish connection in NotFound component ([d77efe3](https://github.com/allthingslinux/portal/commit/d77efe34c3ee03166f64970df4c40fe7490b42e4))
+* **page:** establish connection in metadata generation and page rendering ([f92fa77](https://github.com/allthingslinux/portal/commit/f92fa77a929ac7f255b02220526448cdcbe78856))
+* **providers:** implement lazy-loaded Sentry initialization and refactor Providers component ([c49f85f](https://github.com/allthingslinux/portal/commit/c49f85f6530079e1dff8109d67510121798f81ee))
+* **settings:** enhance account settings configuration with custom paths and layout options ([ad2e83e](https://github.com/allthingslinux/portal/commit/ad2e83e039ffaef7164f1c2b7c16809fc3f61994))
+* **settings:** implement nuqs-based tab state management for settings page ([f80a7ce](https://github.com/allthingslinux/portal/commit/f80a7ced217b932142deaef9c79ec3d3f3b93fe2))
+
 # [1.1.0](https://github.com/allthingslinux/portal/compare/v1.0.1...v1.1.0) (2026-01-27)
 
 
