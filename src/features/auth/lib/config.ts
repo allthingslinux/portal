@@ -23,6 +23,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { schema } from "@/db/schema";
+import { ircAccount } from "@/db/schema/irc";
 import { xmppAccount } from "@/db/schema/xmpp";
 import {
   sendOTPEmail,
@@ -254,7 +255,7 @@ const oauthProviderConfig = {
   // clientRegistrationDefaultScopes: ["openid", "profile"], // Default scopes for new clients
   // clientRegistrationAllowedScopes: ["email", "offline_access"], // Additional allowed scopes for new clients
   // Scopes configuration
-  scopes: ["openid", "profile", "email", "offline_access", "xmpp"], // Supported scopes
+  scopes: ["openid", "profile", "email", "offline_access", "xmpp", "irc"], // Supported scopes
   // Valid audiences (resources) for this OAuth server
   validAudiences: [baseURL, `${baseURL}/api`],
   // Cached trusted clients (first-party applications)
@@ -314,6 +315,29 @@ const oauthProviderConfig = {
           },
         });
         // Continue without XMPP claim on error
+      }
+    }
+
+    // Add IRC nick when 'irc' scope is requested
+    if (scopes.includes("irc")) {
+      try {
+        const [ircAccountRecord] = await db
+          .select({ nick: ircAccount.nick })
+          .from(ircAccount)
+          .where(eq(ircAccount.userId, user.id))
+          .limit(1);
+
+        if (ircAccountRecord) {
+          claims.irc_nick = ircAccountRecord.nick;
+        }
+      } catch (error) {
+        const Sentry = await import("@sentry/nextjs");
+        Sentry.captureException(error, {
+          tags: {
+            function: "customUserInfoClaims",
+            userId: user.id,
+          },
+        });
       }
     }
 
