@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -69,7 +71,10 @@ function UserDetailContent({
 }: {
   userDetail: AdminUserDetailResponse;
 }) {
+  const [mounted, setMounted] = useState(false);
   const { user: userRow, ircAccount, xmppAccount } = userDetail;
+
+  useEffect(() => setMounted(true), []);
 
   return (
     <div className="flex flex-col gap-8">
@@ -105,7 +110,7 @@ function UserDetailContent({
           <div className="space-y-1">
             <dt className="font-medium">Created</dt>
             <dd className="text-muted-foreground">
-              {formatDate(userRow.createdAt)}
+              {mounted ? formatDate(userRow.createdAt) : "—"}
             </dd>
           </div>
         </dl>
