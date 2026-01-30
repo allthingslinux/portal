@@ -35,9 +35,5 @@ export const ircAccount = pgTable(
       .notNull(),
     metadata: jsonb("metadata"),
   },
-  (table) => [
-    index("irc_account_userId_idx").on(table.userId),
-    index("irc_account_nick_idx").on(table.nick),
-    index("irc_account_status_idx").on(table.status),
-  ]
+  (table) => [index("irc_account_status_idx").on(table.status)]
 );
