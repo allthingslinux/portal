@@ -1,6 +1,13 @@
 "use client";
 
-import { ArrowDown, ArrowUp, ArrowUpDown, Ban, Eye } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Ban,
+  Eye,
+  UserCircle,
+} from "lucide-react";
 import type { UseMutationResult } from "@tanstack/react-query";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 
@@ -35,6 +42,7 @@ interface UserMutations {
   banUser: UseMutationResult<unknown, Error, { userId: string }, unknown>;
   unbanUser: UseMutationResult<unknown, Error, string, unknown>;
   impersonateUser: UseMutationResult<unknown, Error, string, unknown>;
+  onViewDetails?: (userId: string) => void;
 }
 
 export function createUserColumns(mutations: UserMutations): ColumnDef<User>[] {
@@ -154,7 +162,18 @@ export function createUserColumns(mutations: UserMutations): ColumnDef<User>[] {
 
         return (
           <div className="flex justify-end gap-2">
+            {mutations.onViewDetails && (
+              <Button
+                aria-label="View user details"
+                onClick={() => mutations.onViewDetails?.(user.id)}
+                size="sm"
+                variant="outline"
+              >
+                <UserCircle className="h-4 w-4" />
+              </Button>
+            )}
             <Button
+              aria-label="Impersonate user"
               disabled={mutations.impersonateUser.isPending}
               onClick={() => mutations.impersonateUser.mutate(user.id)}
               size="sm"
