@@ -255,3 +255,60 @@ export interface AdminStats {
     disabled: number;
   };
 }
+
+/**
+ * IRC account shape as returned by admin user detail and irc-accounts list APIs
+ */
+export interface AdminIrcAccount {
+  id: string;
+  userId: string;
+  nick: string;
+  server: string;
+  port: number;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+  metadata?: Record<string, unknown> | null;
+}
+
+/**
+ * XMPP account shape as returned by admin user detail API
+ */
+export interface AdminXmppAccount {
+  id: string;
+  userId: string;
+  jid: string;
+  username: string;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+  metadata?: Record<string, unknown> | null;
+}
+
+/**
+ * Admin user detail response (GET /api/admin/users/[id]) including integration accounts
+ */
+export interface AdminUserDetailResponse {
+  user: unknown;
+  ircAccount: AdminIrcAccount | null;
+  xmppAccount: AdminXmppAccount | null;
+}
+
+/**
+ * IRC account with optional user info for admin list
+ */
+export interface IrcAccountWithUser extends AdminIrcAccount {
+  user?: {
+    id: string;
+    email: string;
+    name: string | null;
+  };
+}
+
+/**
+ * Admin IRC accounts list response (GET /api/admin/irc-accounts)
+ */
+export interface IrcAccountListResponse {
+  ircAccounts: IrcAccountWithUser[];
+  pagination: ListPaginationMeta;
+}
