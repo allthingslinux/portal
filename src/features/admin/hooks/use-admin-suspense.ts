@@ -70,9 +70,16 @@ export function useUpdateUserSuspense() {
       queryClient.setQueryData<AdminUserDetailResponse>(
         queryKeys.users.detail(variables.id),
         (prev) =>
-          prev
-            ? { ...prev, user: data }
-            : { user: data, ircAccount: null, xmppAccount: null }
+          (prev
+            ? {
+                ...prev,
+                user: data as unknown as AdminUserDetailResponse["user"],
+              }
+            : {
+                user: data as unknown as AdminUserDetailResponse["user"],
+                ircAccount: null,
+                xmppAccount: null,
+              }) as AdminUserDetailResponse
       );
       // Invalidate users list to refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
