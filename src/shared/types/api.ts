@@ -257,7 +257,8 @@ export interface AdminStats {
 }
 
 /**
- * IRC account shape as returned by admin user detail and irc-accounts list APIs
+ * IRC account shape as returned by admin user detail and irc-accounts list APIs.
+ * Dates are ISO-8601 strings (JSON wire format).
  */
 export interface AdminIrcAccount {
   id: string;
@@ -266,13 +267,14 @@ export interface AdminIrcAccount {
   server: string;
   port: number;
   status: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   metadata?: Record<string, unknown> | null;
 }
 
 /**
- * XMPP account shape as returned by admin user detail API
+ * XMPP account shape as returned by admin user detail API.
+ * Dates are ISO-8601 strings (JSON wire format).
  */
 export interface AdminXmppAccount {
   id: string;
@@ -280,16 +282,30 @@ export interface AdminXmppAccount {
   jid: string;
   username: string;
   status: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   metadata?: Record<string, unknown> | null;
+}
+
+/**
+ * User row shape in admin user detail response.
+ * Dates are ISO-8601 strings (JSON wire format).
+ */
+export interface AdminUserRow {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  banned: boolean | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 /**
  * Admin user detail response (GET /api/admin/users/[id]) including integration accounts
  */
 export interface AdminUserDetailResponse {
-  user: unknown;
+  user: AdminUserRow;
   ircAccount: AdminIrcAccount | null;
   xmppAccount: AdminXmppAccount | null;
 }
