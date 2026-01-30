@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
+import { captureException } from "@sentry/nextjs";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -13,7 +14,11 @@ import type {
   IrcAccount,
   UpdateIrcAccountRequest,
 } from "./types";
-import { generateIrcPassword, isValidIrcNick } from "./utils";
+import {
+  generateIrcPassword,
+  IRC_NICK_MAX_LENGTH,
+  isValidIrcNick,
+} from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
 import type { IntegrationCreateInput } from "@/features/integrations/lib/core/types";
@@ -53,7 +58,7 @@ export class IrcIntegration extends IntegrationBase<
     }
     if (!isValidIrcNick(nick)) {
       throw new Error(
-        "Invalid nick. Use letters, digits, or [ ] \\ ^ _ ` { | } ~ - (max 50 characters)."
+        `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
       );
     }
 
@@ -72,17 +77,30 @@ export class IrcIntegration extends IntegrationBase<
     const temporaryPassword = generateIrcPassword();
     await this.registerNickWithAtheme(nick, temporaryPassword, userRow.email);
 
-    const [newRow] = await db
-      .insert(ircAccount)
-      .values({
-        id: randomUUID(),
-        userId,
-        nick,
-        server: ircConfig.server,
-        port: ircConfig.port,
-        status: "active",
-      })
-      .returning();
+    let newRow: typeof ircAccount.$inferSelect | undefined;
+    try {
+      [newRow] = await db
+        .insert(ircAccount)
+        .values({
+          id: randomUUID(),
+          userId,
+          nick,
+          server: ircConfig.server,
+          port: ircConfig.port,
+          status: "active",
+        })
+        .returning();
+    } catch (dbError) {
+      // DB insert failed after Atheme registration; nick is orphaned on Atheme.
+      // Atheme has no unauthenticated DROP API; user must contact admin to recover.
+      captureException(dbError, {
+        tags: { integration: "irc", step: "db_insert_after_atheme" },
+        extra: { userId, nick },
+      });
+      throw new Error(
+        "Failed to create IRC account record. The nick may have been registered—please contact an administrator if you cannot retry."
+      );
+    }
 
     if (!newRow) {
       throw new Error("Failed to create IRC account record");
