@@ -114,8 +114,9 @@ jobs:
     permissions:
       contents: read
     env:
-      # Placeholder so db client loads during Next.js build; routes that use DB are force-dynamic
+      # Placeholders so Next.js build can prerender; not used for real requests
       DATABASE_URL: postgresql://localhost:5432/__build_placeholder__
+      BETTER_AUTH_SECRET: __ci_build_placeholder_do_not_use_in_production__
     steps:
       - name: Checkout
         uses: actions/checkout@v6
