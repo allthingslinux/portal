@@ -187,7 +187,19 @@ export class IrcIntegration extends IntegrationBase<
     email: string
   ): Promise<void> {
     try {
-      await registerNick(nick, password, email);
+      await Sentry.startSpan(
+        {
+          op: "rpc.client",
+          name: "Atheme registerNick",
+          attributes: {
+            "irc.server": ircConfig.server,
+            "irc.nick_length": String(nick.length),
+          },
+        },
+        async () => {
+          await registerNick(nick, password, email);
+        }
+      );
     } catch (error) {
       Sentry.captureException(error, {
         tags: { integration: "irc", operation: "registerNick" },
