@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/layout/page/page-header";
 import { AdminStats } from "./admin-stats";
+import { IrcAccountsManagement } from "./irc-accounts-management";
 import { SessionManagement } from "./session-management";
 import { UserManagement } from "./user-management";
 import { useTranslatedRoutes } from "@/features/routing/hooks/use-translated-routes";
@@ -35,6 +36,7 @@ export function AdminDashboard() {
         <TabsList>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="sessions">Sessions</TabsTrigger>
+          <TabsTrigger value="irc-accounts">IRC Accounts</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users">
@@ -43,6 +45,10 @@ export function AdminDashboard() {
 
         <TabsContent value="sessions">
           <SessionManagement />
+        </TabsContent>
+
+        <TabsContent value="irc-accounts">
+          <IrcAccountsManagement />
         </TabsContent>
       </Tabs>
     </div>
