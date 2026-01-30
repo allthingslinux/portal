@@ -42,10 +42,15 @@ export function useUsers(filters?: UserListFilters) {
   });
 }
 
-export function useUser(userId: string) {
-  return useQuery({
-    queryKey: queryKeys.users.detail(userId),
-    queryFn: () => fetchUserById(userId),
+export function useUser(userId: string | null) {
+  return useQuery<AdminUserDetailResponse, Error>({
+    queryKey: queryKeys.users.detail(userId ?? ""),
+    queryFn: () => {
+      if (!userId) {
+        throw new Error("No userId");
+      }
+      return fetchUserById(userId);
+    },
     enabled: !!userId,
     staleTime: QUERY_CACHE.STALE_TIME_DEFAULT,
   });
@@ -62,9 +67,16 @@ export function useUpdateUser() {
       queryClient.setQueryData<AdminUserDetailResponse>(
         queryKeys.users.detail(variables.id),
         (prev) =>
-          prev
-            ? { ...prev, user: data }
-            : { user: data, ircAccount: null, xmppAccount: null }
+          (prev
+            ? {
+                ...prev,
+                user: data as unknown as AdminUserDetailResponse["user"],
+              }
+            : {
+                user: data as unknown as AdminUserDetailResponse["user"],
+                ircAccount: null,
+                xmppAccount: null,
+              }) as AdminUserDetailResponse
       );
       // Invalidate users list to refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
