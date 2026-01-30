@@ -23,6 +23,14 @@ Each integration lives in its own directory under `src/features/integrations/lib
 ```text
 src/features/integrations/lib/
 ├── core/              # Types, registry, factory, constants, user-deletion
+├── irc/               # IRC integration (Atheme NickServ)
+│   ├── atheme/        # Atheme JSON-RPC client (provisioning)
+│   ├── keys.ts        # Environment variable validation (t3-env)
+│   ├── config.ts      # Configuration and isIrcConfigured()
+│   ├── types.ts       # IrcAccount, CreateIrcAccountRequest, AthemeFault
+│   ├── utils.ts       # Nick validation, generateIrcPassword()
+│   ├── implementation.ts  # IrcIntegration and registration
+│   └── index.ts       # Public exports
 ├── xmpp/              # XMPP integration implementation
 │   ├── keys.ts        # Environment variable validation (t3-env)
 │   ├── config.ts      # Configuration and validation
@@ -772,9 +780,26 @@ The XMPP integration serves as the reference implementation:
 
 See the XMPP implementation files for a complete example of how to build an integration.
 
+### IRC Integration
+
+The IRC integration provisions NickServ accounts on atl.chat via Atheme JSON-RPC (Flow B):
+
+- **Location**: `src/features/integrations/lib/irc/`
+- **External Service**: Atheme JSON-RPC (NickServ REGISTER). UnrealIRCd JSON-RPC is optional for admin use (who's online).
+- **Database**: Dedicated `irc_account` table (`id`, `user_id` unique, `nick` unique, `server`, `port`, `status`, `created_at`, `updated_at`, `metadata`). No password stored.
+- **Features**:
+  - Nick required on create (user must enter; no auto-generate in v1).
+  - One-time password generated and shown once; user saves it for `/msg NickServ IDENTIFY`.
+  - Delete is soft-delete only (NickServ account remains on Atheme).
+  - Connect instructions: server:port (TLS), same for all users from env (`IRC_SERVER`, `IRC_PORT`).
+- **Environment**: `IRC_ATHEME_JSONRPC_URL` (required), `IRC_SERVER`, `IRC_PORT`, optional `IRC_ATHEME_INSECURE_SKIP_VERIFY`.
+- **Auth**: Optional `irc` scope and `irc_nick` claim in `customUserInfoClaims` when user has an IRC account.
+
+**Prerequisite:** atl.chat must enable Atheme `misc/httpd` and `transport/jsonrpc` (e.g. port 8081) before Portal can provision.
+
 ## Current State
 
-All integrations, including XMPP, use the unified integrations framework. There are no integration-specific API routes, hooks, or components - everything goes through the generic integration APIs and components.
+All integrations, including XMPP and IRC, use the unified integrations framework. There are no integration-specific API routes, hooks, or components - everything goes through the generic integration APIs and components.
 
 **All integrations use:**
 
