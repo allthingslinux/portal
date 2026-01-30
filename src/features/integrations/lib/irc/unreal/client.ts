@@ -1,6 +1,7 @@
 import "server-only";
 
-import { captureException } from "@sentry/nextjs";
+// biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
+import * as Sentry from "@sentry/nextjs";
 
 import { ircConfig } from "../config";
 import type {
@@ -12,7 +13,7 @@ import type {
 
 const UNREAL_RPC_TIMEOUT_MS = 15_000;
 const UNREAL_RPC_ID_MAX_LENGTH = 32;
-const TRAILING_SLASH_OR_EMPTY_REGEX = /\/?$/;
+const TRAILING_SLASHES_REGEX = /\/+$/;
 const NEWLINES_REGEX = /[\r\n]/g;
 
 function getApiUrl(): string {
@@ -20,10 +21,11 @@ function getApiUrl(): string {
   if (!base) {
     throw new Error("IRC_UNREAL_JSONRPC_URL is not configured");
   }
-  if (base.endsWith("/api")) {
-    return base;
+  const normalized = base.replace(TRAILING_SLASHES_REGEX, "");
+  if (normalized.endsWith("/api")) {
+    return normalized;
   }
-  return `${base.replace(TRAILING_SLASH_OR_EMPTY_REGEX, "")}/api`;
+  return `${normalized}/api`;
 }
 
 function getBasicAuth(): string {
@@ -133,7 +135,7 @@ export const unrealRpcClient = {
       const result = await unrealRequest<UnrealClient>("user.get", params);
       return result ?? null;
     } catch (err) {
-      captureException(err, {
+      Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "user.get" },
         extra: { nick },
       });
@@ -172,7 +174,7 @@ export const unrealRpcClient = {
       const result = await unrealRequest<UnrealChannel>("channel.get", params);
       return result ?? null;
     } catch (err) {
-      captureException(err, {
+      Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "channel.get" },
         extra: { channel },
       });
