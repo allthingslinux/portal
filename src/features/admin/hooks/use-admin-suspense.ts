@@ -67,19 +67,16 @@ export function useUpdateUserSuspense() {
       updateUser(id, data),
     onSuccess: (data, variables) => {
       // Merge updated user into existing user detail cache (preserve ircAccount, xmppAccount)
+      // Only merge when prev exists; avoid creating incomplete cache entries with null integrations
       queryClient.setQueryData<AdminUserDetailResponse>(
         queryKeys.users.detail(variables.id),
         (prev) =>
-          (prev
-            ? {
+          prev
+            ? ({
                 ...prev,
                 user: data as unknown as AdminUserDetailResponse["user"],
-              }
-            : {
-                user: data as unknown as AdminUserDetailResponse["user"],
-                ircAccount: null,
-                xmppAccount: null,
-              }) as AdminUserDetailResponse
+              } as AdminUserDetailResponse)
+            : undefined
       );
       // Invalidate users list to refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
