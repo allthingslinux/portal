@@ -42,10 +42,13 @@ interface IntegrationManagementProps<TAccount extends { id: string }> {
   createInputLabel?: string;
   createInputPlaceholder?: string;
   createInputHelp?: string;
+  createInputRequired?: boolean;
   createInputToPayload?: (value: string) => Record<string, unknown>;
+  onCreateSuccess?: (account: TAccount) => void;
   renderAccountDetails?: (account: TAccount) => ReactNode;
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Single component with loading/error/empty/account states
 export function IntegrationManagement<TAccount extends { id: string }>({
   integrationId,
   title,
@@ -54,7 +57,9 @@ export function IntegrationManagement<TAccount extends { id: string }>({
   createInputLabel,
   createInputPlaceholder,
   createInputHelp,
+  createInputRequired,
   createInputToPayload,
+  onCreateSuccess,
   renderAccountDetails,
 }: IntegrationManagementProps<TAccount>) {
   const {
@@ -73,11 +78,12 @@ export function IntegrationManagement<TAccount extends { id: string }>({
         createInputToPayload?.(trimmed) ??
         (trimmed ? { identifier: trimmed } : {});
 
-      await createMutation.mutateAsync(payload);
+      const account = await createMutation.mutateAsync(payload);
       toast.success(`${title} account created`, {
         description: `Your ${title} account has been created successfully.`,
       });
       setInputValue("");
+      onCreateSuccess?.(account);
     } catch (error) {
       captureException(error);
       toast.error(`Failed to create ${title.toLowerCase()} account`, {
@@ -164,7 +170,10 @@ export function IntegrationManagement<TAccount extends { id: string }>({
         <CardFooter>
           <Button
             className="w-full"
-            disabled={createMutation.isPending}
+            disabled={
+              createMutation.isPending ||
+              (createInputRequired && !inputValue.trim())
+            }
             onClick={handleCreate}
           >
             {createMutation.isPending ? (
