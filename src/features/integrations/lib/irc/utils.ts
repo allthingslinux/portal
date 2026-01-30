@@ -10,10 +10,12 @@ export const IRC_NICK_MAX_LENGTH = 50;
 const IRC_PASSWORD_LENGTH = 24;
 
 /**
- * Valid nick: letters, digits, [\]^_`{|}~ and - (RFC 1459).
- * No spaces, no leading/trailing spaces; length 1..NICKLEN.
+ * RFC 1459: first character must be a letter; rest may be letter, digit, or [\]^_`{|}~-
+ * Length 1..NICKLEN. No leading/trailing spaces.
  */
-const IRC_NICK_REGEX = /^[a-zA-Z0-9[\]\\^_`{|}~-]{1,50}$/;
+const IRC_NICK_REGEX = new RegExp(
+  `^[a-zA-Z][a-zA-Z0-9[\\]\\\\^_\`{|}~-]{0,${IRC_NICK_MAX_LENGTH - 1}}$`
+);
 
 /**
  * Validate IRC nick (RFC 1459 style). Password must not equal nick (Atheme).
@@ -22,11 +24,13 @@ export function isValidIrcNick(nick: string): boolean {
   if (!nick || typeof nick !== "string") {
     return false;
   }
-  const trimmed = nick.trim();
+  if (nick !== nick.trim()) {
+    return false;
+  }
   return (
-    trimmed.length >= 1 &&
-    trimmed.length <= IRC_NICK_MAX_LENGTH &&
-    IRC_NICK_REGEX.test(trimmed)
+    nick.length >= 1 &&
+    nick.length <= IRC_NICK_MAX_LENGTH &&
+    IRC_NICK_REGEX.test(nick)
   );
 }
 
