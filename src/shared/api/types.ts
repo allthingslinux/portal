@@ -14,6 +14,7 @@ export type {
   AdminIrcAccount,
   AdminStats,
   AdminUserDetailResponse,
+  AdminUserRow,
   AdminXmppAccount,
   ApiKeyListFilters,
   ApiKeyListResponse,
