@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { AlertCircle, CheckCircle2, Copy } from "lucide-react";
 import { toast } from "sonner";
-import { captureException, startSpan } from "@sentry/nextjs";
+// biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
+import * as Sentry from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -86,26 +87,37 @@ export function IntegrationsContent() {
                   <Button
                     aria-label="Copy password"
                     onClick={async () => {
-                      try {
-                        if (navigator.clipboard?.writeText) {
-                          await navigator.clipboard.writeText(
-                            ircPasswordDialog.temporaryPassword
-                          );
-                        } else {
-                          const ta = document.createElement("textarea");
-                          ta.value = ircPasswordDialog.temporaryPassword;
-                          document.body.appendChild(ta);
-                          ta.select();
-                          document.execCommand("copy");
-                          document.body.removeChild(ta);
+                      await Sentry.startSpan(
+                        {
+                          name: "Copy IRC password",
+                          op: "ui.action",
+                          attributes: { integrationId: "irc" },
+                        },
+                        async () => {
+                          try {
+                            if (navigator.clipboard?.writeText) {
+                              await navigator.clipboard.writeText(
+                                ircPasswordDialog.temporaryPassword
+                              );
+                            } else {
+                              const ta = document.createElement("textarea");
+                              ta.value = ircPasswordDialog.temporaryPassword;
+                              document.body.appendChild(ta);
+                              ta.select();
+                              if (!document.execCommand("copy")) {
+                                throw new Error("execCommand copy failed");
+                              }
+                              document.body.removeChild(ta);
+                            }
+                            toast.success("Copied", {
+                              description: "Password copied to clipboard",
+                            });
+                          } catch (err) {
+                            Sentry.captureException(err);
+                            toast.error("Failed to copy");
+                          }
                         }
-                        toast.success("Copied", {
-                          description: "Password copied to clipboard",
-                        });
-                      } catch (err) {
-                        captureException(err);
-                        toast.error("Failed to copy");
-                      }
+                      );
                     }}
                     size="sm"
                     variant="ghost"
@@ -180,25 +192,36 @@ export function IntegrationsContent() {
                       <Button
                         aria-label="Copy connect string"
                         onClick={async () => {
-                          try {
-                            const text = `${account.server}:${account.port}`;
-                            if (navigator.clipboard?.writeText) {
-                              await navigator.clipboard.writeText(text);
-                            } else {
-                              const ta = document.createElement("textarea");
-                              ta.value = text;
-                              document.body.appendChild(ta);
-                              ta.select();
-                              document.execCommand("copy");
-                              document.body.removeChild(ta);
+                          await Sentry.startSpan(
+                            {
+                              name: "Copy IRC connect string",
+                              op: "ui.action",
+                              attributes: { integrationId: "irc" },
+                            },
+                            async () => {
+                              try {
+                                const text = `${account.server}:${account.port}`;
+                                if (navigator.clipboard?.writeText) {
+                                  await navigator.clipboard.writeText(text);
+                                } else {
+                                  const ta = document.createElement("textarea");
+                                  ta.value = text;
+                                  document.body.appendChild(ta);
+                                  ta.select();
+                                  if (!document.execCommand("copy")) {
+                                    throw new Error("execCommand copy failed");
+                                  }
+                                  document.body.removeChild(ta);
+                                }
+                                toast.success("Copied", {
+                                  description: "Connect string copied",
+                                });
+                              } catch (err) {
+                                Sentry.captureException(err);
+                                toast.error("Failed to copy");
+                              }
                             }
-                            toast.success("Copied", {
-                              description: "Connect string copied",
-                            });
-                          } catch (err) {
-                            captureException(err);
-                            toast.error("Failed to copy");
-                          }
+                          );
                         }}
                         size="sm"
                         variant="ghost"
@@ -273,7 +296,7 @@ export function IntegrationsContent() {
                       <Button
                         aria-label="Copy JID"
                         onClick={async () => {
-                          await startSpan(
+                          await Sentry.startSpan(
                             {
                               name: "Copy XMPP JID",
                               op: "ui.action",
@@ -295,14 +318,16 @@ export function IntegrationsContent() {
                                   textArea.value = account.jid;
                                   document.body.appendChild(textArea);
                                   textArea.select();
-                                  document.execCommand("copy");
+                                  if (!document.execCommand("copy")) {
+                                    throw new Error("execCommand copy failed");
+                                  }
                                   document.body.removeChild(textArea);
                                   toast.success("Copied", {
                                     description: "JID copied to clipboard",
                                   });
                                 }
                               } catch (error) {
-                                captureException(error);
+                                Sentry.captureException(error);
                                 toast.error("Failed to copy", {
                                   description:
                                     "Could not copy JID to clipboard",
