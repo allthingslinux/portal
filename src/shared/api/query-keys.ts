@@ -65,6 +65,11 @@ export const queryKeys = {
     all: ["admin"] as const,
     stats: () => [...queryKeys.admin.all, "stats"] as const,
     dashboard: () => [...queryKeys.admin.all, "dashboard"] as const,
+    ircAccounts: {
+      lists: () => [...queryKeys.admin.all, "ircAccounts", "list"] as const,
+      list: (filters?: { status?: string; limit?: number; offset?: number }) =>
+        [...queryKeys.admin.ircAccounts.lists(), { filters }] as const,
+    },
   },
 
   // Integration queries
