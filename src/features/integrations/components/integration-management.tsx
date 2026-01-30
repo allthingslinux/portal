@@ -4,7 +4,8 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { AlertCircle, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { captureException } from "@sentry/nextjs";
+// biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
+import * as Sentry from "@sentry/nextjs";
 
 import {
   AlertDialog,
@@ -78,14 +79,14 @@ export function IntegrationManagement<TAccount extends { id: string }>({
         createInputToPayload?.(trimmed) ??
         (trimmed ? { identifier: trimmed } : {});
 
-      const account = await createMutation.mutateAsync(payload);
+      const createdAccount = await createMutation.mutateAsync(payload);
       toast.success(`${title} account created`, {
         description: `Your ${title} account has been created successfully.`,
       });
       setInputValue("");
-      onCreateSuccess?.(account);
+      onCreateSuccess?.(createdAccount);
     } catch (error) {
-      captureException(error);
+      Sentry.captureException(error);
       toast.error(`Failed to create ${title.toLowerCase()} account`, {
         description:
           error instanceof Error
@@ -106,7 +107,7 @@ export function IntegrationManagement<TAccount extends { id: string }>({
         description: `Your ${title} account has been deleted successfully.`,
       });
     } catch (error) {
-      captureException(error);
+      Sentry.captureException(error);
       toast.error(`Failed to delete ${title.toLowerCase()} account`, {
         description:
           error instanceof Error
