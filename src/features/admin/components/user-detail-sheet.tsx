@@ -12,6 +12,7 @@ import {
 import { useUser } from "@/features/admin/hooks/use-admin";
 import { integrationStatusLabels } from "@/features/integrations/lib/core/constants";
 import type { AdminUserDetailResponse } from "@/shared/api/types";
+import { formatDate } from "@/shared/utils/date";
 
 interface UserDetailSheetProps {
   open: boolean;
@@ -24,7 +25,7 @@ export function UserDetailSheet({
   onOpenChange,
   userId,
 }: UserDetailSheetProps) {
-  const { data, isPending, error } = useUser(userId ?? "");
+  const { data, isPending, error } = useUser(userId);
 
   if (!userId) {
     return null;
@@ -57,9 +58,7 @@ export function UserDetailSheet({
           </div>
         )}
 
-        {data && (
-          <UserDetailContent userDetail={data as AdminUserDetailResponse} />
-        )}
+        {data && <UserDetailContent userDetail={data} />}
       </SheetContent>
     </Sheet>
   );
@@ -70,15 +69,7 @@ function UserDetailContent({
 }: {
   userDetail: AdminUserDetailResponse;
 }) {
-  const { user, ircAccount, xmppAccount } = userDetail;
-  const userRow = user as {
-    id: string;
-    email: string;
-    name: string | null;
-    role: string;
-    banned: boolean | null;
-    createdAt: Date;
-  };
+  const { user: userRow, ircAccount, xmppAccount } = userDetail;
 
   return (
     <div className="flex flex-col gap-8">
@@ -98,7 +89,7 @@ function UserDetailContent({
           <div className="space-y-1">
             <dt className="font-medium">Role</dt>
             <dd>
-              <Badge variant="secondary">{userRow.role}</Badge>
+              <Badge variant="secondary">{userRow.role ?? "user"}</Badge>
             </dd>
           </div>
           <div className="space-y-1">
@@ -114,7 +105,7 @@ function UserDetailContent({
           <div className="space-y-1">
             <dt className="font-medium">Created</dt>
             <dd className="text-muted-foreground">
-              {new Date(userRow.createdAt).toLocaleString()}
+              {formatDate(userRow.createdAt)}
             </dd>
           </div>
         </dl>
