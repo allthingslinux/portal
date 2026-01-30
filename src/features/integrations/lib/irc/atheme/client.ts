@@ -82,7 +82,7 @@ async function athemeCommand(params: string[]): Promise<string> {
 
     if ("error" in data && data.error) {
       const err = data as JsonRpcError;
-      const code = err.error.code as AthemeFaultCode;
+      const code = (err.error?.code ?? 16) as AthemeFaultCode;
       throw new AthemeFaultError({
         code,
         message: err.error.message ?? "Atheme fault",
