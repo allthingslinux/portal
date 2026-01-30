@@ -114,8 +114,15 @@ export const unrealRpcClient = {
     if (objectDetailLevel !== undefined) {
       params.object_detail_level = objectDetailLevel;
     }
-    const result = await unrealRequest<UnrealClient[]>("user.list", params);
-    return Array.isArray(result) ? result : [];
+    try {
+      const result = await unrealRequest<UnrealClient[]>("user.list", params);
+      return Array.isArray(result) ? result : [];
+    } catch (err) {
+      Sentry.captureException(err, {
+        tags: { integration: "irc-unreal", method: "user.list" },
+      });
+      return [];
+    }
   },
 
   /**
@@ -153,8 +160,18 @@ export const unrealRpcClient = {
     if (objectDetailLevel !== undefined) {
       params.object_detail_level = objectDetailLevel;
     }
-    const result = await unrealRequest<UnrealChannel[]>("channel.list", params);
-    return Array.isArray(result) ? result : [];
+    try {
+      const result = await unrealRequest<UnrealChannel[]>(
+        "channel.list",
+        params
+      );
+      return Array.isArray(result) ? result : [];
+    } catch (err) {
+      Sentry.captureException(err, {
+        tags: { integration: "irc-unreal", method: "channel.list" },
+      });
+      return [];
+    }
   },
 
   /**
