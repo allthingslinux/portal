@@ -10,6 +10,7 @@ import {
   fetchAdminStats,
   fetchApiKeyById,
   fetchApiKeys,
+  fetchIrcAccounts,
   fetchOAuthClientById,
   fetchOAuthClients,
   fetchSessionById,
@@ -21,6 +22,7 @@ import {
 import { usersListQueryOptions } from "@/features/admin/lib/users-query-options";
 import { queryKeys } from "@/shared/api/query-keys";
 import type {
+  AdminUserDetailResponse,
   SessionListFilters,
   UpdateUserInput,
   UserListFilters,
@@ -56,8 +58,14 @@ export function useUpdateUser() {
     mutationFn: ({ id, data }: { id: string; data: UpdateUserInput }) =>
       updateUser(id, data),
     onSuccess: (data, variables) => {
-      // Update specific user in cache
-      queryClient.setQueryData(queryKeys.users.detail(variables.id), data);
+      // Merge updated user into existing user detail cache (preserve ircAccount, xmppAccount)
+      queryClient.setQueryData<AdminUserDetailResponse>(
+        queryKeys.users.detail(variables.id),
+        (prev) =>
+          prev
+            ? { ...prev, user: data }
+            : { user: data, ircAccount: null, xmppAccount: null }
+      );
       // Invalidate users list to refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.users.lists() });
       // Invalidate stats
@@ -206,5 +214,18 @@ export function useDeleteAdminOAuthClient() {
         queryKey: queryKeys.oauthClients.lists(),
       });
     },
+  });
+}
+
+// IRC accounts (admin list)
+export function useAdminIrcAccounts(filters?: {
+  status?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  return useQuery({
+    queryKey: queryKeys.admin.ircAccounts.list(filters),
+    queryFn: () => fetchIrcAccounts(filters),
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
