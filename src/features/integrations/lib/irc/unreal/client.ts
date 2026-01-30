@@ -1,5 +1,7 @@
 import "server-only";
 
+import { captureException } from "@sentry/nextjs";
+
 import { ircConfig } from "../config";
 import type {
   UnrealChannel,
@@ -130,7 +132,11 @@ export const unrealRpcClient = {
     try {
       const result = await unrealRequest<UnrealClient>("user.get", params);
       return result ?? null;
-    } catch {
+    } catch (err) {
+      captureException(err, {
+        tags: { integration: "irc-unreal", method: "user.get" },
+        extra: { nick },
+      });
       return null;
     }
   },
@@ -165,7 +171,11 @@ export const unrealRpcClient = {
     try {
       const result = await unrealRequest<UnrealChannel>("channel.get", params);
       return result ?? null;
-    } catch {
+    } catch (err) {
+      captureException(err, {
+        tags: { integration: "irc-unreal", method: "channel.get" },
+        extra: { channel },
+      });
       return null;
     }
   },
