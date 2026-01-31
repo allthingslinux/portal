@@ -69,10 +69,12 @@ async function athemeCommand(params: string[]): Promise<string> {
     };
 
     if (ircConfig.atheme.insecureSkipVerify) {
-      const https = await import("node:https");
-      // @ts-expect-error - 'agent' is not in RequestInit but supported by node-fetch/undici in Next.js
-      fetchOptions.agent = new https.Agent({
-        rejectUnauthorized: false,
+      const { Agent } = await import("undici");
+      // @ts-expect-error - 'dispatcher' is supported by native fetch in Node.js (undici)
+      fetchOptions.dispatcher = new Agent({
+        connect: {
+          rejectUnauthorized: false,
+        },
       });
     }
 
