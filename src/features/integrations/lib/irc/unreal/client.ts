@@ -68,7 +68,7 @@ async function unrealRequest<T>(
   const timeout = setTimeout(() => controller.abort(), UNREAL_RPC_TIMEOUT_MS);
 
   try {
-    const response = await fetch(url, {
+    const fetchOptions: RequestInit = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -76,7 +76,17 @@ async function unrealRequest<T>(
       },
       body: JSON.stringify(body),
       signal: controller.signal,
-    });
+    };
+
+    if (ircConfig.unreal.insecureSkipVerify) {
+      const https = await import("node:https");
+      // @ts-expect-error - 'agent' is not in RequestInit but supported by node-fetch/undici in Next.js
+      fetchOptions.agent = new https.Agent({
+        rejectUnauthorized: false,
+      });
+    }
+
+    const response = await fetch(url, fetchOptions);
 
     const data = (await response.json()) as
       | UnrealJsonRpcSuccess<T>
