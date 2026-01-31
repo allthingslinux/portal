@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
+import { z } from "zod";
 import { and, eq, ne } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -25,6 +26,12 @@ import {
 } from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
+
+const UpdateXmppAccountSchema = z.object({
+  status: z.enum(["active", "suspended"]).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+  username: z.string().optional(),
+});
 
 /**
  * XMPP integration implementation.
@@ -232,6 +239,12 @@ export class XmppIntegration extends IntegrationBase<
     accountId: string,
     input: UpdateXmppAccountRequest
   ): Promise<XmppAccount> {
+    const parsed = UpdateXmppAccountSchema.safeParse(input);
+    if (!parsed.success) {
+      throw new Error("Invalid update request");
+    }
+    const data = parsed.data;
+
     const [account] = await db
       .select()
       .from(xmppAccount)
@@ -244,7 +257,7 @@ export class XmppIntegration extends IntegrationBase<
       throw new Error("XMPP account not found");
     }
 
-    if (input.username && input.username !== account.username) {
+    if (data.username && data.username !== account.username) {
       throw new Error(
         "Username cannot be changed. Please delete your account and create a new one with the desired username."
       );
@@ -252,12 +265,12 @@ export class XmppIntegration extends IntegrationBase<
 
     const updates: Partial<typeof xmppAccount.$inferInsert> = {};
 
-    if (input.status && input.status !== account.status) {
-      updates.status = input.status;
+    if (data.status && data.status !== account.status) {
+      updates.status = data.status;
     }
 
-    if (input.metadata !== undefined) {
-      updates.metadata = input.metadata;
+    if (data.metadata !== undefined) {
+      updates.metadata = data.metadata;
     }
 
     if (Object.keys(updates).length === 0) {
