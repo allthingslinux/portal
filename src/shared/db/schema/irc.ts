@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   index,
   integer,
@@ -6,6 +7,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
@@ -24,7 +26,7 @@ export const ircAccount = pgTable(
       .notNull()
       .unique()
       .references(() => user.id, { onDelete: "cascade" }),
-    nick: text("nick").notNull().unique(),
+    nick: text("nick").notNull(),
     server: text("server").notNull(),
     port: integer("port").default(6697).notNull(),
     status: ircAccountStatusEnum("status").default("active").notNull(),
@@ -35,5 +37,10 @@ export const ircAccount = pgTable(
       .notNull(),
     metadata: jsonb("metadata"),
   },
-  (table) => [index("irc_account_status_idx").on(table.status)]
+  (table) => [
+    index("irc_account_status_idx").on(table.status),
+    uniqueIndex("irc_account_nick_active_idx")
+      .on(table.nick)
+      .where(sql`status != 'deleted'`),
+  ]
 );

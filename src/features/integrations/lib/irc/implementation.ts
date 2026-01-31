@@ -173,7 +173,7 @@ export class IrcIntegration extends IntegrationBase<
     const [existingNick] = await db
       .select()
       .from(ircAccount)
-      .where(eq(ircAccount.nick, nick))
+      .where(and(eq(ircAccount.nick, nick), ne(ircAccount.status, "deleted")))
       .limit(1);
 
     if (existingNick) {
@@ -230,7 +230,9 @@ export class IrcIntegration extends IntegrationBase<
     const [row] = await db
       .select()
       .from(ircAccount)
-      .where(eq(ircAccount.userId, userId))
+      .where(
+        and(eq(ircAccount.userId, userId), ne(ircAccount.status, "deleted"))
+      )
       .limit(1);
 
     return row ? rowToAccount(row) : null;

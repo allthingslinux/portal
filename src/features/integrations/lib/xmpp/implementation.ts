@@ -1,7 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
@@ -84,7 +84,12 @@ export class XmppIntegration extends IntegrationBase<
     const [existingUsername] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.username, username))
+      .where(
+        and(
+          eq(xmppAccount.username, username),
+          ne(xmppAccount.status, "deleted")
+        )
+      )
       .limit(1);
 
     if (existingUsername) {
@@ -119,7 +124,9 @@ export class XmppIntegration extends IntegrationBase<
     const [existingAccount] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.userId, userId))
+      .where(
+        and(eq(xmppAccount.userId, userId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
     if (existingAccount) {
@@ -201,7 +208,9 @@ export class XmppIntegration extends IntegrationBase<
     const [account] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.userId, userId))
+      .where(
+        and(eq(xmppAccount.userId, userId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
     return account
