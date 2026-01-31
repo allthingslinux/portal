@@ -32,8 +32,8 @@ export interface IntegrationPublicInfo {
   enabled: boolean;
 }
 
-export type IntegrationCreateInput = Record<string, unknown>;
-export type IntegrationUpdateInput = Record<string, unknown>;
+export type IntegrationCreateInput = object;
+export type IntegrationUpdateInput = object;
 
 export interface IntegrationOperationContext {
   userId?: string;

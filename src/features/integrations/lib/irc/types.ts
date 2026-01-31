@@ -27,7 +27,7 @@ export interface IrcAccount {
 /**
  * Create IRC account request. Nick is required (no auto-generate in v1).
  */
-export interface CreateIrcAccountRequest extends Record<string, unknown> {
+export interface CreateIrcAccountRequest {
   nick: string;
 }
 
@@ -48,7 +48,7 @@ export type UpdateIrcAccountStatus = "active" | "pending" | "suspended";
 /**
  * Update IRC account request (status, metadata; nick change deferred in v1)
  */
-export interface UpdateIrcAccountRequest extends Record<string, unknown> {
+export interface UpdateIrcAccountRequest {
   nick?: string;
   status?: UpdateIrcAccountStatus;
   metadata?: Record<string, unknown>;
@@ -61,9 +61,14 @@ export interface UpdateIrcAccountRequest extends Record<string, unknown> {
 export type AthemeFaultCode = 1 | 2 | 5 | 6 | 8 | 9 | 10 | 15 | 16;
 
 /**
+ * More flexible fault code type for runtime safety
+ */
+export type AnyAthemeFaultCode = AthemeFaultCode | number;
+
+/**
  * Atheme JSON-RPC error response
  */
 export interface AthemeFault {
-  code: AthemeFaultCode;
+  code: AnyAthemeFaultCode;
   message: string;
 }

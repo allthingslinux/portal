@@ -1,7 +1,7 @@
 import "server-only";
 
 import { ircConfig } from "../config";
-import type { AthemeFault, AthemeFaultCode } from "../types";
+import type { AnyAthemeFaultCode, AthemeFault } from "../types";
 
 /** JSON-RPC 2.0 request */
 interface JsonRpcRequest {
@@ -29,7 +29,7 @@ interface JsonRpcError {
  * Thrown when Atheme returns a fault (e.g. nick taken, bad params).
  */
 export class AthemeFaultError extends Error {
-  readonly code: AthemeFaultCode;
+  readonly code: AnyAthemeFaultCode;
   readonly fault: AthemeFault;
 
   constructor(fault: AthemeFault) {
@@ -87,14 +87,14 @@ async function athemeCommand(params: string[]): Promise<string> {
 
     if (!response.ok) {
       const err = data as JsonRpcError;
-      const code = (err.error?.code ?? 16) as AthemeFaultCode;
+      const code = (err.error?.code ?? 16) as AnyAthemeFaultCode;
       const message = err.error?.message ?? "Atheme request failed";
       throw new AthemeFaultError({ code, message });
     }
 
     if ("error" in data && data.error) {
       const err = data as JsonRpcError;
-      const code = (err.error?.code ?? 16) as AthemeFaultCode;
+      const code = (err.error?.code ?? 16) as AnyAthemeFaultCode;
       throw new AthemeFaultError({
         code,
         message: err.error.message ?? "Atheme fault",
