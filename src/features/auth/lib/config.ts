@@ -297,26 +297,31 @@ const oauthProviderConfig = {
 
     // Add XMPP username when 'xmpp' scope is requested
     if (scopes.includes("xmpp")) {
-      try {
-        const [xmppAccountRecord] = await db
-          .select({ username: xmppAccount.username })
-          .from(xmppAccount)
-          .where(eq(xmppAccount.userId, user.id))
-          .limit(1);
+      await Sentry.startSpan(
+        { op: "db.lookup", name: "xmppAccount lookup" },
+        async () => {
+          try {
+            const [xmppAccountRecord] = await db
+              .select({ username: xmppAccount.username })
+              .from(xmppAccount)
+              .where(eq(xmppAccount.userId, user.id))
+              .limit(1);
 
-        if (xmppAccountRecord) {
-          claims.xmpp_username = xmppAccountRecord.username;
+            if (xmppAccountRecord) {
+              claims.xmpp_username = xmppAccountRecord.username;
+            }
+          } catch (error) {
+            // Capture error in Sentry but gracefully continue without XMPP claim
+            Sentry.captureException(error, {
+              tags: {
+                function: "customUserInfoClaims",
+                userId: user.id,
+              },
+            });
+            // Continue without XMPP claim on error
+          }
         }
-      } catch (error) {
-        // Capture error in Sentry but gracefully continue without XMPP claim
-        Sentry.captureException(error, {
-          tags: {
-            function: "customUserInfoClaims",
-            userId: user.id,
-          },
-        });
-        // Continue without XMPP claim on error
-      }
+      );
     }
 
     // Add IRC nick when 'irc' scope is requested

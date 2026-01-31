@@ -283,7 +283,9 @@ export class XmppIntegration extends IntegrationBase<
         ...updates,
         updatedAt: new Date(),
       })
-      .where(eq(xmppAccount.id, accountId))
+      .where(
+        and(eq(xmppAccount.id, accountId), ne(xmppAccount.status, "deleted"))
+      )
       .returning();
 
     if (!updated) {
@@ -344,14 +346,11 @@ export class XmppIntegration extends IntegrationBase<
   }
 }
 
-function rowToAccount(row: typeof xmppAccount.$inferSelect): XmppAccount {
-  return {
-    ...row,
-    integrationId: "xmpp" as const,
-    metadata:
-      (row.metadata as Record<string, unknown> | undefined) ?? undefined,
-  };
-}
+const rowToAccount = (row: typeof xmppAccount.$inferSelect): XmppAccount => ({
+  ...row,
+  integrationId: "xmpp" as const,
+  metadata: (row.metadata as Record<string, unknown> | undefined) ?? undefined,
+});
 
 export const xmppIntegration = new XmppIntegration();
 

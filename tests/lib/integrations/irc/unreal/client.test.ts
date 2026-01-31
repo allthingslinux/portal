@@ -110,4 +110,74 @@ describe("UnrealIRCd Client", () => {
       expect(result).toEqual([]);
     });
   });
+
+  describe("userGet", () => {
+    it("fetches a single user by nick", async () => {
+      // Arrange
+      const mockUser = { nick: "alice", realname: "Alice" };
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ jsonrpc: "2.0", result: mockUser, id: 1 }),
+      });
+
+      // Act
+      const result = await unrealRpcClient.userGet("alice");
+
+      // Assert
+      expect(result).toEqual(mockUser);
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          body: expect.stringContaining('"method":"user.get"'),
+        })
+      );
+    });
+
+    it("returns null on error", async () => {
+      // Arrange
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        json: async () => ({ error: { message: "Not found" } }),
+      });
+
+      // Act
+      const result = await unrealRpcClient.userGet("unknown");
+
+      // Assert
+      expect(result).toBeNull();
+    });
+  });
+
+  describe("channelGet", () => {
+    it("fetches a single channel by name", async () => {
+      // Arrange
+      const mockChannel = { name: "#test" };
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ jsonrpc: "2.0", result: mockChannel, id: 1 }),
+      });
+
+      // Act
+      const result = await unrealRpcClient.channelGet("#test");
+
+      // Assert
+      expect(result).toEqual(mockChannel);
+    });
+
+    it("returns null on error", async () => {
+      // Arrange
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        json: async () => ({ error: { message: "Not found" } }),
+      });
+
+      // Act
+      const result = await unrealRpcClient.channelGet("#unknown");
+
+      // Assert
+      expect(result).toBeNull();
+    });
+  });
 });

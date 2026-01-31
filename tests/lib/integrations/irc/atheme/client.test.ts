@@ -95,13 +95,15 @@ describe("Atheme Client", () => {
       });
 
       // Act & Assert
-      const promise = registerNick(nick, "pwd", email, ip);
-
-      await expect(promise).rejects.toBeInstanceOf(AthemeFaultError);
-      await expect(promise).rejects.toMatchObject({
-        code: 8,
-        message: "Nick already registered",
-      });
+      await expect(registerNick(nick, "pwd", email, ip)).rejects.toSatisfy(
+        (err: unknown) => {
+          return (
+            err instanceof AthemeFaultError &&
+            err.code === 8 &&
+            err.message === "Nick already registered"
+          );
+        }
+      );
     });
 
     it("handles generic fetch errors", async () => {
@@ -120,26 +122,29 @@ describe("Atheme Client", () => {
       const { ircConfig } = await import(
         "@/features/integrations/lib/irc/config"
       );
+      const originalValue = ircConfig.atheme.insecureSkipVerify;
       (ircConfig.atheme as any).insecureSkipVerify = true;
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ jsonrpc: "2.0", result: "Success", id: 1 }),
-      });
+      try {
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ jsonrpc: "2.0", result: "Success", id: 1 }),
+        });
 
-      // Act
-      await registerNick("alice", "password123", "alice@example.com");
+        // Act
+        await registerNick("alice", "password123", "alice@example.com");
 
-      // Assert
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          dispatcher: expect.any(Object),
-        })
-      );
-
-      // Reset config for other tests
-      (ircConfig.atheme as any).insecureSkipVerify = false;
+        // Assert
+        expect(mockFetch).toHaveBeenCalledWith(
+          expect.any(String),
+          expect.objectContaining({
+            dispatcher: expect.any(Object),
+          })
+        );
+      } finally {
+        // Reset config for other tests
+        (ircConfig.atheme as any).insecureSkipVerify = originalValue;
+      }
     });
   });
 });

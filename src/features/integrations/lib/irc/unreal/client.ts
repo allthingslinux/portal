@@ -68,46 +68,55 @@ async function unrealRequest<T>(
   const timeout = setTimeout(() => controller.abort(), UNREAL_RPC_TIMEOUT_MS);
 
   try {
-    const fetchOptions: RequestInit = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${getBasicAuth()}`,
+    return await Sentry.startSpan(
+      {
+        op: "http.client",
+        name: `UnrealIRCd RPC ${method}`,
+        attributes: { "rpc.method": method },
       },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    };
+      async () => {
+        const fetchOptions: RequestInit = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${getBasicAuth()}`,
+          },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        };
 
-    if (ircConfig.unreal.insecureSkipVerify) {
-      const { Agent } = await import("undici");
-      // @ts-expect-error - 'dispatcher' is supported by native fetch in Node.js (undici)
-      fetchOptions.dispatcher = new Agent({
-        connect: {
-          rejectUnauthorized: false,
-        },
-      });
-    }
+        if (ircConfig.unreal.insecureSkipVerify) {
+          const { Agent } = await import("undici");
+          // @ts-expect-error - 'dispatcher' is supported by native fetch in Node.js (undici)
+          fetchOptions.dispatcher = new Agent({
+            connect: {
+              rejectUnauthorized: false,
+            },
+          });
+        }
 
-    const response = await fetch(url, fetchOptions);
+        const response = await fetch(url, fetchOptions);
 
-    const data = (await response.json()) as
-      | UnrealJsonRpcSuccess<T>
-      | UnrealJsonRpcError;
+        const data = (await response.json()) as
+          | UnrealJsonRpcSuccess<T>
+          | UnrealJsonRpcError;
 
-    if (!response.ok) {
-      const err = data as UnrealJsonRpcError;
-      throw new Error(
-        err.error?.message ?? `UnrealIRCd RPC error: ${response.status}`
-      );
-    }
+        if (!response.ok) {
+          const err = data as UnrealJsonRpcError;
+          throw new Error(
+            err.error?.message ?? `UnrealIRCd RPC error: ${response.status}`
+          );
+        }
 
-    if ("error" in data && data.error) {
-      const err = data as UnrealJsonRpcError;
-      throw new Error(err.error.message ?? "UnrealIRCd RPC fault");
-    }
+        if ("error" in data && data.error) {
+          const err = data as UnrealJsonRpcError;
+          throw new Error(err.error.message ?? "UnrealIRCd RPC fault");
+        }
 
-    const success = data as UnrealJsonRpcSuccess<T>;
-    return success.result;
+        const success = data as UnrealJsonRpcSuccess<T>;
+        return success.result;
+      }
+    );
   } finally {
     clearTimeout(timeout);
   }
