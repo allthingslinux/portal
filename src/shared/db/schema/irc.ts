@@ -14,6 +14,7 @@ import { user } from "./auth";
 
 export const ircAccountStatusEnum = pgEnum("irc_account_status", [
   "active",
+  "pending",
   "suspended",
   "deleted",
 ]);
