@@ -33,6 +33,12 @@ const CreateIrcAccountSchema = z.object({
     ),
 });
 
+const UpdateIrcAccountSchema = z.object({
+  status: z.enum(["active", "pending", "suspended", "deleted"]).optional(),
+  metadata: z.record(z.unknown()).optional(),
+  nick: z.string().optional(),
+});
+
 /**
  * IRC integration implementation (Atheme NickServ provisioning, soft-delete only).
  */
@@ -139,7 +145,18 @@ export class IrcIntegration extends IntegrationBase<
       await this.registerNickWithAtheme(nick, temporaryPassword, userRow.email);
     } catch (athemeError) {
       // Cleanup the pending record on Atheme failure
-      await db.delete(ircAccount).where(eq(ircAccount.id, accountRow.id));
+      try {
+        await db.delete(ircAccount).where(eq(ircAccount.id, accountRow.id));
+      } catch (cleanupError) {
+        Sentry.captureException(cleanupError, {
+          tags: { integration: "irc", step: "cleanup_after_atheme_failure" },
+          extra: {
+            userId,
+            accountId: accountRow.id,
+            originalError: athemeError,
+          },
+        });
+      }
       throw athemeError;
     }
 
@@ -165,19 +182,7 @@ export class IrcIntegration extends IntegrationBase<
       );
     }
 
-    const account: IrcAccount = {
-      id: finalRow.id,
-      userId: finalRow.userId,
-      integrationId: "irc",
-      nick: finalRow.nick,
-      server: finalRow.server,
-      port: finalRow.port,
-      status: finalRow.status,
-      createdAt: finalRow.createdAt,
-      updatedAt: finalRow.updatedAt,
-      metadata:
-        (finalRow.metadata as Record<string, unknown> | undefined) ?? undefined,
-    };
+    const account = rowToAccount(finalRow);
 
     return { ...account, temporaryPassword };
   }
@@ -270,7 +275,9 @@ export class IrcIntegration extends IntegrationBase<
     const [row] = await db
       .select()
       .from(ircAccount)
-      .where(eq(ircAccount.id, accountId))
+      .where(
+        and(eq(ircAccount.id, accountId), ne(ircAccount.status, "deleted"))
+      )
       .limit(1);
 
     return row ? rowToAccount(row) : null;
@@ -280,10 +287,18 @@ export class IrcIntegration extends IntegrationBase<
     accountId: string,
     input: UpdateIrcAccountRequest
   ): Promise<IrcAccount> {
+    const parsed = UpdateIrcAccountSchema.safeParse(input);
+    if (!parsed.success) {
+      throw new Error("Invalid update request");
+    }
+    const data = parsed.data;
+
     const [account] = await db
       .select()
       .from(ircAccount)
-      .where(eq(ircAccount.id, accountId))
+      .where(
+        and(eq(ircAccount.id, accountId), ne(ircAccount.status, "deleted"))
+      )
       .limit(1);
 
     if (!account) {
@@ -292,13 +307,13 @@ export class IrcIntegration extends IntegrationBase<
 
     const updates: Partial<typeof ircAccount.$inferInsert> = {};
 
-    if (input.status != null && input.status !== account.status) {
-      updates.status = input.status;
+    if (data.status != null && data.status !== account.status) {
+      updates.status = data.status;
     }
-    if (input.metadata !== undefined) {
-      updates.metadata = input.metadata;
+    if (data.metadata !== undefined) {
+      updates.metadata = data.metadata;
     }
-    if (input.nick != null && input.nick.trim() !== account.nick) {
+    if (data.nick != null && data.nick.trim() !== account.nick) {
       throw new Error(
         "Nick cannot be changed. Delete your account and create a new one with the desired nick."
       );

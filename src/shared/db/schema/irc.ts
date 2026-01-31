@@ -22,7 +22,9 @@ export const ircAccountStatusEnum = pgEnum("irc_account_status", [
 export const ircAccount = pgTable(
   "irc_account",
   {
-    id: text("id").primaryKey(),
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     userId: text("user_id")
       .notNull()
       .unique()
@@ -30,7 +32,7 @@ export const ircAccount = pgTable(
     nick: text("nick").notNull(),
     server: text("server").notNull(),
     port: integer("port").default(6697).notNull(),
-    status: ircAccountStatusEnum("status").default("active").notNull(),
+    status: ircAccountStatusEnum("status").default("pending").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

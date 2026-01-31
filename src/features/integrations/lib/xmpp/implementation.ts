@@ -192,13 +192,7 @@ export class XmppIntegration extends IntegrationBase<
       throw new Error("Failed to create XMPP account record");
     }
 
-    return {
-      ...newAccount,
-      integrationId: "xmpp" as const,
-      metadata:
-        (newAccount.metadata as Record<string, unknown> | undefined) ??
-        undefined,
-    };
+    return rowToAccount(newAccount);
   }
 
   /**
@@ -213,15 +207,7 @@ export class XmppIntegration extends IntegrationBase<
       )
       .limit(1);
 
-    return account
-      ? {
-          ...account,
-          integrationId: "xmpp" as const,
-          metadata:
-            (account.metadata as Record<string, unknown> | undefined) ??
-            undefined,
-        }
-      : null;
+    return account ? rowToAccount(account) : null;
   }
 
   /**
@@ -231,18 +217,12 @@ export class XmppIntegration extends IntegrationBase<
     const [account] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.id, accountId))
+      .where(
+        and(eq(xmppAccount.id, accountId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
-    return account
-      ? {
-          ...account,
-          integrationId: "xmpp" as const,
-          metadata:
-            (account.metadata as Record<string, unknown> | undefined) ??
-            undefined,
-        }
-      : null;
+    return account ? rowToAccount(account) : null;
   }
 
   /**
@@ -255,7 +235,9 @@ export class XmppIntegration extends IntegrationBase<
     const [account] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.id, accountId))
+      .where(
+        and(eq(xmppAccount.id, accountId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
     if (!account) {
@@ -295,12 +277,7 @@ export class XmppIntegration extends IntegrationBase<
       throw new Error("Failed to update XMPP account");
     }
 
-    return {
-      ...updated,
-      integrationId: "xmpp" as const,
-      metadata:
-        (updated.metadata as Record<string, unknown> | undefined) ?? undefined,
-    };
+    return rowToAccount(updated);
   }
 
   /**
@@ -314,7 +291,9 @@ export class XmppIntegration extends IntegrationBase<
     const [account] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.id, accountId))
+      .where(
+        and(eq(xmppAccount.id, accountId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
     if (!account) {
@@ -350,6 +329,15 @@ export class XmppIntegration extends IntegrationBase<
       throw new Error("Failed to delete XMPP account");
     }
   }
+}
+
+function rowToAccount(row: typeof xmppAccount.$inferSelect): XmppAccount {
+  return {
+    ...row,
+    integrationId: "xmpp" as const,
+    metadata:
+      (row.metadata as Record<string, unknown> | undefined) ?? undefined,
+  };
 }
 
 export const xmppIntegration = new XmppIntegration();

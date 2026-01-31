@@ -25,7 +25,12 @@ export async function GET(request: NextRequest) {
         : DEFAULT_LIMIT;
     const offset = Number.isFinite(rawOffset) && rawOffset >= 0 ? rawOffset : 0;
 
-    const validStatuses = ["active", "suspended", "deleted"] as const;
+    const validStatuses = [
+      "active",
+      "pending",
+      "suspended",
+      "deleted",
+    ] as const;
     const statusFilter =
       statusParam &&
       validStatuses.includes(statusParam as (typeof validStatuses)[number])
