@@ -84,7 +84,6 @@ export class IrcIntegration extends IntegrationBase<
     }
 
     const temporaryPassword = generateIrcPassword();
-    await this.registerNickWithAtheme(nick, temporaryPassword, userRow.email);
 
     const [deletedAccount] = await db
       .select()
@@ -94,22 +93,24 @@ export class IrcIntegration extends IntegrationBase<
       )
       .limit(1);
 
-    let newRow: typeof ircAccount.$inferSelect | undefined;
+    let accountRow: typeof ircAccount.$inferSelect | undefined;
+
+    // 1. Initial DB entry (pending)
     try {
       if (deletedAccount) {
-        [newRow] = await db
+        [accountRow] = await db
           .update(ircAccount)
           .set({
             nick,
             server: ircConfig.server,
             port: ircConfig.port,
-            status: "active",
+            status: "pending",
             updatedAt: new Date(),
           })
           .where(eq(ircAccount.id, deletedAccount.id))
           .returning();
       } else {
-        [newRow] = await db
+        [accountRow] = await db
           .insert(ircAccount)
           .values({
             id: randomUUID(),
@@ -117,38 +118,65 @@ export class IrcIntegration extends IntegrationBase<
             nick,
             server: ircConfig.server,
             port: ircConfig.port,
-            status: "active",
+            status: "pending",
           })
           .returning();
       }
     } catch (dbError) {
-      // DB insert/update failed after Atheme registration; nick is orphaned on Atheme.
-      // Atheme has no unauthenticated DROP API; user must contact admin to recover.
       Sentry.captureException(dbError, {
-        tags: { integration: "irc", step: "db_insert_after_atheme" },
+        tags: { integration: "irc", step: "db_insert_pending" },
         extra: { userId, nick },
       });
+      throw new Error("Failed to initialize IRC account record");
+    }
+
+    if (!accountRow) {
+      throw new Error("Failed to initialize IRC account record");
+    }
+
+    // 2. Atheme registration
+    try {
+      await this.registerNickWithAtheme(nick, temporaryPassword, userRow.email);
+    } catch (athemeError) {
+      // Cleanup the pending record on Atheme failure
+      await db.delete(ircAccount).where(eq(ircAccount.id, accountRow.id));
+      throw athemeError;
+    }
+
+    // 3. Update to active
+    const [finalRow] = await db
+      .update(ircAccount)
+      .set({
+        status: "active",
+        updatedAt: new Date(),
+      })
+      .where(eq(ircAccount.id, accountRow.id))
+      .returning();
+
+    if (!finalRow) {
+      // This is a rare edge case where Atheme succeeded but final update failed.
+      // The account is now orphaned on Atheme but exists in Portal as 'pending'.
+      Sentry.captureException(new Error("Failed to activate IRC account"), {
+        tags: { integration: "irc", step: "db_activate" },
+        extra: { userId, nick, accountId: accountRow.id },
+      });
       throw new Error(
-        "Failed to create IRC account record. The nick may have been registered—please contact an administrator if you cannot retry."
+        "IRC account registration partially succeeded but failed to activate. Please contact an administrator."
       );
     }
 
-    if (!newRow) {
-      throw new Error("Failed to create IRC account record");
-    }
-
     const account: IrcAccount = {
-      id: newRow.id,
-      userId: newRow.userId,
+      id: finalRow.id,
+      userId: finalRow.userId,
       integrationId: "irc",
-      nick: newRow.nick,
-      server: newRow.server,
-      port: newRow.port,
-      status: newRow.status,
-      createdAt: newRow.createdAt,
-      updatedAt: newRow.updatedAt,
+      nick: finalRow.nick,
+      server: finalRow.server,
+      port: finalRow.port,
+      status: finalRow.status,
+      createdAt: finalRow.createdAt,
+      updatedAt: finalRow.updatedAt,
       metadata:
-        (newRow.metadata as Record<string, unknown> | undefined) ?? undefined,
+        (finalRow.metadata as Record<string, unknown> | undefined) ?? undefined,
     };
 
     return { ...account, temporaryPassword };
