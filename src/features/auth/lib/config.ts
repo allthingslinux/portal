@@ -19,7 +19,7 @@ import {
 
 import "server-only";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { schema } from "@/db/schema";
@@ -324,7 +324,9 @@ const oauthProviderConfig = {
         const [ircAccountRecord] = await db
           .select({ nick: ircAccount.nick })
           .from(ircAccount)
-          .where(eq(ircAccount.userId, user.id))
+          .where(
+            and(eq(ircAccount.userId, user.id), eq(ircAccount.status, "active"))
+          )
           .limit(1);
 
         if (ircAccountRecord) {
