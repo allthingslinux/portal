@@ -35,7 +35,7 @@ const CreateIrcAccountSchema = z.object({
 
 const UpdateIrcAccountSchema = z.object({
   status: z.enum(["active", "pending", "suspended", "deleted"]).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
   nick: z.string().optional(),
 });
 

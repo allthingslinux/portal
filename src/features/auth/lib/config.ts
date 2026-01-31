@@ -1,5 +1,6 @@
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { passkey } from "@better-auth/passkey";
+// biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
 import * as Sentry from "@sentry/nextjs";
 import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
