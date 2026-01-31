@@ -1,5 +1,6 @@
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { passkey } from "@better-auth/passkey";
+import * as Sentry from "@sentry/nextjs";
 import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -307,7 +308,6 @@ const oauthProviderConfig = {
         }
       } catch (error) {
         // Capture error in Sentry but gracefully continue without XMPP claim
-        const Sentry = await import("@sentry/nextjs");
         Sentry.captureException(error, {
           tags: {
             function: "customUserInfoClaims",
@@ -320,27 +320,34 @@ const oauthProviderConfig = {
 
     // Add IRC nick when 'irc' scope is requested
     if (scopes.includes("irc")) {
-      try {
-        const [ircAccountRecord] = await db
-          .select({ nick: ircAccount.nick })
-          .from(ircAccount)
-          .where(
-            and(eq(ircAccount.userId, user.id), eq(ircAccount.status, "active"))
-          )
-          .limit(1);
+      await Sentry.startSpan(
+        { op: "db.lookup", name: "ircAccount lookup" },
+        async () => {
+          try {
+            const [ircAccountRecord] = await db
+              .select({ nick: ircAccount.nick })
+              .from(ircAccount)
+              .where(
+                and(
+                  eq(ircAccount.userId, user.id),
+                  eq(ircAccount.status, "active")
+                )
+              )
+              .limit(1);
 
-        if (ircAccountRecord) {
-          claims.irc_nick = ircAccountRecord.nick;
+            if (ircAccountRecord) {
+              claims.irc_nick = ircAccountRecord.nick;
+            }
+          } catch (error) {
+            Sentry.captureException(error, {
+              tags: {
+                function: "customUserInfoClaims",
+                userId: user.id,
+              },
+            });
+          }
         }
-      } catch (error) {
-        const Sentry = await import("@sentry/nextjs");
-        Sentry.captureException(error, {
-          tags: {
-            function: "customUserInfoClaims",
-            userId: user.id,
-          },
-        });
-      }
+      );
     }
 
     return claims;
