@@ -1,5 +1,21 @@
+process.env.SKIP_ENV_VALIDATION = "true";
+
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+// Mock keys before anything else to avoid T3-Env validation
+vi.mock("@/features/integrations/lib/xmpp/keys", () => ({
+  keys: () => ({}),
+}));
+vi.mock("@/features/integrations/lib/irc/keys", () => ({
+  keys: () => ({}),
+}));
+vi.mock("@/shared/db/keys", () => ({
+  keys: () => ({}),
+}));
+vi.mock("@/features/auth/lib/keys", () => ({
+  keys: () => ({}),
+}));
 
 import { db } from "@/db";
 import { GET } from "@/app/api/admin/irc-accounts/route";
@@ -27,10 +43,17 @@ vi.mock("@/db", () => ({
 }));
 
 // Mock utils
-vi.mock("@/shared/api/utils", () => ({
-  requireAdminOrStaff: vi.fn(),
-  handleAPIError: vi.fn((err) => new Response(err.message, { status: 500 })),
-}));
+vi.mock("@/shared/api/utils", async () => {
+  const actual =
+    await vi.importActual<typeof import("@/shared/api/utils")>(
+      "@/shared/api/utils"
+    );
+  return {
+    ...actual,
+    requireAdminOrStaff: vi.fn(),
+    handleAPIError: vi.fn(actual.handleAPIError),
+  };
+});
 
 describe("Admin IRC Accounts API", () => {
   beforeEach(() => {
@@ -39,18 +62,21 @@ describe("Admin IRC Accounts API", () => {
 
   it("returns unauthorized if privilege check fails", async () => {
     // Arrange
-    const { requireAdminOrStaff } = await import("@/shared/api/utils");
+    const { requireAdminOrStaff, APIError } = await import(
+      "@/shared/api/utils"
+    );
     (requireAdminOrStaff as any).mockRejectedValueOnce(
-      new Error("Unauthorized")
+      new APIError("Unauthorized", 401)
     );
     const req = new NextRequest("http://localhost/api/admin/irc-accounts");
 
     // Act
     const res = await GET(req);
+    const data = await res.json();
 
     // Assert
-    expect(res.status).toBe(500);
-    expect(await res.text()).toBe("Unauthorized");
+    expect(res.status).toBe(401);
+    expect(data.error).toBe("Unauthorized");
   });
 
   it("fetches and returns IRC accounts with pagination", async () => {
@@ -97,5 +123,51 @@ describe("Admin IRC Accounts API", () => {
     expect(res.status).toBe(200);
     expect(data.ircAccounts).toHaveLength(1);
     expect(data.pagination.total).toBe(1);
+  });
+
+  it("allows filtering by 'pending' status", async () => {
+    // Arrange
+    const { requireAdminOrStaff } = await import("@/shared/api/utils");
+    (requireAdminOrStaff as any).mockResolvedValueOnce({});
+
+    // Mock data select
+    (db.select as any).mockReturnValueOnce({
+      from: vi.fn(() => ({
+        leftJoin: vi.fn(() => ({
+          where: vi.fn(() => ({
+            orderBy: vi.fn(() => ({
+              limit: vi.fn(() => ({
+                offset: vi.fn(() => [
+                  {
+                    ircAccount: { id: "p1", nick: "bob", status: "pending" },
+                    user: { id: "u2" },
+                  },
+                ]),
+              })),
+            })),
+          })),
+        })),
+      })),
+    });
+
+    // Mock count select
+    (db.select as any).mockReturnValueOnce({
+      from: vi.fn(() => ({
+        where: vi.fn(() => [{ count: 1 }]),
+      })),
+    });
+
+    const req = new NextRequest(
+      "http://localhost/api/admin/irc-accounts?status=pending"
+    );
+
+    // Act
+    const res = await GET(req);
+    const data = await res.json();
+
+    // Assert
+    expect(res.status).toBe(200);
+    expect(data.ircAccounts).toHaveLength(1);
+    expect(data.ircAccounts[0].status).toBe("pending");
   });
 });

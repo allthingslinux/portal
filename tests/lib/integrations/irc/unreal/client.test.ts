@@ -4,10 +4,11 @@ import { unrealRpcClient } from "@/features/integrations/lib/irc/unreal/client";
 
 // Mock fetch
 const mockFetch = vi.fn();
-global.fetch = mockFetch as any;
+global.fetch = mockFetch as unknown as typeof fetch;
 
 // Mock Sentry
 vi.mock("@sentry/nextjs", () => ({
+  startSpan: vi.fn((_, cb) => cb()),
   captureException: vi.fn(),
 }));
 
@@ -92,6 +93,21 @@ describe("UnrealIRCd Client", () => {
 
       // Assert
       expect(result).toEqual(mockChannels);
+    });
+
+    it("handles channel list errors and returns empty array", async () => {
+      // Arrange
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: async () => ({ error: { message: "Internal Server Error" } }),
+      });
+
+      // Act
+      const result = await unrealRpcClient.channelList();
+
+      // Assert
+      expect(result).toEqual([]);
     });
   });
 });

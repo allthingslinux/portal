@@ -7,7 +7,7 @@ import {
 
 // Mock fetch
 const mockFetch = vi.fn();
-global.fetch = mockFetch as any;
+global.fetch = mockFetch as unknown as typeof fetch;
 
 // Mock Sentry
 vi.mock("@sentry/nextjs", () => ({
@@ -83,6 +83,7 @@ describe("Atheme Client", () => {
       // Arrange
       const nick = "alice";
       const email = "alice@example.com";
+      const ip = "1.2.3.4";
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
@@ -94,17 +95,13 @@ describe("Atheme Client", () => {
       });
 
       // Act & Assert
-      const act = () => registerNick(nick, "pwd", email);
+      const promise = registerNick(nick, "pwd", email, ip);
 
-      await expect(act).rejects.toThrow(AthemeFaultError);
-      try {
-        await act();
-      } catch (err) {
-        if (err instanceof AthemeFaultError) {
-          expect(err.code).toBe(8);
-          expect(err.message).toBe("Nick already registered");
-        }
-      }
+      await expect(promise).rejects.toBeInstanceOf(AthemeFaultError);
+      await expect(promise).rejects.toMatchObject({
+        code: 8,
+        message: "Nick already registered",
+      });
     });
 
     it("handles generic fetch errors", async () => {
@@ -112,10 +109,37 @@ describe("Atheme Client", () => {
       mockFetch.mockRejectedValueOnce(new Error("Network Error"));
 
       // Act
-      const act = registerNick("alice", "pwd", "alice@example.com");
+      const act = registerNick("alice", "pwd", "alice@example.com", "1.2.3.4");
 
       // Assert
       await expect(act).rejects.toThrow("Network Error");
+    });
+
+    it("uses undici dispatcher when insecureSkipVerify is true", async () => {
+      // Arrange
+      const { ircConfig } = await import(
+        "@/features/integrations/lib/irc/config"
+      );
+      (ircConfig.atheme as any).insecureSkipVerify = true;
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ jsonrpc: "2.0", result: "Success", id: 1 }),
+      });
+
+      // Act
+      await registerNick("alice", "password123", "alice@example.com");
+
+      // Assert
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          dispatcher: expect.any(Object),
+        })
+      );
+
+      // Reset config for other tests
+      (ircConfig.atheme as any).insecureSkipVerify = false;
     });
   });
 });
