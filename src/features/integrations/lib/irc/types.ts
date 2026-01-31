@@ -6,7 +6,7 @@
 /**
  * IRC account status (matches irc_account_status enum)
  */
-export type IrcAccountStatus = "active" | "suspended" | "deleted";
+export type IrcAccountStatus = "active" | "pending" | "suspended" | "deleted";
 
 /**
  * IRC account information (Portal DB + integration id)
