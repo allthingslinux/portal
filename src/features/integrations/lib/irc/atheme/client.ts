@@ -61,12 +61,22 @@ async function athemeCommand(params: string[]): Promise<string> {
   const timeout = setTimeout(() => controller.abort(), 15_000);
 
   try {
-    const response = await fetch(url, {
+    const fetchOptions: RequestInit = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
       signal: controller.signal,
-    });
+    };
+
+    if (ircConfig.atheme.insecureSkipVerify) {
+      const https = await import("node:https");
+      // @ts-expect-error - 'agent' is not in RequestInit but supported by node-fetch/undici in Next.js
+      fetchOptions.agent = new https.Agent({
+        rejectUnauthorized: false,
+      });
+    }
+
+    const response = await fetch(url, fetchOptions);
 
     const data = (await response.json()) as
       | JsonRpcSuccess
