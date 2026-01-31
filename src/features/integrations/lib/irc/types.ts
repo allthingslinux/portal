@@ -41,11 +41,16 @@ export interface CreateIrcAccountResult {
 }
 
 /**
+ * Statuses allowed in an update request
+ */
+export type UpdateIrcAccountStatus = "active" | "pending" | "suspended";
+
+/**
  * Update IRC account request (status, metadata; nick change deferred in v1)
  */
 export interface UpdateIrcAccountRequest extends Record<string, unknown> {
   nick?: string;
-  status?: IrcAccountStatus;
+  status?: UpdateIrcAccountStatus;
   metadata?: Record<string, unknown>;
 }
 
