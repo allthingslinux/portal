@@ -27,22 +27,27 @@ export const UpdateIrcAccountStatusSchema = z.enum([
 ]);
 
 /**
+ * IRC nick validation schema
+ */
+export const IrcNickSchema = z
+  .string()
+  .trim()
+  .min(1, "Nick is required")
+  .max(
+    IRC_NICK_MAX_LENGTH,
+    `Nick must be ${IRC_NICK_MAX_LENGTH} characters or less`
+  )
+  .refine(
+    isValidIrcNick,
+    `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
+  );
+
+/**
  * Schema for creating an IRC account via API
  * Extends the database insert schema with custom validation
  */
 export const CreateIrcAccountRequestSchema = z.object({
-  nick: z
-    .string()
-    .trim()
-    .min(1, "Nick is required")
-    .max(
-      IRC_NICK_MAX_LENGTH,
-      `Nick must be ${IRC_NICK_MAX_LENGTH} characters or less`
-    )
-    .refine(
-      isValidIrcNick,
-      `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
-    ),
+  nick: IrcNickSchema,
 });
 
 /**
