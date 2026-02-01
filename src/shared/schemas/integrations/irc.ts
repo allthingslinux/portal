@@ -6,6 +6,7 @@
 import { z } from "zod";
 
 import { selectIrcAccountSchema } from "@/db/schema/irc";
+import { metadataSchema } from "../utils";
 import {
   IRC_NICK_MAX_LENGTH,
   isValidIrcNick,
@@ -51,7 +52,7 @@ export const CreateIrcAccountRequestSchema = z.object({
 export const UpdateIrcAccountRequestSchema =
   CreateIrcAccountRequestSchema.partial().extend({
     status: UpdateIrcAccountStatusSchema.optional(),
-    metadata: z.record(z.string(), z.unknown()).optional(),
+    metadata: metadataSchema,
   });
 
 /**
@@ -65,8 +66,8 @@ export const IrcAccountSchema = selectIrcAccountSchema
   })
   .transform((data) => ({
     ...data,
-    // Transform metadata from unknown to proper type
-    metadata: data.metadata as Record<string, unknown> | undefined,
+    // Transform metadata from unknown to a validated type safely
+    metadata: metadataSchema.parse(data.metadata),
   }));
 
 // Type exports

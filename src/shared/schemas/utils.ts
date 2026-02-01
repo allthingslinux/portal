@@ -16,9 +16,16 @@ export function createStatusEnumSchema<
 
 /**
  * Metadata schema for JSONB fields
- * Restricted to objects (key-value pairs) matching application usage
+ * Safe schema for parsing metadata objects, allowing null or undefined
  */
-export const metadataSchema = z.record(z.string(), z.unknown()).optional();
+/**
+ * Metadata schema for JSONB fields
+ * Safe schema for parsing metadata objects, converting null to undefined for interface compatibility
+ */
+export const metadataSchema = z.preprocess(
+  (val) => (val === null ? undefined : val),
+  z.record(z.string(), z.unknown()).optional()
+);
 
 /**
  * UUID schema with validation

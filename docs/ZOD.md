@@ -273,19 +273,22 @@ export const CreateIrcAccountRequestSchema = z.object({
 
 ### 6. Handle JSONB Fields Properly
 
-drizzle-zod generates `unknown` for JSONB fields. Use `.transform()` to properly type them:
+drizzle-zod generates `unknown` for JSONB fields. Use `.transform()` and `metadataSchema.parse()` to properly type and validate them:
 
 ```typescript
+import { metadataSchema } from "../utils";
+
 export const IrcAccountSchema = selectIrcAccountSchema
   .extend({
     integrationId: z.literal("irc"),
   })
   .transform((data) => ({
     ...data,
-    // Transform metadata from unknown to proper type
-    metadata: data.metadata as Record<string, unknown> | undefined,
+    // Safely parse metadata from unknown to a validated type
+    metadata: metadataSchema.parse(data.metadata),
   }));
 ```
+
 
 ## Examples
 

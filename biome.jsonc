@@ -8,11 +8,42 @@
   "linter": {
     "rules": {
       "performance": {
-        "noBarrelFile": "off",
-        "noNamespaceImport": "off"
+        "noBarrelFile": "error",
+        "noNamespaceImport": "error"
       }
     }
   },
+  "overrides": [
+    {
+      "includes": [
+        "src/shared/schemas/index.ts",
+        "src/shared/schemas/integrations/index.ts",
+        "src/features/integrations/api/index.ts",
+        "src/features/user/api/index.ts",
+        "src/features/admin/api/index.ts",
+        "src/shared/api/index.ts",
+        "src/shared/types/api.ts",
+        "src/app/metadata.ts"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.ts", "**/*.tsx"],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noNamespaceImport": "off"
+          }
+        }
+      }
+    }
+  ],
   "assist": {
     "actions": {
       "source": {
