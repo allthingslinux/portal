@@ -45,3 +45,10 @@ export const optionalNonEmptyStringSchema = z
   .min(1)
   .optional()
   .or(z.literal("").transform(() => undefined));
+
+/**
+ * Helper for creating branded string schemas
+ */
+export function brandedString<T extends string>(schema: z.ZodString) {
+  return schema.brand<T>();
+}
