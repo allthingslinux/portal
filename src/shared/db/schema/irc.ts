@@ -27,7 +27,6 @@ export const ircAccount = pgTable(
       .$defaultFn(() => crypto.randomUUID()),
     userId: text("user_id")
       .notNull()
-      .unique()
       .references(() => user.id, { onDelete: "cascade" }),
     nick: text("nick").notNull(),
     server: text("server").notNull(),
@@ -42,6 +41,9 @@ export const ircAccount = pgTable(
   },
   (table) => [
     index("irc_account_status_idx").on(table.status),
+    uniqueIndex("irc_account_userId_active_idx")
+      .on(table.userId)
+      .where(sql`status != 'deleted'`),
     uniqueIndex("irc_account_nick_active_idx")
       .on(table.nick)
       .where(sql`status != 'deleted'`),

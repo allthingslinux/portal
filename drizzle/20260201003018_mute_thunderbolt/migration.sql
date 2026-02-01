@@ -118,7 +118,7 @@ CREATE TABLE "integration_accounts" (
 --> statement-breakpoint
 CREATE TABLE "irc_account" (
 	"id" text PRIMARY KEY,
-	"user_id" text NOT NULL UNIQUE,
+	"user_id" text NOT NULL,
 	"nick" text NOT NULL,
 	"server" text NOT NULL,
 	"port" integer DEFAULT 6697 NOT NULL,
@@ -221,6 +221,7 @@ CREATE INDEX "integration_accounts_userId_idx" ON "integration_accounts" ("user_
 CREATE INDEX "integration_accounts_type_idx" ON "integration_accounts" ("integration_type");--> statement-breakpoint
 CREATE UNIQUE INDEX "integration_accounts_userId_type_idx" ON "integration_accounts" ("user_id","integration_type");--> statement-breakpoint
 CREATE INDEX "irc_account_status_idx" ON "irc_account" ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "irc_account_userId_active_idx" ON "irc_account" ("user_id") WHERE status != 'deleted';--> statement-breakpoint
 CREATE UNIQUE INDEX "irc_account_nick_active_idx" ON "irc_account" ("nick") WHERE status != 'deleted';--> statement-breakpoint
 CREATE INDEX "xmpp_account_userId_idx" ON "xmpp_account" ("user_id");--> statement-breakpoint
 CREATE INDEX "xmpp_account_jid_idx" ON "xmpp_account" ("jid");--> statement-breakpoint

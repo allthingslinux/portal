@@ -1,7 +1,7 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "2a7d22ee-b5da-4d37-946d-2876c2af4dd5",
+  "id": "1e53cfd9-ec5e-475a-93c2-a3617328c5ff",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
@@ -2517,6 +2517,27 @@
       "nameExplicit": true,
       "columns": [
         {
+          "value": "user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": "status != 'deleted'",
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "irc_account_userId_active_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
           "value": "nick",
           "isExpression": false,
           "asc": true,
@@ -3157,17 +3178,6 @@
       "name": "user_email_key",
       "schema": "public",
       "table": "user",
-      "entityType": "uniques"
-    },
-    {
-      "nameExplicit": false,
-      "columns": [
-        "user_id"
-      ],
-      "nullsNotDistinct": false,
-      "name": "irc_account_user_id_key",
-      "schema": "public",
-      "table": "irc_account",
       "entityType": "uniques"
     },
     {
