@@ -1,7 +1,6 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-import { z } from "zod";
 // biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
 import * as Sentry from "@sentry/nextjs";
 import { and, eq, ne } from "drizzle-orm";
@@ -12,32 +11,16 @@ import { ircAccount } from "@/db/schema/irc";
 import { AthemeFaultError, registerNick } from "./atheme/client";
 import { ircConfig, isIrcConfigured } from "./config";
 import type { IrcAccount, UpdateIrcAccountRequest } from "./types";
-import {
-  generateIrcPassword,
-  IRC_NICK_MAX_LENGTH,
-  isValidIrcNick,
-} from "./utils";
+import { generateIrcPassword } from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
 import type { IntegrationCreateInput } from "@/features/integrations/lib/core/types";
+import {
+  CreateIrcAccountRequestSchema,
+  UpdateIrcAccountRequestSchema,
+} from "@/shared/schemas/integrations/irc";
 
-const CreateIrcAccountSchema = z.object({
-  nick: z
-    .string()
-    .trim()
-    .min(1, "Nick is required")
-    .max(IRC_NICK_MAX_LENGTH)
-    .refine(
-      isValidIrcNick,
-      `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
-    ),
-});
-
-const UpdateIrcAccountSchema = z.object({
-  status: z.enum(["active", "pending", "suspended"]).optional(),
-  metadata: z.record(z.string(), z.unknown()).optional(),
-  nick: z.string().optional(),
-});
+// Schemas are now imported from @/shared/schemas/integrations/irc
 
 /**
  * IRC integration implementation (Atheme NickServ provisioning, soft-delete only).
@@ -68,7 +51,7 @@ export class IrcIntegration extends IntegrationBase<
       throw new Error("IRC integration is not configured");
     }
 
-    const parsed = CreateIrcAccountSchema.safeParse(input);
+    const parsed = CreateIrcAccountRequestSchema.safeParse(input);
     if (!parsed.success) {
       const msg =
         parsed.error.issues[0]?.message ??
@@ -287,7 +270,7 @@ export class IrcIntegration extends IntegrationBase<
     accountId: string,
     input: UpdateIrcAccountRequest
   ): Promise<IrcAccount> {
-    const parsed = UpdateIrcAccountSchema.safeParse(input);
+    const parsed = UpdateIrcAccountRequestSchema.safeParse(input);
     if (!parsed.success) {
       throw new Error("Invalid update request");
     }

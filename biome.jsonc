@@ -5,6 +5,14 @@
     "ultracite/biome/react",
     "ultracite/biome/next"
   ],
+  "linter": {
+    "rules": {
+      "performance": {
+        "noBarrelFile": "off",
+        "noNamespaceImport": "off"
+      }
+    }
+  },
   "assist": {
     "actions": {
       "source": {
