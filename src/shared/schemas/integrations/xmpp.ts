@@ -55,15 +55,10 @@ export const UpdateXmppAccountRequestSchema =
  * Full XMPP account schema (for responses)
  * Extends database select schema with proper metadata typing and integration ID
  */
-export const XmppAccountSchema = selectXmppAccountSchema
-  .extend({
-    integrationId: z.literal("xmpp"),
-  })
-  .transform((data) => ({
-    ...data,
-    // Transform metadata from unknown to a validated type safely
-    metadata: metadataSchema.parse(data.metadata),
-  }));
+export const XmppAccountSchema = selectXmppAccountSchema.extend({
+  integrationId: z.literal("xmpp"),
+  metadata: metadataSchema,
+});
 
 // Type exports
 export type XmppAccountStatus = z.infer<typeof XmppAccountStatusSchema>;
