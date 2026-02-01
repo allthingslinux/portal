@@ -1,3 +1,5 @@
+import type { z } from "zod";
+
 import type { IntegrationStatus as IntegrationStatusType } from "@/shared/utils/constants";
 import { INTEGRATION_STATUSES } from "@/shared/utils/constants";
 
@@ -93,4 +95,14 @@ export interface Integration<
    * Custom operations exposed by the integration.
    */
   customOperations?: Record<string, IntegrationCustomOperation>;
+
+  /**
+   * Zod schema for account creation input.
+   */
+  createAccountSchema?: z.ZodType<TCreateInput>;
+
+  /**
+   * Zod schema for account update input.
+   */
+  updateAccountSchema?: z.ZodType<TUpdateInput>;
 }
