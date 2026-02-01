@@ -6,7 +6,7 @@
 import { z } from "zod";
 
 import { selectIrcAccountSchema } from "@/db/schema/irc";
-import { metadataSchema } from "../utils";
+import { brandedString, metadataSchema } from "../utils";
 import {
   IRC_NICK_MAX_LENGTH,
   isValidIrcNick,
@@ -29,18 +29,20 @@ export const UpdateIrcAccountStatusSchema = z.enum([
 /**
  * IRC nick validation schema
  */
-export const IrcNickSchema = z
-  .string()
-  .trim()
-  .min(1, "Nick is required")
-  .max(
-    IRC_NICK_MAX_LENGTH,
-    `Nick must be ${IRC_NICK_MAX_LENGTH} characters or less`
-  )
-  .refine(
-    isValidIrcNick,
-    `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
-  );
+export const IrcNickSchema = brandedString<"IrcNick">(
+  z
+    .string()
+    .trim()
+    .min(1, "Nick is required")
+    .max(
+      IRC_NICK_MAX_LENGTH,
+      `Nick must be ${IRC_NICK_MAX_LENGTH} characters or less`
+    )
+    .refine(
+      isValidIrcNick,
+      `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
+    )
+);
 
 /**
  * Schema for creating an IRC account via API
