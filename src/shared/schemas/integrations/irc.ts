@@ -64,16 +64,11 @@ export const UpdateIrcAccountRequestSchema =
  * Full IRC account schema (for responses)
  * Extends database select schema with proper metadata typing and integration ID
  */
-export const IrcAccountSchema = selectIrcAccountSchema
-  .extend({
-    integrationId: z.literal("irc"),
-    temporaryPassword: z.string().optional(), // Only present on creation
-  })
-  .transform((data) => ({
-    ...data,
-    // Transform metadata from unknown to a validated type safely
-    metadata: metadataSchema.parse(data.metadata),
-  }));
+export const IrcAccountSchema = selectIrcAccountSchema.extend({
+  integrationId: z.literal("irc"),
+  temporaryPassword: z.string().optional(), // Only present on creation
+  metadata: metadataSchema,
+});
 
 // Type exports
 export type IrcAccountStatus = z.infer<typeof IrcAccountStatusSchema>;
