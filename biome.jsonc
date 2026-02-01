@@ -34,7 +34,15 @@
       }
     },
     {
-      "includes": ["**/*.ts", "**/*.tsx"],
+      "includes": [
+        "src/features/**/implementation.ts",
+        "src/features/**/lib/config.ts",
+        "src/features/**/client.ts",
+        "src/features/**/unreal/client.ts",
+        "src/features/**/components/*.tsx",
+        "src/app/**/integrations-content.tsx",
+        "src/sentry.*.ts"
+      ],
       "linter": {
         "rules": {
           "performance": {
