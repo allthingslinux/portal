@@ -76,19 +76,30 @@ export async function POST(
       throw new APIError("Integration is disabled", 403);
     }
 
-    let body: Record<string, unknown>;
-    try {
-      const rawBody = await request.json();
-      const bodySchema = z.record(z.string(), z.unknown());
-      body = bodySchema.parse(rawBody);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        throw new APIError(`Invalid request body: ${error.message}`, 400);
+    const rawBody = await request.json();
+    let body: unknown = rawBody;
+
+    if (integration.createAccountSchema) {
+      const parsed = integration.createAccountSchema.safeParse(rawBody);
+      if (!parsed.success) {
+        const error = parsed.error;
+        const errorMessage = error.issues[0]?.message ?? "Validation failed";
+        // TODO: Return detailed field errors structure when frontend supports it
+        throw new APIError(errorMessage, 400);
       }
-      throw new APIError("Invalid JSON body", 400);
+      body = parsed.data;
+    } else {
+      // Fallback for integrations without schemas
+      const fallbackSchema = z.record(z.string(), z.unknown());
+      const parsed = fallbackSchema.safeParse(rawBody);
+      if (!parsed.success) {
+        throw new APIError("Invalid request body", 400);
+      }
+      body = parsed.data;
     }
 
-    const account = await integration.createAccount(userId, body);
+    // Cast body to expected input type (validated by schema or fallback)
+    const account = await integration.createAccount(userId, body as object);
 
     return Response.json({ ok: true, account }, { status: 201 });
   } catch (error) {
