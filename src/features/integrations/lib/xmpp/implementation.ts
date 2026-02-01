@@ -25,7 +25,10 @@ import {
 } from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
-import { UpdateXmppAccountRequestSchema } from "@/shared/schemas/integrations/xmpp";
+import {
+  CreateXmppAccountRequestSchema,
+  UpdateXmppAccountRequestSchema,
+} from "@/shared/schemas/integrations/xmpp";
 
 // Schemas are now imported from @/shared/schemas/integrations/xmpp
 
@@ -43,6 +46,8 @@ export class XmppIntegration extends IntegrationBase<
       name: "XMPP",
       description: "XMPP chat accounts and provisioning",
       enabled: isXmppConfigured(),
+      createAccountSchema: CreateXmppAccountRequestSchema,
+      updateAccountSchema: UpdateXmppAccountRequestSchema,
     });
   }
 
