@@ -46,25 +46,13 @@ export const CreateIrcAccountRequestSchema = z.object({
 
 /**
  * Schema for updating an IRC account via API
- * Only allows updating specific fields
+ * Derives from create schema to reuse validation, then extends with update-specific fields
  */
-export const UpdateIrcAccountRequestSchema = z.object({
-  status: UpdateIrcAccountStatusSchema.optional(),
-  metadata: z.record(z.string(), z.unknown()).optional(),
-  nick: z
-    .string()
-    .trim()
-    .min(1, "Nick is required")
-    .max(
-      IRC_NICK_MAX_LENGTH,
-      `Nick must be ${IRC_NICK_MAX_LENGTH} characters or less`
-    )
-    .refine(
-      isValidIrcNick,
-      `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
-    )
-    .optional(),
-});
+export const UpdateIrcAccountRequestSchema =
+  CreateIrcAccountRequestSchema.partial().extend({
+    status: UpdateIrcAccountStatusSchema.optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
+  });
 
 /**
  * Full IRC account schema (for responses)

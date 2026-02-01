@@ -16,7 +16,7 @@ export function createStatusEnumSchema<
 
 /**
  * Metadata schema for JSONB fields
- * Allows any valid JSON value
+ * Restricted to objects (key-value pairs) matching application usage
  */
 export const metadataSchema = z.record(z.string(), z.unknown()).optional();
 
