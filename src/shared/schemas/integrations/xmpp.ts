@@ -40,7 +40,15 @@ export const CreateXmppAccountRequestSchema = z.object({
 export const UpdateXmppAccountRequestSchema = z.object({
   status: UpdateXmppAccountStatusSchema.optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
-  username: z.string().optional(),
+  username: z
+    .string()
+    .trim()
+    .min(1)
+    .refine(
+      isValidXmppUsername,
+      "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number."
+    )
+    .optional(),
 });
 
 /**
