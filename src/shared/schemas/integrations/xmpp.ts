@@ -35,21 +35,13 @@ export const CreateXmppAccountRequestSchema = z.object({
 
 /**
  * Schema for updating an XMPP account via API
- * Only allows updating specific fields
+ * Derives from create schema to reuse validation, then extends with update-specific fields
  */
-export const UpdateXmppAccountRequestSchema = z.object({
-  status: UpdateXmppAccountStatusSchema.optional(),
-  metadata: z.record(z.string(), z.unknown()).optional(),
-  username: z
-    .string()
-    .trim()
-    .min(1)
-    .refine(
-      isValidXmppUsername,
-      "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number."
-    )
-    .optional(),
-});
+export const UpdateXmppAccountRequestSchema =
+  CreateXmppAccountRequestSchema.partial().extend({
+    status: UpdateXmppAccountStatusSchema.optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
+  });
 
 /**
  * Full XMPP account schema (for responses)
