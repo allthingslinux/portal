@@ -275,18 +275,45 @@ export const CreateIrcAccountRequestSchema = z.object({
 
 drizzle-zod generates `unknown` for JSONB fields. Use `.transform()` and `metadataSchema.parse()` to properly type and validate them:
 
-```typescript
-import { metadataSchema } from "../utils";
+### 7. Use Branded Types for Domain Primitives
 
-export const IrcAccountSchema = selectIrcAccountSchema
-  .extend({
-    integrationId: z.literal("irc"),
-  })
-  .transform((data) => ({
-    ...data,
-    // Safely parse metadata from unknown to a validated type
-    metadata: metadataSchema.parse(data.metadata),
-  }));
+Use `brandedString` helper to create distinct types for strings that shouldn't be mixed (e.g., UserId vs. Nick):
+
+```typescript
+import { brandedString } from "@/shared/schemas/utils";
+
+// Define branded schema
+export const IrcNickSchema = brandedString<"IrcNick">(
+  z.string().min(1).max(30)
+);
+
+// Inferred type is unique
+export type IrcNick = z.infer<typeof IrcNickSchema>;
+
+// Valid:
+const nick: IrcNick = IrcNickSchema.parse("foo");
+
+// Error: Type 'string' is not assignable to type 'IrcNick'
+const bad: IrcNick = "just a string";
+```
+
+### 8. Type-Safe Integration Hooks
+
+When using integration hooks, let Zod schemas drive the input types:
+
+```typescript
+// Define schema
+export const CreateAccountSchema = z.object({ username: z.string() });
+export type CreateAccountInput = z.infer<typeof CreateAccountSchema>;
+
+// Use with hook
+const mutation = useCreateIntegrationAccount<Account, CreateAccountInput>(
+  "my-integration"
+);
+
+// Type-safe at call site
+mutation.mutate({ username: "valid" }); // OK
+mutation.mutate({ wrong: 1 }); // TS Error
 ```
 
 
