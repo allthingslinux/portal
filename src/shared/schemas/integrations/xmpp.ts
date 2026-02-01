@@ -6,7 +6,7 @@
 import { z } from "zod";
 
 import { selectXmppAccountSchema } from "@/db/schema/xmpp";
-import { metadataSchema } from "../utils";
+import { brandedString, metadataSchema } from "../utils";
 import { isValidXmppUsername } from "@/features/integrations/lib/xmpp/utils";
 
 // Status enums matching database
@@ -22,14 +22,16 @@ export const UpdateXmppAccountStatusSchema = z.enum(["active", "suspended"]);
  * XMPP username validation schema
  * Normalizes empty strings to undefined to allow auto-generation
  */
-export const XmppUsernameSchema = z
-  .string()
-  .trim()
-  .min(1)
-  .refine(
-    isValidXmppUsername,
-    "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number."
-  )
+export const XmppUsernameSchema = brandedString<"XmppUsername">(
+  z
+    .string()
+    .trim()
+    .min(1)
+    .refine(
+      isValidXmppUsername,
+      "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number."
+    )
+)
   .optional()
   .or(z.literal("").transform(() => undefined));
 
