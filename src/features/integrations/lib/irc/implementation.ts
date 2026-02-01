@@ -35,6 +35,8 @@ export class IrcIntegration extends IntegrationBase<
       name: "IRC",
       description: "IRC (atl.chat) accounts via NickServ",
       enabled: isIrcConfigured(),
+      createAccountSchema: CreateIrcAccountRequestSchema,
+      updateAccountSchema: UpdateIrcAccountRequestSchema,
     });
   }
 
