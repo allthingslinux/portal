@@ -19,19 +19,26 @@ export const XmppAccountStatusSchema = z.enum([
 export const UpdateXmppAccountStatusSchema = z.enum(["active", "suspended"]);
 
 /**
+ * XMPP username validation schema
+ * Normalizes empty strings to undefined to allow auto-generation
+ */
+export const XmppUsernameSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .refine(
+    isValidXmppUsername,
+    "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number."
+  )
+  .optional()
+  .or(z.literal("").transform(() => undefined));
+
+/**
  * Schema for creating an XMPP account via API
  * Username is optional (will be generated from email if not provided)
  */
 export const CreateXmppAccountRequestSchema = z.object({
-  username: z
-    .string()
-    .trim()
-    .min(1)
-    .refine(
-      isValidXmppUsername,
-      "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number."
-    )
-    .optional(),
+  username: XmppUsernameSchema,
 });
 
 /**
