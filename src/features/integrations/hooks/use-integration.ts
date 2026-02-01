@@ -54,12 +54,15 @@ export function useIntegrationAccountById<TAccount>(
 /**
  * Create a new integration account for the current user.
  */
-export function useCreateIntegrationAccount<TAccount>(integrationId: string) {
+export function useCreateIntegrationAccount<
+  TAccount,
+  TCreateInput = Record<string, unknown>,
+>(integrationId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: Record<string, unknown>) =>
-      createIntegrationAccount<TAccount>(integrationId, input),
+    mutationFn: (input: TCreateInput) =>
+      createIntegrationAccount<TAccount, TCreateInput>(integrationId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.integrations.accounts.current(integrationId),
@@ -71,17 +74,19 @@ export function useCreateIntegrationAccount<TAccount>(integrationId: string) {
 /**
  * Update an integration account.
  */
-export function useUpdateIntegrationAccount<TAccount>(integrationId: string) {
+export function useUpdateIntegrationAccount<
+  TAccount,
+  TUpdateInput = Record<string, unknown>,
+>(integrationId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      input,
-    }: {
-      id: string;
-      input: Record<string, unknown>;
-    }) => updateIntegrationAccount<TAccount>(integrationId, id, input),
+    mutationFn: ({ id, input }: { id: string; input: TUpdateInput }) =>
+      updateIntegrationAccount<TAccount, TUpdateInput>(
+        integrationId,
+        id,
+        input
+      ),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(
         queryKeys.integrations.accounts.detail(integrationId, variables.id),

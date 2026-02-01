@@ -3,7 +3,6 @@
 // ============================================================================
 // Shared TanStack Query infrastructure and utilities
 
-// biome-ignore lint/performance/noBarrelFile: Barrel file for shared API module
 export * from "./hydration";
 export * from "./query-client";
 export * from "./query-keys";

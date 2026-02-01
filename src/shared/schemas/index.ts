@@ -1,5 +1,7 @@
 // ============================================================================
-// Admin API Module Barrel Exports
+// Schemas Index
 // ============================================================================
+// Central export point for all Zod schemas
 
-export * from "./admin";
+export * from "./integrations";
+export * from "./utils";

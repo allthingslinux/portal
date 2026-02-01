@@ -86,10 +86,10 @@ export async function fetchIntegrationAccountById<TAccount>(
 /**
  * Create a new integration account for the current user
  */
-export async function createIntegrationAccount<TAccount>(
-  integrationId: string,
-  input: Record<string, unknown>
-): Promise<TAccount> {
+export async function createIntegrationAccount<
+  TAccount,
+  TCreateInput = Record<string, unknown>,
+>(integrationId: string, input: TCreateInput): Promise<TAccount> {
   const response = await fetch(`/api/integrations/${integrationId}/accounts`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -118,11 +118,10 @@ export async function createIntegrationAccount<TAccount>(
 /**
  * Update an integration account
  */
-export async function updateIntegrationAccount<TAccount>(
-  integrationId: string,
-  id: string,
-  input: Record<string, unknown>
-): Promise<TAccount> {
+export async function updateIntegrationAccount<
+  TAccount,
+  TUpdateInput = Record<string, unknown>,
+>(integrationId: string, id: string, input: TUpdateInput): Promise<TAccount> {
   const response = await fetch(
     `/api/integrations/${integrationId}/accounts/${id}`,
     {

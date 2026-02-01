@@ -9,6 +9,7 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { user } from "./auth";
 
@@ -49,3 +50,7 @@ export const ircAccount = pgTable(
       .where(sql`status != 'deleted'`),
   ]
 );
+
+// Zod schemas generated from Drizzle table
+export const selectIrcAccountSchema = createSelectSchema(ircAccount);
+export const insertIrcAccountSchema = createInsertSchema(ircAccount);

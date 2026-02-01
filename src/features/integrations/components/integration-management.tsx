@@ -4,7 +4,6 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { AlertCircle, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-// biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
 import * as Sentry from "@sentry/nextjs";
 
 import {

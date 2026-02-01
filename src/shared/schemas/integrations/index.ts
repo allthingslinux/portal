@@ -1,5 +1,7 @@
 // ============================================================================
-// Admin API Module Barrel Exports
+// Integration Schemas Index
 // ============================================================================
+// Central export point for all integration schemas
 
-export * from "./admin";
+export * from "./irc";
+export * from "./xmpp";

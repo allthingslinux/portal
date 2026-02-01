@@ -74,7 +74,6 @@ import type { APIErrorCode as APIErrorCodeType } from "@/shared/utils/constants"
 export type APIErrorCode = APIErrorCodeType;
 
 // Re-export constant for backward compatibility
-// biome-ignore lint/performance/noBarrelFile: Single re-export for backward compatibility
 export { API_ERROR_CODES } from "@/shared/utils/constants";
 
 /**

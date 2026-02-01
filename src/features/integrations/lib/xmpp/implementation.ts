@@ -1,7 +1,6 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-import { z } from "zod";
 import { and, eq, ne } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -26,12 +25,12 @@ import {
 } from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
+import {
+  CreateXmppAccountRequestSchema,
+  UpdateXmppAccountRequestSchema,
+} from "@/shared/schemas/integrations/xmpp";
 
-const UpdateXmppAccountSchema = z.object({
-  status: z.enum(["active", "suspended"]).optional(),
-  metadata: z.record(z.string(), z.unknown()).optional(),
-  username: z.string().optional(),
-});
+// Schemas are now imported from @/shared/schemas/integrations/xmpp
 
 /**
  * XMPP integration implementation.
@@ -47,6 +46,8 @@ export class XmppIntegration extends IntegrationBase<
       name: "XMPP",
       description: "XMPP chat accounts and provisioning",
       enabled: isXmppConfigured(),
+      createAccountSchema: CreateXmppAccountRequestSchema,
+      updateAccountSchema: UpdateXmppAccountRequestSchema,
     });
   }
 
@@ -239,7 +240,7 @@ export class XmppIntegration extends IntegrationBase<
     accountId: string,
     input: UpdateXmppAccountRequest
   ): Promise<XmppAccount> {
-    const parsed = UpdateXmppAccountSchema.safeParse(input);
+    const parsed = UpdateXmppAccountRequestSchema.safeParse(input);
     if (!parsed.success) {
       throw new Error("Invalid update request");
     }

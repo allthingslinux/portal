@@ -2,47 +2,15 @@
 // XMPP Types
 // ============================================================================
 // TypeScript types for XMPP account management and Prosody REST API
+// Types are inferred from Zod schemas for single source of truth
 
-/**
- * XMPP account status
- */
-export type XmppAccountStatus = "active" | "suspended" | "deleted";
-
-/**
- * XMPP account information
- */
-export interface XmppAccount {
-  id: string;
-  userId: string;
-  integrationId: "xmpp"; // Integration identifier
-  jid: string; // Full JID: username@xmpp.atl.chat
-  username: string; // XMPP localpart (username)
-  status: XmppAccountStatus;
-  createdAt: Date;
-  updatedAt: Date;
-  metadata?: Record<string, unknown>;
-}
-
-/**
- * Create XMPP account request
- */
-export interface CreateXmppAccountRequest {
-  username?: string; // Optional, defaults to email localpart
-}
-
-/**
- * Statuses allowed in an update request
- */
-export type UpdateXmppAccountStatus = "active" | "suspended";
-
-/**
- * Update XMPP account request
- */
-export interface UpdateXmppAccountRequest {
-  username?: string; // Optional, must be unique
-  status?: UpdateXmppAccountStatus; // Optional: "active" | "suspended"
-  metadata?: Record<string, unknown>; // Optional JSONB
-}
+export type {
+  CreateXmppAccountRequest,
+  UpdateXmppAccountRequest,
+  UpdateXmppAccountStatus,
+  XmppAccount,
+  XmppAccountStatus,
+} from "@/shared/schemas/integrations/xmpp";
 
 /**
  * Prosody REST API error response

@@ -1,3 +1,4 @@
+import type { z } from "zod";
 import "server-only";
 
 import type {
@@ -7,11 +8,16 @@ import type {
   IntegrationUpdateInput,
 } from "./types";
 
-export interface IntegrationBaseOptions {
+export interface IntegrationBaseOptions<
+  TCreateInput = unknown,
+  TUpdateInput = unknown,
+> {
   id: string;
   name: string;
   description: string;
   enabled?: boolean;
+  createAccountSchema?: z.ZodType<TCreateInput>;
+  updateAccountSchema?: z.ZodType<TUpdateInput>;
 }
 
 export abstract class IntegrationBase<
@@ -24,12 +30,16 @@ export abstract class IntegrationBase<
   readonly name: string;
   readonly description: string;
   readonly enabled: boolean;
+  readonly createAccountSchema?: z.ZodType<TCreateInput>;
+  readonly updateAccountSchema?: z.ZodType<TUpdateInput>;
 
-  constructor(options: IntegrationBaseOptions) {
+  constructor(options: IntegrationBaseOptions<TCreateInput, TUpdateInput>) {
     this.id = options.id;
     this.name = options.name;
     this.description = options.description;
     this.enabled = options.enabled ?? true;
+    this.createAccountSchema = options.createAccountSchema;
+    this.updateAccountSchema = options.updateAccountSchema;
   }
 
   /**

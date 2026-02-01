@@ -8,6 +8,7 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { user } from "./auth";
 
@@ -51,3 +52,7 @@ export const xmppAccount = pgTable(
       .where(sql`status != 'deleted'`),
   ]
 );
+
+// Zod schemas generated from Drizzle table
+export const selectXmppAccountSchema = createSelectSchema(xmppAccount);
+export const insertXmppAccountSchema = createInsertSchema(xmppAccount);

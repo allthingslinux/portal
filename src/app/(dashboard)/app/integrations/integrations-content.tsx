@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { AlertCircle, CheckCircle2, Copy } from "lucide-react";
 import { toast } from "sonner";
-// biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
 import * as Sentry from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
