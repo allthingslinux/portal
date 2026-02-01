@@ -26,16 +26,21 @@ export interface XmppAccount {
 /**
  * Create XMPP account request
  */
-export interface CreateXmppAccountRequest extends Record<string, unknown> {
+export interface CreateXmppAccountRequest {
   username?: string; // Optional, defaults to email localpart
 }
 
 /**
+ * Statuses allowed in an update request
+ */
+export type UpdateXmppAccountStatus = "active" | "suspended";
+
+/**
  * Update XMPP account request
  */
-export interface UpdateXmppAccountRequest extends Record<string, unknown> {
+export interface UpdateXmppAccountRequest {
   username?: string; // Optional, must be unique
-  status?: XmppAccountStatus; // Optional: "active" | "suspended" | "deleted"
+  status?: UpdateXmppAccountStatus; // Optional: "active" | "suspended"
   metadata?: Record<string, unknown>; // Optional JSONB
 }
 

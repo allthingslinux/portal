@@ -1,5 +1,7 @@
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { passkey } from "@better-auth/passkey";
+// biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
+import * as Sentry from "@sentry/nextjs";
 import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -19,10 +21,11 @@ import {
 
 import "server-only";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db/client";
 import { schema } from "@/db/schema";
+import { ircAccount } from "@/db/schema/irc";
 import { xmppAccount } from "@/db/schema/xmpp";
 import {
   sendOTPEmail,
@@ -254,7 +257,7 @@ const oauthProviderConfig = {
   // clientRegistrationDefaultScopes: ["openid", "profile"], // Default scopes for new clients
   // clientRegistrationAllowedScopes: ["email", "offline_access"], // Additional allowed scopes for new clients
   // Scopes configuration
-  scopes: ["openid", "profile", "email", "offline_access", "xmpp"], // Supported scopes
+  scopes: ["openid", "profile", "email", "offline_access", "xmpp", "irc"], // Supported scopes
   // Valid audiences (resources) for this OAuth server
   validAudiences: [baseURL, `${baseURL}/api`],
   // Cached trusted clients (first-party applications)
@@ -294,27 +297,63 @@ const oauthProviderConfig = {
 
     // Add XMPP username when 'xmpp' scope is requested
     if (scopes.includes("xmpp")) {
-      try {
-        const [xmppAccountRecord] = await db
-          .select({ username: xmppAccount.username })
-          .from(xmppAccount)
-          .where(eq(xmppAccount.userId, user.id))
-          .limit(1);
+      await Sentry.startSpan(
+        { op: "db.lookup", name: "xmppAccount lookup" },
+        async () => {
+          try {
+            const [xmppAccountRecord] = await db
+              .select({ username: xmppAccount.username })
+              .from(xmppAccount)
+              .where(eq(xmppAccount.userId, user.id))
+              .limit(1);
 
-        if (xmppAccountRecord) {
-          claims.xmpp_username = xmppAccountRecord.username;
+            if (xmppAccountRecord) {
+              claims.xmpp_username = xmppAccountRecord.username;
+            }
+          } catch (error) {
+            // Capture error in Sentry but gracefully continue without XMPP claim
+            Sentry.captureException(error, {
+              tags: {
+                function: "customUserInfoClaims",
+                userId: user.id,
+              },
+            });
+            // Continue without XMPP claim on error
+          }
         }
-      } catch (error) {
-        // Capture error in Sentry but gracefully continue without XMPP claim
-        const Sentry = await import("@sentry/nextjs");
-        Sentry.captureException(error, {
-          tags: {
-            function: "customUserInfoClaims",
-            userId: user.id,
-          },
-        });
-        // Continue without XMPP claim on error
-      }
+      );
+    }
+
+    // Add IRC nick when 'irc' scope is requested
+    if (scopes.includes("irc")) {
+      await Sentry.startSpan(
+        { op: "db.lookup", name: "ircAccount lookup" },
+        async () => {
+          try {
+            const [ircAccountRecord] = await db
+              .select({ nick: ircAccount.nick })
+              .from(ircAccount)
+              .where(
+                and(
+                  eq(ircAccount.userId, user.id),
+                  eq(ircAccount.status, "active")
+                )
+              )
+              .limit(1);
+
+            if (ircAccountRecord) {
+              claims.irc_nick = ircAccountRecord.nick;
+            }
+          } catch (error) {
+            Sentry.captureException(error, {
+              tags: {
+                function: "customUserInfoClaims",
+                userId: user.id,
+              },
+            });
+          }
+        }
+      );
     }
 
     return claims;

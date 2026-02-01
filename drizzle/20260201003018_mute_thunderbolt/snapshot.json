@@ -1,11 +1,42 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "b64bcda8-c9cb-43bb-a2f4-7c802a82dece",
+  "id": "1e53cfd9-ec5e-475a-93c2-a3617328c5ff",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
   "ddl": [
+    {
+      "values": [
+        "active",
+        "suspended",
+        "deleted"
+      ],
+      "name": "integration_account_status",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "active",
+        "pending",
+        "suspended",
+        "deleted"
+      ],
+      "name": "irc_account_status",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": [
+        "active",
+        "suspended",
+        "deleted"
+      ],
+      "name": "xmpp_account_status",
+      "entityType": "enums",
+      "schema": "public"
+    },
     {
       "isRlsEnabled": false,
       "name": "apikey",
@@ -56,6 +87,18 @@
     },
     {
       "isRlsEnabled": false,
+      "name": "integration_accounts",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "irc_account",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
       "name": "oauth_access_token",
       "entityType": "tables",
       "schema": "public"
@@ -75,6 +118,12 @@
     {
       "isRlsEnabled": false,
       "name": "oauth_refresh_token",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "xmpp_account",
       "entityType": "tables",
       "schema": "public"
     },
@@ -1142,6 +1191,214 @@
       "name": "id",
       "entityType": "columns",
       "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "integration_type",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "type": "integration_account_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'active'",
+      "generated": null,
+      "identity": null,
+      "name": "status",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "metadata",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "nick",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "server",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "6697",
+      "generated": null,
+      "identity": null,
+      "name": "port",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "type": "irc_account_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'pending'",
+      "generated": null,
+      "identity": null,
+      "name": "status",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "metadata",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
       "table": "oauth_access_token"
     },
     {
@@ -1873,6 +2130,110 @@
       "table": "oauth_refresh_token"
     },
     {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "jid",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "username",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "type": "xmpp_account_status",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'active'",
+      "generated": null,
+      "identity": null,
+      "name": "status",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "metadata",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
       "nameExplicit": true,
       "columns": [
         {
@@ -2062,6 +2423,286 @@
       "table": "verification"
     },
     {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "integration_accounts_userId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "integration_type",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "integration_accounts_type_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "integration_type",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "integration_accounts_userId_type_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "status",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "irc_account_status_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": "status != 'deleted'",
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "irc_account_userId_active_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "nick",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": "status != 'deleted'",
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "irc_account_nick_active_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "irc_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "xmpp_account_userId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "jid",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "xmpp_account_jid_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "username",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "xmpp_account_username_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "status",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "xmpp_account_status_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "user_id",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": "status != 'deleted'",
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "xmpp_account_userId_active_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "jid",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": "status != 'deleted'",
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "xmpp_account_jid_active_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "username",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": "status != 'deleted'",
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "xmpp_account_username_active_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
       "nameExplicit": false,
       "columns": [
         "user_id"
@@ -2145,6 +2786,40 @@
       "entityType": "fks",
       "schema": "public",
       "table": "two_factor"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "user",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "integration_accounts_user_id_user_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "integration_accounts"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "user",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "irc_account_user_id_user_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "irc_account"
     },
     {
       "nameExplicit": false,
@@ -2317,6 +2992,23 @@
       "table": "oauth_refresh_token"
     },
     {
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "user",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "name": "xmpp_account_user_id_user_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "xmpp_account"
+    },
+    {
       "columns": [
         "id"
       ],
@@ -2401,6 +3093,26 @@
         "id"
       ],
       "nameExplicit": false,
+      "name": "integration_accounts_pkey",
+      "schema": "public",
+      "table": "integration_accounts",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "irc_account_pkey",
+      "schema": "public",
+      "table": "irc_account",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
       "name": "oauth_access_token_pkey",
       "schema": "public",
       "table": "oauth_access_token",
@@ -2434,6 +3146,16 @@
       "name": "oauth_refresh_token_pkey",
       "schema": "public",
       "table": "oauth_refresh_token",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "xmpp_account_pkey",
+      "schema": "public",
+      "table": "xmpp_account",
       "entityType": "pks"
     },
     {

@@ -1,7 +1,8 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { z } from "zod";
+import { and, eq, ne } from "drizzle-orm";
 
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
@@ -25,6 +26,12 @@ import {
 } from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
+
+const UpdateXmppAccountSchema = z.object({
+  status: z.enum(["active", "suspended"]).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+  username: z.string().optional(),
+});
 
 /**
  * XMPP integration implementation.
@@ -84,7 +91,12 @@ export class XmppIntegration extends IntegrationBase<
     const [existingUsername] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.username, username))
+      .where(
+        and(
+          eq(xmppAccount.username, username),
+          ne(xmppAccount.status, "deleted")
+        )
+      )
       .limit(1);
 
     if (existingUsername) {
@@ -119,7 +131,9 @@ export class XmppIntegration extends IntegrationBase<
     const [existingAccount] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.userId, userId))
+      .where(
+        and(eq(xmppAccount.userId, userId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
     if (existingAccount) {
@@ -185,13 +199,7 @@ export class XmppIntegration extends IntegrationBase<
       throw new Error("Failed to create XMPP account record");
     }
 
-    return {
-      ...newAccount,
-      integrationId: "xmpp" as const,
-      metadata:
-        (newAccount.metadata as Record<string, unknown> | undefined) ??
-        undefined,
-    };
+    return rowToAccount(newAccount);
   }
 
   /**
@@ -201,18 +209,12 @@ export class XmppIntegration extends IntegrationBase<
     const [account] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.userId, userId))
+      .where(
+        and(eq(xmppAccount.userId, userId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
-    return account
-      ? {
-          ...account,
-          integrationId: "xmpp" as const,
-          metadata:
-            (account.metadata as Record<string, unknown> | undefined) ??
-            undefined,
-        }
-      : null;
+    return account ? rowToAccount(account) : null;
   }
 
   /**
@@ -222,18 +224,12 @@ export class XmppIntegration extends IntegrationBase<
     const [account] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.id, accountId))
+      .where(
+        and(eq(xmppAccount.id, accountId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
-    return account
-      ? {
-          ...account,
-          integrationId: "xmpp" as const,
-          metadata:
-            (account.metadata as Record<string, unknown> | undefined) ??
-            undefined,
-        }
-      : null;
+    return account ? rowToAccount(account) : null;
   }
 
   /**
@@ -243,17 +239,25 @@ export class XmppIntegration extends IntegrationBase<
     accountId: string,
     input: UpdateXmppAccountRequest
   ): Promise<XmppAccount> {
+    const parsed = UpdateXmppAccountSchema.safeParse(input);
+    if (!parsed.success) {
+      throw new Error("Invalid update request");
+    }
+    const data = parsed.data;
+
     const [account] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.id, accountId))
+      .where(
+        and(eq(xmppAccount.id, accountId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
     if (!account) {
       throw new Error("XMPP account not found");
     }
 
-    if (input.username && input.username !== account.username) {
+    if (data.username && data.username !== account.username) {
       throw new Error(
         "Username cannot be changed. Please delete your account and create a new one with the desired username."
       );
@@ -261,12 +265,12 @@ export class XmppIntegration extends IntegrationBase<
 
     const updates: Partial<typeof xmppAccount.$inferInsert> = {};
 
-    if (input.status && input.status !== account.status) {
-      updates.status = input.status;
+    if (data.status && data.status !== account.status) {
+      updates.status = data.status;
     }
 
-    if (input.metadata !== undefined) {
-      updates.metadata = input.metadata;
+    if (data.metadata !== undefined) {
+      updates.metadata = data.metadata;
     }
 
     if (Object.keys(updates).length === 0) {
@@ -279,19 +283,16 @@ export class XmppIntegration extends IntegrationBase<
         ...updates,
         updatedAt: new Date(),
       })
-      .where(eq(xmppAccount.id, accountId))
+      .where(
+        and(eq(xmppAccount.id, accountId), ne(xmppAccount.status, "deleted"))
+      )
       .returning();
 
     if (!updated) {
       throw new Error("Failed to update XMPP account");
     }
 
-    return {
-      ...updated,
-      integrationId: "xmpp" as const,
-      metadata:
-        (updated.metadata as Record<string, unknown> | undefined) ?? undefined,
-    };
+    return rowToAccount(updated);
   }
 
   /**
@@ -305,7 +306,9 @@ export class XmppIntegration extends IntegrationBase<
     const [account] = await db
       .select()
       .from(xmppAccount)
-      .where(eq(xmppAccount.id, accountId))
+      .where(
+        and(eq(xmppAccount.id, accountId), ne(xmppAccount.status, "deleted"))
+      )
       .limit(1);
 
     if (!account) {
@@ -342,6 +345,12 @@ export class XmppIntegration extends IntegrationBase<
     }
   }
 }
+
+const rowToAccount = (row: typeof xmppAccount.$inferSelect): XmppAccount => ({
+  ...row,
+  integrationId: "xmpp" as const,
+  metadata: (row.metadata as Record<string, unknown> | undefined) ?? undefined,
+});
 
 export const xmppIntegration = new XmppIntegration();
 

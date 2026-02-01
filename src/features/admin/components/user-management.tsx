@@ -1,6 +1,7 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import {
   Card,
@@ -21,6 +22,7 @@ import {
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { DataTable } from "./data-table";
 import { createUserColumns } from "./user-columns";
+import { UserDetailSheet } from "./user-detail-sheet";
 import { useUsers } from "@/features/admin/hooks/use-admin";
 import {
   useBanUser,
@@ -51,6 +53,7 @@ type StatusValue = (typeof STATUS_OPTIONS)[number]["value"];
 const SEARCH_DEBOUNCE_MS = 300;
 
 function UserManagementInner() {
+  const [detailUserId, setDetailUserId] = useState<string | null>(null);
   const [urlState, setUrlState] = useUsersListSearchParams();
   const debouncedSearch = useDebouncedValue(
     urlState.search,
@@ -91,6 +94,7 @@ function UserManagementInner() {
         banUser,
         unbanUser,
         impersonateUser,
+        onViewDetails: (id) => setDetailUserId(id),
       }),
     [setRole, banUser, unbanUser, impersonateUser]
   );
@@ -138,85 +142,92 @@ function UserManagementInner() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>User Management</CardTitle>
-        <CardDescription>
-          Manage user accounts, roles, and permissions.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <DataTable<User, unknown>
-          columns={columns}
-          data={users}
-          toolbarContent={
-            <search
-              aria-label="Filter users"
-              className="grid gap-x-4 gap-y-2 sm:grid-cols-[minmax(180px,1fr)_140px_140px]"
-            >
-              <Label className="self-end" htmlFor="users-search">
-                Search by email
-              </Label>
-              <Label className="self-end" htmlFor="users-role">
-                Role
-              </Label>
-              <Label className="self-end" htmlFor="users-status">
-                Status
-              </Label>
-              <div className="min-w-0">
-                <Input
-                  aria-describedby="users-search-desc"
-                  autoComplete="off"
-                  className="h-9 w-full"
-                  id="users-search"
-                  onChange={(e) => setUrlState({ search: e.target.value })}
-                  placeholder="Search users by email..."
-                  type="search"
-                  value={urlState.search}
-                />
-                <span className="sr-only" id="users-search-desc">
-                  Filters the list by email; updates on change
-                </span>
-              </div>
-              <Select
-                onValueChange={(value) =>
-                  setUrlState({ role: value as RoleValue })
-                }
-                value={urlState.role}
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>User Management</CardTitle>
+          <CardDescription>
+            Manage user accounts, roles, and permissions.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <DataTable<User, unknown>
+            columns={columns as ColumnDef<User, unknown>[]}
+            data={users}
+            toolbarContent={
+              <search
+                aria-label="Filter users"
+                className="grid gap-x-4 gap-y-2 sm:grid-cols-[minmax(180px,1fr)_140px_140px]"
               >
-                <SelectTrigger className="h-9 w-full" id="users-role">
-                  <SelectValue placeholder="Role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ROLE_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select
-                onValueChange={(value) =>
-                  setUrlState({ status: value as StatusValue })
-                }
-                value={urlState.status}
-              >
-                <SelectTrigger className="h-9 w-full" id="users-status">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </search>
-          }
-        />
-      </CardContent>
-    </Card>
+                <Label className="self-end" htmlFor="users-search">
+                  Search by email
+                </Label>
+                <Label className="self-end" htmlFor="users-role">
+                  Role
+                </Label>
+                <Label className="self-end" htmlFor="users-status">
+                  Status
+                </Label>
+                <div className="min-w-0">
+                  <Input
+                    aria-describedby="users-search-desc"
+                    autoComplete="off"
+                    className="h-9 w-full"
+                    id="users-search"
+                    onChange={(e) => setUrlState({ search: e.target.value })}
+                    placeholder="Search users by email..."
+                    type="search"
+                    value={urlState.search}
+                  />
+                  <span className="sr-only" id="users-search-desc">
+                    Filters the list by email; updates on change
+                  </span>
+                </div>
+                <Select
+                  onValueChange={(value) =>
+                    setUrlState({ role: value as RoleValue })
+                  }
+                  value={urlState.role}
+                >
+                  <SelectTrigger className="h-9 w-full" id="users-role">
+                    <SelectValue placeholder="Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ROLE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  onValueChange={(value) =>
+                    setUrlState({ status: value as StatusValue })
+                  }
+                  value={urlState.status}
+                >
+                  <SelectTrigger className="h-9 w-full" id="users-status">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </search>
+            }
+          />
+        </CardContent>
+      </Card>
+      <UserDetailSheet
+        onOpenChange={(open) => !open && setDetailUserId(null)}
+        open={!!detailUserId}
+        userId={detailUserId}
+      />
+    </>
   );
 }
 

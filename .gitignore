@@ -39,6 +39,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 references
+examples/
 
 .cursor/plans
 .cursor/hooks/logs/

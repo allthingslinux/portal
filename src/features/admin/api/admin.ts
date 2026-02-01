@@ -5,8 +5,10 @@
 
 import type {
   AdminStats,
+  AdminUserDetailResponse,
   ApiKey,
   ApiKeyListResponse,
+  IrcAccountListResponse,
   OAuthClient,
   OAuthClientListResponse,
   Session,
@@ -57,9 +59,11 @@ export async function fetchUsers(
 }
 
 /**
- * Fetch a single user by ID
+ * Fetch a single user by ID including integration accounts (IRC, XMPP)
  */
-export async function fetchUserById(userId: string): Promise<User> {
+export async function fetchUserById(
+  userId: string
+): Promise<AdminUserDetailResponse> {
   const response = await fetch(`/api/admin/users/${userId}`);
 
   if (!response.ok) {
@@ -71,8 +75,7 @@ export async function fetchUserById(userId: string): Promise<User> {
     );
   }
 
-  const data = await response.json();
-  return data.user;
+  return response.json();
 }
 
 /**
@@ -98,7 +101,41 @@ export async function updateUser(
   }
 
   const result = await response.json();
-  return result.user;
+  return result.user as User;
+}
+
+/**
+ * Fetch list of IRC accounts (admin-only) with optional status filter and pagination
+ */
+export async function fetchIrcAccounts(filters?: {
+  status?: string;
+  limit?: number;
+  offset?: number;
+}): Promise<IrcAccountListResponse> {
+  const params = new URLSearchParams();
+  if (filters?.status) {
+    params.append("status", filters.status);
+  }
+  if (filters?.limit) {
+    params.append("limit", String(filters.limit));
+  }
+  if (filters?.offset) {
+    params.append("offset", String(filters.offset));
+  }
+
+  const url = `/api/admin/irc-accounts${params.toString() ? `?${params}` : ""}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ error: "Unknown error" }));
+    throw new Error(
+      error.error || `Failed to fetch IRC accounts: ${response.statusText}`
+    );
+  }
+
+  return response.json();
 }
 
 /**

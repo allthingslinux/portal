@@ -4,7 +4,8 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { AlertCircle, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { captureException } from "@sentry/nextjs";
+// biome-ignore lint/performance/noNamespaceImport: Sentry guideline requires namespace import
+import * as Sentry from "@sentry/nextjs";
 
 import {
   AlertDialog,
@@ -42,10 +43,13 @@ interface IntegrationManagementProps<TAccount extends { id: string }> {
   createInputLabel?: string;
   createInputPlaceholder?: string;
   createInputHelp?: string;
+  createInputRequired?: boolean;
   createInputToPayload?: (value: string) => Record<string, unknown>;
+  onCreateSuccess?: (account: TAccount) => void;
   renderAccountDetails?: (account: TAccount) => ReactNode;
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Single component with loading/error/empty/account states
 export function IntegrationManagement<TAccount extends { id: string }>({
   integrationId,
   title,
@@ -54,7 +58,9 @@ export function IntegrationManagement<TAccount extends { id: string }>({
   createInputLabel,
   createInputPlaceholder,
   createInputHelp,
+  createInputRequired,
   createInputToPayload,
+  onCreateSuccess,
   renderAccountDetails,
 }: IntegrationManagementProps<TAccount>) {
   const {
@@ -73,13 +79,14 @@ export function IntegrationManagement<TAccount extends { id: string }>({
         createInputToPayload?.(trimmed) ??
         (trimmed ? { identifier: trimmed } : {});
 
-      await createMutation.mutateAsync(payload);
+      const createdAccount = await createMutation.mutateAsync(payload);
       toast.success(`${title} account created`, {
         description: `Your ${title} account has been created successfully.`,
       });
       setInputValue("");
+      onCreateSuccess?.(createdAccount);
     } catch (error) {
-      captureException(error);
+      Sentry.captureException(error);
       toast.error(`Failed to create ${title.toLowerCase()} account`, {
         description:
           error instanceof Error
@@ -100,7 +107,7 @@ export function IntegrationManagement<TAccount extends { id: string }>({
         description: `Your ${title} account has been deleted successfully.`,
       });
     } catch (error) {
-      captureException(error);
+      Sentry.captureException(error);
       toast.error(`Failed to delete ${title.toLowerCase()} account`, {
         description:
           error instanceof Error
@@ -164,7 +171,10 @@ export function IntegrationManagement<TAccount extends { id: string }>({
         <CardFooter>
           <Button
             className="w-full"
-            disabled={createMutation.isPending}
+            disabled={
+              createMutation.isPending ||
+              (createInputRequired && !inputValue.trim())
+            }
             onClick={handleCreate}
           >
             {createMutation.isPending ? (

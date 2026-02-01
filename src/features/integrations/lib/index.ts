@@ -1,5 +1,6 @@
 import "server-only";
 
+import { registerIrcIntegration } from "./irc";
 import { registerXmppIntegration } from "./xmpp";
 
 let integrationsRegistered = false;
@@ -13,5 +14,6 @@ export function registerIntegrations(): void {
   }
 
   registerXmppIntegration();
+  registerIrcIntegration();
   integrationsRegistered = true;
 }

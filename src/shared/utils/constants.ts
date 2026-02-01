@@ -104,7 +104,12 @@ export const RATE_LIMIT = {
 /**
  * Integration account status values
  */
-export const INTEGRATION_STATUSES = ["active", "suspended", "deleted"] as const;
+export const INTEGRATION_STATUSES = [
+  "active",
+  "pending",
+  "suspended",
+  "deleted",
+] as const;
 
 export type IntegrationStatus = (typeof INTEGRATION_STATUSES)[number];
 

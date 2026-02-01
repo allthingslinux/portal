@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   index,
   jsonb,
@@ -5,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
@@ -22,10 +24,9 @@ export const xmppAccount = pgTable(
     id: text("id").primaryKey(),
     userId: text("user_id")
       .notNull()
-      .unique()
       .references(() => user.id, { onDelete: "cascade" }),
-    jid: text("jid").notNull().unique(), // Full JID: username@xmpp.atl.chat
-    username: text("username").notNull().unique(), // XMPP localpart (username)
+    jid: text("jid").notNull(), // Full JID: username@xmpp.atl.chat
+    username: text("username").notNull(), // XMPP localpart (username)
     status: xmppAccountStatusEnum("status").default("active").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
@@ -39,5 +40,14 @@ export const xmppAccount = pgTable(
     index("xmpp_account_jid_idx").on(table.jid),
     index("xmpp_account_username_idx").on(table.username),
     index("xmpp_account_status_idx").on(table.status),
+    uniqueIndex("xmpp_account_userId_active_idx")
+      .on(table.userId)
+      .where(sql`status != 'deleted'`),
+    uniqueIndex("xmpp_account_jid_active_idx")
+      .on(table.jid)
+      .where(sql`status != 'deleted'`),
+    uniqueIndex("xmpp_account_username_active_idx")
+      .on(table.username)
+      .where(sql`status != 'deleted'`),
   ]
 );

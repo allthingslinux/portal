@@ -23,6 +23,14 @@ Each integration lives in its own directory under `src/features/integrations/lib
 ```text
 src/features/integrations/lib/
 ├── core/              # Types, registry, factory, constants, user-deletion
+├── irc/               # IRC integration (Atheme NickServ)
+│   ├── atheme/        # Atheme JSON-RPC client (provisioning)
+│   ├── keys.ts        # Environment variable validation (t3-env)
+│   ├── config.ts      # Configuration and isIrcConfigured()
+│   ├── types.ts       # IrcAccount, CreateIrcAccountRequest, AthemeFault
+│   ├── utils.ts       # Nick validation, generateIrcPassword()
+│   ├── implementation.ts  # IrcIntegration and registration
+│   └── index.ts       # Public exports
 ├── xmpp/              # XMPP integration implementation
 │   ├── keys.ts        # Environment variable validation (t3-env)
 │   ├── config.ts      # Configuration and validation
@@ -36,9 +44,11 @@ src/features/integrations/lib/
 
 ## Database Schema
 
+Portal uses two patterns for storing integration accounts: a unified table for generic integrations, and per-integration tables for integrations that need strongly-typed, queryable columns. IRC and XMPP use per-integration tables.
+
 ### Integration Accounts Table
 
-All integration accounts are stored in a unified `integration_accounts` table:
+The unified `integration_accounts` table stores integrations that share the same schema and only differ by type:
 
 ```typescript
 // src/shared/db/schema/integrations/base.ts (or @/db/schema/integrations/base)
@@ -82,6 +92,28 @@ export const integrationAccount = pgTable(
 - Cascade deletion when users are deleted
 - JSON metadata field for integration-specific data
 - Status enum: `active`, `suspended`, `deleted`
+
+### Integration-Specific Tables
+
+Some integrations use dedicated tables **instead of** the unified `integration_accounts` table. These per-integration tables duplicate the common field pattern and add strongly-typed columns. There is no foreign key between `integration_accounts` and `irc_account` or `xmpp_account`—they are mutually exclusive storage patterns.
+
+**Tables:**
+
+- **`integration_accounts`**: Shared polymorphic table. Use for integrations that need only generic attributes. Fields: `id`, `user_id`, `integration_type`, `status`, `created_at`, `updated_at`, `metadata`.
+- **`irc_account`**: Per-integration table for IRC. References `user` via `user_id`. Fields: `id`, `user_id`, `nick`, `server`, `port`, `status`, `created_at`, `updated_at`, `metadata`.
+- **`xmpp_account`**: Per-integration table for XMPP. References `user` via `user_id`. Fields: `id`, `user_id`, `jid`, `username`, `status`, `created_at`, `updated_at`, `metadata`.
+
+**Field placement:**
+
+| Location               | Fields                                                                 |
+| ---------------------- | ---------------------------------------------------------------------- |
+| Common (all tables)    | `id`, `user_id`, `status`, `created_at`, `updated_at`                  |
+| `integration_accounts` | `integration_type` (discriminator)                                     |
+| `irc_account`          | `nick` (unique), `server`, `port`                                      |
+| `xmpp_account`         | `jid` (unique), `username` (unique)                                    |
+| All                    | `metadata` (JSONB for miscellaneous integration-specific data)         |
+
+**Why both exist:** The unified `integration_accounts` table works when integrations share the same schema and only differ by `integration_type`. Per-integration tables (`irc_account`, `xmpp_account`) are used when an integration needs strongly-typed, queryable columns (e.g., unique `nick`, indexed `server`/`port`) and efficient queries without JSON extraction. The `metadata` JSONB column in both patterns holds miscellaneous data that does not need indexing or strict typing.
 
 ## Type System
 
@@ -772,9 +804,35 @@ The XMPP integration serves as the reference implementation:
 
 See the XMPP implementation files for a complete example of how to build an integration.
 
+### IRC Integration
+
+The IRC integration provisions NickServ accounts on atl.chat via Atheme JSON-RPC (Flow B):
+
+- **Location**: `src/features/integrations/lib/irc/`
+- **External Service**: Atheme JSON-RPC (NickServ REGISTER). UnrealIRCd JSON-RPC is optional for admin use (who's online).
+- **Database**: Dedicated `irc_account` table. No password stored. See [Integration-Specific Tables](#integration-specific-tables) for schema details and the relationship to the unified `integration_accounts` table.
+- **Features**:
+  - Nick required on create (user must enter; no auto-generate in v1).
+  - One-time password generated and shown once; user saves it for `/msg NickServ IDENTIFY`.
+  - **⚠️ Delete is soft-delete only** (NickServ account remains registered on Atheme). This means:
+    - Portal marks the record as `status='deleted'` but retains the database row
+    - The nick remains registered on Atheme's NickServ
+    - Re-registration with the same nick fails at the Portal level (nick uniqueness check finds the deleted record) and would fail at Atheme (fault code 8 "already exists") if attempted
+    - Manual Atheme cleanup (NickServ DROP) is required to fully remove the registration and free the nick
+  - Connect instructions: server:port (TLS), same for all users from env (`IRC_SERVER`, `IRC_PORT`).
+- **Environment**:
+  - **Required for provisioning**: `IRC_ATHEME_JSONRPC_URL`
+  - **Required for user connections**: `IRC_SERVER`, `IRC_PORT`
+  - **Optional security**: `IRC_ATHEME_INSECURE_SKIP_VERIFY`
+  - **Optional admin features**: `IRC_UNREAL_JSONRPC_URL`, `IRC_UNREAL_RPC_USER`, `IRC_UNREAL_RPC_PASSWORD`, `IRC_UNREAL_INSECURE_SKIP_VERIFY`
+- **Auth**: Optional `irc` scope and `irc_nick` claim in `customUserInfoClaims` when user has an IRC account.
+- **Unreal (admin)**: When Unreal env is set, use `isUnrealConfigured()` and `unrealRpcClient` from `@/features/integrations/lib/irc`: `userList()`, `userGet(nick)`, `channelList()`, `channelGet(channel)`. HTTPS POST to `/api` with Basic Auth (rpc-user). Use for admin “IRC online” or channel list views.
+
+**Prerequisite:** atl.chat must enable Atheme `misc/httpd` and `transport/jsonrpc` (e.g. port 8081) before Portal can provision.
+
 ## Current State
 
-All integrations, including XMPP, use the unified integrations framework. There are no integration-specific API routes, hooks, or components - everything goes through the generic integration APIs and components.
+All integrations, including XMPP and IRC, use the unified integrations framework. There are no integration-specific API routes, hooks, or components - everything goes through the generic integration APIs and components.
 
 **All integrations use:**
 

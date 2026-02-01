@@ -13,6 +13,7 @@ This directory holds project documentation. Use it as the single source of truth
 | [COMPONENTS.md](./COMPONENTS.md) | Component structure, base components (shadcn/ui), patterns, naming |
 | [DEPLOYMENT.md](./DEPLOYMENT.md) | Deploying to Hetzner VPS, Cloudflare, Docker, environment variables |
 | [INTEGRATIONS.md](./INTEGRATIONS.md) | Integrations framework, adding new integrations, DB schema, types |
+| [IRC.md](./IRC.md) | IRC integration: Atheme NickServ provisioning, UnrealIRCd admin client, env vars, admin UI |
 | [LOGGING.md](./LOGGING.md) | Wide-events pattern, observability, structured logging |
 | [PATH_ALIASES.md](./PATH_ALIASES.md) | TypeScript path aliases (`@/auth`, `@/db`, etc.) and targets |
 | [TESTING.md](./TESTING.md) | Vitest, test organization, unit/component/hook patterns, mocking |

@@ -255,3 +255,76 @@ export interface AdminStats {
     disabled: number;
   };
 }
+
+/**
+ * IRC account shape as returned by admin user detail and irc-accounts list APIs.
+ * Dates are ISO-8601 strings (JSON wire format).
+ */
+export interface AdminIrcAccount {
+  id: string;
+  userId: string;
+  nick: string;
+  server: string;
+  port: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  metadata?: Record<string, unknown> | null;
+}
+
+/**
+ * XMPP account shape as returned by admin user detail API.
+ * Dates are ISO-8601 strings (JSON wire format).
+ */
+export interface AdminXmppAccount {
+  id: string;
+  userId: string;
+  jid: string;
+  username: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  metadata?: Record<string, unknown> | null;
+}
+
+/**
+ * User row shape in admin user detail response.
+ * Dates are ISO-8601 strings (JSON wire format).
+ */
+export interface AdminUserRow {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  banned: boolean | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Admin user detail response (GET /api/admin/users/[id]) including integration accounts
+ */
+export interface AdminUserDetailResponse {
+  user: AdminUserRow;
+  ircAccount: AdminIrcAccount | null;
+  xmppAccount: AdminXmppAccount | null;
+}
+
+/**
+ * IRC account with optional user info for admin list
+ */
+export interface IrcAccountWithUser extends AdminIrcAccount {
+  user?: {
+    id: string;
+    email: string;
+    name: string | null;
+  };
+}
+
+/**
+ * Admin IRC accounts list response (GET /api/admin/irc-accounts)
+ */
+export interface IrcAccountListResponse {
+  ircAccounts: IrcAccountWithUser[];
+  pagination: ListPaginationMeta;
+}

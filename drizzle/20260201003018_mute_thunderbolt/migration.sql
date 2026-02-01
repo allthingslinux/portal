@@ -1,3 +1,6 @@
+CREATE TYPE "integration_account_status" AS ENUM('active', 'suspended', 'deleted');--> statement-breakpoint
+CREATE TYPE "irc_account_status" AS ENUM('active', 'pending', 'suspended', 'deleted');--> statement-breakpoint
+CREATE TYPE "xmpp_account_status" AS ENUM('active', 'suspended', 'deleted');--> statement-breakpoint
 CREATE TABLE "apikey" (
 	"id" text PRIMARY KEY,
 	"name" text,
@@ -103,6 +106,28 @@ CREATE TABLE "verification" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "integration_accounts" (
+	"id" text PRIMARY KEY,
+	"user_id" text NOT NULL,
+	"integration_type" text NOT NULL,
+	"status" "integration_account_status" DEFAULT 'active'::"integration_account_status" NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"metadata" jsonb
+);
+--> statement-breakpoint
+CREATE TABLE "irc_account" (
+	"id" text PRIMARY KEY,
+	"user_id" text NOT NULL,
+	"nick" text NOT NULL,
+	"server" text NOT NULL,
+	"port" integer DEFAULT 6697 NOT NULL,
+	"status" "irc_account_status" DEFAULT 'pending'::"irc_account_status" NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"metadata" jsonb
+);
+--> statement-breakpoint
 CREATE TABLE "oauth_access_token" (
 	"id" text PRIMARY KEY,
 	"token" text UNIQUE,
@@ -172,6 +197,17 @@ CREATE TABLE "oauth_refresh_token" (
 	"scopes" text[] NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "xmpp_account" (
+	"id" text PRIMARY KEY,
+	"user_id" text NOT NULL,
+	"jid" text NOT NULL,
+	"username" text NOT NULL,
+	"status" "xmpp_account_status" DEFAULT 'active'::"xmpp_account_status" NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"metadata" jsonb
+);
+--> statement-breakpoint
 CREATE INDEX "apikey_key_idx" ON "apikey" ("key");--> statement-breakpoint
 CREATE INDEX "apikey_userId_idx" ON "apikey" ("user_id");--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "account" ("user_id");--> statement-breakpoint
@@ -181,11 +217,26 @@ CREATE INDEX "session_userId_idx" ON "session" ("user_id");--> statement-breakpo
 CREATE INDEX "twoFactor_secret_idx" ON "two_factor" ("secret");--> statement-breakpoint
 CREATE INDEX "twoFactor_userId_idx" ON "two_factor" ("user_id");--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "verification" ("identifier");--> statement-breakpoint
+CREATE INDEX "integration_accounts_userId_idx" ON "integration_accounts" ("user_id");--> statement-breakpoint
+CREATE INDEX "integration_accounts_type_idx" ON "integration_accounts" ("integration_type");--> statement-breakpoint
+CREATE UNIQUE INDEX "integration_accounts_userId_type_idx" ON "integration_accounts" ("user_id","integration_type");--> statement-breakpoint
+CREATE INDEX "irc_account_status_idx" ON "irc_account" ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "irc_account_userId_active_idx" ON "irc_account" ("user_id") WHERE status != 'deleted';--> statement-breakpoint
+CREATE UNIQUE INDEX "irc_account_nick_active_idx" ON "irc_account" ("nick") WHERE status != 'deleted';--> statement-breakpoint
+CREATE INDEX "xmpp_account_userId_idx" ON "xmpp_account" ("user_id");--> statement-breakpoint
+CREATE INDEX "xmpp_account_jid_idx" ON "xmpp_account" ("jid");--> statement-breakpoint
+CREATE INDEX "xmpp_account_username_idx" ON "xmpp_account" ("username");--> statement-breakpoint
+CREATE INDEX "xmpp_account_status_idx" ON "xmpp_account" ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "xmpp_account_userId_active_idx" ON "xmpp_account" ("user_id") WHERE status != 'deleted';--> statement-breakpoint
+CREATE UNIQUE INDEX "xmpp_account_jid_active_idx" ON "xmpp_account" ("jid") WHERE status != 'deleted';--> statement-breakpoint
+CREATE UNIQUE INDEX "xmpp_account_username_active_idx" ON "xmpp_account" ("username") WHERE status != 'deleted';--> statement-breakpoint
 ALTER TABLE "apikey" ADD CONSTRAINT "apikey_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "passkey" ADD CONSTRAINT "passkey_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "two_factor" ADD CONSTRAINT "two_factor_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "integration_accounts" ADD CONSTRAINT "integration_accounts_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "irc_account" ADD CONSTRAINT "irc_account_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_client_id_oauth_client_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "oauth_client"("client_id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_session_id_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "session"("id") ON DELETE SET NULL;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
@@ -195,4 +246,5 @@ ALTER TABLE "oauth_consent" ADD CONSTRAINT "oauth_consent_client_id_oauth_client
 ALTER TABLE "oauth_consent" ADD CONSTRAINT "oauth_consent_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "oauth_refresh_token" ADD CONSTRAINT "oauth_refresh_token_client_id_oauth_client_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "oauth_client"("client_id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "oauth_refresh_token" ADD CONSTRAINT "oauth_refresh_token_session_id_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "session"("id") ON DELETE SET NULL;--> statement-breakpoint
-ALTER TABLE "oauth_refresh_token" ADD CONSTRAINT "oauth_refresh_token_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;
+ALTER TABLE "oauth_refresh_token" ADD CONSTRAINT "oauth_refresh_token_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "xmpp_account" ADD CONSTRAINT "xmpp_account_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;
