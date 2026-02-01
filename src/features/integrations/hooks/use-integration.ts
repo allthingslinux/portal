@@ -54,9 +54,6 @@ export function useIntegrationAccountById<TAccount>(
 /**
  * Create a new integration account for the current user.
  */
-/**
- * Create a new integration account for the current user.
- */
 export function useCreateIntegrationAccount<
   TAccount,
   TCreateInput = Record<string, unknown>,
