@@ -51,7 +51,19 @@ export const CreateIrcAccountRequestSchema = z.object({
 export const UpdateIrcAccountRequestSchema = z.object({
   status: UpdateIrcAccountStatusSchema.optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
-  nick: z.string().optional(),
+  nick: z
+    .string()
+    .trim()
+    .min(1, "Nick is required")
+    .max(
+      IRC_NICK_MAX_LENGTH,
+      `Nick must be ${IRC_NICK_MAX_LENGTH} characters or less`
+    )
+    .refine(
+      isValidIrcNick,
+      `Invalid nick. Use letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`
+    )
+    .optional(),
 });
 
 /**
