@@ -2,47 +2,53 @@
 // XMPP Types
 // ============================================================================
 // TypeScript types for XMPP account management and Prosody REST API
+// Types are inferred from Zod schemas for single source of truth
+
+import type { z } from "zod";
+
+import type {
+  CreateXmppAccountRequestSchema,
+  UpdateXmppAccountRequestSchema,
+  UpdateXmppAccountStatusSchema,
+  XmppAccountSchema,
+  XmppAccountStatusSchema,
+} from "@/shared/schemas/integrations/xmpp";
 
 /**
  * XMPP account status
+ * Inferred from Zod schema
  */
-export type XmppAccountStatus = "active" | "suspended" | "deleted";
+export type XmppAccountStatus = z.infer<typeof XmppAccountStatusSchema>;
 
 /**
  * XMPP account information
+ * Inferred from Zod schema for type safety
  */
-export interface XmppAccount {
-  id: string;
-  userId: string;
-  integrationId: "xmpp"; // Integration identifier
-  jid: string; // Full JID: username@xmpp.atl.chat
-  username: string; // XMPP localpart (username)
-  status: XmppAccountStatus;
-  createdAt: Date;
-  updatedAt: Date;
-  metadata?: Record<string, unknown>;
-}
+export type XmppAccount = z.infer<typeof XmppAccountSchema>;
 
 /**
  * Create XMPP account request
+ * Inferred from Zod schema for type safety
  */
-export interface CreateXmppAccountRequest {
-  username?: string; // Optional, defaults to email localpart
-}
+export type CreateXmppAccountRequest = z.infer<
+  typeof CreateXmppAccountRequestSchema
+>;
 
 /**
  * Statuses allowed in an update request
+ * Inferred from Zod schema
  */
-export type UpdateXmppAccountStatus = "active" | "suspended";
+export type UpdateXmppAccountStatus = z.infer<
+  typeof UpdateXmppAccountStatusSchema
+>;
 
 /**
  * Update XMPP account request
+ * Inferred from Zod schema for type safety
  */
-export interface UpdateXmppAccountRequest {
-  username?: string; // Optional, must be unique
-  status?: UpdateXmppAccountStatus; // Optional: "active" | "suspended"
-  metadata?: Record<string, unknown>; // Optional JSONB
-}
+export type UpdateXmppAccountRequest = z.infer<
+  typeof UpdateXmppAccountRequestSchema
+>;
 
 /**
  * Prosody REST API error response
