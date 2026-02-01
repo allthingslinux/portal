@@ -6,6 +6,7 @@
 import { z } from "zod";
 
 import { selectXmppAccountSchema } from "@/db/schema/xmpp";
+import { metadataSchema } from "../utils";
 import { isValidXmppUsername } from "@/features/integrations/lib/xmpp/utils";
 
 // Status enums matching database
@@ -40,7 +41,7 @@ export const CreateXmppAccountRequestSchema = z.object({
 export const UpdateXmppAccountRequestSchema =
   CreateXmppAccountRequestSchema.partial().extend({
     status: UpdateXmppAccountStatusSchema.optional(),
-    metadata: z.record(z.string(), z.unknown()).optional(),
+    metadata: metadataSchema,
   });
 
 /**
@@ -53,8 +54,8 @@ export const XmppAccountSchema = selectXmppAccountSchema
   })
   .transform((data) => ({
     ...data,
-    // Transform metadata from unknown to proper type
-    metadata: data.metadata as Record<string, unknown> | undefined,
+    // Transform metadata from unknown to a validated type safely
+    metadata: metadataSchema.parse(data.metadata),
   }));
 
 // Type exports
