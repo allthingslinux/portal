@@ -76,7 +76,12 @@ export async function POST(
       throw new APIError("Integration is disabled", 403);
     }
 
-    const rawBody = await request.json();
+    let rawBody: unknown;
+    try {
+      rawBody = await request.json();
+    } catch {
+      throw new APIError("Invalid JSON body", 400);
+    }
     let body: unknown = rawBody;
 
     if (integration.createAccountSchema) {
