@@ -18,6 +18,7 @@ export interface IntegrationBaseOptions<
   enabled?: boolean;
   createAccountSchema?: z.ZodType<TCreateInput>;
   updateAccountSchema?: z.ZodType<TUpdateInput>;
+  accountSchema?: z.ZodType<unknown>; // Use unknown here as TAccount isn't in options
 }
 
 export abstract class IntegrationBase<
@@ -32,6 +33,7 @@ export abstract class IntegrationBase<
   readonly enabled: boolean;
   readonly createAccountSchema?: z.ZodType<TCreateInput>;
   readonly updateAccountSchema?: z.ZodType<TUpdateInput>;
+  readonly accountSchema?: z.ZodType<TAccount>;
 
   constructor(options: IntegrationBaseOptions<TCreateInput, TUpdateInput>) {
     this.id = options.id;
@@ -40,6 +42,10 @@ export abstract class IntegrationBase<
     this.enabled = options.enabled ?? true;
     this.createAccountSchema = options.createAccountSchema;
     this.updateAccountSchema = options.updateAccountSchema;
+    // Cast is safe because implementations must provide correct schema type
+    this.accountSchema = options.accountSchema as
+      | z.ZodType<TAccount>
+      | undefined;
   }
 
   /**

@@ -105,4 +105,9 @@ export interface Integration<
    * Zod schema for account update input.
    */
   updateAccountSchema?: z.ZodType<TUpdateInput>;
+
+  /**
+   * Zod schema for the account object (response validation).
+   */
+  accountSchema?: z.ZodType<TAccount>;
 }

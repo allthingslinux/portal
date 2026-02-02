@@ -7,6 +7,7 @@ import "server-only";
 
 import type { NextRequest } from "next/server";
 import { z } from "zod";
+import { fromError, isZodErrorLike } from "zod-validation-error";
 
 import { auth } from "@/auth";
 import { isAdmin, isAdminOrStaff } from "@/auth/check-role";
@@ -101,12 +102,18 @@ export function parseRouteId(value: string | string[] | undefined): string {
 /**
  * Custom API Error class
  */
+/**
+ * Custom API Error class
+ */
 export class APIError extends Error {
   constructor(
     message: string,
     // biome-ignore lint/style/noParameterProperties: Concise error class
     // biome-ignore lint/style/useConsistentMemberAccessibility: Concise error class
-    public status = 500
+    public status = 500,
+    // biome-ignore lint/style/noParameterProperties: Concise error class
+    // biome-ignore lint/style/useConsistentMemberAccessibility: Concise error class
+    public details?: unknown
   ) {
     super(message);
     this.name = "APIError";
@@ -120,8 +127,25 @@ export class APIError extends Error {
 export function handleAPIError(error: unknown): Response {
   if (error instanceof APIError) {
     return Response.json(
-      { ok: false, error: error.message },
+      {
+        ok: false,
+        error: error.message,
+        details: error.details,
+      },
       { status: error.status }
+    );
+  }
+
+  // Handle Zod validation errors automatically
+  if (isZodErrorLike(error)) {
+    const validationError = fromError(error);
+    return Response.json(
+      {
+        ok: false,
+        error: validationError.toString(),
+        details: error.issues, // Expose raw issues for debug/advanced client handling
+      },
+      { status: 400 }
     );
   }
 
