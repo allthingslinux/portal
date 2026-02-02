@@ -108,8 +108,12 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
     "react-day-picker": "^9.13.0",
+<<<<<<< HEAD
     "react-dom": "19.2.4",
     "react-error-boundary": "^6.1.0",
+=======
+    "react-dom": "19.2.3",
+>>>>>>> 20066f5 (refactor: delete custom error boundary component and update error content display.)
     "react-hook-form": "^7.71.1",
     "react-resizable-panels": "^4.4.1",
     "react-scan": "^0.4.3",

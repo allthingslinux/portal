@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { captureException } from "@sentry/nextjs";
+import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,8 @@ export default function Error({
   reset: () => void;
 }) {
   const t = useTranslations("error");
+
+  const { reset: resetQueries } = useQueryErrorResetBoundary();
 
   useEffect(() => {
     try {
@@ -67,7 +70,13 @@ export default function Error({
           </div>
         </CardContent>
         <CardFooter className="flex gap-2">
-          <Button onClick={reset} variant="default">
+          <Button
+            onClick={() => {
+              resetQueries();
+              reset();
+            }}
+            variant="default"
+          >
             {t("retry")}
           </Button>
           <Button asChild variant="outline">

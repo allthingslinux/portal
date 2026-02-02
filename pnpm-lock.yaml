@@ -192,11 +192,16 @@ importers:
         specifier: ^9.13.0
         version: 9.13.0(react@19.2.4)
       react-dom:
+<<<<<<< HEAD
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
       react-error-boundary:
         specifier: ^6.1.0
         version: 6.1.0(react@19.2.4)
+=======
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+>>>>>>> 20066f5 (refactor: delete custom error boundary component and update error content display.)
       react-hook-form:
         specifier: ^7.71.1
         version: 7.71.1(react@19.2.4)
@@ -6883,11 +6888,6 @@ packages:
     resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
     peerDependencies:
       react: ^19.2.4
-
-  react-error-boundary@6.1.0:
-    resolution: {integrity: sha512-02k9WQ/mUhdbXir0tC1NiMesGzRPaCsJEWU/4bcFrbY1YMZOtHShtZP6zw0SJrBWA/31H0KT9/FgdL8+sPKgHA==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0
 
   react-google-recaptcha@3.1.0:
     resolution: {integrity: sha512-cYW2/DWas8nEKZGD7SCu9BSuVz8iOcOLHChHyi7upUuVhkpkhYG/6N3KDiTQ3XAiZ2UAZkfvYKMfAHOzBOcGEg==}
@@ -14487,11 +14487,15 @@ snapshots:
       react: 19.2.4
       scheduler: 0.27.0
 
+<<<<<<< HEAD
   react-error-boundary@6.1.0(react@19.2.4):
     dependencies:
       react: 19.2.4
 
   react-google-recaptcha@3.1.0(react@19.2.4):
+=======
+  react-google-recaptcha@3.1.0(react@19.2.3):
+>>>>>>> 20066f5 (refactor: delete custom error boundary component and update error content display.)
     dependencies:
       prop-types: 15.8.1
       react: 19.2.4

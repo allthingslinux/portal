@@ -81,7 +81,9 @@ export function IntegrationManagement<TAccount extends { id: string }>({
   const createMutation = useCreateIntegrationAccount<TAccount>(integrationId);
   const deleteMutation = useDeleteIntegrationAccount(integrationId);
 
-  type FormValues = { [key: string]: string };
+  interface FormValues {
+    [key: string]: string;
+  }
 
   const {
     register,
