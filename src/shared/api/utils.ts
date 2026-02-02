@@ -102,9 +102,6 @@ export function parseRouteId(value: string | string[] | undefined): string {
 /**
  * Custom API Error class
  */
-/**
- * Custom API Error class
- */
 export class APIError extends Error {
   constructor(
     message: string,

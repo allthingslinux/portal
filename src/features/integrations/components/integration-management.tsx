@@ -44,16 +44,17 @@ interface IntegrationManagementProps<TAccount extends { id: string }> {
   createInputLabel?: string;
   createInputPlaceholder?: string;
   createInputHelp?: string;
-  createInputRequired?: boolean;
-  createInputToPayload?: (value: string) => Record<string, unknown>;
   onCreateSuccess?: (account: TAccount) => void;
 
   renderAccountDetails?: (account: TAccount) => ReactNode;
   /** Optional Zod schema for validation */
-  // biome-ignore lint/suspicious/noExplicitAny: Generic schema type required for react-hook-form compatibility
-  createSchema?: ZodType<any>;
+  createSchema?: ZodType<unknown>;
   /** Name of the field in the schema (defaults to 'identifier') */
   createInputName?: string;
+  /** @deprecated Use createSchema with required field instead */
+  createInputRequired?: boolean;
+  /** @deprecated Provide createSchema for validation; payload is derived from form data */
+  createInputToPayload?: (value: string) => Record<string, unknown>;
 }
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Single component with loading/error/empty/account states
@@ -80,18 +81,20 @@ export function IntegrationManagement<TAccount extends { id: string }>({
   const createMutation = useCreateIntegrationAccount<TAccount>(integrationId);
   const deleteMutation = useDeleteIntegrationAccount(integrationId);
 
+  type FormValues = { [key: string]: string };
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
     setError,
-  } = useForm({
+  } = useForm<FormValues>({
     // biome-ignore lint/suspicious/noExplicitAny: Resolver type mismatch workaround
     resolver: createSchema ? zodResolver(createSchema as any) : undefined,
     defaultValues: {
       [createInputName]: "",
-    },
+    } as FormValues,
   });
 
   const onSubmit = async (data: Record<string, string>) => {
@@ -195,13 +198,23 @@ export function IntegrationManagement<TAccount extends { id: string }>({
                   {createInputLabel}
                 </Label>
                 <Input
+                  aria-describedby={
+                    errors[createInputName]
+                      ? `${integrationId}-${createInputName}-error`
+                      : undefined
+                  }
+                  aria-invalid={!!errors[createInputName]}
                   disabled={createMutation.isPending}
                   id={`${integrationId}-${createInputName}`}
                   placeholder={createInputPlaceholder}
                   {...register(createInputName)}
                 />
                 {errors[createInputName]?.message && (
-                  <p className="font-medium text-destructive text-sm">
+                  <p
+                    className="font-medium text-destructive text-sm"
+                    id={`${integrationId}-${createInputName}-error`}
+                    role="alert"
+                  >
                     {String(errors[createInputName]?.message)}
                   </p>
                 )}

@@ -298,6 +298,19 @@ export const CreateIrcAccountRequestSchema = z.object({
 
 drizzle-zod generates `unknown` for JSONB fields. Use `.transform()` and `metadataSchema.parse()` to properly type and validate them:
 
+```typescript
+import { metadataSchema } from "@/shared/schemas/utils";
+
+export const IrcAccountSchema = selectIrcAccountSchema
+  .transform((data) => ({
+    ...data,
+    // Validate and type the JSONB metadata field
+    metadata: data.metadata 
+      ? metadataSchema.parse(data.metadata) 
+      : undefined,
+  }));
+```
+
 ### 7. Use Branded Types for Domain Primitives
 
 Use `brandedString` helper to create distinct types for strings that shouldn't be mixed (e.g., UserId vs. Nick):
@@ -335,6 +348,8 @@ const mutation = useCreateIntegrationAccount<Account, CreateAccountInput>(
 );
 
 // Type-safe at call site
+mutation.mutate({ username: "alice" });
+```
 ### 9. API Response Validation
 Every API endpoint must validate its response to ensure no internal data (like passwords or PII) leaks and to guarantee the API contract.
 
@@ -477,6 +492,9 @@ export const CreateIrcAccountRequestSchema = z.object({
     ),
 });
 ```
+
+> [!IMPORTANT]
+> Schemas with **async refinements** (like the `checkNickAvailability` check above) must be parsed using `.parseAsync()` or `.safeParseAsync()`. Standard synchronous `.parse()` will throw a runtime error when encountering a Promise.
 
 ### Example 3: Nested Objects
 

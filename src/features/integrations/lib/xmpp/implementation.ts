@@ -131,6 +131,13 @@ export class XmppIntegration extends IntegrationBase<
     if (!this.enabled) {
       throw new Error("XMPP integration is not configured");
     }
+
+    const parsed = CreateXmppAccountRequestSchema.safeParse(input);
+    if (!parsed.success) {
+      const msg = parsed.error.issues[0]?.message ?? "Invalid input";
+      throw new Error(msg);
+    }
+
     validateXmppConfig();
     const [existingAccount] = await db
       .select()
