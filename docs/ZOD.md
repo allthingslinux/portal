@@ -138,7 +138,9 @@ src/
 │   └── schemas/                # Custom validation (SECONDARY)
 │       ├── index.ts            # Central exports
 │       ├── utils.ts            # Reusable schema utilities
+│       ├── user.ts             # User/Admin validation schemas
 │       └── integrations/
+
 │           ├── irc.ts          # IRC API-specific validation
 │           ├── xmpp.ts         # XMPP API-specific validation
 │           └── index.ts
@@ -149,6 +151,27 @@ src/
             └── irc/
                 └── types.ts    # TypeScript types (z.infer)
 ```
+
+## Trust Boundaries & Philosophy
+
+We follow the "Total TypeScript" philosophy on when to use Zod based on trust levels:
+
+### 1. Untrusted Inputs (⚠️ MUST USE ZOD)
+Any data entering the system from outside must be treated as hostile and validated immediately.
+*   **API Requests**: Bodies, Headers, Query Parameters.
+*   **CLI Arguments**: `process.argv`
+*   **Webhooks**: Payloads from external services.
+
+### 2. "Sort-of" Trusted Inputs (✅ SHOULD USE ZOD)
+Data sources we generally trust but don't control, where drift or bugs could cause issues.
+*   **Response Validation**: We validate our own API responses to prevent accidental data leaks (security).
+*   **Third-party APIs**: Validate upstream responses to fail fast if their contract changes.
+
+### 3. Trusted & Controlled Inputs (🚫 SKIP ZOD)
+Data where we control both the producer and consumer, and they are deployed together.
+*   **Internal Function Calls**: Use TypeScript types.
+*   **Frontend Data Fetching**: If the frontend and backend are in the same repo/deployment and types are shared, client-side validation of API responses is optional (unless version drift is a major concern). Validating *user input* (forms) on the client is still recommended for UX.
+
 
 ## When to Use What
 
@@ -312,10 +335,80 @@ const mutation = useCreateIntegrationAccount<Account, CreateAccountInput>(
 );
 
 // Type-safe at call site
-mutation.mutate({ username: "valid" }); // OK
-mutation.mutate({ wrong: 1 }); // TS Error
+### 9. API Response Validation
+Every API endpoint must validate its response to ensure no internal data (like passwords or PII) leaks and to guarantee the API contract.
+
+```typescript
+// Define schema for the response
+export const UserResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string(),
+});
+// Infer type
+export type UserResponse = z.infer<typeof UserResponseSchema>;
+
+// Internal type (has more fields)
+type InternalUser = UserResponse & { passwordHash: string; internalFlag: boolean };
+
+export async function GET() {
+  const internalUser: InternalUser = await db.getUser();
+
+  // ❌ BAD: Leaks passwordHash and internalFlag
+  // return Response.json(internalUser);
+
+  // ✅ GOOD: Strips unknown keys, validating the output
+  const safeUser = UserResponseSchema.parse(internalUser);
+  return Response.json(safeUser);
+}
 ```
 
+### 10. Structured Error Handling
+We use a structured `APIError` that aligns with Zod's `flatten()` output to provide detailed validation feedback.
+
+```typescript
+if (!parsed.success) {
+  const error = parsed.error;
+  throw new APIError("Validation failed", 400, {
+    issues: error.issues,
+    flattened: error.flatten(),
+  });
+}
+```
+
+### 11. Human-Readable Validation Errors
+We use `zod-validation-error` to transform raw Zod issues into user-friendly strings that can be returned in API responses.
+
+```typescript
+// src/shared/api/utils.ts
+import { fromError } from "zod-validation-error";
+
+export function handleAPIError(error: unknown) {
+  if (isZodError(error)) {
+    const validationError = fromError(error);
+    return Response.json({
+      ok: false,
+      error: validationError.message, // "Validation error: Name is required at 'name'"
+      details: error.format()
+    }, { status: 400 });
+  }
+}
+```
+
+### 12. Client-Side Form Validation
+Standardize on `react-hook-form` with the `@hookform/resolvers/zod` for all dashboard forms.
+
+```tsx
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CreateUserSchema } from "@/shared/schemas/user";
+
+const { register, handleSubmit, formState: { errors } } = useForm({
+  resolver: zodResolver(CreateUserSchema),
+});
+```
+
+---
 
 ## Examples
 
@@ -487,4 +580,4 @@ const data = parsed.data;
 
 - [Zod Documentation](https://zod.dev/)
 - [drizzle-zod](https://orm.drizzle.team/docs/zod)
-- [Drizzle ORM](https://orm.drizzle.team/)
+- [Total TypeScript: When should you use Zod?](https://www.totaltypescript.com/when-should-you-use-zod)

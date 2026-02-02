@@ -54,8 +54,37 @@ Some endpoints may return data directly without the `ok` wrapper:
 ```json
 {
   "ok": false,
-  "error": "Error message"
+  "error": "Error message description",
+  "details": {
+    "issues": [
+      {
+        "code": "too_small",
+        "minimum": 3,
+        "type": "string",
+        "inclusive": true,
+        "exact": false,
+        "message": "String must contain at least 3 character(s)",
+        "path": ["name"]
+      }
+    ],
+    "flattened": {
+      "formErrors": [],
+      "fieldErrors": {
+        "name": ["String must contain at least 3 character(s)"]
+      }
+    }
+  }
 }
+```
+**Example with zod-validation-error:**
+```json
+{
+  "ok": false,
+  "error": "Validation error: Name must contain at least 3 character(s) at 'name'",
+  "details": { ... }
+}
+```
+**Note:** The `details` field is optional and typically populated for 400 Bad Request (Validation) errors.
 ```
 
 ### HTTP Status Codes
@@ -124,7 +153,8 @@ Update current authenticated user's profile.
 
 ```json
 {
-  "name": "string"
+  "name": "string",
+  "image": "string (url)"
 }
 ```
 
@@ -253,7 +283,9 @@ Update a user by ID.
 {
   "name": "string",
   "role": "user" | "staff" | "admin",
-  "banned": boolean
+  "banned": boolean,
+  "banReason": "string",
+  "banExpires": "ISO 8061 date"
 }
 ```
 
@@ -690,9 +722,9 @@ Common error messages:
 ### Error Response Format
 
 ```json
-{
   "ok": false,
-  "error": "Error message"
+  "error": "Error message",
+  "details": { ... } // Optional Zod validation issues
 }
 ```
 
