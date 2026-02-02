@@ -721,6 +721,7 @@ Common error messages:
 ### Error Response Format
 
 ```json
+{
   "ok": false,
   "error": "Error message",
   "details": { ... } // Optional Zod validation issues

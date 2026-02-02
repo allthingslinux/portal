@@ -49,6 +49,9 @@ export const AdminUpdateUserSchema = z.object({
     .datetime()
     .or(z.date())
     .transform((val) => (val ? new Date(val) : undefined))
+    .refine((date) => !(date && Number.isNaN(date.getTime())), {
+      message: "Invalid date",
+    })
     .optional(),
 });
 
