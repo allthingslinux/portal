@@ -9,6 +9,7 @@ import {
   type WideEvent,
   withWideEvent,
 } from "@/shared/observability";
+import { UpdateUserSelfSchema } from "@/shared/schemas/user";
 
 // With cacheComponents, route handlers are dynamic by default.
 
@@ -78,7 +79,7 @@ export const PATCH = withWideEvent(
   async (request: NextRequest, event: WideEvent) => {
     try {
       const { userId, session } = await requireAuth(request);
-      const body = await request.json();
+      const body = UpdateUserSelfSchema.parse(await request.json());
 
       // Enrich event with user context
       enrichWideEventWithUser(event, {
@@ -93,7 +94,7 @@ export const PATCH = withWideEvent(
       const [updated] = await db
         .update(user)
         .set({
-          ...(body.name !== undefined && { name: body.name }),
+          ...body,
           updatedAt: new Date(),
         })
         .where(eq(user.id, userId))
