@@ -1,6 +1,6 @@
 import "server-only";
-
 import { randomUUID } from "node:crypto";
+import type { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import { and, eq, ne } from "drizzle-orm";
 
@@ -16,6 +16,7 @@ import { getIntegrationRegistry } from "@/features/integrations/lib/core/registr
 import type { IntegrationCreateInput } from "@/features/integrations/lib/core/types";
 import {
   CreateIrcAccountRequestSchema,
+  IrcAccountSchema,
   UpdateIrcAccountRequestSchema,
 } from "@/shared/schemas/integrations/irc";
 
@@ -37,6 +38,10 @@ export class IrcIntegration extends IntegrationBase<
       enabled: isIrcConfigured(),
       createAccountSchema: CreateIrcAccountRequestSchema,
       updateAccountSchema: UpdateIrcAccountRequestSchema,
+      // Cast is safe as IrcAccountSchema matches IrcAccount
+      accountSchema: IrcAccountSchema as unknown as z.ZodType<
+        IrcAccount & { temporaryPassword?: string }
+      >,
     });
   }
 

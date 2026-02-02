@@ -21,6 +21,8 @@ import { integrationStatusLabels } from "@/features/integrations/lib/core/consta
 import type { IrcAccount } from "@/features/integrations/lib/irc/types";
 import { IRC_NICK_MAX_LENGTH } from "@/features/integrations/lib/irc/utils";
 import type { XmppAccount } from "@/features/integrations/lib/xmpp/types";
+import { CreateIrcAccountRequestSchema } from "@/shared/schemas/integrations/irc";
+import { CreateXmppAccountRequestSchema } from "@/shared/schemas/integrations/xmpp";
 
 // ============================================================================
 // Integrations Content Component
@@ -149,12 +151,10 @@ export function IntegrationsContent() {
             <IntegrationManagement<IrcAccount & { temporaryPassword?: string }>
               createInputHelp={`Letters, digits, or [ ] \\ ^ _ \` { | } ~ - (max ${IRC_NICK_MAX_LENGTH} characters).`}
               createInputLabel="Nick (required)"
+              createInputName="nick"
               createInputPlaceholder="Enter your IRC nick"
-              createInputRequired
-              createInputToPayload={(value) =>
-                value.trim() ? { nick: value.trim() } : {}
-              }
               createLabel="Create IRC Account"
+              createSchema={CreateIrcAccountRequestSchema}
               description={integration.description}
               integrationId={integration.id}
               key={integration.id}
@@ -203,6 +203,9 @@ export function IntegrationsContent() {
                                 if (navigator.clipboard?.writeText) {
                                   await navigator.clipboard.writeText(text);
                                 } else {
+                                  /**
+                                   * Fallback for older browsers
+                                   */
                                   const ta = document.createElement("textarea");
                                   ta.value = text;
                                   document.body.appendChild(ta);
@@ -276,11 +279,10 @@ export function IntegrationsContent() {
             <IntegrationManagement<XmppAccount>
               createInputHelp="If left empty, your username will be generated from your email address. Username must be alphanumeric with underscores, hyphens, or dots."
               createInputLabel="Username (optional)"
+              createInputName="username"
               createInputPlaceholder="Leave empty to use your email username"
-              createInputToPayload={(value) =>
-                value.trim() ? { username: value.trim() } : {}
-              }
               createLabel="Create XMPP Account"
+              createSchema={CreateXmppAccountRequestSchema}
               description={integration.description}
               integrationId={integration.id}
               key={integration.id}
