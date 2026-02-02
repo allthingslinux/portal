@@ -150,8 +150,8 @@ importers:
         specifier: ^0.3.1
         version: 0.3.1(drizzle-orm@1.0.0-beta.8-734e789(@opentelemetry/api@1.9.0)(@types/mssql@9.1.9)(@types/pg@8.16.0)(mssql@11.0.1)(pg@8.17.2(pg-native@3.5.2)))
       drizzle-zod:
-        specifier: ^0.8.3
-        version: 0.8.3(drizzle-orm@1.0.0-beta.8-734e789(@opentelemetry/api@1.9.0)(@types/mssql@9.1.9)(@types/pg@8.16.0)(mssql@11.0.1)(pg@8.17.2(pg-native@3.5.2)))(zod@4.3.6)
+        specifier: 1.0.0-beta.8-734e789
+        version: 1.0.0-beta.8-734e789(drizzle-orm@1.0.0-beta.8-734e789(@opentelemetry/api@1.9.0)(@types/mssql@9.1.9)(@types/pg@8.16.0)(mssql@11.0.1)(pg@8.17.2(pg-native@3.5.2)))(zod@4.3.6)
       embla-carousel-react:
         specifier: ^8.6.0
         version: 8.6.0(react@19.2.3)
@@ -4793,10 +4793,10 @@ packages:
       drizzle-orm:
         optional: true
 
-  drizzle-zod@0.8.3:
-    resolution: {integrity: sha512-66yVOuvGhKJnTdiqj1/Xaaz9/qzOdRJADpDa68enqS6g3t0kpNkwNYjUuaeXgZfO/UWuIM9HIhSlJ6C5ZraMww==}
+  drizzle-zod@1.0.0-beta.8-734e789:
+    resolution: {integrity: sha512-Bm9JSei+plN8WUMunyqxDN25O8wnAUP7URPKt+F+Nvc+kqBKcU3phjBSVOKd7ICVY+tpXALd5gM7KCi1/su4jg==}
     peerDependencies:
-      drizzle-orm: '>=0.36.0'
+      drizzle-orm: '>=1.0.0-beta.2'
       zod: ^3.25.0 || ^4.0.0
 
   dunder-proto@1.0.1:
@@ -12307,7 +12307,7 @@ snapshots:
     optionalDependencies:
       drizzle-orm: 1.0.0-beta.8-734e789(@opentelemetry/api@1.9.0)(@types/mssql@9.1.9)(@types/pg@8.16.0)(mssql@11.0.1)(pg@8.17.2(pg-native@3.5.2))
 
-  drizzle-zod@0.8.3(drizzle-orm@1.0.0-beta.8-734e789(@opentelemetry/api@1.9.0)(@types/mssql@9.1.9)(@types/pg@8.16.0)(mssql@11.0.1)(pg@8.17.2(pg-native@3.5.2)))(zod@4.3.6):
+  drizzle-zod@1.0.0-beta.8-734e789(drizzle-orm@1.0.0-beta.8-734e789(@opentelemetry/api@1.9.0)(@types/mssql@9.1.9)(@types/pg@8.16.0)(mssql@11.0.1)(pg@8.17.2(pg-native@3.5.2)))(zod@4.3.6):
     dependencies:
       drizzle-orm: 1.0.0-beta.8-734e789(@opentelemetry/api@1.9.0)(@types/mssql@9.1.9)(@types/pg@8.16.0)(mssql@11.0.1)(pg@8.17.2(pg-native@3.5.2))
       zod: 4.3.6
