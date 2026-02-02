@@ -1,9 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
 import { AlertCircle, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import type { ZodType } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
 
 import {
@@ -45,7 +47,13 @@ interface IntegrationManagementProps<TAccount extends { id: string }> {
   createInputRequired?: boolean;
   createInputToPayload?: (value: string) => Record<string, unknown>;
   onCreateSuccess?: (account: TAccount) => void;
+
   renderAccountDetails?: (account: TAccount) => ReactNode;
+  /** Optional Zod schema for validation */
+  // biome-ignore lint/suspicious/noExplicitAny: Generic schema type required for react-hook-form compatibility
+  createSchema?: ZodType<any>;
+  /** Name of the field in the schema (defaults to 'identifier') */
+  createInputName?: string;
 }
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Single component with loading/error/empty/account states
@@ -57,10 +65,12 @@ export function IntegrationManagement<TAccount extends { id: string }>({
   createInputLabel,
   createInputPlaceholder,
   createInputHelp,
-  createInputRequired,
+  // createInputRequired, // Deprecated in favor of Zod schema
   createInputToPayload,
   onCreateSuccess,
   renderAccountDetails,
+  createSchema,
+  createInputName = "identifier",
 }: IntegrationManagementProps<TAccount>) {
   const {
     data: account,
@@ -69,20 +79,44 @@ export function IntegrationManagement<TAccount extends { id: string }>({
   } = useIntegrationAccount<TAccount>(integrationId);
   const createMutation = useCreateIntegrationAccount<TAccount>(integrationId);
   const deleteMutation = useDeleteIntegrationAccount(integrationId);
-  const [inputValue, setInputValue] = useState("");
 
-  const handleCreate = async () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    // biome-ignore lint/suspicious/noExplicitAny: Resolver type mismatch workaround
+    resolver: createSchema ? zodResolver(createSchema as any) : undefined,
+    defaultValues: {
+      [createInputName]: "",
+    },
+  });
+
+  const onSubmit = async (data: Record<string, string>) => {
     try {
-      const trimmed = inputValue.trim();
-      const payload =
-        createInputToPayload?.(trimmed) ??
-        (trimmed ? { identifier: trimmed } : {});
+      const rawValue = data[createInputName] || "";
+      const trimmed = rawValue.trim();
+
+      // If a payload converter is provided, use it (backward compatibility)
+      // Otherwise, use the form data directly if trimmed value exists
+      let payload: Record<string, unknown> = {};
+
+      if (createInputToPayload) {
+        payload = createInputToPayload(trimmed);
+      } else if (trimmed) {
+        payload = { [createInputName]: trimmed };
+      }
+
+      // If we have a schema but createInputToPayload returned empty object (e.g. empty string),
+      // we might want to respect the schema's empty/optional handling.
+      // However, createInputToPayload logic in current usages returns {} on empty.
 
       const createdAccount = await createMutation.mutateAsync(payload);
       toast.success(`${title} account created`, {
         description: `Your ${title} account has been created successfully.`,
       });
-      setInputValue("");
+      reset();
       onCreateSuccess?.(createdAccount);
     } catch (error) {
       Sentry.captureException(error);
@@ -146,46 +180,50 @@ export function IntegrationManagement<TAccount extends { id: string }>({
           <div className="font-semibold text-lg">{title}</div>
           <p className="text-muted-foreground text-sm">{description}</p>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {createInputLabel ? (
-            <div className="space-y-2">
-              <Label htmlFor={`${integrationId}-identifier`}>
-                {createInputLabel}
-              </Label>
-              <Input
-                disabled={createMutation.isPending}
-                id={`${integrationId}-identifier`}
-                onChange={(event) => setInputValue(event.target.value)}
-                placeholder={createInputPlaceholder}
-                value={inputValue}
-              />
-              {createInputHelp ? (
-                <p className="text-muted-foreground text-sm">
-                  {createInputHelp}
-                </p>
-              ) : null}
-            </div>
-          ) : null}
-        </CardContent>
-        <CardFooter>
-          <Button
-            className="w-full"
-            disabled={
-              createMutation.isPending ||
-              (createInputRequired && !inputValue.trim())
-            }
-            onClick={handleCreate}
-          >
-            {createMutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating...
-              </>
-            ) : (
-              createLabel
-            )}
-          </Button>
-        </CardFooter>
+        {/* Wrap content in form for Enter key submission */}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <CardContent className="space-y-4">
+            {createInputLabel ? (
+              <div className="space-y-2">
+                <Label htmlFor={`${integrationId}-${createInputName}`}>
+                  {createInputLabel}
+                </Label>
+                <Input
+                  disabled={createMutation.isPending}
+                  id={`${integrationId}-${createInputName}`}
+                  placeholder={createInputPlaceholder}
+                  {...register(createInputName)}
+                />
+                {errors[createInputName]?.message && (
+                  <p className="font-medium text-destructive text-sm">
+                    {String(errors[createInputName]?.message)}
+                  </p>
+                )}
+                {createInputHelp ? (
+                  <p className="text-muted-foreground text-sm">
+                    {createInputHelp}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+          </CardContent>
+          <CardFooter>
+            <Button
+              className="w-full"
+              disabled={createMutation.isPending}
+              type="submit"
+            >
+              {createMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                createLabel
+              )}
+            </Button>
+          </CardFooter>
+        </form>
       </Card>
     );
   }

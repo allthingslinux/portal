@@ -43,7 +43,13 @@ export async function GET(
       );
     }
 
-    return Response.json({ ok: true, account });
+    let data = account;
+    if (integration.accountSchema) {
+      // Validate outgoing data against schema (ensure no leaks)
+      data = integration.accountSchema.parse(account);
+    }
+
+    return Response.json({ ok: true, account: data });
   } catch (error) {
     return handleAPIError(error);
   }
@@ -89,8 +95,10 @@ export async function POST(
       if (!parsed.success) {
         const error = parsed.error;
         const errorMessage = error.issues[0]?.message ?? "Validation failed";
-        // TODO: Return detailed field errors structure when frontend supports it
-        throw new APIError(errorMessage, 400);
+        throw new APIError(errorMessage, 400, {
+          issues: error.issues,
+          flattened: error.flatten(),
+        });
       }
       body = parsed.data;
     } else {
@@ -106,7 +114,13 @@ export async function POST(
     // Cast body to expected input type (validated by schema or fallback)
     const account = await integration.createAccount(userId, body as object);
 
-    return Response.json({ ok: true, account }, { status: 201 });
+    let data = account;
+    if (integration.accountSchema) {
+      // Validate outgoing data against schema (ensure no leaks)
+      data = integration.accountSchema.parse(account);
+    }
+
+    return Response.json({ ok: true, account: data }, { status: 201 });
   } catch (error) {
     return handleAPIError(error);
   }

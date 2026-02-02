@@ -1,6 +1,6 @@
 import "server-only";
-
 import { randomUUID } from "node:crypto";
+import type { z } from "zod";
 import { and, eq, ne } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -28,6 +28,7 @@ import { getIntegrationRegistry } from "@/features/integrations/lib/core/registr
 import {
   CreateXmppAccountRequestSchema,
   UpdateXmppAccountRequestSchema,
+  XmppAccountSchema,
 } from "@/shared/schemas/integrations/xmpp";
 
 // Schemas are now imported from @/shared/schemas/integrations/xmpp
@@ -48,6 +49,8 @@ export class XmppIntegration extends IntegrationBase<
       enabled: isXmppConfigured(),
       createAccountSchema: CreateXmppAccountRequestSchema,
       updateAccountSchema: UpdateXmppAccountRequestSchema,
+      // Cast is safe as XmppAccountSchema matches XmppAccount
+      accountSchema: XmppAccountSchema as unknown as z.ZodType<XmppAccount>,
     });
   }
 
