@@ -27,6 +27,8 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment:
+      name: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.environment) || 'staging' }}
     permissions:
       contents: read
       packages: write
@@ -75,6 +77,8 @@ jobs:
             type=gha,mode=max
           build-args: |
             NODE_ENV=production
+            BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
+            BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
             GIT_COMMIT_SHA=${{ github.sha }}
 
   deploy:

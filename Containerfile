@@ -38,9 +38,18 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Set build-time environment variables
-# These should be provided at build time via --build-arg or .env
 ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
+
+ARG BETTER_AUTH_SECRET
+ENV BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET
+
+ARG BETTER_AUTH_URL
+ENV BETTER_AUTH_URL=$BETTER_AUTH_URL
+
+ARG GIT_COMMIT_SHA
+ENV GIT_COMMIT_SHA=$GIT_COMMIT_SHA
+
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build the application
