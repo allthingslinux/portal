@@ -171,12 +171,26 @@ interface Integration<
   updateAccount: (accountId: string, input: TUpdateInput) => Promise<TAccount>;
   deleteAccount: (accountId: string) => Promise<void>;
 
+  // Schema methods (for API validation)
+  getCreateSchema?: () => z.ZodType<TCreateInput>;
+  getUpdateSchema?: () => z.ZodType<TUpdateInput>;
+
   // Optional methods
   getAccountById?: (accountId: string) => Promise<TAccount | null>;
   validateIdentifier?: (identifier: string) => boolean;
   generateIdentifier?: (email: string) => string;
   customOperations?: Record<string, IntegrationCustomOperation>;
 }
+```
+
+### Type Definition Pattern
+Always infer types from Zod schemas to ensure a single source of truth:
+
+```typescript
+import { z } from "zod";
+import { CreateIrcAccountRequestSchema } from "@/shared/schemas/integrations/irc";
+
+export type CreateIrcAccountRequest = z.infer<typeof CreateIrcAccountRequestSchema>;
 ```
 
 ## API Routes
