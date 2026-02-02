@@ -4,6 +4,7 @@ import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
 import { handleAPIError, requireAdminOrStaff } from "@/shared/api/utils";
+import { UserSearchSchema } from "@/shared/schemas/user";
 
 // With cacheComponents, route handlers are dynamic by default.
 
@@ -12,19 +13,17 @@ export async function GET(request: NextRequest) {
     await requireAdminOrStaff(request);
 
     const { searchParams } = new URL(request.url);
-    const role = searchParams.get("role");
-    const banned = searchParams.get("banned");
-    const search = searchParams.get("search");
-    const limit = Number.parseInt(searchParams.get("limit") || "50", 10);
-    const offset = Number.parseInt(searchParams.get("offset") || "0", 10);
+    const { role, banned, search, limit, offset } = UserSearchSchema.parse(
+      Object.fromEntries(searchParams)
+    );
 
     // Build where conditions
     const conditions: ReturnType<typeof eq | typeof or>[] = [];
     if (role) {
       conditions.push(eq(user.role, role));
     }
-    if (banned !== null) {
-      conditions.push(eq(user.banned, banned === "true"));
+    if (banned !== undefined) {
+      conditions.push(eq(user.banned, banned));
     }
     if (search) {
       const searchCondition = or(

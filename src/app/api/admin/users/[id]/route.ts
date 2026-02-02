@@ -11,6 +11,7 @@ import {
   parseRouteId,
   requireAdminOrStaff,
 } from "@/shared/api/utils";
+import { AdminUpdateUserSchema } from "@/shared/schemas/user";
 
 // With cacheComponents, route handlers are dynamic by default.
 
@@ -59,17 +60,12 @@ export async function PATCH(
     await requireAdminOrStaff(request);
     const params = await ctx.params;
     const id = parseRouteId(params.id);
-    const body = await request.json();
+    const body = AdminUpdateUserSchema.parse(await request.json());
 
     const [updated] = await db
       .update(user)
       .set({
-        ...(body.name && { name: body.name }),
-        ...(body.email && { email: body.email }),
-        ...(body.role && { role: body.role }),
-        ...(body.banned !== undefined && { banned: body.banned }),
-        ...(body.banReason && { banReason: body.banReason }),
-        ...(body.banExpires && { banExpires: new Date(body.banExpires) }),
+        ...body,
         updatedAt: new Date(),
       })
       .where(eq(user.id, id))
