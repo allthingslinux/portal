@@ -85,7 +85,6 @@ Some endpoints may return data directly without the `ok` wrapper:
 }
 ```
 **Note:** The `details` field is optional and typically populated for 400 Bad Request (Validation) errors.
-```
 
 ### HTTP Status Codes
 
@@ -285,7 +284,7 @@ Update a user by ID.
   "role": "user" | "staff" | "admin",
   "banned": boolean,
   "banReason": "string",
-  "banExpires": "ISO 8061 date"
+  "banExpires": "ISO 8601 date"
 }
 ```
 

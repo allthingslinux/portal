@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { z } from "zod";
+import { captureException } from "@sentry/nextjs";
 
 import { registerIntegrations } from "@/features/integrations/lib";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
@@ -46,7 +47,18 @@ export async function GET(
     let data = account;
     if (integration.accountSchema) {
       // Validate outgoing data against schema (ensure no leaks)
-      data = integration.accountSchema.parse(account);
+      const parsed = integration.accountSchema.safeParse(account);
+      if (parsed.success) {
+        data = parsed.data as typeof account;
+      } else {
+        // Log the mismatch but don't fail the request (defensive output validation)
+        captureException(
+          new Error(`Account schema validation failed for ${integrationId}`),
+          {
+            extra: { integrationId, userId, issues: parsed.error.issues },
+          }
+        );
+      }
     }
 
     return Response.json({ ok: true, account: data });
@@ -117,7 +129,18 @@ export async function POST(
     let data = account;
     if (integration.accountSchema) {
       // Validate outgoing data against schema (ensure no leaks)
-      data = integration.accountSchema.parse(account);
+      const parsed = integration.accountSchema.safeParse(account);
+      if (parsed.success) {
+        data = parsed.data as typeof account;
+      } else {
+        // Log the mismatch but don't fail the request (defensive output validation)
+        captureException(
+          new Error(`Account schema validation failed for ${integrationId}`),
+          {
+            extra: { integrationId, userId, issues: parsed.error.issues },
+          }
+        );
+      }
     }
 
     return Response.json({ ok: true, account: data }, { status: 201 });

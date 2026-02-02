@@ -105,10 +105,11 @@ export function IntegrationsContent() {
                               ta.value = ircPasswordDialog.temporaryPassword;
                               document.body.appendChild(ta);
                               ta.select();
-                              if (!document.execCommand("copy")) {
+                              const success = document.execCommand("copy");
+                              document.body.removeChild(ta);
+                              if (!success) {
                                 throw new Error("execCommand copy failed");
                               }
-                              document.body.removeChild(ta);
                             }
                             toast.success("Copied", {
                               description: "Password copied to clipboard",

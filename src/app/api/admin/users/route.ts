@@ -45,18 +45,18 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .offset(offset);
 
-    const total = await db
-      .select({ count: user.id })
+    const [{ count }] = await db
+      .select({ count: db.$count(user, whereClause) })
       .from(user)
-      .where(whereClause);
+      .limit(1);
 
     return Response.json({
       users,
       pagination: {
-        total: total.length,
+        total: count,
         limit,
         offset,
-        hasMore: offset + limit < total.length,
+        hasMore: offset + limit < count,
       },
     });
   } catch (error) {

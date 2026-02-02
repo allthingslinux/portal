@@ -171,9 +171,10 @@ interface Integration<
   updateAccount: (accountId: string, input: TUpdateInput) => Promise<TAccount>;
   deleteAccount: (accountId: string) => Promise<void>;
 
-  // Schema methods (for API validation)
-  getCreateSchema?: () => z.ZodType<TCreateInput>;
-  getUpdateSchema?: () => z.ZodType<TUpdateInput>;
+  // Schema properties (for API validation)
+  createAccountSchema?: z.ZodType<TCreateInput>;
+  updateAccountSchema?: z.ZodType<TUpdateInput>;
+  accountSchema?: z.ZodType<TAccount>;
 
   // Optional methods
   getAccountById?: (accountId: string) => Promise<TAccount | null>;

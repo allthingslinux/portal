@@ -46,6 +46,8 @@ export const AdminUpdateUserSchema = z.object({
   banReason: z.string().trim().max(500).optional(),
   banExpires: z
     .string()
+    .datetime()
+    .or(z.date())
     .transform((val) => (val ? new Date(val) : undefined))
     .optional(),
 });
