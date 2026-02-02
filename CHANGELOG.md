@@ -1,3 +1,30 @@
+# [1.4.0](https://github.com/allthingslinux/portal/compare/v1.3.0...v1.4.0) (2026-02-02)
+
+
+### Bug Fixes
+
+* add validation to update schema fields per PR feedback ([3b7e318](https://github.com/allthingslinux/portal/commit/3b7e318bfeb2259543fc01d4534d62d58c0b5b22)), closes [#37](https://github.com/allthingslinux/portal/issues/37)
+* address Cubic AI code review findings ([45e3071](https://github.com/allthingslinux/portal/commit/45e30718c8566e973107607ae43ef13286db3a03))
+* **deps:** align drizzle-zod version with drizzle-orm beta ([edf7a1e](https://github.com/allthingslinux/portal/commit/edf7a1e045455d5239e6aefe89e7a75cd749c4db))
+* handle invalid JSON request body with a 400 API error. ([9e10870](https://github.com/allthingslinux/portal/commit/9e10870bb8356972d95363d016723f4ece85ca69))
+* implement safe metadata parsing and refine linter config ([0e8888b](https://github.com/allthingslinux/portal/commit/0e8888b266738f8e68d0353ed9c2dba53971f4f6))
+* **integrations:** add UI validation guard to prevent empty payload ([7a17f85](https://github.com/allthingslinux/portal/commit/7a17f85de05b75abd03a3f0dd5c8d5a673d3411d))
+
+
+### Features
+
+* **base.ts:** add support for schema validation using zod ([80a3e4a](https://github.com/allthingslinux/portal/commit/80a3e4a8f31963a617af407b7c94f2d8a63d9a15))
+* **core:** integrate zod-validation-error and enhance integration base types ([1ab3376](https://github.com/allthingslinux/portal/commit/1ab3376f2c6d86a69e930658deb31cc4c4a3820e))
+* **hooks:** add generic input type parameters for integration account hooks ([2bc910a](https://github.com/allthingslinux/portal/commit/2bc910a15552df7681ca16f6615254f713c6a681))
+* Implement type-safe integration account creation and update using Zod schemas and branded types. ([4c176a1](https://github.com/allthingslinux/portal/commit/4c176a1c0a84deaf28d11a94ef6736e896d762bb))
+* **integrations:** implement type-safe forms and schema-backed routing ([b3fe80d](https://github.com/allthingslinux/portal/commit/b3fe80d0b5fd6f2095b33e01593a999d45570dcf))
+* Introduce new `react-hook-form-zod` and `zod` skills with various form templates and update integration schemas and documentation." ([c2eb2b9](https://github.com/allthingslinux/portal/commit/c2eb2b90fb060b207dadd15cdea0e79ae15ee7a9))
+* **irc:** add account schema validation for IRC integration ([f982174](https://github.com/allthingslinux/portal/commit/f9821747ea34a54e67fac795494fbfc9f9517c95))
+* **schemas:** centralize user and admin validation schemas ([b2f9e69](https://github.com/allthingslinux/portal/commit/b2f9e6943d3233e81f25d4492a3d5d42f30b7356))
+* **types.ts:** add Zod schema types for account creation and update ([58b0326](https://github.com/allthingslinux/portal/commit/58b032699a6289f68b00f83116430ae7d2665ea0))
+* **utils.ts:** add brandedString helper function for creating branded string schemas ([50450da](https://github.com/allthingslinux/portal/commit/50450dae3a7fa4552d50e347361b13fd9b5324bd))
+* **xmpp:** add CreateXmppAccountRequestSchema to XmppIntegration ([c399216](https://github.com/allthingslinux/portal/commit/c399216431b86f0b2fe6da92192c03b69c89ed24))
+
 # [1.3.0](https://github.com/allthingslinux/portal/compare/v1.2.0...v1.3.0) (2026-02-01)
 
 
