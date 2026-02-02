@@ -85,6 +85,7 @@ export function IntegrationManagement<TAccount extends { id: string }>({
     handleSubmit,
     formState: { errors },
     reset,
+    setError,
   } = useForm({
     // biome-ignore lint/suspicious/noExplicitAny: Resolver type mismatch workaround
     resolver: createSchema ? zodResolver(createSchema as any) : undefined,
@@ -98,6 +99,15 @@ export function IntegrationManagement<TAccount extends { id: string }>({
       const rawValue = data[createInputName] || "";
       const trimmed = rawValue.trim();
 
+      // Prevent submitting empty payload if no schema or custom converter is available
+      if (!(createSchema || createInputToPayload) && trimmed === "") {
+        setError(createInputName, {
+          type: "manual",
+          message: `${createInputLabel || "Input"} is required`,
+        });
+        return;
+      }
+
       // If a payload converter is provided, use it (backward compatibility)
       // Otherwise, use the form data directly if trimmed value exists
       let payload: Record<string, unknown> = {};
@@ -107,10 +117,6 @@ export function IntegrationManagement<TAccount extends { id: string }>({
       } else if (trimmed) {
         payload = { [createInputName]: trimmed };
       }
-
-      // If we have a schema but createInputToPayload returned empty object (e.g. empty string),
-      // we might want to respect the schema's empty/optional handling.
-      // However, createInputToPayload logic in current usages returns {} on empty.
 
       const createdAccount = await createMutation.mutateAsync(payload);
       toast.success(`${title} account created`, {
