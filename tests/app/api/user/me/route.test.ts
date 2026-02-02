@@ -140,6 +140,15 @@ vi.mock("@/db/schema", () => ({
   schema: {},
 }));
 
+vi.mock("@/shared/schemas/user", () => ({
+  UpdateUserSelfSchema: {
+    parse: vi.fn((data) => data),
+  },
+  UserDtoSchema: {
+    pick: vi.fn().mockReturnThis(),
+  },
+}));
+
 const mockSelect = vi.fn();
 const mockFrom = vi.fn();
 const mockWhere = vi.fn();
