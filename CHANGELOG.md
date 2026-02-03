@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/allthingslinux/portal/compare/v1.4.0...v1.4.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency drizzle-zod to v1.0.0-beta.9-e89174b ([#40](https://github.com/allthingslinux/portal/issues/40)) ([7a967eb](https://github.com/allthingslinux/portal/commit/7a967eb2356d180ae9e5779265528b19bf81f3db))
+
 # [1.4.0](https://github.com/allthingslinux/portal/compare/v1.3.0...v1.4.0) (2026-02-02)
 
 
