@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/allthingslinux/portal/compare/v1.4.1...v1.4.2) (2026-02-08)
+
+
+### Bug Fixes
+
+* **deps:** update critical ([#42](https://github.com/allthingslinux/portal/issues/42)) ([176b4bd](https://github.com/allthingslinux/portal/commit/176b4bd4eb1d7deb8a775a915581738d8b8d10b4))
+
 ## [1.4.1](https://github.com/allthingslinux/portal/compare/v1.4.0...v1.4.1) (2026-02-03)
 
 
