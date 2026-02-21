@@ -93,8 +93,10 @@ export async function DELETE(
     const params = await ctx.params;
     const id = parseRouteId(params.id);
 
-    await cleanupIntegrationAccounts(id);
-    await db.delete(user).where(eq(user.id, id));
+    await Promise.all([
+      cleanupIntegrationAccounts(id),
+      db.delete(user).where(eq(user.id, id)),
+    ]);
 
     return Response.json({ success: true });
   } catch (error) {

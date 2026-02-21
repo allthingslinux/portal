@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { captureException } from "@sentry/nextjs";
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -80,7 +81,7 @@ export default function Error({
             {t("retry")}
           </Button>
           <Button asChild variant="outline">
-            <a href="/">{t("goHome")}</a>
+            <Link href="/">{t("goHome")}</Link>
           </Button>
         </CardFooter>
       </Card>

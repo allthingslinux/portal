@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -64,7 +65,7 @@ export default function AppError({
             {t("retry")}
           </Button>
           <Button asChild variant="outline">
-            <a href="/app">{t("backToDashboard")}</a>
+            <Link href="/app">{t("backToDashboard")}</Link>
           </Button>
         </CardFooter>
       </Card>
