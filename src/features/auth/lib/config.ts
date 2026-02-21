@@ -202,13 +202,12 @@ const socialProviders = {
   //   // For OAuth Proxy: redirectURI must be your production app's callback URL
   //   // redirectURI: "https://my-main-app.com/api/auth/callback/github",
   // },
-  // Example: Discord OAuth
-  // discord: {
-  //   clientId: process.env.DISCORD_CLIENT_ID || "",
-  //   clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
-  //   // For OAuth Proxy: redirectURI must be your production app's callback URL
-  //   // redirectURI: "https://my-main-app.com/api/auth/callback/discord",
-  // },
+  discord: {
+    clientId: process.env.DISCORD_CLIENT_ID as string,
+    clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+    // For OAuth Proxy: redirectURI must be your production app's callback URL
+    // redirectURI: "https://my-main-app.com/api/auth/callback/discord",
+  },
 };
 
 // ============================================================================
