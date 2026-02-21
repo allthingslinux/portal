@@ -1,3 +1,11 @@
+# [1.5.0](https://github.com/allthingslinux/portal/compare/v1.4.2...v1.5.0) (2026-02-21)
+
+
+### Features
+
+* **auth:** enable Discord OAuth and add bridge identity endpoint ([a93aa39](https://github.com/allthingslinux/portal/commit/a93aa3979d7cd99f1d568ef610f3188360205c88))
+* Pass `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, and `GIT_COMMIT_SHA` as build arguments to the Docker image and configure the workflow environment. ([9927b2b](https://github.com/allthingslinux/portal/commit/9927b2b63a179ef9b121ca2239ded8f26c4e0a30))
+
 ## [1.4.2](https://github.com/allthingslinux/portal/compare/v1.4.1...v1.4.2) (2026-02-08)
 
 
