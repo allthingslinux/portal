@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/allthingslinux/portal/compare/v1.5.0...v1.5.1) (2026-02-21)
+
+
+### Bug Fixes
+
+* **bridge/identity:** snake_case response fields, add discord_id to IRC/XMPP lookups ([490b273](https://github.com/allthingslinux/portal/commit/490b2738c7f02b7d4c657503ef5c14de0065e693))
+
 # [1.5.0](https://github.com/allthingslinux/portal/compare/v1.4.2...v1.5.0) (2026-02-21)
 
 
