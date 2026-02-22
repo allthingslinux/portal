@@ -1,6 +1,6 @@
 import {
-  BookOpen,
-  Bot,
+  DollarSign,
+  Globe,
   HelpCircle,
   LogOut,
   MessageSquare,
@@ -75,65 +75,15 @@ export const routeConfig = {
       },
     },
     {
-      id: "projects",
-      path: "/app/projects",
-      icon: Bot,
+      id: "connect",
+      path: "/app/connect",
+      icon: Globe,
       metadata: {
         robots: { index: false, follow: false },
       },
       navigation: {
         group: "platform",
-        order: 2,
-        children: [
-          {
-            id: "projects-all",
-            path: "/app/projects",
-            breadcrumb: {},
-          },
-          {
-            id: "projects-active",
-            path: "/app/projects/active",
-            breadcrumb: {},
-          },
-          {
-            id: "projects-archived",
-            path: "/app/projects/archived",
-            breadcrumb: {},
-          },
-        ],
-      },
-    },
-    {
-      id: "documentation",
-      path: "/docs",
-      icon: BookOpen,
-      metadata: {
-        robots: { index: true, follow: true },
-      },
-      navigation: {
-        group: "platform",
-        order: 3,
-        children: [
-          {
-            id: "docs-intro",
-            path: "/docs",
-            breadcrumb: {},
-          },
-          {
-            id: "docs-getting-started",
-            path: "/docs/getting-started",
-            breadcrumb: {},
-          },
-          {
-            id: "docs-api",
-            path: "/docs/api",
-            breadcrumb: {},
-          },
-        ],
-      },
-      sitemap: {
-        priority: 0.6,
-        changeFrequency: "monthly",
+        order: 4,
       },
     },
     {
@@ -145,7 +95,7 @@ export const routeConfig = {
       },
       navigation: {
         group: "platform",
-        order: 4,
+        order: 5,
       },
     },
     {
@@ -157,7 +107,20 @@ export const routeConfig = {
       },
       navigation: {
         group: "platform",
-        order: 5,
+        order: 6,
+      },
+    },
+    {
+      id: "donate",
+      path: "/app/donate",
+      icon: DollarSign,
+      metadata: {
+        robots: { index: true, follow: true },
+      },
+      breadcrumb: {},
+      navigation: {
+        group: "platform",
+        order: 7,
       },
     },
     {
@@ -169,7 +132,7 @@ export const routeConfig = {
       },
       navigation: {
         group: "platform",
-        order: 6,
+        order: 8,
         permissions: ["canViewAdmin"], // Role-based access
       },
     },

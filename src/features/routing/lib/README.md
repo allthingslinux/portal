@@ -40,16 +40,6 @@ Translations are organized by route ID in your locale file:
         "label": "Overview"
       }
     },
-    "projects": {
-      "label": "Projects",
-      "navigation": {
-        "children": {
-          "projects-all": {
-            "label": "All Projects"
-          }
-        }
-      }
-    },
     "group": {
       "platform": {
         "label": "Platform"
