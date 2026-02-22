@@ -1,6 +1,7 @@
 import "server-only";
 
 import { registerIrcIntegration } from "./irc";
+import { registerMailcowIntegration } from "./mailcow";
 import { registerXmppIntegration } from "./xmpp";
 
 let integrationsRegistered = false;
@@ -15,5 +16,6 @@ export function registerIntegrations(): void {
 
   registerXmppIntegration();
   registerIrcIntegration();
+  registerMailcowIntegration();
   integrationsRegistered = true;
 }
