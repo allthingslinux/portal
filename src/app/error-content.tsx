@@ -80,8 +80,8 @@ export default function Error({
           >
             {t("retry")}
           </Button>
-          <Button asChild variant="outline">
-            <Link href="/">{t("goHome")}</Link>
+          <Button render={<Link href="/" />} variant="outline">
+            {t("goHome")}
           </Button>
         </CardFooter>
       </Card>
