@@ -1,30 +1,126 @@
 import "dotenv/config";
-import { reset, seed } from "drizzle-seed";
+import { sql } from "drizzle-orm";
 
-import { db } from "@/db/client";
-import { schema } from "@/db/schema";
+import { user } from "@/db/schema/auth";
+import { ircAccount } from "@/db/schema/irc";
+import { xmppAccount } from "@/db/schema/xmpp";
+import { db } from "./lib/db";
 
 // ============================================================================
 // Database Seeding Script
 // ============================================================================
-// This script uses drizzle-seed to generate deterministic, realistic fake data.
-// See: https://orm.drizzle.team/docs/seed-overview#drizzle-seed
-//
-// Features:
-// - Deterministic data generation (same seed = same data)
-// - Realistic fake data using pseudorandom number generator (pRNG)
-// - Consistent across different runs
+// This script inserts mock users and IRC/XMPP accounts for testing.
+// drizzle-seed is not used due to instanceof incompatibility with drizzle-orm 1.0 beta.
 //
 // Usage:
 //   pnpm tsx scripts/seed.ts          - Seed database with default options
 //   pnpm tsx scripts/seed.ts reset    - Reset database before seeding
 //
-// Options:
-//   - count: Number of entities to create per table (default: 10)
-//   - seed: Seed number for pRNG (default: random)
-//
-// Example with custom options:
-//   await seed(db, schema, { count: 100, seed: 12345 });
+const XMPP_DOMAIN = "xmpp.atl.chat";
+const IRC_SERVER = "irc.atl.chat";
+const IRC_PORT = 6697;
+
+/** All Portal tables (for TRUNCATE CASCADE). Bypasses drizzle-seed reset due to drizzle-orm 1.0 beta instanceof incompatibility. Reserved words quoted. */
+const TABLE_NAMES = [
+  "oauth_access_token",
+  "oauth_refresh_token",
+  "oauth_consent",
+  "oauth_client",
+  "session",
+  "account",
+  "passkey",
+  "two_factor",
+  "verification",
+  "apikey",
+  "jwks",
+  "integration_accounts",
+  "irc_account",
+  "xmpp_account",
+  '"user"',
+] as const;
+
+async function resetDatabase() {
+  const tables = TABLE_NAMES.join(", ");
+  await db.execute(sql.raw(`TRUNCATE ${tables} CASCADE`));
+}
+
+/** Insert IRC and XMPP accounts for existing users (mock data for testing) */
+async function seedIntegrationAccounts() {
+  const users = await db.select({ id: user.id }).from(user).limit(8);
+
+  const statuses = ["active", "suspended", "deleted"] as const;
+  const ircStatuses = ["active", "pending", "suspended", "deleted"] as const;
+
+  for (let i = 0; i < users.length; i++) {
+    const u = users[i];
+    if (!u?.id) {
+      continue;
+    }
+
+    const suffix = `seed${i + 1}`;
+    const nick = `atl_${suffix}`;
+    const xmppUsername = `atl_${suffix}`;
+    const jid = `${xmppUsername}@${XMPP_DOMAIN}`;
+    const status = statuses[i % statuses.length];
+    const ircStatus = ircStatuses[i % ircStatuses.length];
+
+    await db.insert(ircAccount).values({
+      userId: u.id,
+      nick,
+      server: IRC_SERVER,
+      port: IRC_PORT,
+      status: ircStatus,
+    });
+
+    await db.insert(xmppAccount).values({
+      id: crypto.randomUUID(),
+      userId: u.id,
+      jid,
+      username: xmppUsername,
+      status,
+    });
+  }
+
+  console.log(`Seeded ${users.length} IRC and XMPP accounts.`);
+}
+
+const MOCK_NAMES = [
+  "Alice Johnson",
+  "Bob Smith",
+  "Carol Williams",
+  "David Brown",
+  "Eve Davis",
+  "Frank Miller",
+  "Grace Wilson",
+  "Henry Moore",
+  "Ivy Taylor",
+  "Jack Anderson",
+] as const;
+
+/** Insert mock users for testing (minimal required fields) */
+async function seedUsers() {
+  const now = new Date();
+  const users = MOCK_NAMES.map((name, i) => {
+    const id = crypto.randomUUID();
+    const email = `user${i + 1}@example.com`;
+    return {
+      id,
+      name,
+      email,
+      emailVerified: false,
+      image: null,
+      createdAt: now,
+      updatedAt: now,
+      twoFactorEnabled: null,
+      role: i === 0 ? "admin" : "user",
+      banned: false,
+      banReason: null,
+      banExpires: null,
+    };
+  });
+  await db.insert(user).values(users);
+  console.log(`Seeded ${users.length} users.`);
+}
 
 async function main() {
   const args = process.argv.slice(2);
@@ -32,42 +128,14 @@ async function main() {
 
   if (shouldReset) {
     console.log("Resetting database...");
-    await reset(db, schema);
+    await resetDatabase();
     console.log("Database reset complete.");
   }
 
   console.log("Seeding database...");
 
-  // Basic seeding with default options (10 entities per table)
-  // Note: Better Auth tables (user, session, account, etc.) may require
-  // specific data formats (e.g., hashed passwords, valid tokens).
-  // Consider using Better Auth's built-in user creation methods for auth tables.
-  await seed(db, schema, { count: 10, seed: 12_345 });
-
-  // Example: Custom seeding with refinements
-  // await seed(db, schema, { count: 50, seed: 12_345 }).refine((funcs) => ({
-  //   user: {
-  //     count: 100,
-  //     columns: {
-  //       name: funcs.fullName(),
-  //       email: funcs.email(),
-  //       // Note: For Better Auth user table, you may want to:
-  //       // - Use Better Auth's signUp methods for proper password hashing
-  //       // - Generate valid email verification tokens if needed
-  //       // - Set appropriate role values ("user", "staff", "admin")
-  //     },
-  //   },
-  //   // OAuth tables may need specific client IDs, secrets, etc.
-  //   // Consider seeding these manually or with custom logic
-  //   oauthClient: {
-  //     count: 5,
-  //     columns: {
-  //       name: funcs.companyName(),
-  //       // Add other required OAuth client fields
-  //     },
-  //   },
-  //   // Add more table refinements as needed
-  // }));
+  await seedUsers();
+  await seedIntegrationAccounts();
 
   console.log("Database seeding complete.");
   process.exit(0);
