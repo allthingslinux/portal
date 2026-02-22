@@ -15,7 +15,7 @@ Centralized identity and hub management system for the AllThingsLinux (ATL) comm
 
 ## Tech Stack
 
-Next.js 16 (App Router) · React 19 · TypeScript · TailwindCSS 4 · shadcn/ui (Radix) · BetterAuth · Drizzle ORM · PostgreSQL · Zod · TanStack Query · next-intl · Biome / Ultracite
+Next.js 16 (App Router) · React 19 · TypeScript · TailwindCSS 4 · shadcn/ui (Base) · BetterAuth · Drizzle ORM · PostgreSQL · Zod · TanStack Query · next-intl · Biome / Ultracite
 
 ## Repository Structure
 
