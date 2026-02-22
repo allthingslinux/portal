@@ -1,5 +1,7 @@
 "use client";
 
+import { Fragment } from "react";
+
 import type { BreadcrumbItem as BreadcrumbItemType } from "@/shared/types/routes";
 import {
   Breadcrumb,
@@ -19,10 +21,7 @@ export function BreadcrumbTrail({ items }: BreadcrumbTrailProps) {
     <Breadcrumb>
       <BreadcrumbList>
         {items.map((crumb, index) => (
-          <div
-            className="flex items-center"
-            key={crumb.href ?? `${crumb.label}-${index}`}
-          >
+          <Fragment key={crumb.href ?? `${crumb.label}-${index}`}>
             {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
             <BreadcrumbItem className={index === 0 ? "hidden md:block" : ""}>
               {crumb.href ? (
@@ -31,7 +30,7 @@ export function BreadcrumbTrail({ items }: BreadcrumbTrailProps) {
                 <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
               )}
             </BreadcrumbItem>
-          </div>
+          </Fragment>
         ))}
       </BreadcrumbList>
     </Breadcrumb>
