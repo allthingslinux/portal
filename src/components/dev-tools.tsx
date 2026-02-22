@@ -4,6 +4,8 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import Script from "next/script";
 
+import { useIsClient } from "@/hooks/use-is-client";
+
 /**
  * DevTools Component
  * Centralized component for all development tools and debugging utilities.
@@ -22,11 +24,7 @@ import Script from "next/script";
  * ReactQueryDevtools must be rendered inside QueryClientProvider context (see Providers.tsx).
  */
 export function DevTools(): React.ReactNode | null {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const isClient = useIsClient();
 
   // Only render in development
   if (process.env.NODE_ENV !== "development") {
