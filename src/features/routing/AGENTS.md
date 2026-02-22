@@ -17,7 +17,7 @@
 
 ## Middleware
 
-> ⚠️ The Next.js middleware file is **`src/proxy.ts`**, not `middleware.ts`. This is intentional (Sentry instrumentation requires this filename).
+> ⚠️ The Next.js middleware file is **`src/proxy.ts`**, not `middleware.ts`.
 
 The middleware handles:
 1. Authentication redirects (unauthenticated → login)
