@@ -9,7 +9,7 @@ import { handleAPIError, requireAuth } from "@/shared/api/utils";
 
 /**
  * GET /api/user/sessions
- * Get current authenticated user's sessions
+ * Get current authenticated user's sessions (token field excluded for security).
  */
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
     const limit = Number.parseInt(searchParams.get("limit") || "100", 10);
     const offset = Number.parseInt(searchParams.get("offset") || "0", 10);
 
-    // Build where conditions - always filter by current user
     const conditions: ReturnType<typeof eq | typeof gt>[] = [
       eq(session.userId, userId),
     ];
@@ -29,16 +28,24 @@ export async function GET(request: NextRequest) {
     }
     const whereClause = and(...conditions);
 
-    // Fetch user's sessions
-    const sessions = await db
-      .select()
+    const rows = await db
+      .select({
+        id: session.id,
+        expiresAt: session.expiresAt,
+        createdAt: session.createdAt,
+        updatedAt: session.updatedAt,
+        ipAddress: session.ipAddress,
+        userAgent: session.userAgent,
+        userId: session.userId,
+        impersonatedBy: session.impersonatedBy,
+      })
       .from(session)
       .where(whereClause)
       .orderBy(desc(session.createdAt))
       .limit(limit)
       .offset(offset);
 
-    return Response.json({ sessions });
+    return Response.json({ sessions: rows });
   } catch (error) {
     return handleAPIError(error);
   }
