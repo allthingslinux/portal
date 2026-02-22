@@ -166,6 +166,8 @@ export function Providers({ children }: { children: ReactNode }) {
               // Two-factor authentication methods
               // Options: ["otp", "totp"] or boolean (true for both)
               replace={replace}
+              // Social OAuth providers to display in the sign-in UI
+              social={{ providers: ["discord"] }}
               // Additional configuration options (uncomment if needed):
               // additionalFields={{
               //   company: {
