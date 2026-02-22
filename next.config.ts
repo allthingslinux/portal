@@ -1,4 +1,6 @@
 import { execSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -7,12 +9,50 @@ import { config } from "./src/shared/next-config";
 import { withAnalyzer } from "./src/shared/next-config/with-analyzer";
 import { withObservability } from "./src/shared/next-config/with-observability";
 
+const VERSION_STRIP_V = /^v/;
+
+/** Get app version: env > package.json > git describe */
+function getAppVersion(): string {
+  if (process.env.NEXT_PUBLIC_APP_VERSION) {
+    return process.env.NEXT_PUBLIC_APP_VERSION.replace(VERSION_STRIP_V, "");
+  }
+  try {
+    const pkg = JSON.parse(
+      readFileSync(join(process.cwd(), "package.json"), "utf-8")
+    );
+    const ver = pkg.version as string | undefined;
+    if (ver) {
+      return ver;
+    }
+  } catch {
+    // package.json not readable
+  }
+  try {
+    const result = execSync("git describe --tags --always", {
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    if (result) {
+      return result.replace(VERSION_STRIP_V, "");
+    }
+  } catch {
+    // Git not available
+  }
+  return "0.0.0";
+}
+
 const withNextIntl = createNextIntlPlugin();
+
+const appVersion = getAppVersion();
 
 let nextConfig: NextConfig = {
   // ============================================================================
   // Core Configuration
   // ============================================================================
+
+  env: {
+    NEXT_PUBLIC_APP_VERSION: appVersion,
+  },
 
   // Enable React Strict Mode for better development experience
   // Helps identify problems early and prepares for React's future features
