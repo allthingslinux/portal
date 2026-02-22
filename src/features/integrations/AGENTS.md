@@ -1,6 +1,6 @@
 # src/features/integrations
 
-> Scope: IRC, XMPP, and Discord integration — UI, API, and backend clients.
+> Scope: IRC, XMPP, Mailcow, and Discord integration — UI, API, and backend clients.
 
 ## What Lives Here
 
@@ -9,6 +9,7 @@
 | `lib/core/` | Base types, integration registry, shared utilities |
 | `lib/irc/` | IRC integration (Atheme RPC + UnrealIRCd client) |
 | `lib/xmpp/` | XMPP integration (Prosody REST client) |
+| `lib/mailcow/` | mailcow integration (REST API for mailbox provisioning) |
 | `lib/discord/` | Discord integration (REST API client) |
 | `lib/mediawiki/` | MediaWiki API client (wiki account sync) |
 | `components/` | Integration UI (status cards, account forms) |
@@ -58,6 +59,8 @@ lib/mediawiki/
 
 **Prosody REST client** (`lib/xmpp/`) — talks to Prosody's REST API for XMPP account management. **Server-only.**
 
+**Mailcow client** (`lib/mailcow/`) — talks to Mailcow REST API for mailbox provisioning (add/edit/delete/get). **Server-only.** Auth via `X-API-Key`.
+
 ## Usage Patterns
 
 ```typescript
@@ -74,6 +77,7 @@ const { data: integrations, isLoading } = useIntegrations()
 Each integration has its own `keys.ts`. Key vars:
 - IRC: `IRC_HOST`, `IRC_PORT`, `ATHEME_USERNAME`, `ATHEME_PASSWORD`, `UNREAL_WS_URL`
 - XMPP: `XMPP_DOMAIN`, `PROSODY_REST_URL`, `PROSODY_REST_SECRET`
+- mailcow: `MAILCOW_API_URL`, `MAILCOW_API_KEY`, `MAILCOW_DOMAIN`
 - Discord: `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID`
 - MediaWiki: `WIKI_API_URL` (default: https://atl.wiki/api.php)
 
