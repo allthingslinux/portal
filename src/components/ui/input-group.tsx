@@ -57,6 +57,10 @@ const inputGroupAddonVariants = cva(
   }
 )
 
+function focusInputFromAddon(addonElement: HTMLElement) {
+  addonElement.parentElement?.querySelector("input")?.focus()
+}
+
 function InputGroupAddon({
   className,
   align = "inline-start",
@@ -67,12 +71,20 @@ function InputGroupAddon({
       role="group"
       data-slot="input-group-addon"
       data-align={align}
+      tabIndex={0}
+      aria-label="Focus input"
       className={cn(inputGroupAddonVariants({ align }), className)}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest("button")) {
           return
         }
-        e.currentTarget.parentElement?.querySelector("input")?.focus()
+        focusInputFromAddon(e.currentTarget)
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          focusInputFromAddon(e.currentTarget)
+        }
       }}
       {...props}
     />
