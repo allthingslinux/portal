@@ -27,8 +27,7 @@ async function RootLayoutContent({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   await connection();
-  const locale = await getLocale();
-  const messages = await getMessages();
+  const [locale, messages] = await Promise.all([getLocale(), getMessages()]);
 
   return (
     <>
