@@ -33,11 +33,11 @@ export default async function AppNotFound() {
           </p>
         </CardContent>
         <CardFooter className="flex justify-center gap-2">
-          <Button asChild variant="default">
-            <Link href="/app">{t("navigation.backToDashboard")}</Link>
+          <Button render={<Link href="/app" />} variant="default">
+            {t("navigation.backToDashboard")}
           </Button>
-          <Button asChild variant="outline">
-            <Link href="/">{t("error.notFound.goHome")}</Link>
+          <Button render={<Link href="/" />} variant="outline">
+            {t("error.notFound.goHome")}
           </Button>
         </CardFooter>
       </Card>
