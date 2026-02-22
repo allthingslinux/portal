@@ -36,6 +36,7 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:seed:reset": "tsx scripts/seed.ts reset",
     "create-admin": "tsx scripts/create-admin.ts",
+    "create-mailcow-oauth-client": "tsx scripts/create-mailcow-oauth-client.ts",
     "compose:db": "docker compose up -d portal-db",
     "compose:db:down": "docker compose down",
     "compose:production": "docker compose --profile production up -d",
