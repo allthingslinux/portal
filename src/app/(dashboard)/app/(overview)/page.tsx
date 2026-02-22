@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/layout/page/page-header";
 import { verifySession } from "@/auth/dal";
+import { DiscordStatsCard } from "@/features/integrations/components/discord-stats-card";
 import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
 import { getServerQueryClient } from "@/shared/api/hydration";
 import { queryKeys } from "@/shared/api/query-keys";
@@ -45,7 +46,9 @@ export default async function AppPage() {
             })}
           />
 
-          {/* Dashboard content will be added here */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <DiscordStatsCard />
+          </div>
         </div>
       </div>
     </HydrationBoundary>
