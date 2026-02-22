@@ -34,70 +34,6 @@
       "label": "Overview"
     }
   },
-  "projects": {
-    "label": "Projects",
-    "metadata": {
-      "title": "Projects",
-      "description": "Manage your projects"
-    },
-    "ui": {
-      "title": "Projects",
-      "description": "Manage your projects"
-    },
-    "breadcrumb": {
-      "label": "Projects"
-    }
-  },
-  "projects-all": {
-    "label": "All Projects",
-    "breadcrumb": {
-      "label": "All Projects"
-    }
-  },
-  "projects-active": {
-    "label": "Active",
-    "breadcrumb": {
-      "label": "Active"
-    }
-  },
-  "projects-archived": {
-    "label": "Archived",
-    "breadcrumb": {
-      "label": "Archived"
-    }
-  },
-  "documentation": {
-    "label": "Documentation",
-    "metadata": {
-      "title": "Documentation",
-      "description": "Platform documentation"
-    },
-    "ui": {
-      "title": "Documentation",
-      "description": "Platform documentation"
-    },
-    "breadcrumb": {
-      "label": "Documentation"
-    }
-  },
-  "docs-intro": {
-    "label": "Introduction",
-    "breadcrumb": {
-      "label": "Introduction"
-    }
-  },
-  "docs-getting-started": {
-    "label": "Getting Started",
-    "breadcrumb": {
-      "label": "Getting Started"
-    }
-  },
-  "docs-api": {
-    "label": "API Reference",
-    "breadcrumb": {
-      "label": "API Reference"
-    }
-  },
   "settings": {
     "label": "Settings",
     "metadata": {
@@ -112,11 +48,39 @@
       "label": "Settings"
     }
   },
+  "connect": {
+    "label": "Connect",
+    "metadata": {
+      "title": "Connect",
+      "description": "Links to ATL community platforms: Discord, IRC, XMPP, wiki, and more"
+    },
+    "ui": {
+      "title": "Connect",
+      "description": "Connect with the community across Discord, IRC, XMPP, and our web platforms."
+    },
+    "breadcrumb": {
+      "label": "Connect"
+    }
+  },
   "integrations": {
     "label": "Integrations",
     "metadata": {
       "title": "Integrations",
       "description": "Manage your service integrations including XMPP, IRC, and more"
+    }
+  },
+  "donate": {
+    "label": "Donate",
+    "metadata": {
+      "title": "Donate",
+      "description": "Support All Things Linux through donations and contributions"
+    },
+    "ui": {
+      "title": "Donate",
+      "description": "Support our community through financial donations, volunteering, or contributing your skills."
+    },
+    "breadcrumb": {
+      "label": "Donate"
     }
   },
   "admin": {
