@@ -18,21 +18,15 @@ export const xmppConfig = {
 
   // Prosody REST API configuration
   prosody: {
-    // REST API endpoint URL
+    // REST API endpoint URL (mod_http_admin_api)
     // Use internal Docker network URL for same-network communication
-    // or public URL if Prosody is on a different network
     restUrl: env.PROSODY_REST_URL,
 
-    // Username for REST API authentication (admin JID)
-    // Format: "admin@xmpp.atl.chat" or from PROSODY_ADMIN_JID
-    username:
-      env.PROSODY_REST_USERNAME ||
-      env.PROSODY_ADMIN_JID ||
-      "admin@xmpp.atl.chat",
+    // Username for REST API authentication (admin JID, e.g. admin@atl.chat)
+    username: env.PROSODY_REST_USERNAME || "admin@atl.chat",
 
-    // Password/secret for REST API authentication (component secret)
-    // Same as PROSODY_REST_SECRET in Prosody configuration
-    password: env.PROSODY_REST_PASSWORD || env.PROSODY_REST_SECRET,
+    // Password for REST API authentication
+    password: env.PROSODY_REST_PASSWORD,
   },
 } as const;
 
@@ -44,7 +38,7 @@ export const xmppConfig = {
 export function validateXmppConfig(): void {
   if (!xmppConfig.prosody.password) {
     const error = new Error(
-      "PROSODY_REST_PASSWORD or PROSODY_REST_SECRET environment variable is required"
+      "PROSODY_REST_PASSWORD environment variable is required"
     );
     // Capture to Sentry before throwing (if Sentry is initialized)
     try {
@@ -52,7 +46,7 @@ export function validateXmppConfig(): void {
         tags: {
           type: "configuration_error",
           module: "xmpp_config",
-          missing_var: "PROSODY_REST_PASSWORD or PROSODY_REST_SECRET",
+          missing_var: "PROSODY_REST_PASSWORD",
         },
         level: "error",
       });

@@ -11,6 +11,7 @@ import {
   createProsodyAccount,
   deleteProsodyAccount,
   ProsodyAccountNotFoundError,
+  resetProsodyPassword,
 } from "./client";
 import { isXmppConfigured, validateXmppConfig, xmppConfig } from "./config";
 import type {
@@ -354,6 +355,31 @@ export class XmppIntegration extends IntegrationBase<
     if (!deleted) {
       throw new Error("Failed to delete XMPP account");
     }
+  }
+
+  /**
+   * Reset the Prosody password for an XMPP account.
+   * The new password is random and not stored — XMPP auth is handled externally.
+   */
+  async resetPassword(accountId: string): Promise<void> {
+    if (!this.enabled) {
+      throw new Error("XMPP integration is not configured");
+    }
+    validateXmppConfig();
+
+    const [account] = await db
+      .select()
+      .from(xmppAccount)
+      .where(
+        and(eq(xmppAccount.id, accountId), ne(xmppAccount.status, "deleted"))
+      )
+      .limit(1);
+
+    if (!account) {
+      throw new Error("XMPP account not found");
+    }
+
+    await resetProsodyPassword(account.username);
   }
 }
 

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { randomBytes } from "node:crypto";
+
 import { validateXmppConfig, xmppConfig } from "./config";
 import type { ProsodyRestAccountResponse, ProsodyRestError } from "./types";
 import { formatJid } from "./utils";
@@ -14,26 +16,15 @@ export class ProsodyAccountNotFoundError extends Error {
   }
 }
 
-/**
- * Escape XML special characters for defense-in-depth
- * Username is already validated, but this prevents XML injection if validation fails
- */
-function escapeXml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
-
 // ============================================================================
 // Prosody REST API Client
 // ============================================================================
-// Client for interacting with Prosody's mod_rest API
-// Uses HTTP Basic authentication with admin JID and component secret
+// Client for interacting with Prosody's mod_http_admin_api module
+// Uses HTTP Basic authentication with PROSODY_REST_USERNAME:PROSODY_REST_PASSWORD
 //
-// Documentation: https://modules.prosody.im/mod_rest.html
+// Documentation: https://modules.prosody.im/mod_http_admin_api.html
+// Endpoint: PUT {PROSODY_REST_URL}/admin_api/users/{username}
+// Body: { "password": "..." }
 
 /**
  * Create Basic Auth header for Prosody REST API
@@ -57,7 +48,7 @@ async function prosodyRequest<T>(
   const response = await fetch(url, {
     ...options,
     headers: {
-      "Content-Type": "application/xml",
+      "Content-Type": "application/json",
       Authorization: createAuthHeader(),
       ...options.headers,
     },
@@ -74,20 +65,23 @@ async function prosodyRequest<T>(
     throw new Error(errorMessage);
   }
 
-  // mod_rest returns XML or JSON depending on the request
+  // mod_http_admin_api returns JSON
   const contentType = response.headers.get("content-type") || "";
   if (contentType.includes("application/json")) {
     return (await response.json()) as T;
   }
 
-  // For XML responses, return the text
+  // For non-JSON responses (e.g. 204 No Content), return empty object
   const text = await response.text();
-  return text as unknown as T;
+  return (text ? JSON.parse(text) : {}) as T;
 }
 
 /**
- * Create XMPP account in Prosody
- * Note: No password is set - authentication is handled via OAuth
+ * Create or update XMPP account in Prosody via mod_http_admin_api
+ *
+ * Uses PUT /admin_api/users/{username} with JSON body {"password": "..."}
+ * A random password is generated; the portal does not store it — authentication
+ * is handled externally (e.g. OAuth / SASL EXTERNAL).
  *
  * @param username - XMPP localpart (username)
  * @returns Success response
@@ -98,32 +92,23 @@ export async function createProsodyAccount(
   validateXmppConfig();
   const jid = formatJid(username, xmppConfig.domain);
 
-  // mod_rest expects XMPP stanzas in XML format
-  // Create account stanza: <iq type="set" to="prosody" id="create">
-  //   <query xmlns="jabber:iq:register">
-  //     <username>username</username>
-  //   </query>
-  // </iq>
-  const stanza = `<?xml version="1.0"?>
-<iq type="set" to="${xmppConfig.domain}" id="create_${Date.now()}">
-  <query xmlns="jabber:iq:register">
-    <username>${escapeXml(username)}</username>
-  </query>
-</iq>`;
+  // Generate a random password for the Prosody account.
+  // The portal does not store this password; XMPP client auth is handled separately.
+  const password = randomBytes(32).toString("hex");
 
   try {
     const result = await prosodyRequest<ProsodyRestAccountResponse>(
-      "/accounts",
+      `/admin_api/users/${encodeURIComponent(username)}`,
       {
-        method: "POST",
-        body: stanza,
+        method: "PUT",
+        body: JSON.stringify({ password }),
       }
     );
 
     return result;
   } catch (error) {
     if (error instanceof Error) {
-      // Check if account already exists
+      // Check if account already exists (409 Conflict)
       if (
         error.message.includes("exists") ||
         error.message.includes("409") ||
@@ -138,7 +123,9 @@ export async function createProsodyAccount(
 }
 
 /**
- * Delete XMPP account from Prosody
+ * Delete XMPP account from Prosody via mod_http_admin_api
+ *
+ * Uses DELETE /admin_api/users/{username}
  *
  * @param username - XMPP localpart (username)
  * @returns Success response
@@ -147,25 +134,12 @@ export async function deleteProsodyAccount(
   username: string
 ): Promise<ProsodyRestAccountResponse> {
   validateXmppConfig();
-  // Delete account stanza: <iq type="set" to="prosody" id="delete">
-  //   <query xmlns="jabber:iq:register">
-  //     <remove/>
-  //   </query>
-  // </iq>
-  const stanza = `<?xml version="1.0"?>
-<iq type="set" to="${xmppConfig.domain}" id="delete_${Date.now()}">
-  <query xmlns="jabber:iq:register">
-    <remove/>
-  </query>
-</iq>`;
 
   try {
-    // sourcery skip: inline-immediately-returned-variable
     const result = await prosodyRequest<ProsodyRestAccountResponse>(
-      `/accounts/${encodeURIComponent(username)}`,
+      `/admin_api/users/${encodeURIComponent(username)}`,
       {
         method: "DELETE",
-        body: stanza,
       }
     );
 
@@ -177,7 +151,6 @@ export async function deleteProsodyAccount(
         error.message.includes("not found") ||
         error.message.includes("404")
       ) {
-        // Account doesn't exist, but that's okay for deletion
         throw new ProsodyAccountNotFoundError();
       }
       throw error;
@@ -187,7 +160,9 @@ export async function deleteProsodyAccount(
 }
 
 /**
- * Check if XMPP account exists in Prosody
+ * Check if XMPP account exists in Prosody via mod_http_admin_api
+ *
+ * Uses GET /admin_api/users/{username}
  *
  * @param username - XMPP localpart (username)
  * @returns true if account exists, false otherwise
@@ -197,7 +172,7 @@ export async function checkProsodyAccountExists(
 ): Promise<boolean> {
   validateXmppConfig();
   try {
-    await prosodyRequest(`/accounts/${encodeURIComponent(username)}`, {
+    await prosodyRequest(`/admin_api/users/${encodeURIComponent(username)}`, {
       method: "GET",
     });
     return true;
@@ -211,4 +186,21 @@ export async function checkProsodyAccountExists(
     // Re-throw other errors
     throw error;
   }
+}
+
+/**
+ * Reset the password for an existing XMPP account in Prosody.
+ *
+ * Uses PUT /admin_api/users/{username} — same endpoint as create (idempotent).
+ * A new random password is generated; the portal does not store it.
+ *
+ * @param username - XMPP localpart
+ */
+export async function resetProsodyPassword(username: string): Promise<void> {
+  validateXmppConfig();
+  const password = randomBytes(32).toString("hex");
+  await prosodyRequest(`/admin_api/users/${encodeURIComponent(username)}`, {
+    method: "PUT",
+    body: JSON.stringify({ password }),
+  });
 }
