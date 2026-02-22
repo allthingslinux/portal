@@ -12,6 +12,7 @@ import type { oauthClient } from "@/db/schema/oauth";
 // Re-export filter, input, and response types from centralized location
 export type {
   AdminIrcAccount,
+  AdminMailcowAccount,
   AdminStats,
   AdminUserDetailResponse,
   AdminUserRow,
@@ -21,6 +22,8 @@ export type {
   CreateApiKeyInput,
   IrcAccountListResponse,
   IrcAccountWithUser,
+  MailcowAccountListResponse,
+  MailcowAccountWithUser,
   OAuthClientListFilters,
   OAuthClientListResponse,
   SessionListFilters,

@@ -9,6 +9,7 @@ import type {
   ApiKey,
   ApiKeyListResponse,
   IrcAccountListResponse,
+  MailcowAccountListResponse,
   OAuthClient,
   OAuthClientListResponse,
   Session,
@@ -133,6 +134,40 @@ export async function fetchIrcAccounts(filters?: {
       .catch(() => ({ error: "Unknown error" }));
     throw new Error(
       error.error || `Failed to fetch IRC accounts: ${response.statusText}`
+    );
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetch list of mailcow accounts (admin-only) with optional status filter and pagination
+ */
+export async function fetchMailcowAccounts(filters?: {
+  status?: string;
+  limit?: number;
+  offset?: number;
+}): Promise<MailcowAccountListResponse> {
+  const params = new URLSearchParams();
+  if (filters?.status) {
+    params.append("status", filters.status);
+  }
+  if (filters?.limit) {
+    params.append("limit", String(filters.limit));
+  }
+  if (filters?.offset) {
+    params.append("offset", String(filters.offset));
+  }
+
+  const url = `/api/admin/mailcow-accounts${params.toString() ? `?${params}` : ""}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ error: "Unknown error" }));
+    throw new Error(
+      error.error || `Failed to fetch mailcow accounts: ${response.statusText}`
     );
   }
 

@@ -11,6 +11,7 @@ import {
   fetchApiKeyById,
   fetchApiKeys,
   fetchIrcAccounts,
+  fetchMailcowAccounts,
   fetchOAuthClientById,
   fetchOAuthClients,
   fetchSessionById,
@@ -64,7 +65,7 @@ export function useUpdateUser() {
     mutationFn: ({ id, data }: { id: string; data: UpdateUserInput }) =>
       updateUser(id, data),
     onSuccess: (data, variables) => {
-      // Merge updated user into existing user detail cache (preserve ircAccount, xmppAccount)
+      // Merge updated user into existing user detail cache (preserve ircAccount, mailcowAccount, xmppAccount)
       // Only merge when prev exists; avoid creating incomplete cache entries with null integrations
       queryClient.setQueryData<AdminUserDetailResponse>(
         queryKeys.users.detail(variables.id),
@@ -249,6 +250,19 @@ export function useAdminXmppAccounts(filters?: {
   return useQuery({
     queryKey: queryKeys.admin.xmppAccounts.list(filters),
     queryFn: () => fetchXmppAccounts(filters),
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
+  });
+}
+
+// mailcow accounts (admin list)
+export function useAdminMailcowAccounts(filters?: {
+  status?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  return useQuery({
+    queryKey: queryKeys.admin.mailcowAccounts.list(filters),
+    queryFn: () => fetchMailcowAccounts(filters),
     staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }

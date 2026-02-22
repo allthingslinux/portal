@@ -75,6 +75,11 @@ export const queryKeys = {
       list: (filters?: { status?: string; limit?: number; offset?: number }) =>
         [...queryKeys.admin.xmppAccounts.lists(), { filters }] as const,
     },
+    mailcowAccounts: {
+      lists: () => [...queryKeys.admin.all, "mailcowAccounts", "list"] as const,
+      list: (filters?: { status?: string; limit?: number; offset?: number }) =>
+        [...queryKeys.admin.mailcowAccounts.lists(), { filters }] as const,
+    },
   },
 
   // Integration queries

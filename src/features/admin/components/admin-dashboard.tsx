@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/layout/page/page-header";
 import { AdminStats } from "./admin-stats";
 import { IrcAccountsManagement } from "./irc-accounts-management";
+import { MailcowAccountsManagement } from "./mailcow-accounts-management";
 import { SessionManagement } from "./session-management";
 import { UserManagement } from "./user-management";
 import { XmppAccountsManagement } from "./xmpp-accounts-management";
@@ -39,6 +40,7 @@ export function AdminDashboard() {
           <TabsTrigger value="sessions">Sessions</TabsTrigger>
           <TabsTrigger value="irc-accounts">IRC Accounts</TabsTrigger>
           <TabsTrigger value="xmpp-accounts">XMPP Accounts</TabsTrigger>
+          <TabsTrigger value="mailcow-accounts">Mailcow Accounts</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users">
@@ -55,6 +57,10 @@ export function AdminDashboard() {
 
         <TabsContent value="xmpp-accounts">
           <XmppAccountsManagement />
+        </TabsContent>
+
+        <TabsContent value="mailcow-accounts">
+          <MailcowAccountsManagement />
         </TabsContent>
       </Tabs>
     </div>

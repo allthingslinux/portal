@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
 import { ircAccount } from "@/db/schema/irc";
+import { mailcowAccount } from "@/db/schema/mailcow";
 import { xmppAccount } from "@/db/schema/xmpp";
 import { cleanupIntegrationAccounts } from "@/features/integrations/lib/core/user-deletion";
 import {
@@ -37,14 +38,20 @@ export async function GET(
       );
     }
 
-    const [[ircRow], [xmppRow]] = await Promise.all([
+    const [[ircRow], [mailcowRow], [xmppRow]] = await Promise.all([
       db.select().from(ircAccount).where(eq(ircAccount.userId, id)).limit(1),
+      db
+        .select()
+        .from(mailcowAccount)
+        .where(eq(mailcowAccount.userId, id))
+        .limit(1),
       db.select().from(xmppAccount).where(eq(xmppAccount.userId, id)).limit(1),
     ]);
 
     return Response.json({
       user: userData,
       ircAccount: ircRow ?? null,
+      mailcowAccount: mailcowRow ?? null,
       xmppAccount: xmppRow ?? null,
     });
   } catch (error) {

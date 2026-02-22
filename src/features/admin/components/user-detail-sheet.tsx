@@ -40,7 +40,7 @@ export function UserDetailSheet({
         <SheetHeader className="p-0 pr-12 pb-6">
           <SheetTitle>User details</SheetTitle>
           <SheetDescription>
-            User profile and integration accounts (IRC, XMPP).
+            User profile and integration accounts (IRC, XMPP, mailcow).
           </SheetDescription>
         </SheetHeader>
 
@@ -69,7 +69,7 @@ function UserDetailContent({
 }: {
   userDetail: AdminUserDetailResponse;
 }) {
-  const { user: userRow, ircAccount, xmppAccount } = userDetail;
+  const { user: userRow, ircAccount, xmppAccount, mailcowAccount } = userDetail;
 
   return (
     <div className="flex flex-col gap-8">
@@ -177,6 +177,36 @@ function UserDetailContent({
           ) : (
             <div className="rounded-lg border border-dashed p-4 text-muted-foreground text-sm">
               No XMPP account
+            </div>
+          )}
+
+          {mailcowAccount ? (
+            <div className="rounded-lg border p-4">
+              <div className="mb-3 font-medium">mailcow</div>
+              <dl className="space-y-3 text-sm">
+                <div className="space-y-1">
+                  <dt className="text-muted-foreground">Email</dt>
+                  <dd className="font-mono">{mailcowAccount.email}</dd>
+                </div>
+                <div className="space-y-1">
+                  <dt className="text-muted-foreground">Domain</dt>
+                  <dd className="font-mono">{mailcowAccount.domain}</dd>
+                </div>
+                <div className="space-y-1">
+                  <dt className="text-muted-foreground">Status</dt>
+                  <dd>
+                    <Badge variant="outline">
+                      {integrationStatusLabels[
+                        mailcowAccount.status as keyof typeof integrationStatusLabels
+                      ] ?? mailcowAccount.status}
+                    </Badge>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed p-4 text-muted-foreground text-sm">
+              No mailcow account
             </div>
           )}
         </div>

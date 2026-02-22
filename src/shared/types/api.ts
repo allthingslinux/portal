@@ -287,6 +287,22 @@ export interface AdminXmppAccount {
 }
 
 /**
+ * Mailcow account shape as returned by admin user detail API.
+ * Dates are ISO-8601 strings (JSON wire format).
+ */
+export interface AdminMailcowAccount {
+  id: string;
+  userId: string;
+  email: string;
+  domain: string;
+  localPart: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  metadata?: Record<string, unknown> | null;
+}
+
+/**
  * User row shape in admin user detail response.
  * Dates are ISO-8601 strings (JSON wire format).
  */
@@ -306,6 +322,7 @@ export interface AdminUserRow {
 export interface AdminUserDetailResponse {
   user: AdminUserRow;
   ircAccount: AdminIrcAccount | null;
+  mailcowAccount: AdminMailcowAccount | null;
   xmppAccount: AdminXmppAccount | null;
 }
 
@@ -344,5 +361,24 @@ export interface XmppAccountWithUser extends AdminXmppAccount {
  */
 export interface XmppAccountListResponse {
   xmppAccounts: XmppAccountWithUser[];
+  pagination: ListPaginationMeta;
+}
+
+/**
+ * Mailcow account with optional user info for admin list
+ */
+export interface MailcowAccountWithUser extends AdminMailcowAccount {
+  user?: {
+    id: string;
+    email: string;
+    name: string | null;
+  };
+}
+
+/**
+ * Admin Mailcow accounts list response (GET /api/admin/mailcow-accounts)
+ */
+export interface MailcowAccountListResponse {
+  mailcowAccounts: MailcowAccountWithUser[];
   pagination: ListPaginationMeta;
 }
