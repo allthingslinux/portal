@@ -6,10 +6,17 @@ import Script from "next/script";
 
 import { useIsClient } from "@/hooks/use-is-client";
 
+/** Use process.env to avoid importing @/env (which extends server-only modules like discord/keys). */
+const isDevToolsDisabled = () =>
+  process.env.NEXT_PUBLIC_DEV_TOOLS_ENABLED === "false";
+
 /**
  * DevTools Component
  * Centralized component for all development tools and debugging utilities.
  * Only loads and initializes tools in development mode.
+ *
+ * Environment:
+ * - NEXT_PUBLIC_DEV_TOOLS_ENABLED=false — Disable all dev tools (React Grab, React Scan)
  *
  * Tools included:
  * - React Scan: Performance profiling (requires NEXT_PUBLIC_REACT_SCAN_ENABLED=true)
@@ -19,12 +26,18 @@ import { useIsClient } from "@/hooks/use-is-client";
  * Usage:
  * - Default dev: All tools except React Scan
  * - With React Scan: Set NEXT_PUBLIC_REACT_SCAN_ENABLED=true and run `pnpm scan`
+ * - Disable all: Set NEXT_PUBLIC_DEV_TOOLS_ENABLED=false
  *
  * Note: This component should be placed in the <head> for scripts and in the <body> for components.
  * ReactQueryDevtools must be rendered inside QueryClientProvider context (see Providers.tsx).
  */
 export function DevTools(): React.ReactNode | null {
   const isClient = useIsClient();
+
+  // Skip when explicitly disabled via env
+  if (isDevToolsDisabled()) {
+    return null;
+  }
 
   // Only render in development
   if (process.env.NODE_ENV !== "development") {
@@ -89,7 +102,7 @@ function ReactScan(): React.ReactNode | null {
           });
         } catch (error) {
           // Silently fail if react-scan can't initialize
-          if (process.env.NODE_ENV === "development") {
+          if (process.env.NODE_ENV === "test") {
             console.warn(
               "[DevTools] React Scan failed to initialize. Make sure the react-scan server is running (port 5567).",
               error
@@ -99,7 +112,7 @@ function ReactScan(): React.ReactNode | null {
       })
       .catch((error) => {
         // Handle import errors (e.g., module not found)
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "test") {
           console.warn("[DevTools] Failed to load react-scan module.", error);
         }
       });
@@ -130,7 +143,6 @@ export function ReactQueryDevtools({
   initialIsOpen?: boolean;
   position?: "bottom" | "top";
 } = {}): React.ReactNode | null {
-  // Hooks must be called before any conditional returns
   const [Devtools, setDevtools] = useState<React.ComponentType<{
     buttonPosition?: "bottom-left" | "bottom-right" | "top-left" | "top-right";
     initialIsOpen?: boolean;
@@ -138,7 +150,9 @@ export function ReactQueryDevtools({
   }> | null>(null);
 
   useEffect(() => {
-    // Only load in development
+    if (isDevToolsDisabled()) {
+      return;
+    }
     if (process.env.NODE_ENV !== "development") {
       return;
     }
@@ -148,11 +162,12 @@ export function ReactQueryDevtools({
     });
   }, []);
 
-  // Only render in development
+  if (isDevToolsDisabled()) {
+    return null;
+  }
   if (process.env.NODE_ENV !== "development") {
     return null;
   }
-
   if (!Devtools) {
     return null;
   }
