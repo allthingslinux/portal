@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { PageHeader } from "@/components/layout/page/page-header";
+import { PageContent, PageHeader } from "@/components/layout/page";
 import { verifySession } from "@/auth/dal";
 import { IntegrationsContent } from "./integrations-content";
 import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
@@ -36,12 +36,10 @@ export default async function IntegrationsPage() {
   // Empty dehydrate kept for consistency with other app pages; integrations fetch client-side.
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="space-y-6">
-          <PageHeader pathname="/app/integrations" resolver={resolver} />
-          <IntegrationsContent />
-        </div>
-      </div>
+      <PageContent>
+        <PageHeader pathname="/app/integrations" resolver={resolver} />
+        <IntegrationsContent />
+      </PageContent>
     </HydrationBoundary>
   );
 }
