@@ -70,6 +70,11 @@ export const queryKeys = {
       list: (filters?: { status?: string; limit?: number; offset?: number }) =>
         [...queryKeys.admin.ircAccounts.lists(), { filters }] as const,
     },
+    xmppAccounts: {
+      lists: () => [...queryKeys.admin.all, "xmppAccounts", "list"] as const,
+      list: (filters?: { status?: string; limit?: number; offset?: number }) =>
+        [...queryKeys.admin.xmppAccounts.lists(), { filters }] as const,
+    },
   },
 
   // Integration queries
