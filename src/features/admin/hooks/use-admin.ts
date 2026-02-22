@@ -17,6 +17,7 @@ import {
   fetchSessions,
   fetchUserById,
   fetchUsers,
+  fetchXmppAccounts,
   updateUser,
 } from "@/features/admin/api/admin";
 import { usersListQueryOptions } from "@/features/admin/lib/users-query-options";
@@ -235,6 +236,19 @@ export function useAdminIrcAccounts(filters?: {
   return useQuery({
     queryKey: queryKeys.admin.ircAccounts.list(filters),
     queryFn: () => fetchIrcAccounts(filters),
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
+  });
+}
+
+// XMPP accounts (admin list)
+export function useAdminXmppAccounts(filters?: {
+  status?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  return useQuery({
+    queryKey: queryKeys.admin.xmppAccounts.list(filters),
+    queryFn: () => fetchXmppAccounts(filters),
     staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }
