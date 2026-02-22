@@ -1,12 +1,5 @@
 "use client"
 
-/**
- * Chart components (Recharts wrapper).
- * Consumers: use next/dynamic with ssr: false when importing chart-heavy pages
- * to avoid bundling recharts in the main bundle.
- *
- * Example: const ChartPage = dynamic(() => import("./chart-page"), { ssr: false })
- */
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
@@ -87,7 +80,6 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
   return (
     <style
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: ChartConfig theme/color values only; no user input
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
@@ -180,10 +172,7 @@ function ChartTooltipContent({
 
   return (
     <div
-      className={cn(
-        "border-border/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
-        className
-      )}
+      className={cn("border-border/50 bg-background gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl grid min-w-32 items-start", className)}
     >
       {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
@@ -316,7 +305,6 @@ function ChartLegendContent({
   )
 }
 
-// Helper to extract item config from a payload.
 function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,
