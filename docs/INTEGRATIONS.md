@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Portal integrations framework provides a unified, extensible system for managing external service integrations (XMPP, IRC, Discord, MediaWiki, SSH pubnix, Mailcow, etc.). It centralizes account management, API routes, database schema, and UI components into a single, reusable architecture.
+The Portal integrations framework provides a unified, extensible system for managing external service integrations (XMPP, IRC, mailcow, Discord, MediaWiki, SSH pubnix, etc.). It centralizes account management, API routes, database schema, and UI components into a single, reusable architecture.
 
 ## Architecture
 
@@ -37,6 +37,14 @@ src/features/integrations/lib/
 │   ├── types.ts       # Integration-specific types
 │   ├── client.ts      # External service client (Prosody REST API)
 │   ├── utils.ts       # Utility functions
+│   ├── implementation.ts  # Integration instance and registration
+│   └── index.ts       # Public exports
+├── mailcow/           # mailcow integration implementation
+│   ├── keys.ts        # Environment variable validation (t3-env)
+│   ├── config.ts      # Configuration and validation
+│   ├── types.ts       # Integration-specific types
+│   ├── client.ts      # mailcow REST API client
+│   ├── utils.ts       # local_part validation, formatEmail
 │   ├── implementation.ts  # Integration instance and registration
 │   └── index.ts       # Public exports
 └── index.ts           # registerIntegrations() and public API
@@ -102,6 +110,7 @@ Some integrations use dedicated tables **instead of** the unified `integration_a
 - **`integration_accounts`**: Shared polymorphic table. Use for integrations that need only generic attributes. Fields: `id`, `user_id`, `integration_type`, `status`, `created_at`, `updated_at`, `metadata`.
 - **`irc_account`**: Per-integration table for IRC. References `user` via `user_id`. Fields: `id`, `user_id`, `nick`, `server`, `port`, `status`, `created_at`, `updated_at`, `metadata`.
 - **`xmpp_account`**: Per-integration table for XMPP. References `user` via `user_id`. Fields: `id`, `user_id`, `jid`, `username`, `status`, `created_at`, `updated_at`, `metadata`.
+- **`mailcow_account`**: Per-integration table for mailcow. References `user` via `user_id`. Fields: `id`, `user_id`, `email`, `domain`, `local_part`, `status`, `created_at`, `updated_at`, `metadata`.
 
 **Field placement:**
 
@@ -111,6 +120,7 @@ Some integrations use dedicated tables **instead of** the unified `integration_a
 | `integration_accounts` | `integration_type` (discriminator)                                     |
 | `irc_account`          | `nick` (unique), `server`, `port`                                      |
 | `xmpp_account`         | `jid` (unique), `username` (unique)                                    |
+| `mailcow_account`      | `email` (unique), `domain`, `local_part`                               |
 | All                    | `metadata` (JSONB for miscellaneous integration-specific data)         |
 
 **Why both exist:** The unified `integration_accounts` table works when integrations share the same schema and only differ by `integration_type`. Per-integration tables (`irc_account`, `xmpp_account`) are used when an integration needs strongly-typed, queryable columns (e.g., unique `nick`, indexed `server`/`port`) and efficient queries without JSON extraction. The `metadata` JSONB column in both patterns holds miscellaneous data that does not need indexing or strict typing.
@@ -844,6 +854,24 @@ The IRC integration provisions NickServ accounts on atl.chat via Atheme JSON-RPC
 - **Unreal (admin)**: When Unreal env is set, use `isUnrealConfigured()` and `unrealRpcClient` from `@/features/integrations/lib/irc`: `userList()`, `userGet(nick)`, `channelList()`, `channelGet(channel)`. HTTPS POST to `/api` with Basic Auth (rpc-user). Use for admin “IRC online” or channel list views.
 
 **Prerequisite:** atl.chat must enable Atheme `misc/httpd` and `transport/jsonrpc` (e.g. port 8081) before Portal can provision.
+
+### mailcow Integration
+
+The mailcow integration provisions email mailboxes via the mailcow REST API:
+
+- **Location**: `src/features/integrations/lib/mailcow/`
+- **External Service**: mailcow REST API (X-API-Key auth)
+- **Database**: Dedicated `mailcow_account` table. No password stored.
+- **Features**:
+  - User chooses local part (email username) and sets password on create.
+  - Password passed once to mailcow; never stored in Portal.
+  - Create/update/delete sync with mailcow API.
+- **Environment**:
+  - `MAILCOW_API_URL` — Base URL (e.g. `https://mail.atl.tools`)
+  - `MAILCOW_API_KEY` — Read-write API key
+  - `MAILCOW_DOMAIN` — Domain for provisioning (e.g. `atl.tools`)
+
+See [docs/MAILCOW.md](./MAILCOW.md) for full details.
 
 ## Current State
 
