@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
+import { PageContent } from "@/components/layout/page";
 import { verifyAdminOrStaffSession } from "@/auth/dal";
 import { AdminDashboard } from "@/features/admin/components/admin-dashboard";
 import { loadUsersListSearchParams } from "@/features/admin/lib/search-params";
@@ -81,9 +82,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <PageContent>
         <AdminDashboard />
-      </div>
+      </PageContent>
     </HydrationBoundary>
   );
 }
