@@ -7,6 +7,7 @@ import {
   IrcPasswordDialog,
   type IrcPasswordDialogData,
 } from "./irc-password-dialog";
+import { MailcowIntegrationCard } from "./mailcow-integration-card";
 import { XmppAccountDetails } from "./xmpp-account-details";
 import { IntegrationManagement } from "@/features/integrations/components/integration-management";
 import { useIntegrations } from "@/features/integrations/hooks/use-integration";
@@ -79,6 +80,17 @@ export function IntegrationsContent() {
               renderAccountDetails={(account) => (
                 <IrcAccountDetails account={account} />
               )}
+              title={integration.name}
+            />
+          );
+        }
+
+        if (integration.id === "mailcow") {
+          return (
+            <MailcowIntegrationCard
+              description={integration.description}
+              integrationId={integration.id}
+              key={integration.id}
               title={integration.name}
             />
           );
