@@ -140,7 +140,10 @@ function XmppAccountsManagementInner() {
           columns={columns}
           data={xmppAccounts}
           toolbarContent={
-            <Select onValueChange={setStatusFilter} value={statusFilter}>
+            <Select
+              onValueChange={(value) => setStatusFilter(value ?? "")}
+              value={statusFilter}
+            >
               <SelectTrigger className="max-w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>

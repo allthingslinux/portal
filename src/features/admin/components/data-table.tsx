@@ -117,10 +117,10 @@ function DataTableInner<TData, TValue>({
           )}
           {enableColumnVisibility && (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="shrink-0" variant="outline">
-                  Columns
-                </Button>
+              <DropdownMenuTrigger
+                render={<Button className="shrink-0" variant="outline" />}
+              >
+                Columns
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {table
