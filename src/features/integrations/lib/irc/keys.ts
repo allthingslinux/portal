@@ -4,6 +4,7 @@ import { createEnv } from "@t3-oss/env-nextjs";
 /**
  * IRC environment variables (Atheme JSON-RPC, server/port for UI; UnrealIRCd for admin).
  * Optional: IRC_ATHEME_INSECURE_SKIP_VERIFY, IRC_UNREAL_INSECURE_SKIP_VERIFY for internal/self-signed TLS.
+ * Optional: IRC_ATHEME_OPER_ACCOUNT + IRC_ATHEME_OPER_PASSWORD for oper-level commands (e.g. FDROP).
  */
 export const keys = () =>
   createEnv({
@@ -15,6 +16,8 @@ export const keys = () =>
         .string()
         .optional()
         .transform((v) => v === "true" || v === "1"),
+      IRC_ATHEME_OPER_ACCOUNT: z.string().optional(),
+      IRC_ATHEME_OPER_PASSWORD: z.string().optional(),
       IRC_UNREAL_JSONRPC_URL: z.string().url().optional(),
       IRC_UNREAL_RPC_USER: z.string().optional(),
       IRC_UNREAL_RPC_PASSWORD: z.string().optional(),
@@ -29,6 +32,8 @@ export const keys = () =>
       IRC_ATHEME_JSONRPC_URL: process.env.IRC_ATHEME_JSONRPC_URL,
       IRC_ATHEME_INSECURE_SKIP_VERIFY:
         process.env.IRC_ATHEME_INSECURE_SKIP_VERIFY,
+      IRC_ATHEME_OPER_ACCOUNT: process.env.IRC_ATHEME_OPER_ACCOUNT,
+      IRC_ATHEME_OPER_PASSWORD: process.env.IRC_ATHEME_OPER_PASSWORD,
       IRC_UNREAL_JSONRPC_URL: process.env.IRC_UNREAL_JSONRPC_URL,
       IRC_UNREAL_RPC_USER: process.env.IRC_UNREAL_RPC_USER,
       IRC_UNREAL_RPC_PASSWORD: process.env.IRC_UNREAL_RPC_PASSWORD,

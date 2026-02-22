@@ -7,8 +7,8 @@ import { and, eq, ne } from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
 import { ircAccount } from "@/db/schema/irc";
-import { AthemeFaultError, registerNick } from "./atheme/client";
-import { ircConfig, isIrcConfigured } from "./config";
+import { AthemeFaultError, fdropNick, registerNick } from "./atheme/client";
+import { ircConfig, isAthemeOperConfigured, isIrcConfigured } from "./config";
 import type { IrcAccount, UpdateIrcAccountRequest } from "./types";
 import { generateIrcPassword } from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
@@ -326,7 +326,8 @@ export class IrcIntegration extends IntegrationBase<
   }
 
   /**
-   * Soft-delete only; NickServ account remains on Atheme.
+   * Delete an IRC account: attempt Atheme FDROP if oper credentials are configured,
+   * then soft-delete the DB record.
    */
   async deleteAccount(accountId: string): Promise<void> {
     const [account] = await db
@@ -337,6 +338,19 @@ export class IrcIntegration extends IntegrationBase<
 
     if (!account) {
       return;
+    }
+
+    // Attempt to drop the NickServ registration if oper creds are available.
+    // Failure is non-fatal — we still soft-delete the portal record.
+    if (isAthemeOperConfigured()) {
+      try {
+        await fdropNick(account.nick);
+      } catch (error) {
+        Sentry.captureException(error, {
+          tags: { integration: "irc", step: "fdrop_on_delete" },
+          extra: { accountId, nick: account.nick },
+        });
+      }
     }
 
     const [updated] = await db
