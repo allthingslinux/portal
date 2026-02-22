@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DataTable } from "./data-table";
 import { useAdminIrcAccounts } from "@/features/admin/hooks/use-admin";
 import { integrationStatusLabels } from "@/features/integrations/lib/core/constants";
@@ -67,8 +74,21 @@ function createIrcAccountColumns() {
   ] as ColumnDef<IrcAccountWithUser, unknown>[];
 }
 
+const IRC_STATUS_OPTIONS = [
+  { value: "all", label: "All statuses" },
+  { value: "active", label: "Active" },
+  { value: "pending", label: "Pending" },
+  { value: "suspended", label: "Suspended" },
+  { value: "deleted", label: "Deleted" },
+] as const;
+
 function IrcAccountsManagementInner() {
-  const { data, error, isPending } = useAdminIrcAccounts();
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const filters = useMemo(
+    () => ({ status: statusFilter === "all" ? undefined : statusFilter }),
+    [statusFilter]
+  );
+  const { data, error, isPending } = useAdminIrcAccounts(filters);
   const columns = useMemo(() => createIrcAccountColumns(), []);
   const ircAccounts = useMemo(() => data?.ircAccounts ?? [], [data]);
 
@@ -120,6 +140,20 @@ function IrcAccountsManagementInner() {
         <DataTable<IrcAccountWithUser, unknown>
           columns={columns}
           data={ircAccounts}
+          toolbarContent={
+            <Select onValueChange={setStatusFilter} value={statusFilter}>
+              <SelectTrigger className="max-w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                {IRC_STATUS_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          }
         />
       </CardContent>
     </Card>
