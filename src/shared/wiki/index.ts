@@ -1,7 +1,7 @@
 import { env } from "@/env";
 import { mediawiki } from "@/features/integrations/lib/mediawiki";
 
-const RECENT_CHANGES_LIMIT = 6;
+const RECENT_CHANGES_LIMIT = 5;
 const API_PATH_REGEX = /\/w\/api\.php$/;
 const ROOT_API_REGEX = /\/api\.php$/;
 
