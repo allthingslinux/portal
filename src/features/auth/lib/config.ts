@@ -394,6 +394,11 @@ const oauthProviderConfig = {
   //   refreshToken: "rt_", // Prefix for refresh tokens
   //   clientSecret: "cs_", // Prefix for client secrets
   // },
+  // Silence startup warning — route exists but Better Auth checks before Next.js HTTP server is ready
+  // See: https://github.com/better-auth/better-auth/issues/4540
+  silenceWarnings: {
+    oauthAuthServerConfig: true,
+  },
 };
 
 // ============================================================================
