@@ -279,20 +279,25 @@ export function IntegrationManagement<TAccount extends { id: string }>({
       </CardContent>
       <CardFooter className="flex justify-end">
         <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button disabled={deleteMutation.isPending} variant="destructive">
-              {deleteMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Account
-                </>
-              )}
-            </Button>
+          <AlertDialogTrigger
+            render={
+              <Button
+                disabled={deleteMutation.isPending}
+                variant="destructive"
+              />
+            }
+          >
+            {deleteMutation.isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              <>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Account
+              </>
+            )}
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
