@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { PageHeader } from "@/components/layout/page/page-header";
+import { PageContent, PageHeader } from "@/components/layout/page";
 import { verifySession } from "@/auth/dal";
 import { SettingsContent } from "./settings-content";
 import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
@@ -50,12 +50,10 @@ export default async function SettingsPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="space-y-6">
-          <PageHeader pathname={SETTINGS_PATH} resolver={resolver} />
-          <SettingsContent />
-        </div>
-      </div>
+      <PageContent>
+        <PageHeader pathname={SETTINGS_PATH} resolver={resolver} />
+        <SettingsContent />
+      </PageContent>
     </HydrationBoundary>
   );
 }
