@@ -64,8 +64,8 @@ export default function AppError({
           <Button onClick={reset} variant="default">
             {t("retry")}
           </Button>
-          <Button asChild variant="outline">
-            <Link href="/app">{t("backToDashboard")}</Link>
+          <Button render={<Link href="/app" />} variant="outline">
+            {t("backToDashboard")}
           </Button>
         </CardFooter>
       </Card>
