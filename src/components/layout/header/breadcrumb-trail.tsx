@@ -19,7 +19,10 @@ export function BreadcrumbTrail({ items }: BreadcrumbTrailProps) {
     <Breadcrumb>
       <BreadcrumbList>
         {items.map((crumb, index) => (
-          <div className="flex items-center" key={`${crumb.label}-${index}`}>
+          <div
+            className="flex items-center"
+            key={crumb.href ?? `${crumb.label}-${index}`}
+          >
             {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
             <BreadcrumbItem className={index === 0 ? "hidden md:block" : ""}>
               {crumb.href ? (
