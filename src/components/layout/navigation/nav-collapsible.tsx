@@ -37,35 +37,38 @@ export function NavCollapsible({ route }: NavCollapsibleProps) {
 
   return (
     <Collapsible
-      asChild
-      className="group/collapsible"
       defaultOpen={isActive || isRouteActive}
+      render={<SidebarMenuItem className="group/collapsible" />}
     >
-      <SidebarMenuItem>
-        <CollapsibleTrigger asChild>
+      <CollapsibleTrigger
+        render={
           <SidebarMenuButton
             isActive={isActive || isRouteActive}
             tooltip={route.label}
-          >
-            {route.icon && <route.icon />}
-            <span>{route.label}</span>
-            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <SidebarMenuSub>
-            {children.map((child) => (
-              <SidebarMenuSubItem key={child.id}>
-                <SidebarMenuSubButton asChild>
-                  <Link href={child.path as Parameters<typeof Link>[0]["href"]}>
-                    <span>{child.label}</span>
-                  </Link>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            ))}
-          </SidebarMenuSub>
-        </CollapsibleContent>
-      </SidebarMenuItem>
+          />
+        }
+      >
+        {route.icon && <route.icon />}
+        <span>{route.label}</span>
+        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <SidebarMenuSub>
+          {children.map((child) => (
+            <SidebarMenuSubItem key={child.id}>
+              <SidebarMenuSubButton
+                render={
+                  <Link
+                    href={child.path as Parameters<typeof Link>[0]["href"]}
+                  />
+                }
+              >
+                <span>{child.label}</span>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+          ))}
+        </SidebarMenuSub>
+      </CollapsibleContent>
     </Collapsible>
   );
 }

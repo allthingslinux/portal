@@ -32,16 +32,20 @@ export function NavItem({ route }: NavItemProps) {
 
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton asChild isActive={isActive} tooltip={route.label}>
-        <Link href={route.path as Parameters<typeof Link>[0]["href"]}>
-          {route.icon && <route.icon />}
-          <span>{route.label}</span>
-          {route.navigation?.badge && (
-            <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs">
-              {route.navigation.badge}
-            </span>
-          )}
-        </Link>
+      <SidebarMenuButton
+        isActive={isActive}
+        render={
+          <Link href={route.path as Parameters<typeof Link>[0]["href"]} />
+        }
+        tooltip={route.label}
+      >
+        {route.icon && <route.icon />}
+        <span>{route.label}</span>
+        {route.navigation?.badge && (
+          <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs">
+            {route.navigation.badge}
+          </span>
+        )}
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
