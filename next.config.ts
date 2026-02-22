@@ -350,31 +350,25 @@ let nextConfig: NextConfig = {
   },
 
   // ============================================================================
-  // Image Optimization
-  // ============================================================================
-  // Configure Next.js Image component behavior
-  // Add remotePatterns if you need to load images from external domains
-  images: {
-    // Add remote domains here when needed
-    // Example:
-    // remotePatterns: [
-    //   {
-    //     protocol: 'https',
-    //     hostname: 'example.com',
-    //     pathname: '/images/**',
-    //   },
-    // ],
-    formats: ["image/avif", "image/webp"],
-  },
-
-  // ============================================================================
   // Script Configuration
   // ============================================================================
   // Set crossOrigin attribute for next/script tags
   // Matches the crossOrigin="anonymous" used in layout.tsx
   crossOrigin: "anonymous",
   // Merge with base config from next-config package
+  // Spread config last but deep-merge images to avoid overwriting remotePatterns
   ...config,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+        pathname: "/**",
+      },
+    ],
+    formats: ["image/avif", "image/webp"],
+    ...config.images,
+  },
 };
 
 // Apply observability configuration (Sentry source maps, etc.)
