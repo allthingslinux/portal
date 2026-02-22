@@ -38,15 +38,18 @@ export default defineConfig({
   resolve: {
     alias: {
       "@/auth/client": path.resolve(
-        __dirname,
+        import.meta.dirname,
         "./src/features/auth/lib/client.ts"
       ),
-      "@/auth": path.resolve(__dirname, "./src/features/auth/lib"),
-      "@/db": path.resolve(__dirname, "./src/shared/db"),
-      "@/config": path.resolve(__dirname, "./src/shared/config"),
-      "@/ui": path.resolve(__dirname, "./src/components/ui"),
-      "@": path.resolve(__dirname, "./src"),
-      "server-only": path.resolve(__dirname, "./vitest.server-only-mock.ts"),
+      "@/auth": path.resolve(import.meta.dirname, "./src/features/auth/lib"),
+      "@/db": path.resolve(import.meta.dirname, "./src/shared/db"),
+      "@/config": path.resolve(import.meta.dirname, "./src/shared/config"),
+      "@/ui": path.resolve(import.meta.dirname, "./src/components/ui"),
+      "@": path.resolve(import.meta.dirname, "./src"),
+      "server-only": path.resolve(
+        import.meta.dirname,
+        "./vitest.server-only-mock.ts"
+      ),
     },
   },
 });
