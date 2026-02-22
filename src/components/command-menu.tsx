@@ -13,6 +13,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { useIsClient } from "@/hooks/use-is-client";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useTranslatedRoutes } from "@/features/routing/hooks/use-translated-routes";
 import { createRouteTranslationResolver } from "@/features/routing/lib/i18n";
@@ -29,17 +30,12 @@ import { getNavigationItems } from "@/features/routing/lib/permissions";
  */
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsClient();
   const router = useRouter();
   const translatedConfig = useTranslatedRoutes();
   const permissions = usePermissions();
   const t = useTranslations();
   const resolver = createRouteTranslationResolver(t);
-
-  // Defer rendering the dialog until after hydration to prevent mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Get navigation items filtered by permissions
   const navigationGroups = getNavigationItems(
