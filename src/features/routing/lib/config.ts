@@ -3,6 +3,7 @@ import {
   Globe,
   HelpCircle,
   LogOut,
+  Mail,
   MessageSquare,
   Settings2,
   Shield,
@@ -83,7 +84,7 @@ export const routeConfig = {
       },
       navigation: {
         group: "platform",
-        order: 4,
+        order: 3,
       },
     },
     {
@@ -93,6 +94,19 @@ export const routeConfig = {
       metadata: {
         robots: { index: false, follow: false },
       },
+      navigation: {
+        group: "platform",
+        order: 4,
+      },
+    },
+    {
+      id: "mail",
+      path: "/app/mail",
+      icon: Mail,
+      metadata: {
+        robots: { index: false, follow: false },
+      },
+      breadcrumb: {},
       navigation: {
         group: "platform",
         order: 5,

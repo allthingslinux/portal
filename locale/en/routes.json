@@ -62,6 +62,20 @@
       "label": "Connect"
     }
   },
+  "mail": {
+    "label": "Mail",
+    "metadata": {
+      "title": "Mail",
+      "description": "Manage your email account and mailbox"
+    },
+    "ui": {
+      "title": "Mail",
+      "description": "Manage your @atl.tools email account, access webmail, and configure mail clients."
+    },
+    "breadcrumb": {
+      "label": "Mail"
+    }
+  },
   "integrations": {
     "label": "Integrations",
     "metadata": {
