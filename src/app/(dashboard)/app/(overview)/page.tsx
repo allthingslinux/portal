@@ -20,10 +20,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const MOCK_QUICK_LINKS = [
+  { label: "atl.tools", href: "https://atl.tools" },
+  { label: "atl.wiki", href: "https://atl.wiki" },
   { label: "atl.dev", href: "https://atl.dev" },
-  { label: "atl.chat", href: "https://atl.chat" },
-  { label: "Wiki", href: "https://wiki.atl.dev" },
-  { label: "GitHub", href: "https://github.com/allthingslinux" },
+  { label: "atl.sh", href: "https://atl.sh" },
 ];
 
 // Placeholder stat cards — wire to real APIs when available
@@ -87,12 +87,6 @@ export default async function AppPage() {
           />
           {/* Account info — top right */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-card/50 px-4 py-2.5 dark:border-border/40 dark:bg-card/30">
-              <div className="size-2 rounded-full bg-green-500" />
-              <span className="text-muted-foreground text-sm">
-                Identity active
-              </span>
-            </div>
             {user.createdAt && (
               <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-primary/10 px-4 py-2.5 dark:bg-primary/20">
                 <Calendar className="size-4 text-primary" />
@@ -151,7 +145,7 @@ export default async function AppPage() {
             <div className="flex flex-wrap gap-2">
               {MOCK_QUICK_LINKS.map((link) => (
                 <a
-                  className="rounded-lg border border-border/60 bg-card/50 px-4 py-2.5 text-sm transition-colors hover:bg-card dark:border-border/40 dark:bg-card/30 dark:hover:bg-card"
+                  className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 font-medium text-primary text-sm transition-colors hover:border-primary/50 hover:bg-primary/20 dark:border-primary/40 dark:bg-primary/15 dark:hover:bg-primary/25"
                   href={link.href}
                   key={link.href}
                   rel="noopener noreferrer"
