@@ -1,231 +1,139 @@
-# AGENTS.md
+# Portal
 
-## Project Overview
+> Scope: Root project (applies to all subdirectories unless overridden)
 
-Portal is a centralized hub and identity management system for the AllThingsLinux (ATL) community and non-profit. It serves as the single source of truth and entry point for all ATL services including free email, IRC, XMPP, SSH pubnix spaces, web hosting, Discord integration, wiki access, and various developer tools. Users create one ATL identity that provisions and manages access to all services across multiple domains (atl.dev, atl.sh, atl.tools, atl.chat). Built with modern TypeScript patterns and clean architecture for a tech-savvy Linux enthusiast community.
+Centralized identity and hub management system for the AllThingsLinux (ATL) community. One ATL identity provisions access to all services: email, IRC, XMPP, SSH, web hosting, Discord, wiki access, and developer tools across `atl.dev`, `atl.sh`, `atl.tools`, and `atl.chat`.
 
-## Setup Commands
+## Quick Facts
 
-- Install deps: `pnpm install`
-- Run build: `pnpm build`
-- Start production: `pnpm start`
-- Start development: `pnpm dev` (request user to run, never run directly)
-- Check code: `pnpm check`
-- Format code: `pnpm fix`
-- Type check: `pnpm type-check`
-- Generate auth schema: `pnpm auth:init-schema`
-- Generate DB migrations: `pnpm db:generate`
-- Run DB migrations: `pnpm db:migrate`
-- Push DB schema: `pnpm db:push` (dev only)
-- Open DB studio: `pnpm db:studio`
-- Seed database: `pnpm db:seed`
-- Create admin user: `pnpm create-admin`
-- Start database: `pnpm compose:db` or `docker compose up -d portal-db`
+- **Primary Language:** TypeScript (strict mode)
+- **Package Manager:** pnpm (never npm/yarn)
+- **Framework:** Next.js 16 (App Router)
+- **Auth:** BetterAuth
+- **Database:** Drizzle ORM + PostgreSQL
+- **Key Commands:** `pnpm dev`, `pnpm build`, `pnpm fix`, `pnpm type-check`
 
 ## Tech Stack
 
-- React 19 + Next.js 16 (App Router)
-- TypeScript (strict mode)
-- TailwindCSS 4 + Shadcn UI (Radix)
-- BetterAuth for authentication
-- DrizzleORM + PostgreSQL
-- Zod for validation
-- TanStack Query (React Query) for state management and data fetching
-- next-intl for internationalization
-- Biome and Ultracite for linting/formatting
+Next.js 16 (App Router) · React 19 · TypeScript · TailwindCSS 4 · shadcn/ui (Radix) · BetterAuth · Drizzle ORM · PostgreSQL · Zod · TanStack Query · next-intl · Biome / Ultracite
 
-## Code Style
+## Repository Structure
 
-- NEVER REMOVE ANYTHING FROM THE CODEBASE WITHOUT ASKING FIRST, ALWAYS FIX IT INSTEAD
-- NEVER RUN NEXT DEV, ALWAYS REQUEST THE USER TO RUN IT FOR YOU
-- TypeScript strict mode enabled
-- Use functional components and hooks
-- Prefer composition over inheritance
-- Follow Next.js App Router conventions
-- Use selective imports over barrel exports for performance
-- Single quotes, no semicolons (Biome config)
-- Ultracite enforces strict code quality standards
-- Write accessible, performant, type-safe code
-- Use explicit types for clarity, prefer `unknown` over `any`
-- Always await promises in async functions
-- Use semantic HTML and ARIA attributes
+```
+src/
+├── app/                    # Next.js App Router pages & API routes
+│   ├── (dashboard)/        # Authenticated dashboard pages
+│   ├── api/                # Route handlers (REST endpoints)
+│   └── auth/               # Auth pages (login, register, verify)
+├── features/               # Feature modules (colocated UI + logic)
+│   ├── admin/              # Admin dashboard (users, bans, roles) → see AGENTS.md
+│   ├── auth/               # Auth UI, session context, permissions → see AGENTS.md
+│   ├── integrations/       # IRC, XMPP, Discord integrations → see AGENTS.md
+│   ├── routing/            # Route config, middleware, breadcrumbs → see AGENTS.md
+│   └── user/               # User profile & settings → see AGENTS.md
+├── shared/                 # Cross-cutting infrastructure
+│   ├── api/                # TanStack Query setup, query keys, server queries → see AGENTS.md
+│   ├── config/             # App-level config
+│   ├── db/                 # Drizzle schema, queries, migrations → see AGENTS.md
+│   ├── email/              # Email service (Resend)
+│   ├── observability/      # Sentry, OpenTelemetry, web vitals → see AGENTS.md
+│   ├── schemas/            # Shared Zod validation schemas → see AGENTS.md
+│   ├── security/           # Security utilities
+│   ├── seo/                # Metadata helpers
+│   ├── types/              # Centralized TypeScript types
+│   └── utils/              # Shared utilities & constants
+├── components/             # Shared UI components (shadcn + custom)
+├── hooks/                  # Shared React hooks
+└── i18n/                   # next-intl routing config
+```
+
+Supporting files:
+```
+.agents/
+├── code-standards.md       # Coding rules beyond what Biome enforces
+└── skills.md               # Available agent skills index
+docs/                       # Architecture and reference docs
+locale/                     # i18n translation files (en, es, fr, de, pt, zh)
+scripts/                    # Utility/maintenance scripts
+tests/                      # Test suites (unit, integration)
+proxy.ts                    # Next.js middleware (note: named proxy.ts, not middleware.ts)
+```
+
+## Common Tasks
+
+### Development
+- `pnpm dev` — Start development server (**request user to run, never run directly**)
+- `pnpm build` — Build for production
+- `pnpm start` — Start production server
+
+### Quality
+- `pnpm fix` — Format & lint fix (Biome/Ultracite) — **run before committing**
+- `pnpm check` — Check formatting & linting without fixing
+- `pnpm type-check` — TypeScript validation
+
+### Database
+- `pnpm db:generate` — Generate migration files from schema changes
+- `pnpm db:migrate` — Run pending migrations (safe for production)
+- `pnpm db:push` — Push schema directly (dev only, never production)
+- `pnpm db:studio` — Open Drizzle Studio (GUI)
+- `pnpm db:seed` — Seed the database
+- `pnpm compose:db` — Start PostgreSQL via Docker Compose
+
+### Auth & Admin
+- `pnpm auth:init-schema` — Regenerate BetterAuth schema
+- `pnpm create-admin` — Create an admin user
+
+### Testing
+- Tests live in `tests/` — see `tests/` for conventions
+- `pnpm test` — Run all tests (CI mode)
 
 ## Import Aliases
 
 ```typescript
-import { auth, authClient } from "@/auth";        // Authentication
-import { db } from "@/db";                        // Database
-import { BASE_URL } from "@/config";              // App config (or @/config/app)
-import { Button } from "@/components/ui/button"; // UI components
-import { usePermissions } from "@/hooks/use-permissions"; // Custom hooks
+import { auth, authClient } from "@/auth"          // Auth module
+import { db } from "@/db"                           // Database
+import { env } from "@/env"                         // Validated env vars
+import { BASE_URL } from "@/config"                 // App config
+import { Button } from "@/components/ui/button"     // UI components
+import { QUERY_CACHE } from "@/lib/utils/constants" // Constants
+import type { SessionData } from "@/types/auth"     // Centralized types
 ```
 
-**Current Implementation:**
+## Types & Constants
 
-- Auth module uses barrel exports via `@/auth` index file
-- Database uses barrel exports via `@/db` index file
-- Config uses barrel exports via `@/config` (or `@/config/app` for app-specific config)
-- UI components use direct imports: `@/components/ui/button`
-- Most other modules use direct imports for performance
+Types centralized in `src/shared/types/`:
+- `@/types/auth` — `SessionData`, `AuthResult`, `UserPermissions`, `Permission`
+- `@/types/api` — filters, inputs, responses, error types
+- `@/types/routes` — `RouteConfig`, `ProtectedRoute`, `BreadcrumbItem`
+- `@/types/common` — DTOs (`UserDTO`, `SessionDTO`, `ApiKeyDTO`)
 
-## Type Organization (TLDR)
+Constants centralized in `src/shared/utils/constants.ts`:
+- `USER_ROLES`, `PERMISSIONS`, `HTTP_STATUS`, `API_ERROR_CODES`
+- `QUERY_CACHE` — TanStack Query stale/gc times
+- `RATE_LIMIT`, `INTEGRATION_STATUSES`, `PAGINATION`, `VALIDATION_PATTERNS`
 
-**All major types are centralized in `src/types/` directory:**
+## Environment Variables
 
-- `@/types/auth` - Authentication types (`SessionData`, `AuthResult`, `UserPermissions`, `Permission`)
-- `@/types/api` - API types (filters, inputs, responses, error types)
-- `@/types/routes` - Route configuration types (`RouteConfig`, `ProtectedRoute`, `BreadcrumbItem`, etc.)
-- `@/types/email` - Email service types (`EmailOptions`)
-- `@/types/common` - Domain DTOs (`UserDTO`, `SessionDTO`, `ApiKeyDTO`, etc.)
+Each module has its own `keys.ts` file using `@t3-oss/env-nextjs`. The central `src/env.ts` extends all module keys. **Never access `process.env` directly** — always use the `keys()` function from the relevant module.
 
-**Backward compatibility:** Original locations (`@/lib/api/types`, `@/lib/routes/types`, etc.) re-export from centralized types.
+## Critical Rules
 
-**Module-specific types stay in modules:**
+- **Package manager is pnpm**. Never use npm or yarn.
+- **Never run `pnpm dev`** — always ask the user to run it.
+- **Never delete code** without asking first — fix it instead.
+- **Run `pnpm fix` before committing** to ensure Biome/Ultracite compliance.
+- **Never use `db:push` in production** — always generate and run migrations.
+- **Never access `process.env` directly** — use the module's `keys()` function.
+- **Always validate inputs with Zod** — never trust raw external data.
 
-- Integration types (`@/lib/integrations/core/types`) - framework-specific
-- Drizzle-inferred types (`@/lib/api/types`) - tightly coupled to schema
-- Component prop types - stay with components
-- Internal utility types - stay in their modules
+## Guidelines
 
-**Import from centralized types:**
+- [Code Standards](.agents/code-standards.md) — Rules beyond what Biome enforces
+- [Project Skills](.agents/skills.md) — Available agent skills index
 
-```typescript
-import type { SessionData, AuthResult } from "@/types/auth";
-import type { UserListFilters, UpdateUserInput } from "@/types/api";
-import type { RouteConfig, ProtectedRoute } from "@/types/routes";
-import type { EmailOptions } from "@/types/email";
-```
+## Finish the Task
 
-## Constants Organization (TLDR)
-
-**All major constants are centralized in `src/lib/utils/constants.ts`:**
-
-- `USER_ROLES`, `PERMISSIONS` - User and permission constants
-- `HTTP_STATUS`, `API_ERROR_CODES` - API and HTTP constants
-- `QUERY_CACHE` - TanStack Query cache time constants (`STALE_TIME_SHORT`, `STALE_TIME_DEFAULT`, `STALE_TIME_LONG`, `GC_TIME_DEFAULT`)
-- `RATE_LIMIT` - API rate limit defaults (`DEFAULT_TIME_WINDOW_MS`, `DEFAULT_MAX_REQUESTS`)
-- `INTEGRATION_STATUSES` - Integration account status values
-- `PAGINATION` - Pagination defaults
-- `VALIDATION_PATTERNS` - Regex patterns for validation
-- `MOBILE_BREAKPOINT`, `DATE_FORMATS` - UI/display constants
-
-**Backward compatibility:** Original locations re-export from centralized constants where applicable.
-
-**Module-specific constants stay in modules:**
-
-- App config (`@/lib/config/app.ts`) - Application-specific configuration
-- Query keys factory (`@/lib/api/query-keys.ts`) - TanStack Query factory pattern
-- Integration labels (`@/lib/integrations/core/constants.ts`) - UI-specific labels
-- Observability patterns (`@/lib/observability/server.ts`) - Module-specific regex
-- Route config (`@/lib/routes/config.ts`) - Route definitions
-
-**Import from centralized constants:**
-
-```typescript
-import { QUERY_CACHE, API_ERROR_CODES, RATE_LIMIT } from "@/lib/utils/constants";
-
-// Use in hooks
-staleTime: QUERY_CACHE.STALE_TIME_SHORT
-
-// Use in API code
-if (error.code === API_ERROR_CODES.UNAUTHORIZED) { ... }
-```
-
-## Architecture Rules
-
-- **Module boundaries**: Clear separation between client/server code
-- **Selective exports**: Use targeted imports over barrel files for performance
-- **Authentication**: Use `@/auth` module for all auth operations
-- **Database**: Use `@/db` for all database operations
-- **Components**: Place reusable components in `@/components`
-- **UI**: Use shadcn/ui components from `@/ui/*`
-
-## Environment Variables with t3-env
-
-Portal uses `@t3-oss/env-nextjs` for type-safe, validated environment variable management. Each module that needs environment variables has its own `keys.ts` file.
-
-### Pattern
-
-1. **Module-level `keys.ts`**: Each lib module (auth, db, observability, xmpp, etc.) exports a `keys()` function that defines and validates its environment variables using Zod schemas.
-
-```typescript
-// src/lib/xmpp/keys.ts
-import { z } from "zod";
-import { createEnv } from "@t3-oss/env-nextjs";
-
-export const keys = () =>
-  createEnv({
-    server: {
-      XMPP_DOMAIN: z.string().optional(),
-      PROSODY_REST_URL: z.url().optional(),
-      // ... other vars
-    },
-    runtimeEnv: {
-      XMPP_DOMAIN: process.env.XMPP_DOMAIN,
-      PROSODY_REST_URL: process.env.PROSODY_REST_URL,
-      // ... other vars
-    },
-  });
-```
-
-1. **Central `env.ts`**: The main `src/env.ts` file extends all module keys and provides a single source of truth.
-
-```typescript
-// src/env.ts
-import { keys as auth } from "@/lib/auth/keys";
-import { keys as database } from "@/lib/db/keys";
-import { keys as observability } from "@/lib/observability/keys";
-import { keys as xmpp } from "@/lib/xmpp/keys";
-
-export const env = createEnv({
-  extends: [auth(), database(), observability(), xmpp()],
-  server: {},
-  client: {},
-  runtimeEnv: {},
-});
-```
-
-1. **Usage in modules**: Modules import and use their own `keys()` function, not direct `process.env` access.
-
-```typescript
-// src/lib/xmpp/config.ts
-import { keys } from "./keys";
-
-const env = keys();
-export const xmppConfig = {
-  domain: env.XMPP_DOMAIN || "xmpp.atl.chat",
-  prosody: {
-    restUrl: env.PROSODY_REST_URL,
-    // ...
-  },
-};
-```
-
-### Benefits
-
-- **Type safety**: Environment variables are typed and validated at runtime
-- **Early error detection**: Invalid or missing required vars fail fast with clear error messages
-- **Modularity**: Each module manages its own environment variables
-- **No direct `process.env`**: All env access goes through validated `keys()` functions
-- **Client/Server separation**: t3-env handles Next.js client/server boundary correctly
-
-## Security Guidelines
-
-- Never expose API keys in client code
-- Use BetterAuth for all authentication
-- Validate all inputs with Zod schemas
-- Implement proper RBAC with permissions module
-- Sanitize user inputs in MDX content
-
-## Development Notes
-
-- Use TypeScript paths for imports (configured in tsconfig.json)
-- Follow Next.js 16 App Router patterns
-- Implement proper error boundaries
-- Use Suspense for loading states
-- Optimize images with next/image
-- Format code with `pnpm fix`
-- Database setup uses Docker Compose (`pnpm compose:db` or `docker compose up -d portal-db`); `pnpm compose:production`, `pnpm compose:staging`, `pnpm compose:adminer` for other profiles
-- Available MCP tools: shadcn, Better Auth, llms.txt documentation, Next.js Devtools, GitHub, Sentry, Trigger.dev
-- Use TanStack Query for all server state management
-- Internationalization handled via next-intl with locale files in `locale/` directory
+- [ ] Run `pnpm fix` before committing.
+- [ ] Update the relevant per-directory `AGENTS.md` if you changed structure, commands, or key files.
+- [ ] Update root `README.md` if setup steps or ports changed.
+- [ ] Summarize changes in conventional commit form (e.g. `feat: ...`, `fix: ...`, `docs: ...`).
