@@ -29,6 +29,8 @@ export type {
   UpdateUserInput,
   UserListFilters,
   UserListResponse,
+  XmppAccountListResponse,
+  XmppAccountWithUser,
 } from "@/shared/types/api";
 
 // User types
