@@ -6,6 +6,7 @@ import { AdminStats } from "./admin-stats";
 import { IrcAccountsManagement } from "./irc-accounts-management";
 import { SessionManagement } from "./session-management";
 import { UserManagement } from "./user-management";
+import { XmppAccountsManagement } from "./xmpp-accounts-management";
 import { useTranslatedRoutes } from "@/features/routing/hooks/use-translated-routes";
 
 export function AdminDashboard() {
@@ -37,6 +38,7 @@ export function AdminDashboard() {
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="sessions">Sessions</TabsTrigger>
           <TabsTrigger value="irc-accounts">IRC Accounts</TabsTrigger>
+          <TabsTrigger value="xmpp-accounts">XMPP Accounts</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users">
@@ -49,6 +51,10 @@ export function AdminDashboard() {
 
         <TabsContent value="irc-accounts">
           <IrcAccountsManagement />
+        </TabsContent>
+
+        <TabsContent value="xmpp-accounts">
+          <XmppAccountsManagement />
         </TabsContent>
       </Tabs>
     </div>
