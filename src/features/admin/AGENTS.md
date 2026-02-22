@@ -25,7 +25,7 @@ All admin functionality requires explicit permission checks. **Never render admi
 ```typescript
 // Server-side — in route handlers or server actions
 import { auth } from "@/auth"
-import { USER_ROLES } from "@/lib/utils/constants"
+import { USER_ROLES } from "@/shared/utils/constants"
 
 const session = await auth.api.getSession({ headers: await headers() })
 if (session?.user.role !== USER_ROLES.ADMIN) {
@@ -33,14 +33,14 @@ if (session?.user.role !== USER_ROLES.ADMIN) {
 }
 
 // Client-side — in components
-import { usePermissions } from "@/hooks/use-permissions"
+import { usePermissions } from "@/auth"
 const { hasPermission } = usePermissions()
 // Gate entire components: if (!hasPermission("admin:read")) return null
 ```
 
 ## Common Tasks
 
-- **Viewing/editing users**: Query keys in `@/lib/api/query-keys` under `users.*`
+- **Viewing/editing users**: Query keys in `@/shared/api/query-keys` under `users.*`
 - **Ban management**: Uses `banExpires` date field — validated via Zod schema in `src/shared/schemas/user.ts`
 - **Role assignment**: Update `role` field through the admin API, never directly against the DB from the client
 - **Stats**: Live stats fetched from `src/app/api/admin/stats/route.ts`

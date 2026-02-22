@@ -10,6 +10,7 @@
 | `lib/irc/` | IRC integration (Atheme RPC + UnrealIRCd client) |
 | `lib/xmpp/` | XMPP integration (Prosody REST client) |
 | `lib/discord/` | Discord integration (REST API client) |
+| `lib/mediawiki/` | MediaWiki API client (wiki account sync) |
 | `components/` | Integration UI (status cards, account forms) |
 | `hooks/` | TanStack Query hooks for integration data |
 | `api/` | Integration API route handler wrappers |
@@ -37,6 +38,11 @@ lib/xmpp/
 lib/discord/
   ├── client.ts        ← Discord REST API client (bot token auth)
   └── ...
+
+lib/mediawiki/
+  ├── client.ts        ← MediaWiki API client (server-only)
+  ├── keys.ts          ← MediaWiki env vars
+  └── index.ts         ← Barrel export
 ```
 
 ## Key Concepts
@@ -69,6 +75,7 @@ Each integration has its own `keys.ts`. Key vars:
 - IRC: `IRC_HOST`, `IRC_PORT`, `ATHEME_USERNAME`, `ATHEME_PASSWORD`, `UNREAL_WS_URL`
 - XMPP: `XMPP_DOMAIN`, `PROSODY_REST_URL`, `PROSODY_REST_SECRET`
 - Discord: `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID`
+- MediaWiki: `WIKI_API_URL` (default: https://atl.wiki/api.php)
 
 ## Critical Rules
 

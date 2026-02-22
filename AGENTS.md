@@ -95,7 +95,7 @@ import { db } from "@/db"                           // Database
 import { env } from "@/env"                         // Validated env vars
 import { BASE_URL } from "@/config"                 // App config
 import { Button } from "@/components/ui/button"     // UI components
-import { QUERY_CACHE } from "@/lib/utils/constants" // Constants
+import { QUERY_CACHE } from "@/shared/utils/constants" // Constants
 import type { SessionData } from "@/types/auth"     // Centralized types
 ```
 

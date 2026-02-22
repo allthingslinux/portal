@@ -25,12 +25,12 @@ Config files at root:
 ### Capture Errors
 
 ```typescript
-import { captureException } from "@/lib/observability/server" // or /client
+import { captureError } from "@/shared/observability" // or server/client for init
 
 try {
   await riskyOperation()
 } catch (error) {
-  captureException(error, { tags: { feature: "irc" } })
+  captureError(error, { tags: { feature: "irc" } })
   throw error
 }
 ```
@@ -38,11 +38,14 @@ try {
 ### Custom Spans (OpenTelemetry)
 
 ```typescript
-import { withSpan } from "@/lib/observability/helpers"
+import { createMetricSpan } from "@/shared/observability/helpers"
 
-const result = await withSpan("irc.createAccount", async () => {
-  return await createIrcAccount(username)
-})
+const result = await createMetricSpan(
+  "irc.createAccount",
+  "irc.create",
+  {},
+  () => createIrcAccount(username)
+)
 ```
 
 ### Logging
@@ -50,7 +53,7 @@ const result = await withSpan("irc.createAccount", async () => {
 Use the observability helpers — **not raw `console.*`** in production code:
 
 ```typescript
-import { log } from "@/lib/observability/server"
+import { log } from "@/shared/observability"
 
 log.info({ userId, action: "create_irc_account" }, "IRC account created")
 log.error({ error }, "Failed to create IRC account")

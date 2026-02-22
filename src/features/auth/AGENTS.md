@@ -49,7 +49,7 @@ const { data: session, isPending } = authClient.useSession()
 
 ```typescript
 // Client
-import { usePermissions } from "@/hooks/use-permissions"
+import { usePermissions } from "@/auth"
 const { hasPermission } = usePermissions()
 if (!hasPermission("admin:read")) return null
 

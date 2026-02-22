@@ -19,7 +19,7 @@
 **Always use the query key factory** — never hardcode query key strings.
 
 ```typescript
-import { queryKeys } from "@/lib/api/query-keys"
+import { queryKeys } from "@/shared/api/query-keys"
 
 // Reading keys (for useQuery)
 useQuery({ queryKey: queryKeys.users.list(filters) })
@@ -35,8 +35,8 @@ queryClient.invalidateQueries({ queryKey: queryKeys.users.list() })
 ```typescript
 "use client"
 import { useQuery, useMutation } from "@tanstack/react-query"
-import { queryKeys } from "@/lib/api/query-keys"
-import { QUERY_CACHE } from "@/lib/utils/constants"
+import { queryKeys } from "@/shared/api/query-keys"
+import { QUERY_CACHE } from "@/shared/utils/constants"
 
 function UserList() {
   const { data, isLoading } = useQuery({
@@ -70,7 +70,7 @@ export default async function Page() {
 
 ## Stale Times
 
-Use constants from `@/lib/utils/constants` — don't hardcode millisecond values:
+Use constants from `@/shared/utils/constants` — don't hardcode millisecond values:
 
 | Constant | Value | Use For |
 |----------|-------|---------|

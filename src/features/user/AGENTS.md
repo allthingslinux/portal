@@ -23,10 +23,10 @@ const { data: user } = useCurrentUser() // returns UserDTO | undefined
 
 ## TanStack Query
 
-User query keys are defined in the factory at `@/lib/api/query-keys`:
+User query keys are defined in the factory at `@/shared/api/query-keys`:
 
 ```typescript
-import { queryKeys } from "@/lib/api/query-keys"
+import { queryKeys } from "@/shared/api/query-keys"
 queryClient.invalidateQueries({ queryKey: queryKeys.users.current() })
 ```
 
