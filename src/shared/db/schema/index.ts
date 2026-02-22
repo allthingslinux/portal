@@ -9,6 +9,7 @@ import {
 } from "./auth";
 import { integrationAccount } from "./integrations/base";
 import { ircAccount } from "./irc";
+import { mailcowAccount } from "./mailcow";
 import {
   oauthAccessToken,
   oauthClient,
@@ -31,5 +32,6 @@ export const schema = {
   jwks,
   integrationAccount,
   ircAccount,
+  mailcowAccount,
   xmppAccount,
 };
