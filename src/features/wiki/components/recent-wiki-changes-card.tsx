@@ -1,3 +1,5 @@
+import { ArrowUpRight, BookOpen } from "lucide-react";
+
 import { env } from "@/env";
 import { formatRelativeTime } from "@/shared/utils/date";
 import { fetchRecentWikiChanges } from "@/shared/wiki";
@@ -10,6 +12,13 @@ function getWikiBaseUrl(): string {
   return api.replace(API_PATH_REGEX, "").replace(ROOT_API_REGEX, "") || api;
 }
 
+function formatDiff(diff: number): string {
+  if (diff === 0) {
+    return "±0";
+  }
+  return diff > 0 ? `+${diff}` : String(diff);
+}
+
 export async function RecentWikiChangesCard() {
   const changes = await fetchRecentWikiChanges();
   const wikiBaseUrl = getWikiBaseUrl();
@@ -17,18 +26,11 @@ export async function RecentWikiChangesCard() {
   if (changes.length === 0) {
     return (
       <div className="rounded-xl border border-border/60 bg-card/50 p-4 dark:border-border/40 dark:bg-card/30">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <BookOpen className="size-4 text-muted-foreground" />
           <h3 className="font-medium text-foreground">Recent Wiki Changes</h3>
-          <a
-            className="font-medium text-primary text-xs hover:underline"
-            href={wikiBaseUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            View all
-          </a>
         </div>
-        <p className="text-muted-foreground text-sm">
+        <p className="mt-3 text-muted-foreground text-sm">
           No recent changes. Check back later.
         </p>
       </div>
@@ -38,7 +40,10 @@ export async function RecentWikiChangesCard() {
   return (
     <div className="rounded-xl border border-border/60 bg-card/50 p-4 dark:border-border/40 dark:bg-card/30">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-medium text-foreground">Recent Wiki Changes</h3>
+        <div className="flex items-center gap-2">
+          <BookOpen className="size-4 text-muted-foreground" />
+          <h3 className="font-medium text-foreground">Recent Wiki Changes</h3>
+        </div>
         <a
           className="font-medium text-primary text-xs hover:underline"
           href={wikiBaseUrl}
@@ -48,71 +53,39 @@ export async function RecentWikiChangesCard() {
           View all
         </a>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full font-mono text-sm">
-          <thead>
-            <tr className="border-border/60 border-b text-left">
-              <th className="h-9 px-3 py-2 font-medium text-muted-foreground uppercase tracking-wider">
-                Page
-              </th>
-              <th className="h-9 px-3 py-2 font-medium text-muted-foreground uppercase tracking-wider">
-                User
-              </th>
-              <th className="h-9 px-3 py-2 font-medium text-muted-foreground uppercase tracking-wider">
-                When
-              </th>
-              <th className="h-9 w-20 px-3 py-2 text-right font-medium text-muted-foreground uppercase tracking-wider">
-                Diff
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {changes.map((item) => (
-              <tr
-                className="border-border/40 border-b transition-colors last:border-0 hover:bg-muted/30"
-                key={`${item.pageId}-${item.title}-${item.timestamp}`}
-              >
-                <td className="min-w-[160px] px-3 py-2.5">
-                  <a
-                    className="block break-words font-medium text-foreground hover:text-primary hover:underline"
-                    href={item.url}
-                    rel="noopener noreferrer"
-                    target="_blank"
+      <ul className="flex flex-col gap-2">
+        {changes.map((item) => (
+          <li key={`${item.pageId}-${item.title}-${item.timestamp}`}>
+            <a
+              className="group flex flex-col gap-0.5 rounded-lg border border-border/60 px-3 py-2 transition-colors hover:bg-muted/50 dark:border-border/40"
+              href={item.url}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <span className="line-clamp-2 font-medium text-foreground text-sm group-hover:text-primary">
+                  {item.title}
+                </span>
+                <ArrowUpRight className="mt-0.5 size-3.5 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+              </div>
+              <span className="text-muted-foreground text-xs">
+                by {item.user} · {formatRelativeTime(item.timestamp)}
+                {item.diff !== 0 && (
+                  <span
+                    className={
+                      item.diff > 0
+                        ? "ml-1 text-green-600 dark:text-green-500"
+                        : "ml-1 text-red-600 dark:text-red-500"
+                    }
                   >
-                    {item.title}
-                  </a>
-                </td>
-                <td className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">
-                  {item.user}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2.5">
-                  <span className="rounded bg-muted/50 px-1.5 py-0.5 text-muted-foreground tabular-nums">
-                    {formatRelativeTime(item.timestamp)}
+                    · {formatDiff(item.diff)}
                   </span>
-                </td>
-                <td className="px-3 py-2.5 text-right">
-                  {item.diff !== 0 ? (
-                    <span
-                      className={
-                        item.diff > 0
-                          ? "inline-block rounded bg-green-500/15 px-1.5 py-0.5 font-medium text-green-600 tabular-nums dark:text-green-500"
-                          : "inline-block rounded bg-red-500/15 px-1.5 py-0.5 font-medium text-red-600 tabular-nums dark:text-red-500"
-                      }
-                    >
-                      {item.diff > 0 ? "+" : ""}
-                      {item.diff}
-                    </span>
-                  ) : (
-                    <span className="inline-block rounded bg-muted/50 px-1.5 py-0.5 text-muted-foreground tabular-nums">
-                      ±0
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                )}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
