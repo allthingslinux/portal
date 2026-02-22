@@ -1,5 +1,7 @@
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppHeader } from "./header/app-header";
 import { SidebarContainer } from "./sidebar/sidebar-container";
+import { StatusBar } from "./status-bar";
 import { SidebarInset, SidebarProvider } from "@/ui/sidebar";
 
 interface AppLayoutProps {
@@ -9,12 +11,19 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, canViewAdmin }: AppLayoutProps) {
   return (
-    <SidebarProvider>
-      <SidebarContainer canViewAdmin={canViewAdmin} />
-      <SidebarInset>
-        <AppHeader />
-        {children}
-      </SidebarInset>
-    </SidebarProvider>
+    <TooltipProvider delay={100}>
+      <SidebarProvider className="bg-sidebar">
+        <SidebarContainer canViewAdmin={canViewAdmin} />
+        <div className="flex h-svh w-full min-w-0 flex-1 flex-col overflow-hidden bg-canvas">
+          <SidebarInset className="min-h-0">
+            <AppHeader />
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-background">
+              <div className="min-h-0 flex-1 overflow-auto">{children}</div>
+              <StatusBar />
+            </div>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </TooltipProvider>
   );
 }

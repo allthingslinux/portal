@@ -81,13 +81,15 @@ export function SidebarUserSection({ actions }: SidebarUserSectionProps) {
               </SidebarMenuButton>
             ) : (
               action.path && (
-                <SidebarMenuButton asChild>
-                  <Link
-                    href={action.path as Parameters<typeof Link>[0]["href"]}
-                  >
-                    <Icon />
-                    <span>{action.label}</span>
-                  </Link>
+                <SidebarMenuButton
+                  render={
+                    <Link
+                      href={action.path as Parameters<typeof Link>[0]["href"]}
+                    />
+                  }
+                >
+                  <Icon />
+                  <span>{action.label}</span>
                 </SidebarMenuButton>
               )
             )}
