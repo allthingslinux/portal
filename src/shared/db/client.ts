@@ -45,7 +45,20 @@ const poolConfig: PoolConfig = {
   // max: 20,
 };
 
-const pool = new Pool(poolConfig);
+/**
+ * Global pool instance to prevent connection exhaustion during Next.js HMR.
+ * Next.js clears the module cache on every compile, meaning a new connection pool
+ * would be created for every change if we didn't cache it on the global object.
+ */
+const globalForDb = globalThis as unknown as {
+  pool: Pool | undefined;
+};
+
+const pool = globalForDb.pool ?? new Pool(poolConfig);
+
+if (process.env.NODE_ENV !== "production") {
+  globalForDb.pool = pool;
+}
 
 // ============================================================================
 // Drizzle Database Instance
