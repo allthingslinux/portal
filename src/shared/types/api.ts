@@ -327,3 +327,22 @@ export interface IrcAccountListResponse {
   ircAccounts: IrcAccountWithUser[];
   pagination: ListPaginationMeta;
 }
+
+/**
+ * XMPP account with optional user info for admin list
+ */
+export interface XmppAccountWithUser extends AdminXmppAccount {
+  user?: {
+    id: string;
+    email: string;
+    name: string | null;
+  };
+}
+
+/**
+ * Admin XMPP accounts list response (GET /api/admin/xmpp-accounts)
+ */
+export interface XmppAccountListResponse {
+  xmppAccounts: XmppAccountWithUser[];
+  pagination: ListPaginationMeta;
+}
