@@ -12,6 +12,7 @@ import { ThemeProvider } from "next-themes";
 
 import { CommandMenu } from "@/components/command-menu";
 import { ReactQueryDevtools } from "@/components/dev-tools";
+import { MailcowIcon } from "@/components/icons/mailcow-icon";
 // import { ErrorBoundary } from "@/components/error-boundary";
 import { authClient } from "@/auth/client";
 import { useBetterAuthUILocalization } from "@/auth/localization";
@@ -148,25 +149,41 @@ export function Providers({ children }: { children: ReactNode }) {
               credentials
               // Next.js Link component for client-side navigation
               // Wrapper needed for Better Auth UI compatibility with Next.js typed routes
-              Link={LinkWrapper}
+              genericOAuth={
+                process.env.NEXT_PUBLIC_MAILCOW_OAUTH_ENABLED === "true"
+                  ? {
+                      providers: [
+                        {
+                          provider: "mailcow",
+                          name: "Mailcow",
+                          icon: ({ className }) => (
+                            <MailcowIcon className={className} size={20} />
+                          ),
+                        },
+                      ],
+                    }
+                  : undefined
+              }
               // Multiple device session management
-              localization={localization}
+              Link={LinkWrapper}
               // Programmatic navigation function
-              multiSession
+              localization={localization}
               // Callback when session changes (refreshes server components)
-              navigate={navigate}
+              multiSession
               // Persist client for offline auth (set to true if using persistQueryClient)
-              onSessionChange={() => router.refresh()}
+              navigate={navigate}
               // WebAuthn/passkey authentication
-              passkey
+              onSessionChange={() => router.refresh()}
               // Redirect URL after successful authentication
-              persistClient={false}
+              passkey
               // Replace current history entry instead of pushing
-              redirectTo="/app"
+              persistClient={false}
               // Two-factor authentication methods
               // Options: ["otp", "totp"] or boolean (true for both)
-              replace={replace}
+              redirectTo="/app"
               // Social OAuth providers to display in the sign-in UI
+              replace={replace}
+              // Generic OAuth (mailcow). Show when NEXT_PUBLIC_MAILCOW_OAUTH_ENABLED=true
               social={{ providers: ["discord"] }}
               // Additional configuration options (uncomment if needed):
               // additionalFields={{

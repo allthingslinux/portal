@@ -9,6 +9,7 @@ import {
   admin as adminPlugin,
   apiKey,
   bearer,
+  genericOAuth,
   jwt,
   lastLoginMethod,
   multiSession,
@@ -39,6 +40,7 @@ import {
   user as userRole,
 } from "./permissions";
 import { cleanupIntegrationAccounts } from "@/features/integrations/lib/core/user-deletion";
+import { keys as mailcowKeys } from "@/features/integrations/lib/mailcow/keys";
 
 // ============================================================================
 // Constants
@@ -209,6 +211,45 @@ const socialProviders = {
     // redirectURI: "https://my-main-app.com/api/auth/callback/discord",
   },
 };
+
+// ============================================================================
+// Generic OAuth (Mailcow as sign-in provider)
+// ============================================================================
+// Mailcow exposes OAuth2 at /oauth/authorize, /oauth/token, /oauth/profile.
+// Create OAuth client via Mailcow API POST /api/v1/add/oauth2-client or UI.
+// See: references/mailcow-openapi.yaml, NextAuth discussion #9206
+
+const mailcowEnv = mailcowKeys();
+const mailcowOAuthConfig =
+  mailcowEnv.MAILCOW_API_URL &&
+  mailcowEnv.MAILCOW_OAUTH_CLIENT_ID &&
+  mailcowEnv.MAILCOW_OAUTH_CLIENT_SECRET
+    ? [
+        {
+          providerId: "mailcow",
+          clientId: mailcowEnv.MAILCOW_OAUTH_CLIENT_ID,
+          clientSecret: mailcowEnv.MAILCOW_OAUTH_CLIENT_SECRET,
+          authorizationUrl: `${mailcowEnv.MAILCOW_API_URL.replace(/\/$/, "")}/oauth/authorize`,
+          tokenUrl: `${mailcowEnv.MAILCOW_API_URL.replace(/\/$/, "")}/oauth/token`,
+          userInfoUrl: `${mailcowEnv.MAILCOW_API_URL.replace(/\/$/, "")}/oauth/profile`,
+          scopes: ["profile"],
+          mapProfileToUser: (profile: {
+            username?: string;
+            identifier?: string;
+            email?: string;
+            full_name?: string;
+            displayName?: string;
+          }) => ({
+            id: profile.username ?? profile.identifier ?? profile.email ?? "",
+            email: profile.email ?? "",
+            name:
+              profile.full_name ?? profile.displayName ?? profile.email ?? "",
+            image: null,
+            emailVerified: true,
+          }),
+        },
+      ]
+    : [];
 
 // ============================================================================
 // OAuth Provider Plugin Configuration
@@ -554,6 +595,9 @@ const plugins = [
     disableSettingJwtHeader: true, // Required for OAuth provider mode
   }), // JWT tokens for services that can't use sessions
   openAPI(),
+  ...(mailcowOAuthConfig.length > 0
+    ? [genericOAuth({ config: mailcowOAuthConfig })]
+    : []),
   oAuthProxy({
     // Production URL of your main app
     // If this matches baseURL, requests will not be proxied

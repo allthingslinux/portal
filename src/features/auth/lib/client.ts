@@ -4,6 +4,7 @@ import { passkeyClient } from "@better-auth/passkey/client";
 import {
   adminClient,
   apiKeyClient,
+  genericOAuthClient,
   jwtClient,
   lastLoginMethodClient,
   multiSessionClient,
@@ -94,6 +95,7 @@ const fetchOptions = {
 const plugins = [
   passkeyClient(), // WebAuthn support - requires user gesture to trigger
   apiKeyClient(), // API key management
+  genericOAuthClient(), // Custom OAuth (e.g. mailcow sign-in)
   jwtClient({
     // Custom JWKS path (must match server configuration if customized)
     // jwks: {
