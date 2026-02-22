@@ -1,5 +1,12 @@
 "use client"
 
+/**
+ * Chart components (Recharts wrapper).
+ * Consumers: use next/dynamic with ssr: false when importing chart-heavy pages
+ * to avoid bundling recharts in the main bundle.
+ *
+ * Example: const ChartPage = dynamic(() => import("./chart-page"), { ssr: false })
+ */
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
@@ -80,6 +87,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
   return (
     <style
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: ChartConfig theme/color values only; no user input
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
