@@ -51,11 +51,11 @@ export default async function Page() {
 
       <SignedOut>
         <div className="flex gap-4">
-          <Button asChild>
-            <Link href="/auth/sign-in">{t("navigation.signIn")}</Link>
+          <Button render={<Link href="/auth/sign-in" />}>
+            {t("navigation.signIn")}
           </Button>
-          <Button asChild variant="outline">
-            <Link href="/auth/sign-up">{t("navigation.signUp")}</Link>
+          <Button render={<Link href="/auth/sign-up" />} variant="outline">
+            {t("navigation.signUp")}
           </Button>
         </div>
       </SignedOut>
@@ -63,8 +63,8 @@ export default async function Page() {
       <SignedIn>
         <div className="flex flex-col items-center gap-4">
           <UserButton size="icon" />
-          <Button asChild>
-            <Link href="/app">{t("marketing.homePage.goToDashboard")}</Link>
+          <Button render={<Link href="/app" />}>
+            {t("marketing.homePage.goToDashboard")}
           </Button>
         </div>
       </SignedIn>
