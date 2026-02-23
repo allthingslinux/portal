@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createSelectSchema } from "drizzle-zod";
+import { createSelectSchema } from "drizzle-orm/zod";
 
 import { user } from "@/shared/db/schema/auth";
 
