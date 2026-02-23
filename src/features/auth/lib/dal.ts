@@ -28,6 +28,9 @@ export type { SessionData } from "@/shared/types/auth";
  * Uses React's cache() to memoize the result during a render pass,
  * preventing duplicate requests when called multiple times in the same render.
  *
+ * If the session cookie exists but the user was deleted (e.g. after DB wipe),
+ * redirects to clear-stale-session which signs out and redirects to sign-in.
+ *
  * @returns SessionData if authenticated, otherwise redirects to sign-in
  * @throws Redirects to /auth/sign-in if not authenticated
  */
@@ -39,6 +42,21 @@ export const verifySession = cache(async (): Promise<SessionData> => {
 
   if (!session?.user) {
     redirect("/auth/sign-in");
+  }
+
+  // Stale session: cookie exists but user was deleted (e.g. DB wipe)
+  const { db } = await import("@/db");
+  const { user } = await import("@/db/schema/auth");
+  const { eq } = await import("drizzle-orm");
+
+  const [userRow] = await db
+    .select({ id: user.id })
+    .from(user)
+    .where(eq(user.id, session.user.id))
+    .limit(1);
+
+  if (!userRow) {
+    redirect("/api/auth/clear-stale-session");
   }
 
   return {
