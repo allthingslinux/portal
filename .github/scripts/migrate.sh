@@ -59,8 +59,8 @@ if ! command -v drizzle-kit &> /dev/null; then
 fi
 
 # Check if config file exists (required for drizzle-kit migrate)
-if [ ! -f "src/lib/db/config.ts" ]; then
-  echo "❌ Error: src/lib/db/config.ts not found"
+if [ ! -f "src/shared/db/config.ts" ]; then
+  echo "❌ Error: src/shared/db/config.ts not found"
   echo "Drizzle config file is required for running migrations"
   exit 1
 fi
@@ -89,7 +89,7 @@ if [ "$DRY_RUN" == "true" ]; then
 else
   echo "Executing database migrations..."
   echo "Using DATABASE_URL from environment..."
-  echo "Using config file: src/lib/db/config.ts"
+  echo "Using config file: src/shared/db/config.ts"
   echo ""
   
   # Run migrations using drizzle-kit migrate
@@ -97,7 +97,7 @@ else
   # - Reads migration files from drizzle/ directory (specified in config.out)
   # - Fetches migration history from __drizzle_migrations__ table
   # - Applies only new migrations that haven't been run
-  drizzle-kit migrate --config src/lib/db/config.ts || {
+  drizzle-kit migrate --config src/shared/db/config.ts || {
     echo ""
     echo "❌ Migration failed!"
     echo "Please review the error above and fix any issues before retrying."
