@@ -1,5 +1,6 @@
 CREATE TYPE "integration_account_status" AS ENUM('active', 'suspended', 'deleted');--> statement-breakpoint
 CREATE TYPE "irc_account_status" AS ENUM('active', 'pending', 'suspended', 'deleted');--> statement-breakpoint
+CREATE TYPE "mailcow_account_status" AS ENUM('active', 'suspended', 'deleted');--> statement-breakpoint
 CREATE TYPE "xmpp_account_status" AS ENUM('active', 'suspended', 'deleted');--> statement-breakpoint
 CREATE TABLE "apikey" (
 	"id" text PRIMARY KEY,
@@ -128,6 +129,18 @@ CREATE TABLE "irc_account" (
 	"metadata" jsonb
 );
 --> statement-breakpoint
+CREATE TABLE "mailcow_account" (
+	"id" text PRIMARY KEY,
+	"user_id" text NOT NULL,
+	"email" text NOT NULL,
+	"domain" text NOT NULL,
+	"local_part" text NOT NULL,
+	"status" "mailcow_account_status" DEFAULT 'active'::"mailcow_account_status" NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"metadata" jsonb
+);
+--> statement-breakpoint
 CREATE TABLE "oauth_access_token" (
 	"id" text PRIMARY KEY,
 	"token" text UNIQUE,
@@ -223,6 +236,11 @@ CREATE UNIQUE INDEX "integration_accounts_userId_type_idx" ON "integration_accou
 CREATE INDEX "irc_account_status_idx" ON "irc_account" ("status");--> statement-breakpoint
 CREATE UNIQUE INDEX "irc_account_userId_active_idx" ON "irc_account" ("user_id") WHERE status != 'deleted';--> statement-breakpoint
 CREATE UNIQUE INDEX "irc_account_nick_active_idx" ON "irc_account" ("nick") WHERE status != 'deleted';--> statement-breakpoint
+CREATE INDEX "mailcow_account_userId_idx" ON "mailcow_account" ("user_id");--> statement-breakpoint
+CREATE INDEX "mailcow_account_email_idx" ON "mailcow_account" ("email");--> statement-breakpoint
+CREATE INDEX "mailcow_account_status_idx" ON "mailcow_account" ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "mailcow_account_userId_active_idx" ON "mailcow_account" ("user_id") WHERE status != 'deleted';--> statement-breakpoint
+CREATE UNIQUE INDEX "mailcow_account_email_active_idx" ON "mailcow_account" ("email") WHERE status != 'deleted';--> statement-breakpoint
 CREATE INDEX "xmpp_account_userId_idx" ON "xmpp_account" ("user_id");--> statement-breakpoint
 CREATE INDEX "xmpp_account_jid_idx" ON "xmpp_account" ("jid");--> statement-breakpoint
 CREATE INDEX "xmpp_account_username_idx" ON "xmpp_account" ("username");--> statement-breakpoint
@@ -237,6 +255,7 @@ ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fkey" FOREIGN KEY 
 ALTER TABLE "two_factor" ADD CONSTRAINT "two_factor_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "integration_accounts" ADD CONSTRAINT "integration_accounts_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "irc_account" ADD CONSTRAINT "irc_account_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "mailcow_account" ADD CONSTRAINT "mailcow_account_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_client_id_oauth_client_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "oauth_client"("client_id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_session_id_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "session"("id") ON DELETE SET NULL;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
