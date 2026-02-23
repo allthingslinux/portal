@@ -57,6 +57,9 @@ pnpm db:migrate
 
 # Dev shortcut (NEVER in production)
 pnpm db:push
+
+# Wipe DB (dev only): drops public schema so migrations run clean
+pnpm db:wipe
 ```
 
 ## Critical Rules
