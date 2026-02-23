@@ -187,7 +187,7 @@ export function MailcowCreateForm({
                 Creating...
               </>
             ) : (
-              submitLabel ?? `Create ${title} Account`
+              (submitLabel ?? `Create ${title} Account`)
             )}
           </Button>
         </CardFooter>
