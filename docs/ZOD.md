@@ -33,7 +33,7 @@ This ensures type safety at both compile-time and runtime while maintaining a si
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              drizzle-zod (Generate Base Schemas)            │
+│              drizzle-orm/zod (Generate Base Schemas)       │
 │              createSelectSchema(), createInsertSchema()     │
 └────────────────────────┬────────────────────────────────────┘
                          │
@@ -61,7 +61,7 @@ This ensures type safety at both compile-time and runtime while maintaining a si
 **Example**:
 ```typescript
 // src/shared/db/schema/irc.ts
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-orm/zod";
 
 export const ircAccount = pgTable("irc_account", {
   id: text("id").primaryKey(),
@@ -131,8 +131,8 @@ export type IrcAccount = z.infer<typeof IrcAccountSchema>;
 src/
 ├── shared/
 │   ├── db/schema/              # Database schemas (PRIMARY)
-│   │   ├── irc.ts              # Table + drizzle-zod schemas
-│   │   ├── xmpp.ts             # Table + drizzle-zod schemas
+│   │   ├── irc.ts              # Table + drizzle-orm/zod schemas
+│   │   ├── xmpp.ts             # Table + drizzle-orm/zod schemas
 │   │   └── auth.ts
 │   │
 │   └── schemas/                # Custom validation (SECONDARY)
@@ -181,7 +181,7 @@ Data where we control both the producer and consumer, and they are deployed toge
 - ✅ Creating migrations
 - ✅ Querying the database
 
-### Use drizzle-zod Generated Schemas When:
+### Use drizzle-orm/zod Generated Schemas When:
 
 - ✅ Validating data that matches database structure exactly
 - ✅ Basic CRUD operations
@@ -223,7 +223,7 @@ export interface IrcAccount {
 export type IrcAccount = z.infer<typeof IrcAccountSchema>;
 ```
 
-### 2. Use drizzle-zod for Base Schemas
+### 2. Use drizzle-orm/zod for Base Schemas
 
 **❌ Don't**: Manually recreate database schemas in Zod
 ```typescript
@@ -296,7 +296,7 @@ export const CreateIrcAccountRequestSchema = z.object({
 
 ### 6. Handle JSONB Fields Properly
 
-drizzle-zod generates `unknown` for JSONB fields. Use `.transform()` and `metadataSchema.parse()` to properly type and validate them:
+drizzle-orm/zod generates `unknown` for JSONB fields. Use `.transform()` and `metadataSchema.parse()` to properly type and validate them:
 
 ```typescript
 import { metadataSchema } from "@/shared/schemas/utils";
@@ -431,7 +431,7 @@ const { register, handleSubmit, formState: { errors } } = useForm({
 
 ```typescript
 // src/shared/db/schema/user.ts
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-orm/zod";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -516,7 +516,7 @@ export const IntegrationConfigSchema = z.object({
 
 ### Migrating Existing Code
 
-#### Step 1: Add drizzle-zod to Database Schema
+#### Step 1: Add drizzle-orm/zod to Database Schema
 
 ```typescript
 // Before
@@ -526,7 +526,7 @@ export const myTable = pgTable("my_table", {
 });
 
 // After
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-orm/zod";
 
 export const myTable = pgTable("my_table", {
   id: text("id").primaryKey(),
@@ -597,5 +597,5 @@ const data = parsed.data;
 ## References
 
 - [Zod Documentation](https://zod.dev/)
-- [drizzle-zod](https://orm.drizzle.team/docs/zod)
+- [drizzle-orm/zod](https://orm.drizzle.team/docs/zod)
 - [Total TypeScript: When should you use Zod?](https://www.totaltypescript.com/when-should-you-use-zod)
