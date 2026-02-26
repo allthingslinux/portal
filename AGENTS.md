@@ -2,7 +2,7 @@
 
 > Scope: Root project (applies to all subdirectories unless overridden)
 
-Centralized identity and hub management system for the AllThingsLinux (ATL) community. One ATL identity provisions access to all services: email, IRC, XMPP, SSH, web hosting, Discord, wiki access, and developer tools across `atl.dev`, `atl.sh`, `atl.tools`, and `atl.chat`.
+Centralized identity and hub management system for the AllThingsLinux (ATL) community. One ATL identity provisions access to all services: email, IRC, XMPP, SSH, web hosting, Discord, wiki access, and developer tools across `atl.dev`, `atl.sh`, `[REDACTED]`, and `atl.chat`.
 
 ## Quick Facts
 
@@ -130,6 +130,36 @@ Each module has its own `keys.ts` file using `@t3-oss/env-nextjs`. The central `
 
 - [Code Standards](.agents/code-standards.md) — Rules beyond what Biome enforces
 - [Project Skills](.agents/skills.md) — Available agent skills index
+
+## Cursor Cloud specific instructions
+
+### Services
+
+| Service | How to start | Port | Required? |
+|---------|-------------|------|-----------|
+| PostgreSQL 18 | `docker compose up -d portal-db` | 5432 | Yes |
+| Next.js dev server | `pnpm dev` | 3000 | Yes |
+
+### Environment setup
+
+A `.env` file at the project root is required with at minimum `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL`. See the README "Database Setup" and "Getting Started" sections for connection details and defaults.
+
+All integration env vars (Discord, IRC, XMPP, Mailcow, Sentry) are optional — the app starts without them.
+
+### Startup sequence
+
+1. Ensure Docker daemon is running (`sudo dockerd` if not already started)
+2. `docker compose up -d portal-db` — start PostgreSQL
+3. Wait for healthy: `docker compose ps` should show `(healthy)`
+4. `pnpm db:push` — sync schema to dev DB (safe for dev; use `pnpm db:migrate` for prod-like flow)
+5. `pnpm dev` — start the dev server on port 3000
+
+### Gotchas
+
+- **`pnpm typegen` before `pnpm type-check`**: Next.js 16 generates `RouteContext` types via `next typegen`. Running `tsc --noEmit` without it first produces `TS2304: Cannot find name 'RouteContext'` errors. The `pnpm build` script runs typegen automatically, but `pnpm type-check` does not.
+- **Docker-in-Docker**: The Cloud VM runs inside a container. Docker requires `fuse-overlayfs` storage driver, `iptables-legacy`, and the daemon started via `sudo dockerd`. See the environment snapshot for pre-installed Docker.
+- **`pg-native` build script**: The `libpq` native build is not in `onlyBuiltDependencies`. The app falls back to the pure-JS `pg` driver, which works fine for development.
+- **Pre-existing test failures**: 2 test files (`tests/app/api/admin/irc-accounts/route.test.ts` and `tests/app/api/bridge/identity/route.test.ts`) fail due to `vi.mock` hoisting issues with t3-env server-side variable access. These are not environment issues — all 118 individual tests pass.
 
 ## Finish the Task
 
