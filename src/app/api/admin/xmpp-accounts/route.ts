@@ -38,26 +38,24 @@ export async function GET(request: NextRequest) {
     }
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    const rows = await db
-      .select({
-        xmppAccount,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        },
-      })
-      .from(xmppAccount)
-      .leftJoin(user, eq(xmppAccount.userId, user.id))
-      .where(whereClause)
-      .orderBy(desc(xmppAccount.createdAt))
-      .limit(limit)
-      .offset(offset);
-
-    const [totalResult] = await db
-      .select({ count: count() })
-      .from(xmppAccount)
-      .where(whereClause);
+    const [rows, [totalResult]] = await Promise.all([
+      db
+        .select({
+          xmppAccount,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          },
+        })
+        .from(xmppAccount)
+        .leftJoin(user, eq(xmppAccount.userId, user.id))
+        .where(whereClause)
+        .orderBy(desc(xmppAccount.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db.select({ count: count() }).from(xmppAccount).where(whereClause),
+    ]);
 
     const total = Number(totalResult?.count ?? 0);
 

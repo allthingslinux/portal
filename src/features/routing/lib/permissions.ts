@@ -73,11 +73,11 @@ export function getNavigationItems(
 
   // Group routes by navigation group
   return resolvedConfig.navigationGroups
-    .sort((a, b) => a.order - b.order)
+    .toSorted((a, b) => a.order - b.order)
     .map((group) => {
       const items = accessibleRoutes
         .filter((route) => route.navigation?.group === group.id)
-        .sort(
+        .toSorted(
           (a, b) => (a.navigation?.order ?? 0) - (b.navigation?.order ?? 0)
         );
 
