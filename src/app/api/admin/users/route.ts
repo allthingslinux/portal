@@ -37,18 +37,19 @@ export async function GET(request: NextRequest) {
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    const users = await db
-      .select()
-      .from(user)
-      .where(whereClause)
-      .orderBy(desc(user.createdAt))
-      .limit(limit)
-      .offset(offset);
-
-    const [{ count }] = await db
-      .select({ count: db.$count(user, whereClause) })
-      .from(user)
-      .limit(1);
+    const [users, [{ count }]] = await Promise.all([
+      db
+        .select()
+        .from(user)
+        .where(whereClause)
+        .orderBy(desc(user.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db
+        .select({ count: db.$count(user, whereClause) })
+        .from(user)
+        .limit(1),
+    ]);
 
     return Response.json({
       users,
