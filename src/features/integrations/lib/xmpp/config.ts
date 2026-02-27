@@ -22,10 +22,13 @@ export const xmppConfig = {
     // Use internal Docker network URL for same-network communication
     restUrl: env.PROSODY_REST_URL,
 
-    // Username for REST API authentication (admin JID, e.g. admin@atl.chat)
-    username: env.PROSODY_REST_USERNAME || "admin@atl.chat",
+    // Bearer token for mod_http_admin_api (mod_tokenauth in Prosody 13+)
+    // Generate via prosodyctl or OAuth2 client credentials grant
+    token: env.PROSODY_REST_TOKEN,
 
-    // Password for REST API authentication
+    // Legacy: username/password kept for backward-compat but unused by
+    // mod_http_admin_api in Prosody 13+ (it requires Bearer tokens)
+    username: env.PROSODY_REST_USERNAME || "admin@atl.chat",
     password: env.PROSODY_REST_PASSWORD,
   },
 } as const;
@@ -36,17 +39,16 @@ export const xmppConfig = {
  * This prevents blocking the entire application if XMPP is not configured
  */
 export function validateXmppConfig(): void {
-  if (!xmppConfig.prosody.password) {
+  if (!xmppConfig.prosody.token) {
     const error = new Error(
-      "PROSODY_REST_PASSWORD environment variable is required"
+      "PROSODY_REST_TOKEN environment variable is required (Bearer token for mod_http_admin_api)"
     );
-    // Capture to Sentry before throwing (if Sentry is initialized)
     try {
       captureException(error, {
         tags: {
           type: "configuration_error",
           module: "xmpp_config",
-          missing_var: "PROSODY_REST_PASSWORD",
+          missing_var: "PROSODY_REST_TOKEN",
         },
         level: "error",
       });
@@ -60,7 +62,6 @@ export function validateXmppConfig(): void {
     const error = new Error(
       "PROSODY_REST_URL environment variable is required"
     );
-    // Capture to Sentry before throwing (if Sentry is initialized)
     try {
       captureException(error, {
         tags: {
@@ -81,5 +82,5 @@ export function validateXmppConfig(): void {
  * Check if XMPP is configured (non-throwing)
  */
 export function isXmppConfigured(): boolean {
-  return !!(xmppConfig.prosody.password && xmppConfig.prosody.restUrl);
+  return !!(xmppConfig.prosody.token && xmppConfig.prosody.restUrl);
 }

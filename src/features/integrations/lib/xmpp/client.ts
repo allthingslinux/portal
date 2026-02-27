@@ -27,12 +27,17 @@ export class ProsodyAccountNotFoundError extends Error {
 // Body: { "password": "..." }
 
 /**
- * Create Basic Auth header for Prosody REST API
+ * Create Authorization header for Prosody REST API.
+ * mod_http_admin_api (Prosody 13+) requires Bearer token auth via mod_tokenauth.
  */
 function createAuthHeader(): string {
-  const { username, password } = xmppConfig.prosody;
-  const credentials = Buffer.from(`${username}:${password}`).toString("base64");
-  return `Basic ${credentials}`;
+  const { token } = xmppConfig.prosody;
+  if (!token) {
+    throw new Error(
+      "PROSODY_REST_TOKEN is required for mod_http_admin_api Bearer auth"
+    );
+  }
+  return `Bearer ${token}`;
 }
 
 /**
