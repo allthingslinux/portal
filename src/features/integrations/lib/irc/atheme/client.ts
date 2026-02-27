@@ -3,33 +3,33 @@ import "server-only";
 import { ircConfig } from "../config";
 import type { AnyAthemeFaultCode, AthemeFault } from "../types";
 
-/** JSON-RPC 2.0 request */
+/** JSON-RPC 2.0 request — Atheme requires `id` as a string (not number) */
 interface JsonRpcRequest {
   jsonrpc: "2.0";
   method: string;
   params: string[];
-  id: number;
+  id: string;
 }
 
 /** JSON-RPC 2.0 success response — result is always a string for atheme.command */
 interface JsonRpcSuccess {
   jsonrpc: "2.0";
   result: string;
-  id: number;
+  id: string;
 }
 
 /** JSON-RPC 2.0 success response with object result (atheme.ison) */
 interface JsonRpcObjectSuccess<T> {
   jsonrpc: "2.0";
   result: T;
-  id: number;
+  id: string;
 }
 
 /** JSON-RPC 2.0 error response (Atheme fault) */
 interface JsonRpcError {
   jsonrpc: "2.0";
   error: { code: number; message: string };
-  id: number;
+  id: string;
 }
 
 /**
@@ -60,7 +60,7 @@ async function athemeRpc<T = string>(
     jsonrpc: "2.0",
     method,
     params,
-    id: 1,
+    id: "1",
   };
 
   const controller = new AbortController();
@@ -113,7 +113,8 @@ async function athemeRpc<T = string>(
 }
 
 /**
- * Call atheme.command (unauthenticated — cookie ".", account "").
+ * Call atheme.command (unauthenticated — cookie ".", account ".").
+ * Atheme's JSONRPC rejects empty-string params, so use "." as placeholder.
  * Params: authcookie, account, sourceip, service, command, ...commandParams
  */
 function athemeCommand(params: string[]): Promise<string> {
@@ -136,7 +137,7 @@ export async function registerNick(
 ): Promise<void> {
   await athemeCommand([
     ".",
-    "",
+    ".",
     sourceIp,
     "NickServ",
     "REGISTER",
@@ -158,7 +159,7 @@ export async function dropNick(
 ): Promise<void> {
   await athemeCommand([
     ".",
-    "",
+    ".",
     sourceIp,
     "NickServ",
     "DROP",

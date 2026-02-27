@@ -49,7 +49,7 @@ describe("Atheme Client", () => {
       const ip = "1.2.3.4";
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ jsonrpc: "2.0", result: "Success", id: 1 }),
+        json: async () => ({ jsonrpc: "2.0", result: "Success", id: "1" }),
       });
 
       // Act
@@ -65,7 +65,7 @@ describe("Atheme Client", () => {
             method: "atheme.command",
             params: [
               ".",
-              "",
+              ".",
               ip,
               "NickServ",
               "REGISTER",
@@ -73,7 +73,7 @@ describe("Atheme Client", () => {
               password,
               email,
             ],
-            id: 1,
+            id: "1",
           }),
         })
       );
@@ -90,7 +90,7 @@ describe("Atheme Client", () => {
         json: async () => ({
           jsonrpc: "2.0",
           error: { code: 8, message: "Nick already registered" },
-          id: 1,
+          id: "1",
         }),
       });
 
@@ -128,7 +128,7 @@ describe("Atheme Client", () => {
       try {
         mockFetch.mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ jsonrpc: "2.0", result: "Success", id: 1 }),
+          json: async () => ({ jsonrpc: "2.0", result: "Success", id: "1" }),
         });
 
         // Act
