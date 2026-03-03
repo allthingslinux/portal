@@ -6,6 +6,7 @@ import { captureException, startSpan } from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { ResetPasswordDialog } from "@/features/integrations/components/reset-password-dialog";
 import { integrationStatusLabels } from "@/features/integrations/lib/core/constants";
 import type { XmppAccount } from "@/features/integrations/lib/xmpp/types";
 
@@ -107,6 +108,15 @@ export function XmppAccountDetails({
         <p className="text-muted-foreground text-sm">
           {new Date(account.createdAt).toLocaleDateString()}
         </p>
+      </div>
+
+      <div className="pt-2">
+        <ResetPasswordDialog
+          accountId={account.id}
+          integrationId={integrationId}
+          integrationName="XMPP"
+          mode="user-chosen"
+        />
       </div>
     </div>
   );
