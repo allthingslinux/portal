@@ -76,6 +76,20 @@
       "label": "Mail"
     }
   },
+  "feed": {
+    "label": "Feed",
+    "metadata": {
+      "title": "Feed",
+      "description": "Linux and open-source news from across the community"
+    },
+    "ui": {
+      "title": "Feed",
+      "description": "Linux and open-source news from across the community, curated from popular outlets."
+    },
+    "breadcrumb": {
+      "label": "Feed"
+    }
+  },
   "integrations": {
     "label": "Integrations",
     "metadata": {

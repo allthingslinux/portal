@@ -5,6 +5,7 @@ import {
   LogOut,
   Mail,
   MessageSquare,
+  Rss,
   Settings2,
   Shield,
   SquareTerminal,
@@ -113,6 +114,19 @@ export const routeConfig = {
       },
     },
     {
+      id: "feed",
+      path: "/app/feed",
+      icon: Rss,
+      metadata: {
+        robots: { index: false, follow: false },
+      },
+      breadcrumb: {},
+      navigation: {
+        group: "platform",
+        order: 6,
+      },
+    },
+    {
       id: "integrations",
       path: "/app/integrations",
       icon: MessageSquare,
@@ -121,7 +135,7 @@ export const routeConfig = {
       },
       navigation: {
         group: "platform",
-        order: 6,
+        order: 7,
       },
     },
     {
@@ -134,7 +148,7 @@ export const routeConfig = {
       breadcrumb: {},
       navigation: {
         group: "platform",
-        order: 7,
+        order: 8,
       },
     },
     {
@@ -146,7 +160,7 @@ export const routeConfig = {
       },
       navigation: {
         group: "platform",
-        order: 8,
+        order: 9,
         permissions: ["canViewAdmin"], // Role-based access
       },
     },
