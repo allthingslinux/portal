@@ -1,8 +1,10 @@
 import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 import { isAdmin } from "@/auth/check-role";
 import { registerIntegrations } from "@/features/integrations/lib";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
+import { ircIntegration } from "@/features/integrations/lib/irc/implementation";
 import { xmppIntegration } from "@/features/integrations/lib/xmpp/implementation";
 import {
   APIError,
@@ -11,12 +13,17 @@ import {
   requireAuth,
 } from "@/shared/api/utils";
 
-// With cacheComponents, route handlers are dynamic by default.
+const ResetPasswordSchema = z.object({
+  password: z.string().min(1, "Password is required").max(512),
+});
 
 /**
  * POST /api/integrations/[integration]/accounts/[id]/reset-password
  * Reset the service-side password for an integration account.
- * Currently only supported for XMPP (Prosody).
+ *
+ * - XMPP: User provides a new password in the request body.
+ * - IRC: Atheme generates a random password (no admin command to set a specific one).
+ *        The generated password is returned in the response.
  */
 export async function POST(
   request: NextRequest,
@@ -42,8 +49,7 @@ export async function POST(
       throw new APIError("Integration is disabled", 403);
     }
 
-    // Only XMPP supports password reset
-    if (integrationId !== "xmpp") {
+    if (integrationId !== "xmpp" && integrationId !== "irc") {
       throw new APIError(
         "Password reset is not supported for this integration",
         400
@@ -56,25 +62,48 @@ export async function POST(
 
     const account = await integration.getAccountById(id);
     if (!account) {
-      return Response.json(
-        { ok: false, error: "Integration account not found" },
-        { status: 404 }
-      );
+      throw new APIError("Integration account not found", 404);
     }
 
     const isAdminUser = await isAdmin(userId);
     if (account.userId !== userId && !isAdminUser) {
-      return Response.json(
-        { ok: false, error: "Forbidden - Access denied" },
-        { status: 403 }
-      );
+      throw new APIError("Forbidden - Access denied", 403);
     }
 
-    await xmppIntegration.resetPassword(id);
+    if (integrationId === "xmpp") {
+      // XMPP: user picks their own password
+      const body = await request.json();
+      const parsed = ResetPasswordSchema.safeParse(body);
+      if (!parsed.success) {
+        const msg = parsed.error.issues[0]?.message ?? "Invalid password";
+        throw new APIError(msg, 400);
+      }
+      await xmppIntegration.resetPassword(id, parsed.data.password);
+      return Response.json({
+        ok: true,
+        message: "XMPP password reset successfully",
+      });
+    }
 
+    // IRC: If user provided a password, use two-step (RESETPASS → SET PASSWORD).
+    // Otherwise, just RESETPASS and return the random password.
+    let ircBody: { password?: string } = {};
+    try {
+      ircBody = await request.json();
+    } catch {
+      // No body or invalid JSON — that's fine, we'll just do random reset
+    }
+    const ircPassword =
+      typeof ircBody.password === "string" && ircBody.password.trim()
+        ? ircBody.password
+        : undefined;
+
+    const newPassword = await ircIntegration.resetPassword(id, ircPassword);
     return Response.json({
       ok: true,
-      message: "XMPP password reset successfully",
+      message: "IRC password reset successfully",
+      // Only include temporaryPassword if the user didn't choose their own
+      ...(ircPassword ? {} : { temporaryPassword: newPassword }),
     });
   } catch (error) {
     return handleAPIError(error);
