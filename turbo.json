@@ -35,6 +35,12 @@
     "test": {
       "dependsOn": ["^build"],
       "inputs": ["src/**", "tests/**", "vitest.config.ts", ".env", ".env.*"],
+      "outputs": [],
+      "env": ["DATABASE_URL"]
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tests/**", "vitest.config.ts", ".env", ".env.*"],
       "outputs": ["coverage/**"],
       "env": ["DATABASE_URL"]
     },
