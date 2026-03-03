@@ -13,7 +13,9 @@ import { APIError, handleAPIError, requireAuth } from "@/shared/api/utils";
  * GET /api/bridge/identity
  *
  * Cross-protocol identity lookup for the bridge service.
- * Requires a valid API key (Bearer token via better-auth apiKey plugin).
+ * Accepts either:
+ *   - A service token via BRIDGE_SERVICE_TOKEN env var (for bridge ↔ portal)
+ *   - A valid user session (Bearer token via better-auth)
  *
  * Query params (exactly one required):
  *   - discordId: look up by Discord snowflake
@@ -29,6 +31,21 @@ import { APIError, handleAPIError, requireAuth } from "@/shared/api/utils";
  * Returns 404 when no matching account is found.
  * Returns 400 when no valid query param is provided.
  */
+
+/**
+ * Authenticate via BRIDGE_SERVICE_TOKEN or fall back to better-auth session.
+ */
+async function requireBridgeAuth(request: NextRequest): Promise<void> {
+  const serviceToken = process.env.BRIDGE_SERVICE_TOKEN;
+  if (serviceToken) {
+    const authHeader = request.headers.get("authorization");
+    if (authHeader === `Bearer ${serviceToken}`) {
+      return; // Service token matched
+    }
+  }
+  // Fall back to better-auth session (user sessions still work)
+  await requireAuth(request);
+}
 
 async function fetchIrcForUser(userId: string) {
   const [irc] = await db
@@ -165,7 +182,7 @@ async function lookupByXmppJid(xmppJid: string) {
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAuth(request);
+    await requireBridgeAuth(request);
 
     const { searchParams } = new URL(request.url);
 
