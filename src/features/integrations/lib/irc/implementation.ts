@@ -7,13 +7,19 @@ import { and, eq, ne } from "drizzle-orm";
 import { db } from "@/db";
 import { user } from "@/db/schema/auth";
 import { ircAccount } from "@/db/schema/irc";
-import { AthemeFaultError, fdropNick, registerNick } from "./atheme/client";
+import {
+  AthemeFaultError,
+  fdropNick,
+  registerNick,
+  resetNickPassword,
+} from "./atheme/client";
 import { ircConfig, isAthemeOperConfigured, isIrcConfigured } from "./config";
 import type { IrcAccount, UpdateIrcAccountRequest } from "./types";
 import { generateIrcPassword } from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
 import type { IntegrationCreateInput } from "@/features/integrations/lib/core/types";
+import { APIError } from "@/shared/api/utils";
 import {
   CreateIrcAccountRequestSchema,
   IrcAccountSchema,
@@ -78,7 +84,9 @@ export class IrcIntegration extends IntegrationBase<
       throw new Error("User not found");
     }
 
-    const temporaryPassword = generateIrcPassword();
+    const userProvidedPassword =
+      "password" in parsed.data ? parsed.data.password : undefined;
+    const temporaryPassword = userProvidedPassword ?? generateIrcPassword();
 
     const [deletedAccount] = await db
       .select()
@@ -231,16 +239,41 @@ export class IrcIntegration extends IntegrationBase<
         },
       });
       if (error instanceof AthemeFaultError) {
-        if (error.code === 8) {
-          throw new Error("Nick is already registered on the IRC network");
+        // Map Atheme fault codes to user-friendly 400 errors.
+        // Atheme's first command_fail message is what we receive (subsequent
+        // messages are dropped by the JSONRPC transport's sent_reply flag).
+        const msg = error.fault.message || "IRC registration failed";
+        switch (error.code) {
+          case 8:
+            throw new APIError(
+              "Nick is already registered on the IRC network",
+              409
+            );
+          case 2:
+            // Atheme returns specific messages for code 2 (e.g. "You cannot
+            // use your nickname as a password", "The account name is invalid")
+            // — pass them through instead of a generic fallback.
+            throw new APIError(msg, 400);
+          case 9:
+            throw new APIError("Too many registrations; try again later", 429);
+          case 6:
+            throw new APIError(
+              "Account is frozen or you don't have permission to register",
+              403
+            );
+          case 10:
+            throw new APIError(
+              "Failed to send verification email; please try again later",
+              502
+            );
+          case 11:
+            throw new APIError(
+              "Account requires email verification before it can be used",
+              400
+            );
+          default:
+            throw new APIError(msg, 400);
         }
-        if (error.code === 2) {
-          throw new Error("Invalid nick or parameters");
-        }
-        if (error.code === 9) {
-          throw new Error("Too many registrations; try again later");
-        }
-        throw new Error(error.fault.message || "IRC registration failed");
       }
       throw error instanceof Error
         ? error
@@ -361,6 +394,69 @@ export class IrcIntegration extends IntegrationBase<
 
     if (!updated) {
       throw new Error("Failed to delete IRC account");
+    }
+  }
+
+  /**
+   * Reset the NickServ password for an IRC account.
+   * If `newPassword` is provided, uses a two-step approach (RESETPASS → login as target → SET PASSWORD).
+   * If omitted, just does RESETPASS and returns the random password Atheme generates.
+   * Requires IRC_ATHEME_OPER_ACCOUNT + IRC_ATHEME_OPER_PASSWORD to be configured.
+   *
+   * @returns The final password (user-chosen or random)
+   */
+  async resetPassword(
+    accountId: string,
+    newPassword?: string
+  ): Promise<string> {
+    if (!this.enabled) {
+      throw new APIError("IRC integration is not configured", 503);
+    }
+
+    if (!isAthemeOperConfigured()) {
+      throw new APIError(
+        "IRC password reset requires oper credentials to be configured",
+        503
+      );
+    }
+
+    const [account] = await db
+      .select()
+      .from(ircAccount)
+      .where(
+        and(eq(ircAccount.id, accountId), ne(ircAccount.status, "deleted"))
+      )
+      .limit(1);
+
+    if (!account) {
+      throw new APIError("IRC account not found", 404);
+    }
+
+    try {
+      return await resetNickPassword(account.nick, newPassword);
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { integration: "irc", operation: "resetPassword" },
+        extra: { accountId, nick: account.nick },
+      });
+      if (error instanceof AthemeFaultError) {
+        const msg = error.fault.message || "Failed to reset IRC password";
+        switch (error.code) {
+          case 3:
+            throw new APIError(
+              "Nick is not registered on the IRC network",
+              404
+            );
+          case 2:
+            throw new APIError(msg, 400);
+          default:
+            throw new APIError(msg, 400);
+        }
+      }
+      if (error instanceof APIError) {
+        throw error;
+      }
+      throw new APIError("Failed to reset IRC password", 502);
     }
   }
 }

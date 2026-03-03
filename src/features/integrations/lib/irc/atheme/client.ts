@@ -3,7 +3,22 @@ import "server-only";
 import { ircConfig } from "../config";
 import type { AnyAthemeFaultCode, AthemeFault } from "../types";
 
-/** JSON-RPC 2.0 request — Atheme requires `id` as a string (not number) */
+// Atheme RESETPASS response: "The password for nick has been changed to password."
+// \x02 is the IRC bold control character — intentional, not a bug.
+// biome-ignore lint/suspicious/noControlCharactersInRegex: Atheme uses IRC bold byte (\x02) in RESETPASS responses
+const RESETPASS_BOLD_RE = /changed to ([^]+)/;
+const RESETPASS_FALLBACK_RE = /changed to (.+?)\./;
+
+// OperServ UPTIME response parsing
+const REGISTERED_ACCOUNTS_RE = /Registered accounts:\s*(\d+)/;
+const USERS_ONLINE_RE = /Users currently online:\s*(\d+)/;
+
+/**
+ * JSON-RPC request for Atheme.
+ * NOTE: Atheme implements JSON-RPC 1.0 style (returns both result and error
+ * in every response). The `jsonrpc` field is ignored by Atheme but included
+ * for spec compliance. Atheme requires `id` as a string.
+ */
 interface JsonRpcRequest {
   jsonrpc: "2.0";
   method: string;
@@ -11,23 +26,23 @@ interface JsonRpcRequest {
   id: string;
 }
 
-/** JSON-RPC 2.0 success response — result is always a string for atheme.command */
+/** JSON-RPC success response — result is always a string for atheme.command */
 interface JsonRpcSuccess {
-  jsonrpc: "2.0";
   result: string;
+  error: null;
   id: string;
 }
 
-/** JSON-RPC 2.0 success response with object result (atheme.ison) */
+/** JSON-RPC success response with object result (atheme.ison) */
 interface JsonRpcObjectSuccess<T> {
-  jsonrpc: "2.0";
   result: T;
+  error: null;
   id: string;
 }
 
-/** JSON-RPC 2.0 error response (Atheme fault) */
+/** JSON-RPC error response (Atheme fault) */
 interface JsonRpcError {
-  jsonrpc: "2.0";
+  result: null;
   error: { code: number; message: string };
   id: string;
 }
@@ -84,25 +99,20 @@ async function athemeRpc<T = string>(
 
     const response = await fetch(url, fetchOptions);
 
+    // Atheme JSONRPC always returns HTTP 200 — errors are in the JSON body.
+    // Responses are JSON-RPC 1.0 style: both `result` and `error` are present.
+    // On success: result has value, error is null.
+    // On failure: result is null, error has { code, message }.
     const data = (await response.json()) as
       | JsonRpcSuccess
       | JsonRpcObjectSuccess<T>
-      | JsonRpcError
-      | { error?: { code?: number; message?: string } };
+      | JsonRpcError;
 
-    if (!response.ok) {
-      const err = data as JsonRpcError;
-      const code = (err.error?.code ?? 16) as AnyAthemeFaultCode;
-      const message = err.error?.message ?? "Atheme request failed";
-      throw new AthemeFaultError({ code, message });
-    }
-
-    if ("error" in data && data.error) {
-      const err = data as JsonRpcError;
-      const code = (err.error?.code ?? 16) as AnyAthemeFaultCode;
+    if (data.error) {
+      const code = (data.error.code ?? 16) as AnyAthemeFaultCode;
       throw new AthemeFaultError({
         code,
-        message: err.error.message ?? "Atheme fault",
+        message: data.error.message ?? "Atheme fault",
       });
     }
 
@@ -299,6 +309,152 @@ export async function fdropNick(
       await athemeLogout(cookie, operAccount);
     } catch {
       // Best-effort logout; don't mask the original error
+    }
+  }
+}
+
+/**
+ * Reset a NickServ account password using oper RESETPASS.
+ *
+ * If `newPassword` is provided, uses a two-step approach:
+ *   1. Oper calls RESETPASS → Atheme generates a random password
+ *   2. Login as the target user with the random password
+ *   3. Call NickServ SET PASSWORD with the user's chosen password
+ *   4. Logout the target user session
+ *
+ * If `newPassword` is omitted, just does RESETPASS and returns the random password.
+ *
+ * @param nick - The NickServ account to reset
+ * @param newPassword - If provided, set this as the final password (two-step)
+ * @returns The final password (user-chosen if provided, otherwise the random one)
+ * @throws Error if oper credentials are not configured
+ * @throws AthemeFaultError on Atheme failure (e.g. code 3 = nick not registered)
+ */
+export async function resetNickPassword(
+  nick: string,
+  newPassword?: string,
+  sourceIp = "127.0.0.1"
+): Promise<string> {
+  const { operAccount, operPassword } = ircConfig.atheme;
+  if (!(operAccount && operPassword)) {
+    throw new Error(
+      "IRC_ATHEME_OPER_ACCOUNT and IRC_ATHEME_OPER_PASSWORD must be configured for RESETPASS"
+    );
+  }
+
+  // Step 1: Oper RESETPASS — Atheme generates a random password
+  const operCookie = await athemeLogin(operAccount, operPassword, sourceIp);
+  let randomPassword: string;
+  try {
+    const result = await athemeCommand([
+      operCookie,
+      operAccount,
+      sourceIp,
+      "NickServ",
+      "RESETPASS",
+      nick.trim(),
+    ]);
+    // Atheme RESETPASS response: "The password for \x02nick\x02 has been changed to \x02password\x02."
+    const match = result.match(RESETPASS_BOLD_RE);
+    if (match?.[1]) {
+      randomPassword = match[1];
+    } else {
+      // Fallback: try without bold markers (\x02)
+      const fallback = result.match(RESETPASS_FALLBACK_RE);
+      if (fallback?.[1]) {
+        randomPassword = fallback[1].trim();
+      } else {
+        throw new Error(
+          `Could not parse new password from RESETPASS response: ${result}`
+        );
+      }
+    }
+  } finally {
+    try {
+      await athemeLogout(operCookie, operAccount);
+    } catch {
+      // Best-effort logout; don't mask the original error
+    }
+  }
+
+  // If no custom password requested, return the random one
+  if (!newPassword) {
+    return randomPassword;
+  }
+
+  // Step 2: Login as the target user with the random password
+  const targetCookie = await athemeLogin(nick.trim(), randomPassword, sourceIp);
+  try {
+    // Step 3: NickServ SET PASSWORD — only works for the currently authenticated user
+    await athemeCommand([
+      targetCookie,
+      nick.trim(),
+      sourceIp,
+      "NickServ",
+      "SET",
+      "PASSWORD",
+      newPassword,
+    ]);
+  } finally {
+    // Step 4: Logout the target user session
+    try {
+      await athemeLogout(targetCookie, nick.trim());
+    } catch {
+      // Best-effort logout
+    }
+  }
+
+  return newPassword;
+}
+
+// ============================================================================
+// IRC Server Stats (OperServ UPTIME)
+// ============================================================================
+
+export interface IrcServerStats {
+  registeredAccounts: number;
+  usersOnline: number;
+}
+
+/**
+ * Fetch IRC server stats via OperServ UPTIME (requires oper credentials).
+ *
+ * Parses lines like:
+ *   "Registered accounts: 42"
+ *   "Users currently online: 7"
+ */
+export async function getIrcStats(
+  sourceIp = "127.0.0.1"
+): Promise<IrcServerStats> {
+  const { operAccount, operPassword } = ircConfig.atheme;
+  if (!(operAccount && operPassword)) {
+    throw new Error(
+      "IRC_ATHEME_OPER_ACCOUNT and IRC_ATHEME_OPER_PASSWORD must be configured for stats"
+    );
+  }
+
+  const cookie = await athemeLogin(operAccount, operPassword, sourceIp);
+  try {
+    const result = await athemeCommand([
+      cookie,
+      operAccount,
+      sourceIp,
+      "OperServ",
+      "UPTIME",
+    ]);
+
+    const registeredMatch = result.match(REGISTERED_ACCOUNTS_RE);
+    const onlineMatch = result.match(USERS_ONLINE_RE);
+
+    return {
+      registeredAccounts: registeredMatch ? Number(registeredMatch[1]) : 0,
+      usersOnline: onlineMatch ? Number(onlineMatch[1]) : 0,
+    };
+  } finally {
+    try {
+      await athemeLogout(cookie, operAccount);
+    } catch {
+      // Best-effort logout
     }
   }
 }
