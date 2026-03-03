@@ -8,6 +8,7 @@ import {
   fetchIntegrationAccount,
   fetchIntegrationAccountById,
   fetchIntegrations,
+  resetIntegrationPassword,
   updateIntegrationAccount,
 } from "@/features/integrations/api/integrations";
 import { queryKeys } from "@/shared/api/query-keys";
@@ -112,5 +113,17 @@ export function useDeleteIntegrationAccount(integrationId: string) {
         queryKey: queryKeys.integrations.accounts.all(integrationId),
       });
     },
+  });
+}
+
+/**
+ * Reset the password for an integration account.
+ * For XMPP: pass the user's chosen password.
+ * For IRC: no password needed — Atheme generates one.
+ */
+export function useResetIntegrationPassword(integrationId: string) {
+  return useMutation({
+    mutationFn: ({ id, password }: { id: string; password?: string }) =>
+      resetIntegrationPassword(integrationId, id, password),
   });
 }
