@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-vega",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "../../apps/portal/src/styles/globals.css",
+    "baseColor": "gray",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@portal/ui",
+    "utils": "@portal/utils",
+    "ui": "@portal/ui/ui",
+    "lib": "@portal/utils",
+    "hooks": "@portal/ui/hooks"
+  }
+}
