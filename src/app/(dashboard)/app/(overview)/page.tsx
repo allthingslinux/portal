@@ -1,4 +1,4 @@
-import { BookOpen, Calendar, DollarSign, GitBranch } from "lucide-react";
+import { Calendar } from "lucide-react";
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getTranslations } from "next-intl/server";
@@ -7,6 +7,8 @@ import { PageContent, PageHeader } from "@/components/layout/page";
 import { verifySession } from "@/auth/dal";
 import { LatestUpdatesCard } from "@/features/blog/components/latest-updates-card";
 import { DiscordMemberStat } from "@/features/integrations/components/discord-member-stat";
+import { IrcMemberStat } from "@/features/integrations/components/irc-member-stat";
+import { XmppMemberStat } from "@/features/integrations/components/xmpp-member-stat";
 import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
 import { RecentWikiChangesCard } from "@/features/wiki/components/recent-wiki-changes-card";
 import { getServerQueryClient } from "@/shared/api/hydration";
@@ -25,40 +27,6 @@ const MOCK_QUICK_LINKS = [
   { label: "atl.dev", href: "https://atl.dev" },
   { label: "atl.sh", href: "https://atl.sh" },
 ];
-
-// Placeholder stat cards — wire to real APIs when available
-function StatCard({
-  title,
-  value,
-  subtitle,
-  Icon,
-}: {
-  title: string;
-  value: string;
-  subtitle?: string;
-  Icon: React.ComponentType<{ className?: string }>;
-}) {
-  return (
-    <div className="rounded-xl border border-border/60 bg-card/50 p-4 dark:border-border/40 dark:bg-card/30">
-      <div className="flex items-center gap-2">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-          <Icon className="size-4 text-primary" />
-        </div>
-        <span className="font-medium text-muted-foreground text-sm">
-          {title}
-        </span>
-      </div>
-      <div className="mt-3">
-        <div className="font-bold text-2xl text-foreground tabular-nums">
-          {value}
-        </div>
-        {subtitle && (
-          <p className="mt-0.5 text-muted-foreground text-xs">{subtitle}</p>
-        )}
-      </div>
-    </div>
-  );
-}
 
 export default async function AppPage() {
   const sessionData = await verifySession();
@@ -108,26 +76,10 @@ export default async function AppPage() {
             <h2 className="mb-3 font-medium text-muted-foreground text-sm uppercase tracking-wider">
               Community stats
             </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <DiscordMemberStat />
-              <StatCard
-                Icon={BookOpen}
-                subtitle="+8 new this week"
-                title="Wiki pages"
-                value="301"
-              />
-              <StatCard
-                Icon={GitBranch}
-                subtitle="Last updated 2 hours ago"
-                title="Git commits"
-                value="420"
-              />
-              <StatCard
-                Icon={DollarSign}
-                subtitle="This month"
-                title="Donations"
-                value="$1,337"
-              />
+              <IrcMemberStat />
+              <XmppMemberStat />
             </div>
           </section>
 
