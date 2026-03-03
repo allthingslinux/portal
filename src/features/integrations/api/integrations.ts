@@ -174,3 +174,41 @@ export async function deleteIntegrationAccount(
     );
   }
 }
+
+interface ResetPasswordResponse {
+  ok: boolean;
+  message: string;
+  /** Only present for IRC — Atheme generates a random password */
+  temporaryPassword?: string;
+}
+
+/**
+ * Reset the password for an integration account.
+ * For XMPP: pass the user's chosen password.
+ * For IRC: no password needed — Atheme generates one and returns it.
+ */
+export async function resetIntegrationPassword(
+  integrationId: string,
+  id: string,
+  password?: string
+): Promise<ResetPasswordResponse> {
+  const response = await fetch(
+    `/api/integrations/${integrationId}/accounts/${id}/reset-password`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(password ? { password } : {}),
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ error: "Unknown error" }));
+    throw new Error(
+      error.error || `Failed to reset password: ${response.statusText}`
+    );
+  }
+
+  return (await response.json()) as ResetPasswordResponse;
+}
