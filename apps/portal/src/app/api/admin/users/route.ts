@@ -1,0 +1,65 @@
+import type { NextRequest } from "next/server";
+import { handleAPIError, requireAdminOrStaff } from "@portal/api/utils";
+import { db } from "@portal/db/client";
+import { user } from "@portal/db/schema/auth";
+import { UserSearchSchema } from "@portal/schemas/user";
+import { and, desc, eq, ilike, or } from "drizzle-orm";
+
+// With cacheComponents, route handlers are dynamic by default.
+
+export async function GET(request: NextRequest) {
+  try {
+    await requireAdminOrStaff(request);
+
+    const { searchParams } = new URL(request.url);
+    const { role, banned, search, limit, offset } = UserSearchSchema.parse(
+      Object.fromEntries(searchParams)
+    );
+
+    // Build where conditions
+    const conditions: ReturnType<typeof eq | typeof or>[] = [];
+    if (role) {
+      conditions.push(eq(user.role, role));
+    }
+    if (banned !== undefined) {
+      conditions.push(eq(user.banned, banned));
+    }
+    if (search) {
+      const searchCondition = or(
+        ilike(user.email, `%${search}%`),
+        ilike(user.name, `%${search}%`)
+      );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    const [users, [{ count }]] = await Promise.all([
+      db
+        .select()
+        .from(user)
+        .where(whereClause)
+        .orderBy(desc(user.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db
+        .select({ count: db.$count(user, whereClause) })
+        .from(user)
+        .limit(1),
+    ]);
+
+    return Response.json({
+      users,
+      pagination: {
+        total: count,
+        limit,
+        offset,
+        hasMore: offset + limit < count,
+      },
+    });
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}

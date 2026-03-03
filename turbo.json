@@ -1,0 +1,60 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig.json", "package.json", ".env", ".env.*"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "DATABASE_URL",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "NODE_ENV",
+        "NEXT_PUBLIC_*",
+        "SENTRY_*",
+        "GIT_COMMIT_SHA"
+      ]
+    },
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
+    "//#check": {},
+    "//#fix": {
+      "cache": false
+    },
+    "typegen": {
+      "inputs": ["src/app/**"],
+      "outputs": [".next/types/**"],
+      "cache": false
+    },
+    "type-check": {
+      "dependsOn": ["transit"],
+      "inputs": ["src/**", "tsconfig.json"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tests/**", "vitest.config.ts", ".env", ".env.*"],
+      "outputs": ["coverage/**"],
+      "env": ["DATABASE_URL"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
+    },
+    "db:generate": {
+      "inputs": ["src/schema/**"],
+      "outputs": ["drizzle/**"],
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    }
+  },
+  "globalDependencies": ["pnpm-lock.yaml"],
+  "globalEnv": ["NODE_ENV"]
+}

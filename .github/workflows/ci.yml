@@ -35,8 +35,9 @@ jobs:
         id: ts_changes
         with:
           files: |
-            src/**/*.{ts,tsx}
-            tsconfig.json
+            apps/portal/src/**/*.{ts,tsx}
+            packages/*/src/**/*.{ts,tsx}
+            **/tsconfig.json
             package.json
             pnpm-lock.yaml
       - name: Check Config
@@ -44,18 +45,20 @@ jobs:
         id: config_changes
         with:
           files: |
-            next.config.ts
-            biome.jsonc
-            vitest.config.ts
+            apps/portal/next.config.ts
+            **/biome.jsonc
+            apps/portal/vitest.config.ts
+            turbo.json
+            apps/portal/turbo.json
             .github/workflows/ci.yml
       - name: Check Tests
         uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
         id: test_changes
         with:
           files: |
-            tests/**/*
-            vitest.config.ts
-            vitest.setup.ts
+            apps/portal/tests/**/*
+            apps/portal/vitest.config.ts
+            apps/portal/vitest.setup.ts
 
   lint:
     name: Lint
@@ -131,7 +134,7 @@ jobs:
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
         with:
           path: |
-            .next/cache
+            apps/portal/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-
@@ -168,7 +171,7 @@ jobs:
         if: always()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
+          files: ./apps/portal/coverage/lcov.info
           fail_ci_if_error: false
           verbose: true
 

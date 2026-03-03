@@ -1,0 +1,27 @@
+{
+  "name": "@portal/seo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.1.6",
+    "schema-dts": "^1.1.5"
+  },
+  "devDependencies": {
+    "@portal/typescript-config": "workspace:*",
+    "@types/react": "^19.2.8",
+    "lodash": "^4.17.21",
+    "@types/lodash": "^4.17.23",
+    "react": "19.2.4",
+    "typescript": "^5.9.3"
+  }
+}

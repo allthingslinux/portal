@@ -1,0 +1,15 @@
+{
+  "extends": "@portal/typescript-config/library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/auth": ["../../apps/portal/src/features/auth/lib"],
+      "@/auth/*": ["../../apps/portal/src/features/auth/lib/*"],
+      "@/config": ["../../apps/portal/src/shared/config"],
+      "@/config/*": ["../../apps/portal/src/shared/config/*"],
+      "@/*": ["../../apps/portal/src/*"]
+    },
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}

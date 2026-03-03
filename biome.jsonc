@@ -1,5 +1,5 @@
 {
-  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
   "extends": [
     "ultracite/biome/core",
     "ultracite/biome/react",
@@ -13,45 +13,6 @@
       }
     }
   },
-  "overrides": [
-    {
-      "includes": [
-        "src/shared/schemas/index.ts",
-        "src/shared/schemas/integrations/index.ts",
-        "src/features/integrations/api/index.ts",
-        "src/features/user/api/index.ts",
-        "src/features/admin/api/index.ts",
-        "src/shared/api/index.ts",
-        "src/shared/types/api.ts",
-        "src/app/metadata.ts"
-      ],
-      "linter": {
-        "rules": {
-          "performance": {
-            "noBarrelFile": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": [
-        "src/features/**/implementation.ts",
-        "src/features/**/lib/config.ts",
-        "src/features/**/client.ts",
-        "src/features/**/unreal/client.ts",
-        "src/features/**/components/*.tsx",
-        "src/app/**/integrations-content.tsx",
-        "src/sentry.*.ts"
-      ],
-      "linter": {
-        "rules": {
-          "performance": {
-            "noNamespaceImport": "off"
-          }
-        }
-      }
-    }
-  ],
   "assist": {
     "actions": {
       "source": {
@@ -89,8 +50,8 @@
               // Blank line separator
               ":BLANK_LINE:",
               // Internal aliases by specificity
-              ["@/components/ui", "@/components/ui/**"],
-              ["@/components", "@/components/**"],
+              ["@portal/ui/ui", "@portal/ui/ui/**"],
+              ["@portal/ui", "@portal/ui/**"],
               ["@/hooks", "@/hooks/**"],
               ["@/lib", "@/lib/**"],
               ["@/auth", "@/auth/**"],
@@ -104,12 +65,66 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": [
+        "apps/portal/src/shared/schemas/index.ts",
+        "apps/portal/src/shared/schemas/integrations/index.ts",
+        "apps/portal/src/features/integrations/api/index.ts",
+        "apps/portal/src/features/user/api/index.ts",
+        "apps/portal/src/features/admin/api/index.ts",
+        "apps/portal/src/shared/api/index.ts",
+        "apps/portal/src/shared/types/api.ts",
+        "apps/portal/src/app/metadata.ts"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noBarrelFile": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "apps/portal/src/features/**/implementation.ts",
+        "apps/portal/src/features/**/lib/config.ts",
+        "apps/portal/src/features/**/client.ts",
+        "apps/portal/src/features/**/unreal/client.ts",
+        "apps/portal/src/features/**/components/*.tsx",
+        "apps/portal/src/app/**/integrations-content.tsx",
+        "apps/portal/src/sentry.*.ts"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noNamespaceImport": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts"],
+      "linter": {
+        "rules": {
+          "performance": {
+            "useTopLevelRegex": "off"
+          },
+          "suspicious": {
+            "noAssignInExpressions": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    }
+  ],
   "files": {
     "includes": [
-      "!src/components/react-scan.tsx",
-      "!references",
-      "!src/components/ui",
-      "!drizzle",
+      "!apps/portal/references",
+      "!packages/ui/src/ui",
+      "!apps/portal/drizzle",
       "!.cursor/skills"
     ]
   }

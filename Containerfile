@@ -1,43 +1,61 @@
 # ============================================================================
-# Multi-stage Containerfile for Next.js 16 Application
+# Multi-stage Containerfile for Portal (Turborepo Monorepo)
 # ============================================================================
-# Stage 1: Dependencies - Install all dependencies
-# Stage 2: Builder - Build the Next.js application
-# Stage 3: Runner - Production runtime with minimal image size
+# Stage 1: Pruner  - Prune workspace to only @portal/portal and its deps
+# Stage 2: Deps    - Install production dependencies from pruned lockfile
+# Stage 3: Builder - Build the Next.js application via turbo
+# Stage 4: Runner  - Minimal production runtime
 # ============================================================================
 
+# Base image pinned for reproducibility
+ARG NODE_IMAGE=node:22-alpine@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34
+
 # ============================================================================
-# Stage 1: Dependencies
+# Stage 1: Pruner — generate minimal workspace subset
 # ============================================================================
-FROM node:22-alpine@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34 AS deps
+FROM ${NODE_IMAGE} AS pruner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.28.2 --activate
+RUN pnpm add -g turbo@^2
 
-# Copy package files
-COPY package.json pnpm-lock.yaml ./
+# Copy the full monorepo (filtered by .dockerignore)
+COPY . .
 
-# Install dependencies
+# Prune to only the portal app and its workspace dependencies
+RUN turbo prune @portal/portal --docker
+
+# ============================================================================
+# Stage 2: Deps — install dependencies from pruned package.json files
+# ============================================================================
+FROM ${NODE_IMAGE} AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@10.28.2 --activate
+
+# Copy only the pruned package.json files and lockfile (maximises layer cache)
+COPY --from=pruner /app/out/json/ .
+
+# Install dependencies using the pruned lockfile
 RUN pnpm install --frozen-lockfile
 
 # ============================================================================
-# Stage 2: Builder
+# Stage 3: Builder — build the application
 # ============================================================================
-FROM node:22-alpine@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34 AS builder
+FROM ${NODE_IMAGE} AS builder
 WORKDIR /app
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
+RUN corepack enable && corepack prepare pnpm@10.28.2 --activate
 
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
+# Copy installed node_modules from deps stage
+COPY --from=deps /app/ .
 
-# Copy source code
-COPY . .
+# Copy full source from pruned workspace
+COPY --from=pruner /app/out/full/ .
 
-# Set build-time environment variables
+# Build-time environment variables
 ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
 
@@ -52,44 +70,38 @@ ENV GIT_COMMIT_SHA=$GIT_COMMIT_SHA
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Build the application
-# Note: Environment variables needed at build time should be passed via --build-arg
-RUN pnpm build
+# Build the portal app (turbo handles dependency ordering)
+RUN pnpm turbo run build --filter=@portal/portal
 
 # ============================================================================
-# Stage 3: Runner (Production)
+# Stage 4: Runner — minimal production image
 # ============================================================================
-FROM node:22-alpine@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34 AS runner
+FROM ${NODE_IMAGE} AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Create non-root user for security
+# Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+  adduser --system --uid 1001 nextjs
 
-# Copy necessary files from builder
-# standalone output includes only the necessary files
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copy standalone output, static assets, and public files
+COPY --from=builder /app/apps/portal/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/portal/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/portal/.next/static ./.next/static
 
-# Set ownership
 RUN chown -R nextjs:nodejs /app
 
-# Switch to non-root user
 USER nextjs
 
-# Expose port
 EXPOSE 3000
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Health check
+# Health check against /api/health
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Start the application
 CMD ["node", "server.js"]

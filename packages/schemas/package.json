@@ -1,0 +1,30 @@
+{
+  "name": "@portal/schemas",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./src/*.ts"
+    },
+    "./integrations/*": {
+      "types": "./src/integrations/*.ts",
+      "default": "./src/integrations/*.ts"
+    }
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@portal/db": "workspace:*",
+    "@portal/types": "workspace:*",
+    "drizzle-orm": "1.0.0-beta.15-859cf75",
+    "zod": "^4.3.5",
+    "zod-validation-error": "^5.0.0"
+  },
+  "devDependencies": {
+    "@portal/typescript-config": "workspace:*",
+    "typescript": "^5.9.3"
+  }
+}

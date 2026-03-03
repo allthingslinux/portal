@@ -1,0 +1,25 @@
+{
+  "name": "@portal/utils",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": {
+      "types": "./src/*.ts",
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@portal/types": "workspace:*",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "@portal/typescript-config": "workspace:*",
+    "typescript": "^5.9.3"
+  }
+}

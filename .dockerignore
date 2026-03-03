@@ -1,27 +1,36 @@
-# Dependencies
-node_modules
+# =============================================================================
+# .dockerignore — Monorepo-aware exclusions for turbo prune Docker builds
+# =============================================================================
+# The pruner stage copies the full monorepo, runs `turbo prune @portal/portal
+# --docker`, then subsequent stages use only the pruned output. Exclude build
+# artifacts, dev tooling, and files not needed for the production build.
+# =============================================================================
+
+# Dependencies (all packages)
+**/node_modules
 .pnp
 .pnp.js
 
-# Testing
-coverage
+# Build artifacts (all packages)
+**/.next
+**/.turbo
+**/coverage
+**/out
+**/build
+**/dist
+
+# Testing (all packages)
+**/tests
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+**/vitest.config.ts
+**/vitest.setup.ts
+**/vitest.server-only-mock.ts
 .nyc_output
-*.test.ts
-*.test.tsx
-*.spec.ts
-*.spec.tsx
-tests
-vitest.config.ts
-vitest.setup.ts
-vitest.server-only-mock.ts
 
-# Next.js
-.next
-out
-build
-dist
-
-# Production
+# Logs
 *.log
 *.log.*
 npm-debug.log*
@@ -30,20 +39,21 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Misc
-.DS_Store
-*.pem
+# Environment files (injected via build args, not baked in)
 .env
 .env*.local
 .env.production
 .env.staging
+**/.env
 
-# Debug
+# IDE / Editor
 .vscode
 .idea
 *.swp
 *.swo
 *~
+.DS_Store
+*.pem
 
 # Git
 .git
@@ -54,40 +64,38 @@ lerna-debug.log*
 .github
 .cursor
 .husky
+.kiro
 
 # Documentation
 *.md
 docs
 !README.md
 
-# Docker
+# Docker (avoid recursive copy)
 Containerfile*
 Dockerfile*
 docker-compose*.yml
 compose.yaml
 .dockerignore
 
-# Database
-drizzle
+# Database migrations (not needed for Next.js build)
+**/drizzle
 *.db
 *.sqlite
 
-# Scripts (keep only what's needed at runtime)
-scripts
-!scripts/seed.ts
+# TypeScript build info
+**/*.tsbuildinfo
 
-# TypeScript (keep tsconfig.json - Next.js needs it for path alias resolution during build)
-*.tsbuildinfo
-
-# Linting
-.eslintrc*
-.prettierrc*
-biome.jsonc
+# Linting / Formatting (not needed for build)
+**/biome.jsonc
 .lintstagedrc.json
 .commitlintrc.json
-
-# Other
-.cache
-.turbo
-.vercel
+.eslintrc*
+.prettierrc*
 .releaserc.json
+
+# Misc
+.cache
+.vercel
+**/references
+**/examples

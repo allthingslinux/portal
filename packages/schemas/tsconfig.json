@@ -1,0 +1,8 @@
+{
+  "extends": "@portal/typescript-config/library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {}
+  },
+  "include": ["src/**/*.ts"]
+}
