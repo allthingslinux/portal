@@ -92,7 +92,7 @@
 
   "devDependencies": {
     "@portal/typescript-config": "workspace:*",
-    "@react-grab/cursor": "^0.0.98",
+    "@react-grab/cursor": "^0.1.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^7.0.0",
     "@semantic-release/git": "^10.0.1",
@@ -108,7 +108,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitest/coverage-v8": "^4.0.17",
     "discord-api-types": "^0.38.40",
-    "drizzle-kit": "1.0.0-beta.15-859cf75",
+    "drizzle-kit": "1.0.0-beta.9-e89174b",
     "fast-check": "^4.5.3",
     "jsdom": "^27.4.0",
     "next-devtools-mcp": "^0.3.10",
