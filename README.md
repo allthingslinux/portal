@@ -21,8 +21,9 @@ All services are accessible across multiple domains: `atl.dev`, `atl.sh`, `atl.t
 
 - **Framework**: React 19 + Next.js 16 (App Router)
 - **Language**: TypeScript (strict mode)
+- **Monorepo**: Turborepo + pnpm workspaces
 - **Styling**: TailwindCSS 4 + Shadcn UI (Radix)
-- **Authentication**: BetterAuth
+- **Authentication**: BetterAuth v1.5+
 - **Database**: DrizzleORM + PostgreSQL
 - **Validation**: Zod
 - **State Management**: TanStack Query (React Query)
@@ -32,7 +33,7 @@ All services are accessible across multiple domains: `atl.dev`, `atl.sh`, `atl.t
 ## Prerequisites
 
 - Node.js >= 22.18.0 (LTS recommended, managed via `mise` if available)
-- pnpm 10.27.0
+- pnpm 10.28.2
 - PostgreSQL database (PostgreSQL 18 recommended)
 - Docker and Docker Compose (for local database setup)
 
@@ -45,9 +46,9 @@ All services are accessible across multiple domains: `atl.dev`, `atl.sh`, `atl.t
 pnpm install
 
 # Set up environment variables
-# Create a .env file with your configuration. Required variables include
+# Create apps/portal/.env with your configuration. Required variables include
 # DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, etc. Environment is
-# validated via @t3-oss/env-nextjs in src/env.ts (extends module keys).
+# validated via @t3-oss/env-nextjs in apps/portal/src/env.ts (extends module keys).
 
 # Start PostgreSQL database (Docker Compose)
 pnpm compose:db
@@ -142,34 +143,45 @@ The application will be available at [http://localhost:3000](http://localhost:30
 
 ## Project Structure
 
+This is a Turborepo monorepo with workspace packages.
+
 ```
-src/
-├── app/                    # Next.js App Router
-│   ├── (dashboard)/app/    # Protected dashboard routes (overview, admin, integrations, settings)
-│   ├── .well-known/        # OAuth/OpenID discovery endpoints
-│   ├── api/                # API routes (admin, auth, integrations, monitoring, user)
-│   └── auth/               # Authentication pages and consent
-├── components/             # Reusable React components
-│   ├── ui/                 # shadcn/ui components
-│   └── layout/             # Layout (header, sidebar, navigation, page)
-├── features/               # Feature modules (auth, admin, integrations, routing, user)
-│   └── [name]/lib/         # Feature-specific logic (e.g. auth, integrations registry)
-├── shared/                 # Shared business logic and config
-│   ├── api/                # API client, query keys, server queries
-│   ├── config/             # Application configuration
-│   ├── db/                 # Database client, schema, migrations config
-│   ├── types/              # Centralized types (auth, api, routes, common, email)
-│   ├── utils/              # Constants, date, error, string helpers
-│   ├── observability/      # Logging and monitoring
-│   └── seo/                # Metadata, JSON-LD, robots, sitemap
-├── hooks/                  # Custom React hooks
-├── i18n/                   # Internationalization setup
-├── styles/                 # Global styles
-├── env.ts                  # t3-env validated environment (extends module keys)
-└── proxy.ts                # Development proxy configuration
+apps/
+└── portal/                 # @portal/portal — Next.js application
+    ├── src/
+    │   ├── app/            # Next.js App Router
+    │   │   ├── (dashboard)/app/  # Protected dashboard routes
+    │   │   ├── .well-known/      # OAuth/OpenID discovery endpoints
+    │   │   ├── api/              # API routes (admin, auth, integrations, user)
+    │   │   └── auth/             # Authentication pages and consent
+    │   ├── features/       # Feature modules (auth, admin, integrations, routing, user)
+    │   │   └── [name]/lib/ # Feature-specific logic
+    │   ├── shared/         # App-specific shared code (config, security, wiki)
+    │   ├── hooks/          # Custom React hooks
+    │   ├── i18n/           # Internationalization setup
+    │   ├── styles/         # Global styles
+    │   ├── env.ts          # t3-env validated environment
+    │   └── proxy.ts        # Next.js middleware (note: named proxy.ts, not middleware.ts)
+    ├── locale/             # i18n translation files
+    ├── scripts/            # Utility/maintenance scripts
+    └── tests/              # Test suites (unit, integration)
+
+packages/
+├── api/                    # @portal/api — TanStack Query setup, query keys, server queries
+├── db/                     # @portal/db — Drizzle schema, client, relations, migrations
+│   ├── src/schema/         # Schema files (auth, api-keys, integrations, irc, xmpp, oauth)
+│   └── drizzle/            # Generated migration files
+├── email/                  # @portal/email — Email service (Resend)
+├── observability/          # @portal/observability — Sentry, OpenTelemetry, web vitals
+├── schemas/                # @portal/schemas — Shared Zod validation schemas
+├── seo/                    # @portal/seo — Metadata, JSON-LD, robots, sitemap
+├── types/                  # @portal/types — Centralized types (auth, api, routes, common)
+├── ui/                     # @portal/ui — Shared UI components (shadcn + custom)
+├── utils/                  # @portal/utils — Constants, date, error, string helpers
+└── typescript-config/      # @portal/typescript-config — Shared TS configs
 ```
 
-Path aliases: `@/auth` → `src/features/auth/lib`, `@/db` → `src/shared/db`, `@/config` → `src/shared/config`, `@/ui/*` → `src/components/ui/*`. See [docs/PATH_ALIASES.md](./docs/PATH_ALIASES.md).
+Path aliases within `apps/portal/`: `@/auth` → `src/features/auth/lib`, `@/db` → `packages/db` (via workspace), `@/config` → `src/shared/config`, `@/ui/*` → `packages/ui` (via workspace). Workspace packages use `@portal/*` imports. See [docs/PATH_ALIASES.md](./docs/PATH_ALIASES.md).
 
 ## Database Setup
 
@@ -188,7 +200,7 @@ pnpm compose:db
 # - Database: portal
 ```
 
-Update your `.env` file with the database connection string:
+Update your `apps/portal/.env` file with the database connection string:
 
 ```env
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/portal
@@ -198,22 +210,24 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/portal
 
 ### Import Aliases
 
-The project uses TypeScript path aliases for clean imports (`@/auth` → `src/features/auth/lib`, `@/db` → `src/shared/db`, `@/config` → `src/shared/config`). See [docs/PATH_ALIASES.md](./docs/PATH_ALIASES.md).
+The project uses TypeScript path aliases for clean imports within `apps/portal/` (`@/auth` → `src/features/auth/lib`, `@/config` → `src/shared/config`). Workspace packages are imported via `@portal/*` (e.g., `@portal/db/client`, `@portal/types/auth`). See [docs/PATH_ALIASES.md](./docs/PATH_ALIASES.md).
 
 ```typescript
 import { auth, authClient } from "@/auth";                 // Authentication
-import { db } from "@/db";                                 // Database
+import { db } from "@portal/db/client";                    // Database
 import { BASE_URL } from "@/config";                       // App config
-import { Button } from "@/components/ui/button";           // UI components
-import { usePermissions } from "@/hooks/use-permissions";  // Custom hooks
+import { Button } from "@portal/ui/button";                // UI components
+import type { SessionData } from "@portal/types/auth";     // Types
+import { USER_ROLES } from "@portal/utils/constants";      // Constants
 ```
 
 ### Module Organization
 
-- **Barrel Exports**: Core modules (`@/auth`, `@/db`, `@/config`) use barrel exports for convenience
-- **Direct Imports**: UI components (`@/components/ui/*`) and shared utils use direct imports for performance
-- **Types**: Centralized in `src/shared/types/` (auth, api, routes, common, email); constants in `src/shared/utils/constants.ts`
-- **Environment**: Validated via `@t3-oss/env-nextjs` in `src/env.ts`, extending module-level `keys()` functions
+- **Barrel Exports**: Core modules (`@/auth`, `@/config`) use barrel exports for convenience
+- **Workspace Packages**: Shared code lives in `packages/` and is imported via `@portal/*`
+- **Direct Imports**: UI components (`@portal/ui/*`) and shared utils use direct imports for performance
+- **Types**: Centralized in `packages/types/src/` (auth, api, routes, common); constants in `packages/utils/src/constants.ts`
+- **Environment**: Validated via `@t3-oss/env-nextjs` in `apps/portal/src/env.ts`, extending module-level `keys()` functions
 - **Clear Boundaries**: Strict separation between client and server code
 - **Type Safety**: Full TypeScript coverage with strict mode enabled
 
@@ -229,10 +243,10 @@ Portal uses BetterAuth for authentication with role-based access control (RBAC):
 
 ### Database
 
-- **ORM**: DrizzleORM for type-safe database queries
-- **Migrations**: Version-controlled schema changes via Drizzle Kit
-- **Relations**: Properly defined relationships between entities
-- **Schemas**: Modular schema organization (auth, oauth, api-keys, etc.)
+- **ORM**: DrizzleORM for type-safe database queries (via `@portal/db` workspace package)
+- **Migrations**: Version-controlled schema changes via Drizzle Kit (in `packages/db/drizzle/`)
+- **Relations**: Properly defined relationships between entities (in `packages/db/src/relations.ts`)
+- **Schemas**: Modular schema organization in `packages/db/src/schema/` (auth, oauth, api-keys, etc.)
 
 ### Internationalization
 
@@ -256,29 +270,35 @@ The project uses `next-intl` for multi-language support:
 
 ### Module Boundaries
 
-Portal follows a clear module organization pattern:
+Portal follows a Turborepo monorepo pattern with shared code extracted into workspace packages:
 
-- **`src/shared/`**: Shared business logic and configuration
-  - `db/` - Database client, schema, and migration config
-  - `api/` - API client, query keys, server queries
+- **`packages/`**: Shared workspace packages
+  - `db/` (`@portal/db`) - Database client, schema, relations, and migration config
+  - `api/` (`@portal/api`) - API client, query keys, server queries
+  - `types/` (`@portal/types`) - Centralized types (auth, api, routes, common)
+  - `schemas/` (`@portal/schemas`) - Shared Zod validation schemas
+  - `utils/` (`@portal/utils`) - Constants, date, error, string helpers
+  - `email/` (`@portal/email`) - Email service
+  - `observability/` (`@portal/observability`) - Sentry, OpenTelemetry, logging
+  - `seo/` (`@portal/seo`) - Metadata, JSON-LD, robots, sitemap
+  - `ui/` (`@portal/ui`) - Shared UI components
+
+- **`apps/portal/src/shared/`**: App-specific shared code
   - `config/` - Application configuration
-  - `types/` - Centralized types (auth, api, routes, common, email)
-  - `utils/` - Constants, date, error, string helpers
-  - `observability/` - Logging and monitoring
-  - `seo/` - Metadata, JSON-LD, robots, sitemap
+  - `security/` - Security utilities (nonce, etc.)
 
-- **`src/features/`**: Feature modules (auth, admin, integrations, routing, user)
+- **`apps/portal/src/features/`**: Feature modules (auth, admin, integrations, routing, user)
   - Each feature may have `lib/`, `components/`, `hooks/`, `api/`
   - Auth lives at `@/auth` → `src/features/auth/lib`
   - Integrations registry at `src/features/integrations/lib/core/registry.ts`
 
-- **`src/components/`**: React components
+- **`apps/portal/src/components/`**: React components
   - `ui/` - Base shadcn/ui components
   - `layout/` - Layout components (header, sidebar, navigation, page)
 
-- **`src/hooks/`**: Custom React hooks (e.g. use-mobile, use-permissions, use-image-preview)
+- **`apps/portal/src/hooks/`**: Custom React hooks (e.g. use-mobile, use-permissions, use-image-preview)
 
-- **`src/app/`**: Next.js App Router
+- **`apps/portal/src/app/`**: Next.js App Router
   - `api/` - API route handlers
   - `(dashboard)/app/` - Protected routes (overview, admin, integrations, settings)
   - `auth/` - Authentication and consent pages
@@ -289,10 +309,10 @@ Portal follows a clear module organization pattern:
 **Server-Only Code**:
 
 - Mark with `"use server"` directive or `import "server-only"`
-- API route handlers (`src/app/api/`)
+- API route handlers (`apps/portal/src/app/api/`)
 - Server actions
-- Database queries
-- Auth utilities (`src/features/auth/lib/server-client.ts`, imported via `@/auth`)
+- Database queries (via `@portal/db`)
+- Auth utilities (`apps/portal/src/features/auth/lib/server-client.ts`, imported via `@/auth`)
 
 **Client Code**:
 
@@ -317,16 +337,16 @@ import { authClient } from "@/auth/client"
 
 Portal uses a registry pattern for integrations:
 
-- **Registry**: `src/features/integrations/lib/core/registry.ts`
-- **Factory**: `src/features/integrations/lib/core/factory.ts`
-- **Base Class**: `BaseIntegration` in `src/features/integrations/lib/core/base.ts`
+- **Registry**: `apps/portal/src/features/integrations/lib/core/registry.ts`
+- **Factory**: `apps/portal/src/features/integrations/lib/core/factory.ts`
+- **Base Class**: `BaseIntegration` in `apps/portal/src/features/integrations/lib/core/base.ts`
 - **Registration**: Integrations register themselves on module load
 
 **Adding a New Integration**:
 
-1. Create integration module in `src/features/integrations/lib/[name]/`
+1. Create integration module in `apps/portal/src/features/integrations/lib/[name]/`
 2. Implement `BaseIntegration` interface
-3. Register in `src/features/integrations/lib/index.ts`
+3. Register in `apps/portal/src/features/integrations/lib/index.ts`
 4. Add environment variables in the integration’s `keys.ts`
 
 ### API Design Conventions
@@ -370,8 +390,8 @@ export async function GET(request: NextRequest) {
 **API Route Structure**:
 
 - RESTful conventions (`GET`, `POST`, `PATCH`, `DELETE`)
-- Route handlers in `src/app/api/[resource]/route.ts`
-- Nested resources: `src/app/api/[resource]/[id]/route.ts`
+- Route handlers in `apps/portal/src/app/api/[resource]/route.ts`
+- Nested resources: `apps/portal/src/app/api/[resource]/[id]/route.ts`
 - Use DTOs to prevent exposing sensitive data
 
 ### Feature Module Conventions
@@ -400,9 +420,9 @@ export async function GET(request: NextRequest) {
 
 **Schema Organization**:
 
-- Modular schemas in `src/shared/db/schema/`
+- Modular schemas in `packages/db/src/schema/`
 - One file per domain (auth.ts, oauth.ts, api-keys.ts)
-- Relations defined in `relations.ts`
+- Relations defined in `packages/db/src/relations.ts`
 - Use Drizzle ORM for type-safe queries
 
 **Migrations**:
@@ -427,11 +447,11 @@ export async function GET(request: NextRequest) {
 
 - PostgreSQL 18+ (via Docker Compose)
 - Node.js 22.18.0+
-- pnpm 10.27.0
+- pnpm 10.28.2
 
 **Environment Variables**:
 
-- Database connection (`DATABASE_URL`)
+- Database connection (`DATABASE_URL`) — in `apps/portal/.env`
 - BetterAuth configuration (`BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`)
 - Optional integrations (XMPP, Sentry, etc.)
 
@@ -445,7 +465,7 @@ export async function GET(request: NextRequest) {
 **GitHub Actions**:
 
 - Runs on Node.js 22.x
-- Requires pnpm 10.27.0
+- Requires pnpm 10.28.2
 - Caches pnpm dependencies
 - Runs: lint, type-check, build, test
 
@@ -465,7 +485,7 @@ export async function GET(request: NextRequest) {
 **Build Requirements**:
 
 - Node.js >= 22.18.0
-- pnpm 10.27.0
+- pnpm 10.28.2
 - PostgreSQL 18+
 
 **Environment Setup**:
