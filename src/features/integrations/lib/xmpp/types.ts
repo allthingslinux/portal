@@ -13,11 +13,19 @@ export type {
 } from "@/shared/schemas/integrations/xmpp";
 
 /**
- * Prosody REST API error response
+ * Prosody REST API error response.
+ * Supports both the legacy format (error/message) and the newer
+ * util.error format (type/condition/text/code) from mod_http_admin_api >= 2025-10-01.
  */
 export interface ProsodyRestError {
-  error: string;
+  // Legacy format
+  error?: string;
   message?: string;
+  // util.error format (Prosody trunk / mod_http_admin_api post-2025-10-01)
+  type?: string;
+  condition?: string;
+  text?: string;
+  code?: number;
 }
 
 /**

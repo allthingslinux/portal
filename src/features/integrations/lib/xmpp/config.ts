@@ -3,6 +3,7 @@ import "server-only";
 import { captureException } from "@sentry/nextjs";
 
 import { keys } from "./keys";
+import { APIError } from "@/shared/api/utils";
 
 // ============================================================================
 // XMPP Configuration
@@ -25,11 +26,6 @@ export const xmppConfig = {
     // Bearer token for mod_http_admin_api (mod_tokenauth in Prosody 13+)
     // Generate via prosodyctl or OAuth2 client credentials grant
     token: env.PROSODY_REST_TOKEN,
-
-    // Legacy: username/password kept for backward-compat but unused by
-    // mod_http_admin_api in Prosody 13+ (it requires Bearer tokens)
-    username: env.PROSODY_REST_USERNAME || "admin@atl.chat",
-    password: env.PROSODY_REST_PASSWORD,
   },
 } as const;
 
@@ -40,11 +36,10 @@ export const xmppConfig = {
  */
 export function validateXmppConfig(): void {
   if (!xmppConfig.prosody.token) {
-    const error = new Error(
-      "PROSODY_REST_TOKEN environment variable is required (Bearer token for mod_http_admin_api)"
-    );
+    const msg =
+      "PROSODY_REST_TOKEN environment variable is required (Bearer token for mod_http_admin_api)";
     try {
-      captureException(error, {
+      captureException(new Error(msg), {
         tags: {
           type: "configuration_error",
           module: "xmpp_config",
@@ -55,15 +50,13 @@ export function validateXmppConfig(): void {
     } catch {
       // Sentry might not be initialized yet, continue to throw
     }
-    throw error;
+    throw new APIError(msg, 503);
   }
 
   if (!xmppConfig.prosody.restUrl) {
-    const error = new Error(
-      "PROSODY_REST_URL environment variable is required"
-    );
+    const msg = "PROSODY_REST_URL environment variable is required";
     try {
-      captureException(error, {
+      captureException(new Error(msg), {
         tags: {
           type: "configuration_error",
           module: "xmpp_config",
@@ -74,7 +67,7 @@ export function validateXmppConfig(): void {
     } catch {
       // Sentry might not be initialized yet, continue to throw
     }
-    throw error;
+    throw new APIError(msg, 503);
   }
 }
 
