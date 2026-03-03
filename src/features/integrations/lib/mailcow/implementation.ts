@@ -57,7 +57,7 @@ export class MailcowIntegration extends IntegrationBase<
   constructor() {
     super({
       id: "mailcow",
-      name: "mailcow",
+      name: "Mailcow",
       description: "Email mailboxes (mailcow)",
       enabled: isMailcowConfigured(),
       createAccountSchema: CreateMailboxRequestSchema,
