@@ -37,6 +37,9 @@ vi.mock("@/features/integrations/lib/xmpp/keys", () => ({ keys: () => ({}) }));
 vi.mock("@/features/integrations/lib/irc/keys", () => ({ keys: () => ({}) }));
 vi.mock("@/shared/db/keys", () => ({ keys: () => ({}) }));
 vi.mock("@/features/auth/lib/keys", () => ({ keys: () => ({}) }));
+vi.mock("@/features/integrations/lib/mailcow/keys", () => ({
+  keys: () => ({}),
+}));
 
 // Mock auth — requireAuth always passes
 vi.mock("@/shared/api/utils", async () => {

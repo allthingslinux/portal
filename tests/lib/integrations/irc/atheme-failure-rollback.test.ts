@@ -22,8 +22,13 @@ const fc = { assert: fcAssert, asyncProperty, constantFrom, string: fcString };
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock env keys before any imports that trigger T3-Env validation
 vi.mock("@/features/integrations/lib/irc/keys", () => ({ keys: () => ({}) }));
+vi.mock("@/features/integrations/lib/mailcow/keys", () => ({
+  keys: () => ({}),
+}));
+vi.mock("@/features/integrations/lib/xmpp/keys", () => ({ keys: () => ({}) }));
+vi.mock("@/shared/db/keys", () => ({ keys: () => ({}) }));
+vi.mock("@/features/auth/lib/keys", () => ({ keys: () => ({}) }));
 vi.mock("@/features/integrations/lib/irc/config", () => ({
   ircConfig: {
     server: "irc.atl.chat",

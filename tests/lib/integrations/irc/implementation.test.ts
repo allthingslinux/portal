@@ -7,6 +7,12 @@ import { ircIntegration } from "@/features/integrations/lib/irc/implementation";
 // Mock keys and config
 process.env.SKIP_ENV_VALIDATION = "true";
 vi.mock("@/features/integrations/lib/irc/keys", () => ({ keys: () => ({}) }));
+vi.mock("@/features/integrations/lib/mailcow/keys", () => ({
+  keys: () => ({}),
+}));
+vi.mock("@/features/integrations/lib/xmpp/keys", () => ({ keys: () => ({}) }));
+vi.mock("@/shared/db/keys", () => ({ keys: () => ({}) }));
+vi.mock("@/features/auth/lib/keys", () => ({ keys: () => ({}) }));
 vi.mock("@/features/integrations/lib/irc/config", () => ({
   ircConfig: { server: "irc.mock.chat", port: 6697 },
   isIrcConfigured: () => true,

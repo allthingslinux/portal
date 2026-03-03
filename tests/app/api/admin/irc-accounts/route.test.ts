@@ -16,6 +16,9 @@ vi.mock("@/shared/db/keys", () => ({
 vi.mock("@/features/auth/lib/keys", () => ({
   keys: () => ({}),
 }));
+vi.mock("@/features/integrations/lib/mailcow/keys", () => ({
+  keys: () => ({}),
+}));
 
 import { db } from "@/db";
 import { GET } from "@/app/api/admin/irc-accounts/route";
