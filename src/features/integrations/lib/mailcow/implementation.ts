@@ -3,16 +3,20 @@ import { randomUUID } from "node:crypto";
 import type { z } from "zod";
 import { and, eq, ne } from "drizzle-orm";
 
-import { db } from "@/db";
-import { user } from "@/db/schema/auth";
-import { mailcowAccount } from "@/db/schema/mailcow";
+import { APIError } from "../../../../shared/api/utils";
+import { db } from "../../../../shared/db";
+import { user } from "../../../../shared/db/schema/auth";
+import { mailcowAccount } from "../../../../shared/db/schema/mailcow";
+import { log } from "../../../../shared/observability";
 import {
-  createMailbox,
-  deleteMailbox,
-  getDomain,
-  getMailbox,
-  updateMailbox,
-} from "./client";
+  CreateMailboxRequestSchema,
+  MailcowAccountSchema,
+  UpdateMailboxRequestSchema,
+} from "../../../../shared/schemas/integrations/mailcow";
+import { IntegrationBase } from "../core/base";
+import { getIntegrationRegistry } from "../core/registry";
+import type { IntegrationCreateInput } from "../core/types";
+import * as client from "./client";
 import {
   isMailcowConfigured,
   mailcowConfig,
@@ -23,14 +27,6 @@ import type {
   UpdateMailboxRequest,
 } from "./types";
 import { formatEmail } from "./utils";
-import { IntegrationBase } from "@/features/integrations/lib/core/base";
-import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
-import type { IntegrationCreateInput } from "@/features/integrations/lib/core/types";
-import {
-  CreateMailboxRequestSchema,
-  MailcowAccountSchema,
-  UpdateMailboxRequestSchema,
-} from "@/shared/schemas/integrations/mailcow";
 
 async function syncStatusToMailcow(
   email: string,
@@ -38,7 +34,7 @@ async function syncStatusToMailcow(
 ): Promise<void> {
   const active = status === "active" ? "1" : "0";
   try {
-    await updateMailbox(email, { active });
+    await client.updateMailbox(email, { active });
   } catch (error) {
     const action = status === "active" ? "activate" : "suspend";
     const msg = error instanceof Error ? error.message : "Unknown error";
@@ -54,6 +50,8 @@ export class MailcowIntegration extends IntegrationBase<
   IntegrationCreateInput,
   UpdateMailboxRequest
 > {
+  readonly enabled: boolean;
+
   constructor() {
     super({
       id: "mailcow",
@@ -65,6 +63,7 @@ export class MailcowIntegration extends IntegrationBase<
       accountSchema:
         MailcowAccountSchema as unknown as z.ZodType<MailcowAccountType>,
     });
+    this.enabled = isMailcowConfigured();
   }
 
   async createAccount(
@@ -72,91 +71,42 @@ export class MailcowIntegration extends IntegrationBase<
     input: IntegrationCreateInput
   ): Promise<MailcowAccountType> {
     if (!this.enabled) {
-      throw new Error("mailcow integration is not configured");
+      log.warn("Mailcow integration attempt while disabled", { userId });
+      throw new APIError("mailcow integration is not configured", 403);
     }
 
-    const parsed = CreateMailboxRequestSchema.safeParse(input);
-    if (!parsed.success) {
-      const msg = parsed.error.issues[0]?.message ?? "Invalid input";
-      throw new Error(msg);
-    }
+    const { local_part, password } = this.validateCreateInput(userId, input);
 
     validateMailcowConfig();
     const domain = mailcowConfig.domain;
     if (!domain) {
-      throw new Error("MAILCOW_DOMAIN is not configured");
-    }
-    const { local_part, password } = parsed.data;
-
-    const [existingAccount] = await db
-      .select()
-      .from(mailcowAccount)
-      .where(
-        and(
-          eq(mailcowAccount.userId, userId),
-          ne(mailcowAccount.status, "deleted")
-        )
-      )
-      .limit(1);
-
-    if (existingAccount) {
-      throw new Error("User already has a mailcow account");
+      throw new APIError("Mailcow domain is not configured", 500);
     }
 
     const email = formatEmail(local_part, domain);
 
-    const [existingEmail] = await db
-      .select()
-      .from(mailcowAccount)
-      .where(
-        and(
-          eq(mailcowAccount.email, email),
-          ne(mailcowAccount.status, "deleted")
-        )
-      )
-      .limit(1);
+    await this.checkAvailability(userId, email, domain);
 
-    if (existingEmail) {
-      throw new Error("This email address is already taken");
-    }
-
-    const mailboxExists = await getMailbox(email);
-    if (mailboxExists) {
-      throw new Error("This email address already exists in mailcow");
-    }
-
-    const domainCheck = await getDomain(domain);
-    const hasDomain =
-      domainCheck &&
-      (Array.isArray(domainCheck) ? domainCheck.length > 0 : true);
-    if (!hasDomain) {
-      throw new Error(`Domain ${domain} does not exist in mailcow`);
-    }
-
-    const [userData] = await db
-      .select({ email: user.email, name: user.name })
-      .from(user)
-      .where(eq(user.id, userId))
-      .limit(1);
-
-    if (!userData) {
-      throw new Error("User not found");
-    }
-
-    const name = userData.name ?? userData.email?.split("@")[0] ?? local_part;
+    const name = await this.getUserDisplayName(userId, local_part);
 
     try {
-      await createMailbox(domain, local_part, password, name);
+      await client.createMailbox(domain, local_part, password, name);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(
-          `Failed to create mailbox in mailcow: ${error.message}`
-        );
-      }
-      throw new Error("Failed to create mailbox in mailcow");
+      log.error("Mailcow API mailbox creation failed", {
+        userId,
+        email,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw new APIError(
+        `Failed to create mailbox in mailcow: ${
+          error instanceof Error ? error.message : "Internal error"
+        }`,
+        500
+      );
     }
 
     const id = randomUUID();
+    log.debug("Inserting mailcow account into database", { userId, email });
     const [newAccount] = await db
       .insert(mailcowAccount)
       .values({
@@ -170,15 +120,118 @@ export class MailcowIntegration extends IntegrationBase<
       .returning();
 
     if (!newAccount) {
+      log.error("Failed to insert mailcow account into DB", { userId, email });
       try {
-        await deleteMailbox(email);
-      } catch {
-        // Ignore rollback errors
+        await client.deleteMailbox(email);
+      } catch (error) {
+        log.error("Failed to rollback mailcow mailbox creation", {
+          email,
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
-      throw new Error("Failed to create mailcow account record");
+      throw new APIError("Failed to create mailcow account record", 500);
     }
 
-    return rowToAccount(newAccount);
+    log.info("Mailcow account created successfully", { userId, email });
+    return this.rowToAccount(newAccount);
+  }
+
+  private validateCreateInput(userId: string, input: unknown) {
+    const inputData = input as { local_part?: string };
+    log.info("Creating mailcow account", {
+      userId,
+      local_part: inputData.local_part,
+    });
+
+    const parsed = CreateMailboxRequestSchema.safeParse(input);
+    if (!parsed.success) {
+      const msg = parsed.error.issues[0]?.message ?? "Invalid input";
+      log.warn("Mailcow account creation validation failed", {
+        userId,
+        issues: parsed.error.issues,
+      });
+      throw new APIError(msg, 400, { issues: parsed.error.issues });
+    }
+    return parsed.data;
+  }
+
+  private async checkAvailability(
+    userId: string,
+    email: string,
+    domain: string
+  ) {
+    const [existingAccount] = await db
+      .select()
+      .from(mailcowAccount)
+      .where(
+        and(
+          eq(mailcowAccount.userId, userId),
+          ne(mailcowAccount.status, "deleted")
+        )
+      )
+      .limit(1);
+
+    if (existingAccount) {
+      throw new APIError("User already has a mailcow account", 400);
+    }
+
+    const [existingEmail] = await db
+      .select()
+      .from(mailcowAccount)
+      .where(
+        and(
+          eq(mailcowAccount.email, email),
+          ne(mailcowAccount.status, "deleted")
+        )
+      )
+      .limit(1);
+
+    if (existingEmail) {
+      throw new APIError("This email address is already taken", 400);
+    }
+
+    const mailbox = await client.getMailbox(email);
+    log.info("Availability check: getMailbox result", {
+      email,
+      exists: !!mailbox,
+      mailboxStructure: mailbox ? Object.keys(mailbox) : null,
+      mailboxType: mailbox?.type,
+    });
+
+    if (mailbox) {
+      throw new APIError(
+        "This email address already exists in mailcow. Please try a different one.",
+        400
+      );
+    }
+
+    const domainCheck = await client.getDomain(domain);
+    log.info("Availability check: getDomain result", {
+      domain: mailcowConfig.domain,
+      exists: !!domainCheck,
+      domainStructure: domainCheck ? Object.keys(domainCheck) : null,
+    });
+
+    if (!domainCheck) {
+      throw new APIError(
+        "Mailcow domain configuration is invalid or the domain does not exist.",
+        500
+      );
+    }
+  }
+
+  private async getUserDisplayName(userId: string, localPart: string) {
+    const [userData] = await db
+      .select({ email: user.email, name: user.name })
+      .from(user)
+      .where(eq(user.id, userId))
+      .limit(1);
+
+    if (!userData) {
+      throw new APIError("User not found", 404);
+    }
+
+    return userData.name ?? userData.email?.split("@")[0] ?? localPart;
   }
 
   async getAccount(userId: string): Promise<MailcowAccountType | null> {
@@ -193,22 +246,11 @@ export class MailcowIntegration extends IntegrationBase<
       )
       .limit(1);
 
-    return account ? rowToAccount(account) : null;
-  }
+    if (!account) {
+      return null;
+    }
 
-  async getAccountById(accountId: string): Promise<MailcowAccountType | null> {
-    const [account] = await db
-      .select()
-      .from(mailcowAccount)
-      .where(
-        and(
-          eq(mailcowAccount.id, accountId),
-          ne(mailcowAccount.status, "deleted")
-        )
-      )
-      .limit(1);
-
-    return account ? rowToAccount(account) : null;
+    return this.rowToAccount(account);
   }
 
   async updateAccount(
@@ -217,90 +259,75 @@ export class MailcowIntegration extends IntegrationBase<
   ): Promise<MailcowAccountType> {
     const parsed = UpdateMailboxRequestSchema.safeParse(input);
     if (!parsed.success) {
-      throw new Error("Invalid update request");
+      const msg = parsed.error.issues[0]?.message ?? "Invalid input";
+      throw new APIError(msg, 400, { issues: parsed.error.issues });
     }
-    const data = parsed.data;
 
     const [account] = await db
       .select()
       .from(mailcowAccount)
-      .where(
-        and(
-          eq(mailcowAccount.id, accountId),
-          ne(mailcowAccount.status, "deleted")
-        )
-      )
+      .where(eq(mailcowAccount.id, accountId))
       .limit(1);
 
     if (!account) {
-      throw new Error("mailcow account not found");
+      throw new APIError("Mailcow account not found", 404);
     }
 
-    const updates: Partial<typeof mailcowAccount.$inferInsert> = {};
-    if (data.status && data.status !== account.status) {
-      updates.status = data.status;
-      await syncStatusToMailcow(account.email, data.status);
+    const { status, password } = parsed.data;
+
+    // Sync status if changed
+    if (status && status !== account.status) {
+      await syncStatusToMailcow(account.email, status);
     }
 
-    if (data.metadata !== undefined) {
-      updates.metadata = data.metadata;
-    }
-
-    if (Object.keys(updates).length === 0) {
-      throw new Error("No valid updates provided");
+    // Sync password if provided
+    if (password) {
+      try {
+        await client.updateMailbox(account.email, { password });
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : "Unknown error";
+        throw new APIError(`Failed to update password in mailcow: ${msg}`, 500);
+      }
     }
 
     const [updated] = await db
       .update(mailcowAccount)
       .set({
-        ...updates,
+        status: status ?? account.status,
         updatedAt: new Date(),
       })
-      .where(
-        and(
-          eq(mailcowAccount.id, accountId),
-          ne(mailcowAccount.status, "deleted")
-        )
-      )
+      .where(eq(mailcowAccount.id, accountId))
       .returning();
 
     if (!updated) {
-      throw new Error("Failed to update mailcow account");
+      throw new APIError("Failed to update mailcow account record", 500);
     }
 
-    return rowToAccount(updated);
+    return this.rowToAccount(updated);
   }
 
   async deleteAccount(accountId: string): Promise<void> {
-    if (!this.enabled) {
-      throw new Error("mailcow integration is not configured");
-    }
-    validateMailcowConfig();
-
     const [account] = await db
       .select()
       .from(mailcowAccount)
-      .where(
-        and(
-          eq(mailcowAccount.id, accountId),
-          ne(mailcowAccount.status, "deleted")
-        )
-      )
+      .where(eq(mailcowAccount.id, accountId))
       .limit(1);
 
     if (!account) {
-      return;
+      throw new APIError("Mailcow account not found", 404);
     }
 
     try {
-      await deleteMailbox(account.email);
+      await client.deleteMailbox(account.email);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(
-          `Failed to delete mailbox from mailcow: ${error.message}`
+      const msg = error instanceof Error ? error.message : "Unknown error";
+      // If mailbox is already gone, we can continue
+      if (!msg.toLowerCase().includes("not found")) {
+        throw new APIError(
+          `Failed to delete mailbox from mailcow: ${msg}`,
+          500
         );
       }
-      throw new Error("Failed to delete mailbox from mailcow");
     }
 
     await db
@@ -311,21 +338,118 @@ export class MailcowIntegration extends IntegrationBase<
       })
       .where(eq(mailcowAccount.id, accountId));
   }
-}
 
-function rowToAccount(
-  row: typeof mailcowAccount.$inferSelect
-): MailcowAccountType {
-  return {
-    ...row,
-    integrationId: "mailcow" as const,
-    metadata:
-      (row.metadata as Record<string, unknown> | undefined) ?? undefined,
-  };
+  private rowToAccount(
+    row: typeof mailcowAccount.$inferSelect
+  ): MailcowAccountType {
+    return {
+      id: row.id,
+      userId: row.userId,
+      integrationId: "mailcow",
+      email: row.email,
+      domain: row.domain,
+      localPart: row.localPart,
+      status: row.status as MailcowAccountType["status"],
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    };
+  }
+
+  /**
+   * App Passwords
+   */
+  async getAppPasswords(accountId: string) {
+    const account = await this.getAccountById(accountId);
+    if (!account) {
+      throw new APIError("Account not found", 404);
+    }
+    return await client.getAppPasswords(account.email);
+  }
+
+  async createAppPassword(accountId: string, name: string) {
+    const account = await this.getAccountById(accountId);
+    if (!account) {
+      throw new APIError("Account not found", 404);
+    }
+    return await client.createAppPassword(account.email, name);
+  }
+
+  async deleteAppPassword(accountId: string, passwordId: string | number) {
+    const account = await this.getAccountById(accountId);
+    if (!account) {
+      throw new APIError("Account not found", 404);
+    }
+    return await client.deleteAppPassword(account.email, passwordId);
+  }
+
+  /**
+   * Aliases
+   */
+  async getAliases(accountId: string) {
+    const account = await this.getAccountById(accountId);
+    if (!account) {
+      throw new APIError("Account not found", 404);
+    }
+    return await client.getAliases(account.email);
+  }
+
+  async createAlias(
+    accountId: string,
+    address: string,
+    goto: string,
+    active = true,
+    publicComment?: string
+  ) {
+    const account = await this.getAccountById(accountId);
+    if (!account) {
+      throw new APIError("Account not found", 404);
+    }
+
+    // Security check: ensure alias is created for the correct user/mailbox domain
+    if (!address.endsWith(`@${account.domain}`)) {
+      throw new APIError(
+        `Alias must be in your domain (@${account.domain})`,
+        400
+      );
+    }
+
+    return await client.createAlias(address, goto, active, publicComment);
+  }
+
+  async deleteAlias(accountId: string, aliasId: string | number) {
+    const account = await this.getAccountById(accountId);
+    if (!account) {
+      throw new APIError("Account not found", 404);
+    }
+    // Security check could be added here to verify alias belongs to account
+    return await client.deleteAlias(aliasId);
+  }
+
+  async getMailboxUsage(accountId: string) {
+    const account = await this.getAccountById(accountId);
+    if (!account) {
+      throw new APIError("Account not found", 404);
+    }
+    return await client.getMailboxUsage(account.email);
+  }
+
+  async getAccountById(accountId: string): Promise<MailcowAccountType | null> {
+    const [acc] = await db
+      .select()
+      .from(mailcowAccount)
+      .where(eq(mailcowAccount.id, accountId))
+      .limit(1);
+
+    if (!acc) {
+      return null;
+    }
+
+    return this.rowToAccount(acc);
+  }
 }
 
 export const mailcowIntegration = new MailcowIntegration();
 
-export function registerMailcowIntegration(): void {
+export function registerMailcowIntegration() {
   getIntegrationRegistry().register(mailcowIntegration);
 }

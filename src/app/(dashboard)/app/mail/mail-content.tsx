@@ -3,9 +3,9 @@
 import {
   AlertCircle,
   ArrowUpRight,
-  Copy,
-  ExternalLink,
+  AtSign,
   Info,
+  Key,
   Loader2,
   Mail,
   Trash2,
@@ -35,15 +35,15 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { MailcowAccountDetails } from "@/app/(dashboard)/app/integrations/mailcow-account-details";
+import { AliasManager } from "@/app/(dashboard)/app/integrations/mailcow-aliases";
+import { AppPasswordManager } from "@/app/(dashboard)/app/integrations/mailcow-app-passwords";
 import { MailcowCreateForm } from "@/app/(dashboard)/app/integrations/mailcow-create-form";
 import {
   useDeleteIntegrationAccount,
   useIntegrationAccount,
   useIntegrations,
 } from "@/features/integrations/hooks/use-integration";
-import { integrationStatusLabels } from "@/features/integrations/lib/core/constants";
 import type { MailcowAccount } from "@/features/integrations/lib/mailcow/types";
-import { formatDate } from "@/shared/utils/date";
 
 const MAIL_INTEGRATION_ID = "mailcow";
 
@@ -116,35 +116,6 @@ export function MailContent({ webmailUrl }: MailContentProps) {
     );
   }
 
-  const statusLabel =
-    account.status in integrationStatusLabels
-      ? integrationStatusLabels[
-          account.status as keyof typeof integrationStatusLabels
-        ]
-      : account.status;
-
-  const handleCopyEmail = async () => {
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(account.email);
-        toast.success("Copied", {
-          description: "Email copied to clipboard",
-        });
-      } else {
-        const el = document.createElement("textarea");
-        el.value = account.email;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand("copy");
-        document.body.removeChild(el);
-        toast.success("Copied", { description: "Email copied to clipboard" });
-      }
-    } catch (error) {
-      captureException(error);
-      toast.error("Failed to copy");
-    }
-  };
-
   const handleDelete = async () => {
     try {
       await deleteMutation.mutateAsync(account.id);
@@ -161,41 +132,6 @@ export function MailContent({ webmailUrl }: MailContentProps) {
 
   return (
     <div className="space-y-6">
-      {/* Hero / Account overview */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
-                {account.email}
-              </CardTitle>
-              <CardDescription>
-                Status: {statusLabel} · Created{" "}
-                {formatDate(account.createdAt as unknown as string)}
-              </CardDescription>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={handleCopyEmail} size="sm" variant="outline">
-                <Copy className="mr-2 h-4 w-4" />
-                Copy email
-              </Button>
-              {webmailUrl && (
-                <a
-                  className={buttonVariants({ size: "sm" })}
-                  href={webmailUrl}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Open webmail
-                </a>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-
       {/* Account details */}
       <Card>
         <CardHeader>
@@ -208,7 +144,25 @@ export function MailContent({ webmailUrl }: MailContentProps) {
           <MailcowAccountDetails
             account={account}
             integrationId={MAIL_INTEGRATION_ID}
+            webmailUrl={webmailUrl}
           />
+        </CardContent>
+      </Card>
+
+      {/* Alias management */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AtSign className="h-5 w-5" />
+            Email Aliases
+          </CardTitle>
+          <CardDescription>
+            Receive email at different addresses that forward to your main
+            account.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AliasManager accountId={account.id} email={account.email} />
         </CardContent>
       </Card>
 
@@ -216,35 +170,49 @@ export function MailContent({ webmailUrl }: MailContentProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Info className="h-5 w-5" />
-            Mail clients & app passwords
+            <Key className="h-5 w-5" />
+            App Passwords & Clients
           </CardTitle>
           <CardDescription>
-            Use Thunderbird, Outlook, or other mail clients with your @atl.tools
-            address.
+            Generate unique passwords to use your @atl.tools address with mail
+            clients (IMAP/SMTP).
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">
-            To use external mail clients (IMAP, SMTP), log in to webmail first,
-            then go to <strong>Mailbox Settings → App Passwords</strong> to
-            generate an app-specific password. Use your email and that password
-            in your mail client.
-          </p>
-          {webmailUrl && (
-            <a
-              className={buttonVariants({
-                className: "mt-4",
-                variant: "outline",
-              })}
-              href={webmailUrl}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Open Mailbox Settings
-              <ArrowUpRight className="ml-2 h-4 w-4" />
-            </a>
-          )}
+        <CardContent className="space-y-6">
+          <div className="rounded-lg bg-muted p-4">
+            <h4 className="mb-2 flex items-center gap-2 font-semibold text-sm">
+              <Info className="h-4 w-4" />
+              Connection Settings
+            </h4>
+            <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
+              <div className="space-y-1">
+                <p className="font-medium">Incoming (IMAP)</p>
+                <p className="family-mono text-muted-foreground">
+                  Server: mail.atl.tools
+                </p>
+                <p className="family-mono text-muted-foreground">
+                  Port: 993 (SSL/TLS)
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="font-medium">Outgoing (SMTP)</p>
+                <p className="family-mono text-muted-foreground">
+                  Server: mail.atl.tools
+                </p>
+                <p className="family-mono text-muted-foreground">
+                  Port: 465 (SSL/TLS)
+                </p>
+              </div>
+            </div>
+            <p className="mt-3 text-muted-foreground text-xs italic">
+              Use your full email as the username. Use an App Password
+              (generated below) as the password.
+            </p>
+          </div>
+
+          <Separator />
+
+          <AppPasswordManager accountId={account.id} />
         </CardContent>
       </Card>
 

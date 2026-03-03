@@ -2,9 +2,13 @@ import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { captureException } from "@sentry/nextjs";
 
-import { registerIntegrations } from "@/features/integrations/lib";
-import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
-import { APIError, handleAPIError, requireAuth } from "@/shared/api/utils";
+import { registerIntegrations } from "../../../../../features/integrations/lib";
+import { getIntegrationRegistry } from "../../../../../features/integrations/lib/core/registry";
+import {
+  APIError,
+  handleAPIError,
+  requireAuth,
+} from "../../../../../shared/api/utils";
 
 // With cacheComponents, route handlers are dynamic by default.
 // [integration] is validated via getIntegrationRegistry().get() (allowlist).
@@ -15,7 +19,7 @@ import { APIError, handleAPIError, requireAuth } from "@/shared/api/utils";
  */
 export async function GET(
   request: NextRequest,
-  ctx: RouteContext<"/api/integrations/[integration]/accounts">
+  ctx: { params: Promise<{ integration: string | string[] }> }
 ) {
   try {
     const { userId } = await requireAuth(request);
@@ -73,7 +77,7 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  ctx: RouteContext<"/api/integrations/[integration]/accounts">
+  ctx: { params: Promise<{ integration: string | string[] }> }
 ) {
   try {
     const { userId } = await requireAuth(request);

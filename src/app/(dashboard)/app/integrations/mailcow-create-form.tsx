@@ -131,10 +131,13 @@ export function MailcowCreateForm({
               autoComplete="new-password"
               disabled={createMutation.isPending}
               id={`${integrationId}-password`}
-              placeholder="Min 8 characters"
+              placeholder="Min 6 characters"
               type="password"
               {...register("password")}
             />
+            <p className="text-muted-foreground text-xs">
+              Must be at least 6 characters.
+            </p>
             {errors.password?.message && (
               <p
                 className="font-medium text-destructive text-sm"

@@ -1,22 +1,26 @@
 "use client";
 
-import { AlertCircle, CheckCircle2, Copy } from "lucide-react";
+import { AlertCircle, CheckCircle2, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { captureException, startSpan } from "@sentry/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { MailboxQuota } from "./mailcow-quota";
 import { integrationStatusLabels } from "@/features/integrations/lib/core/constants";
 import type { MailcowAccount } from "@/features/integrations/lib/mailcow/types";
 
 interface MailcowAccountDetailsProps {
   account: MailcowAccount;
   integrationId: string;
+  webmailUrl?: string | null;
 }
 
 export function MailcowAccountDetails({
   account,
   integrationId,
+  webmailUrl,
 }: MailcowAccountDetailsProps) {
   return (
     <div className="space-y-4">
@@ -81,25 +85,48 @@ export function MailcowAccountDetails({
 
       <div className="space-y-2">
         <Label>Status</Label>
-        <div className="flex items-center gap-2">
-          {account.status === "active" ? (
-            <>
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <span className="text-sm">
-                {integrationStatusLabels[account.status]}
-              </span>
-            </>
-          ) : (
-            <>
-              <AlertCircle className="h-4 w-4 text-yellow-500" />
-              <span className="text-sm">
-                {account.status in integrationStatusLabels
-                  ? integrationStatusLabels[
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {account.status === "active" ? (
+              <>
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <span className="text-sm">
+                  {
+                    integrationStatusLabels[
                       account.status as keyof typeof integrationStatusLabels
                     ]
-                  : account.status}
-              </span>
-            </>
+                  }
+                </span>
+              </>
+            ) : (
+              <>
+                <AlertCircle className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm">
+                  {account.status in integrationStatusLabels
+                    ? integrationStatusLabels[
+                        account.status as keyof typeof integrationStatusLabels
+                      ]
+                    : account.status}
+                </span>
+              </>
+            )}
+          </div>
+          {webmailUrl && (
+            <Button
+              render={
+                <a
+                  aria-label="Open webmail"
+                  href={webmailUrl}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Open webmail
+                </a>
+              }
+              size="sm"
+              variant="outline"
+            />
           )}
         </div>
       </div>
@@ -110,6 +137,10 @@ export function MailcowAccountDetails({
           {new Date(account.createdAt).toLocaleDateString()}
         </p>
       </div>
+
+      <Separator />
+
+      <MailboxQuota accountId={account.id} />
     </div>
   );
 }
