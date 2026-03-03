@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
+# dependencies (all workspaces)
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -11,14 +11,20 @@
 !.yarn/versions
 
 # testing
-/coverage
+coverage/
 
-# next.js
-/.next/
+# next.js (all workspaces)
+.next/
 /out/
+
+# turborepo
+.turbo/
 
 # production
 /build
+
+# drizzle (generated snapshots are committed, but meta is optional)
+# Note: migration SQL files in packages/db/drizzle/ ARE committed
 
 # misc
 .DS_Store
@@ -30,6 +36,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# environment
 .env*
 
 # vercel
@@ -38,9 +45,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-references
+
+# project references & examples (not shipped)
+references/
 examples/
 
+# cursor / IDE
 .cursor/plans
 .cursor/hooks/logs/
+
+# pnpm
 .pnpm-store
