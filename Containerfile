@@ -17,6 +17,8 @@ FROM ${NODE_IMAGE} AS pruner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@10.28.2 --activate
 RUN pnpm add -g turbo@^2
 
