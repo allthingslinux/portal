@@ -37,10 +37,17 @@ export const XmppUsernameSchema = brandedString<"XmppUsername">(
 
 /**
  * Schema for creating an XMPP account via API
- * Username is optional (will be generated from email if not provided)
+ * Username is optional (will be generated from email if not provided).
+ * Password is optional — if omitted a random one is generated and shown once.
  */
 export const CreateXmppAccountRequestSchema = z.object({
   username: XmppUsernameSchema,
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password must be 128 characters or less")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
 });
 
 /**
@@ -59,6 +66,7 @@ export const UpdateXmppAccountRequestSchema =
  */
 export const XmppAccountSchema = selectXmppAccountSchema.extend({
   integrationId: z.literal("xmpp"),
+  temporaryPassword: z.string().optional(), // Only present on creation
   metadata: metadataSchema,
 });
 

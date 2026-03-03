@@ -46,10 +46,17 @@ export const IrcNickSchema = brandedString<"IrcNick">(
 
 /**
  * Schema for creating an IRC account via API
- * Extends the database insert schema with custom validation
+ * Extends the database insert schema with custom validation.
+ * Password is optional — if omitted a random one is generated and shown once.
  */
 export const CreateIrcAccountRequestSchema = z.object({
   nick: IrcNickSchema,
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password must be 128 characters or less")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
 });
 
 /**
