@@ -19,7 +19,7 @@
   "dependencies": {
     "@portal/db": "workspace:*",
     "@portal/types": "workspace:*",
-    "drizzle-orm": "1.0.0-beta.15-859cf75",
+    "drizzle-orm": "1.0.0-beta.9-e89174b",
     "zod": "^4.3.5",
     "zod-validation-error": "^5.0.0"
   },
