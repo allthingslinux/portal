@@ -1,3 +1,55 @@
+# [1.7.0](https://github.com/allthingslinux/portal/compare/v1.6.0...v1.7.0) (2026-03-03)
+
+
+### Bug Fixes
+
+* **db:** correct import path for createInsertSchema and createSelectSchema in mailcow schema ([b8750e1](https://github.com/allthingslinux/portal/commit/b8750e1d29fbd55ae284373989beb0ab0f999c1c))
+* **db:** update import path for createInsertSchema and createSelectSchema from drizzle-zod to drizzle-orm/zod ([f7cfc0b](https://github.com/allthingslinux/portal/commit/f7cfc0be682d17294a420c6e64ee278a7c3513b1))
+* **db:** update import path for createInsertSchema and createSelectSchema in xmpp schema ([0692b4c](https://github.com/allthingslinux/portal/commit/0692b4cb5f6cb8fc9f2b1fc98b4b3f01d3731798))
+* **irc:** fix Atheme JSON-RPC id type and empty param handling ([71f623c](https://github.com/allthingslinux/portal/commit/71f623cd757ef21f1c058cc8917b13fdcf1b25be))
+* **mailcow:** ensure submit label is correctly displayed in MailcowCreateForm ([89471db](https://github.com/allthingslinux/portal/commit/89471dbbaa5b45ea4cc7bfb6dfafd5f70ee45582))
+* **migrate:** update config file path for database migrations ([b940a56](https://github.com/allthingslinux/portal/commit/b940a5666f632a1b440adedc8c0e80949ae5d4ba))
+* **user:** update import path for createSelectSchema from drizzle-zod to drizzle-orm/zod ([2000990](https://github.com/allthingslinux/portal/commit/200099064c52d605b81eb43a2d3c6fce1b2d14f0))
+* **wiki:** decrease recent changes limit from 6 to 5 ([908a691](https://github.com/allthingslinux/portal/commit/908a69136a831a20d20cd4efb767a5b6921d3c08))
+* **xmpp:** switch Prosody REST client from Basic to Bearer token auth ([1325037](https://github.com/allthingslinux/portal/commit/13250371a00c8c4587b0631050a8543df4d8b8d5))
+
+
+### Features
+
+* **admin:** add Mailcow accounts API and management UI ([4e31ded](https://github.com/allthingslinux/portal/commit/4e31ded7afbf9d953d904626c4d45400fd7358d7))
+* **auth:** add endpoint to clear stale sessions and redirect to sign-in ([0e14673](https://github.com/allthingslinux/portal/commit/0e1467399639216bfa12e519caa372de3b96a2b3))
+* **auth:** add Mailcow OAuth sign-in provider with logo icon ([f8fd51e](https://github.com/allthingslinux/portal/commit/f8fd51ea5c45786b981d33e812cd066a3163a173))
+* **auth:** implement check for stale sessions and redirect to clear session endpoint ([5686917](https://github.com/allthingslinux/portal/commit/56869178d6dc9e22faff88e4d3b94533565d7d5a))
+* **dashboard:** update quick links and enhance AppPage styling ([4c672bc](https://github.com/allthingslinux/portal/commit/4c672bcc86d3d39c8d4c5813c65db863548d8b50))
+* **db:** add script to wipe the database by dropping and recreating the public schema ([7a48068](https://github.com/allthingslinux/portal/commit/7a48068f9f53fd54df6efcbd5be1c7b1e9bb6d60))
+* **feed:** add new feed page for Linux and open-source news ([ca447f3](https://github.com/allthingslinux/portal/commit/ca447f3576c4ecfed5e5378ae84d8c2a63df2cc2))
+* **integrations.ts:** add resetIntegrationPassword function to reset passwords for integration accounts ([f83cba9](https://github.com/allthingslinux/portal/commit/f83cba9650aee1b59806495c742aa6d6316ac11d))
+* **integrations:** add XMPP password dialog and enhance integration management ([2bf2e62](https://github.com/allthingslinux/portal/commit/2bf2e627711d6efc79aa2f97be2f56ebd13fec93))
+* **integrations:** enhance integration management with dialogs and stats ([0ce6477](https://github.com/allthingslinux/portal/commit/0ce6477088da11a440d3f0605ddea9744993a7f1))
+* **irc:** enhance password reset and error handling for Atheme integration ([0c20eaa](https://github.com/allthingslinux/portal/commit/0c20eaa1e614ea679e668c6f490d6e5a9378f84f))
+* **mail:** add mail page with Mailcow registration form ([7c371b0](https://github.com/allthingslinux/portal/commit/7c371b0ca5d5a8d72214401bce68ccd2b88fc865))
+* **mailcow:** add database schema and migration ([f1e06fd](https://github.com/allthingslinux/portal/commit/f1e06fd095b601d15e7121317274bb33b7314b38))
+* **mailcow:** add REST API client and integration implementation ([f033a49](https://github.com/allthingslinux/portal/commit/f033a49f69f131323e4b7eee6bfd1259d675efb6))
+* **mailcow:** enhance mail integration with alias and app password management ([8f537f7](https://github.com/allthingslinux/portal/commit/8f537f70261fb9ed6f87cd857fb74cb946b13b89))
+* **reset-password:** add IRC password reset support alongside XMPP ([2dbaee9](https://github.com/allthingslinux/portal/commit/2dbaee9bcacecb6755583c207883089bc622df72))
+* **route.ts:** add support for service token authentication ([092403d](https://github.com/allthingslinux/portal/commit/092403dcf6c8f6b1b4198e90fba015e0b8621010))
+* **routing:** add mail route ([fc802a0](https://github.com/allthingslinux/portal/commit/fc802a0f90faa301589dc15c584ab5483103e55e))
+* **schemas:** make password optional for IRC and XMPP account creation ([9f50408](https://github.com/allthingslinux/portal/commit/9f50408f2870dfde41fef4032c349ac62268a5e5))
+* **ui:** add render and nativeButton props to Button component ([c63fcba](https://github.com/allthingslinux/portal/commit/c63fcbadc656ece87c276c50aca2ffffd1778897))
+* **use-integration.ts:** add useResetIntegrationPassword hook ([faa8c13](https://github.com/allthingslinux/portal/commit/faa8c136efac8cefbd407e872a806706c3b9e949))
+* **wiki:** enhance RecentWikiChangesCard with improved layout and diff display ([6becd0f](https://github.com/allthingslinux/portal/commit/6becd0f8cfda8bf7d4017fdefd66ca09cbffccbd))
+* **xmpp:** enhance error handling and add server stats retrieval ([0ece40a](https://github.com/allthingslinux/portal/commit/0ece40a7b9931e0b2b21579b32856066be16b299))
+
+
+### Performance Improvements
+
+* parallelize independent DB queries with Promise.all and use toSorted ([080655a](https://github.com/allthingslinux/portal/commit/080655aebf5303d34ab8b0ac4f3b8c4f03ea9ff9))
+
+
+### Reverts
+
+* **patch:** remove atl-chat-mod-http-oauth2.patch to rollback OAuth2 integration ([0c5bfc6](https://github.com/allthingslinux/portal/commit/0c5bfc612cf0a37adfcaf50dee8e3ee6d9f815e6))
+
 # [1.6.0](https://github.com/allthingslinux/portal/compare/v1.5.1...v1.6.0) (2026-02-22)
 
 
