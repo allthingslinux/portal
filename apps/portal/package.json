@@ -1,6 +1,6 @@
 {
   "name": "@portal/portal",
-  "version": "0.0.0",
+  "version": "2.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -89,7 +89,6 @@
     "zod": "^4.3.5",
     "zod-validation-error": "^5.0.0"
   },
-
   "devDependencies": {
     "@portal/typescript-config": "workspace:*",
     "@react-grab/cursor": "^0.0.98",
