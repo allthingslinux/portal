@@ -21,8 +21,7 @@
     "db:seed:reset": "tsx scripts/seed.ts reset",
     "auth:init-schema": "npx auth generate --config src/features/auth/lib/config.ts --output ../../packages/db/src/schema/auth-schema.ts",
     "create-admin": "tsx scripts/create-admin.ts",
-    "create-mailcow-oauth-client": "tsx scripts/create-mailcow-oauth-client.ts",
-    "release": "semantic-release"
+    "create-mailcow-oauth-client": "tsx scripts/create-mailcow-oauth-client.ts"
   },
   "dependencies": {
     "@portal/db": "workspace:*",
@@ -92,10 +91,7 @@
   "devDependencies": {
     "@portal/typescript-config": "workspace:*",
     "@react-grab/cursor": "^0.0.98",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/exec": "^7.0.0",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/npm": "^13.1.4",
+
     "@tailwindcss/postcss": "^4.1.18",
     "@tanstack/react-query-devtools": "^5.91.2",
     "@testing-library/jest-dom": "^6.9.1",
@@ -111,8 +107,7 @@
     "fast-check": "^4.5.3",
     "jsdom": "^27.4.0",
     "next-devtools-mcp": "^0.3.10",
-    "semantic-release": "^25.0.2",
-    "semantic-release-major-tag": "^0.3.2",
+
     "shadcn": "^3.7.0",
     "tailwindcss": "^4.1.18",
     "tsx": "^4.21.0",
