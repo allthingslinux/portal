@@ -5,6 +5,13 @@
 
 * **release:** run semantic-release from repo root ([4b691b2](https://github.com/allthingslinux/portal/commit/4b691b2ecebcf57d79c8b03466e3f739da12aee7))
 
+## [2.0.1](https://github.com/allthingslinux/portal/compare/v2.0.0...v2.0.1) (2026-03-04)
+
+
+### Bug Fixes
+
+* **release:** move .releaserc.json to apps/portal/ and backfill v2.0.0 changelog ([c166a30](https://github.com/allthingslinux/portal/commit/c166a30bac48ed4635026e3858b1f43e6e0a4b97))
+
 # [2.0.0](https://github.com/allthingslinux/portal/compare/v1.7.0...v2.0.0) (2026-03-03)
 
 * refactor!: migrate to turborepo monorepo ([a879699](https://github.com/allthingslinux/portal/commit/a87969964349d54fc3f64857df424d3450bd8984))
