@@ -1,3 +1,34 @@
+# [2.0.0](https://github.com/allthingslinux/portal/compare/v1.7.0...v2.0.0) (2026-03-03)
+
+* refactor!: migrate to turborepo monorepo ([a879699](https://github.com/allthingslinux/portal/commit/a87969964349d54fc3f64857df424d3450bd8984))
+
+### Bug Fixes
+
+* **ci:** add test:coverage task to turbo.json ([e44c4b9](https://github.com/allthingslinux/portal/commit/e44c4b965bf827bf5247c15289b6438887249dbf))
+* **db:** add better-auth v1.5 api-key schema migration ([f39f5e3](https://github.com/allthingslinux/portal/commit/f39f5e398c25825d6dc0aee707d8344194ed9594))
+* **docker:** set PNPM_HOME for global turbo install in pruner stage ([fe9fa03](https://github.com/allthingslinux/portal/commit/fe9fa032eb108c6ede641cd05797d7508296e813))
+
+### BREAKING CHANGES
+
+* repository restructured from flat Next.js project to
+Turborepo monorepo with pnpm workspaces.
+
+Structure:
+- apps/portal/ — Next.js application (@portal/portal)
+- packages/db/ — Drizzle schema, client, migrations (@portal/db)
+- packages/api/ — TanStack Query, server queries (@portal/api)
+- packages/types/ — centralized TypeScript types (@portal/types)
+- packages/schemas/ — shared Zod validation schemas (@portal/schemas)
+- packages/utils/ — shared utilities and constants (@portal/utils)
+- packages/ui/ — shared UI components (@portal/ui)
+- packages/email/ — email service (@portal/email)
+- packages/observability/ — Sentry, OpenTelemetry (@portal/observability)
+- packages/seo/ — metadata helpers (@portal/seo)
+- packages/typescript-config/ — shared TS configs
+
+All root commands (pnpm dev, build, test, type-check, db:*) are
+preserved via Turborepo pipeline orchestration.
+
 # [1.7.0](https://github.com/allthingslinux/portal/compare/v1.6.0...v1.7.0) (2026-03-03)
 
 
