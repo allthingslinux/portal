@@ -15,13 +15,13 @@ export type UserRole = "user" | "staff" | "admin";
  * Safe to expose in API responses
  */
 export interface UserDTO {
-  id: string;
-  name: string;
-  email: string;
-  image: string | null;
-  role: UserRole;
-  emailVerified: boolean;
   createdAt: Date | string;
+  email: string;
+  emailVerified: boolean;
+  id: string;
+  image: string | null;
+  name: string;
+  role: UserRole;
   updatedAt?: Date | string;
 }
 
@@ -29,9 +29,9 @@ export interface UserDTO {
  * User with additional admin fields
  */
 export interface AdminUserDTO extends UserDTO {
+  banExpires: Date | string | null;
   banned: boolean;
   banReason: string | null;
-  banExpires: Date | string | null;
   twoFactorEnabled: boolean | null;
 }
 
@@ -39,36 +39,36 @@ export interface AdminUserDTO extends UserDTO {
  * Session DTO
  */
 export interface SessionDTO {
-  id: string;
-  userId: string;
+  createdAt: Date | string;
   expiresAt: Date | string;
+  id: string;
   ipAddress: string | null;
   userAgent: string | null;
-  createdAt: Date | string;
+  userId: string;
 }
 
 /**
  * API Key DTO (excludes sensitive key data)
  */
 export interface ApiKeyDTO {
-  id: string;
   configId: string;
-  referenceId: string;
-  name: string | null;
-  start: string | null;
-  prefix: string | null;
-  enabled: boolean;
-  rateLimitEnabled: boolean;
-  rateLimitTimeWindow: number | null;
-  rateLimitMax: number | null;
-  requestCount: number;
-  remaining: number | null;
-  lastRequest: Date | string | null;
-  expiresAt: Date | string | null;
   createdAt: Date | string;
-  updatedAt: Date | string;
-  permissions: string | null;
+  enabled: boolean;
+  expiresAt: Date | string | null;
+  id: string;
+  lastRequest: Date | string | null;
   metadata: string | null;
+  name: string | null;
+  permissions: string | null;
+  prefix: string | null;
+  rateLimitEnabled: boolean;
+  rateLimitMax: number | null;
+  rateLimitTimeWindow: number | null;
+  referenceId: string;
+  remaining: number | null;
+  requestCount: number;
+  start: string | null;
+  updatedAt: Date | string;
 }
 
 /**
@@ -86,53 +86,42 @@ export interface ApiKeyWithUserDTO extends ApiKeyDTO {
  * OAuth Client DTO
  */
 export interface OAuthClientDTO {
-  id: string;
   clientId: string;
+  createdAt: Date | string;
+  disabled: boolean;
+  id: string;
   name: string;
   redirectUris: string[];
-  disabled: boolean;
-  createdAt: Date | string;
 }
 
 /**
  * Integration Account DTO
  */
 export interface IntegrationAccountDTO {
-  id: string;
-  userId: string;
-  integrationType: string;
-  status: "active" | "suspended" | "deleted";
   createdAt: Date | string;
-  updatedAt: Date | string;
+  id: string;
+  integrationType: string;
   metadata: Record<string, unknown> | null;
+  status: "active" | "suspended" | "deleted";
+  updatedAt: Date | string;
+  userId: string;
 }
 
 /**
  * Integration Info DTO (public integration information)
  */
 export interface IntegrationInfoDTO {
-  id: string;
-  name: string;
   description: string;
   enabled: boolean;
   icon: string | null;
+  id: string;
+  name: string;
 }
 
 /**
  * Admin Statistics DTO
  */
 export interface AdminStatsDTO {
-  users: {
-    total: number;
-    admins: number;
-    staff: number;
-    banned: number;
-    regular: number;
-  };
-  sessions: {
-    total: number;
-    active: number;
-  };
   apiKeys: {
     total: number;
     enabled: number;
@@ -140,6 +129,17 @@ export interface AdminStatsDTO {
   oauthClients: {
     total: number;
     disabled: number;
+  };
+  sessions: {
+    total: number;
+    active: number;
+  };
+  users: {
+    total: number;
+    admins: number;
+    staff: number;
+    banned: number;
+    regular: number;
   };
 }
 
@@ -155,10 +155,10 @@ export interface PaginationParams {
  * Pagination response
  */
 export interface PaginationResponse {
-  total: number;
+  hasMore: boolean;
   limit: number;
   offset: number;
-  hasMore: boolean;
+  total: number;
 }
 
 /**
@@ -178,6 +178,6 @@ export type SortOrder = "asc" | "desc";
  * Sort parameters
  */
 export interface SortParams {
-  orderBy?: string;
   order?: SortOrder;
+  orderBy?: string;
 }

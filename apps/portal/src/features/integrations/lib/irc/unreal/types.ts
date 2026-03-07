@@ -28,43 +28,43 @@ export type UnrealBanType =
  * Derived from S2S protocol Member type.
  */
 export interface UnrealMember {
-  uid: string;
   /** Mode prefix chars concatenated, e.g. "@+" for op+voice */
   prefix: string;
+  uid: string;
 }
 
 /**
  * TKL (server ban) entry returned by server_ban.*, name_ban.*, server_ban_exception.*.
  */
 export interface UnrealTkl {
-  type: string;
-  type_string?: string;
-  set_by?: string;
-  set_at?: string;
-  expire_at?: string | null;
   duration_string?: string;
-  reason?: string;
-  name?: string;
   /** For server_ban_exception: which ban types this exception covers */
   exception_types?: string;
+  expire_at?: string | null;
+  name?: string;
+  reason?: string;
+  set_at?: string;
+  set_by?: string;
+  type: string;
+  type_string?: string;
 }
 
 /**
  * Stats object from stats.get.
  */
 export interface UnrealStats {
-  /** Total clients currently connected */
-  clients?: number;
-  /** Total servers linked */
-  servers?: number;
   /** Total channels open */
   channels?: number;
-  /** Server uptime in seconds */
-  uptime?: number;
+  /** Total clients currently connected */
+  clients?: number;
   /** Max clients ever connected */
   clients_max?: number;
   /** Total connections since boot */
   connections_total?: number;
+  /** Total servers linked */
+  servers?: number;
+  /** Server uptime in seconds */
+  uptime?: number;
   [key: string]: unknown;
 }
 
@@ -72,13 +72,13 @@ export interface UnrealStats {
  * Whowas entry from whowas.get.
  */
 export interface UnrealWhowas {
-  name?: string;
-  hostname?: string;
-  ip?: string;
-  ident?: string;
-  realname?: string;
   account?: string;
+  hostname?: string;
+  ident?: string;
+  ip?: string;
   logoff_time?: string;
+  name?: string;
+  realname?: string;
   servername?: string;
 }
 
@@ -87,13 +87,13 @@ export interface UnrealWhowas {
  */
 export interface UnrealServer {
   id?: string;
-  name: string;
   info?: string;
-  uptime?: number;
-  num_users?: number;
+  name: string;
   num_channels?: number;
-  version?: string;
+  num_users?: number;
   ulined?: boolean;
+  uptime?: number;
+  version?: string;
 }
 
 /**
@@ -105,13 +105,14 @@ export interface UnrealServer {
  * - moddata: module data map (e.g. certfp, swhois, operlogin)
  */
 export interface UnrealClient {
-  id: string;
-  name: string;
-  hostname?: string;
-  ip?: string;
-  details?: string;
   /** Away message if the user is away, undefined if not away */
   away?: string;
+  connected_since?: string;
+  details?: string;
+  hostname?: string;
+  id: string;
+  idle_since?: string;
+  ip?: string;
   /**
    * Module data map. Common keys:
    * - certfp: TLS certificate fingerprint
@@ -119,6 +120,9 @@ export interface UnrealClient {
    * - operlogin: oper account name
    */
   moddata?: Record<string, string>;
+  name: string;
+  server?: Record<string, unknown>;
+  tls?: { cipher?: string; certfp?: string };
   user?: {
     username?: string;
     realname?: string;
@@ -130,10 +134,6 @@ export interface UnrealClient {
     modes?: string;
     channels?: string[] | { name: string; level: string }[];
   };
-  server?: Record<string, unknown>;
-  connected_since?: string;
-  idle_since?: string;
-  tls?: { cipher?: string; certfp?: string };
 }
 
 /**
@@ -144,48 +144,48 @@ export interface UnrealClient {
  * consistent with S2S protocol representation.
  */
 export interface UnrealChannel {
-  name: string;
-  creation_time?: string;
-  num_users?: number;
-  topic?: string;
-  topic_set_by?: string;
-  topic_set_at?: string;
-  modes?: string;
-  /** Ban masks e.g. "*!*@192.168.1.*" */
-  bans?: string[];
   /** Ban exception masks (mode +e) */
   ban_exemptions?: string[];
+  /** Ban masks e.g. "*!*@192.168.1.*" */
+  bans?: string[];
+  creation_time?: string;
   /** Invite exception masks (mode +I) */
   invite_exceptions?: string[];
   members?: string[] | UnrealClient[];
+  modes?: string;
+  name: string;
+  num_users?: number;
+  topic?: string;
+  topic_set_at?: string;
+  topic_set_by?: string;
 }
 
 /**
  * JSON-RPC 2.0 request (UnrealIRCd: id string max 32 chars, no newlines; param strings max 510).
  */
 export interface UnrealJsonRpcRequest {
+  id: number | string;
   jsonrpc: "2.0";
   method: string;
   params?: Record<string, unknown>;
-  id: number | string;
 }
 
 /**
  * JSON-RPC 2.0 success response.
  */
 export interface UnrealJsonRpcSuccess<T = unknown> {
+  id: number | string;
   jsonrpc: "2.0";
   result: T;
-  id: number | string;
 }
 
 /**
  * JSON-RPC 2.0 error response.
  */
 export interface UnrealJsonRpcError {
-  jsonrpc: "2.0";
   error: { code: number; message: string };
   id: number | string;
+  jsonrpc: "2.0";
 }
 
 /**
@@ -203,31 +203,31 @@ export type UnrealOperClass =
  * Spamfilter entry from spamfilter.list / spamfilter.get.
  */
 export interface UnrealSpamfilter {
+  /** Action taken on match, e.g. "block", "kill", "gline" */
+  action?: string;
+  expire_at?: string | null;
   id?: string;
   /** The match string or regex */
   match?: string;
+  reason?: string;
+  set_at?: string;
+  set_by?: string;
   /** Target(s) the filter applies to, e.g. "p" (private), "c" (channel) */
   target?: string;
-  /** Action taken on match, e.g. "block", "kill", "gline" */
-  action?: string;
-  set_by?: string;
-  set_at?: string;
-  expire_at?: string | null;
-  reason?: string;
 }
 
 /**
  * Log entry from log.list / log.subscribe events.
  */
 export interface UnrealLogEntry {
-  /** Log level: "debug", "info", "warn", "error", "fatal" */
-  level?: string;
-  /** Subsystem that generated the log entry, e.g. "server", "channel" */
-  subsystem?: string;
   /** Unique event identifier */
   event_id?: string;
+  /** Log level: "debug", "info", "warn", "error", "fatal" */
+  level?: string;
   /** Human-readable log message */
   msg?: string;
+  /** Subsystem that generated the log entry, e.g. "server", "channel" */
+  subsystem?: string;
   /** ISO 8601 timestamp */
   timestamp?: string;
 }
@@ -236,11 +236,11 @@ export interface UnrealLogEntry {
  * RPC connection info from rpc.info.
  */
 export interface UnrealRpcInfo {
-  /** RPC protocol version */
-  version?: string;
-  /** Loaded RPC modules */
-  modules?: string[];
   /** Current issuer name set via rpc.set_issuer */
   issuer?: string;
+  /** Loaded RPC modules */
+  modules?: string[];
+  /** RPC protocol version */
+  version?: string;
   [key: string]: unknown;
 }

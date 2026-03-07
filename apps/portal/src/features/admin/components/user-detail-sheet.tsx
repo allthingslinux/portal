@@ -16,8 +16,8 @@ import { useUser } from "@/features/admin/hooks/use-admin";
 import { integrationStatusLabels } from "@/features/integrations/lib/core/constants";
 
 interface UserDetailSheetProps {
-  open: boolean;
   onOpenChange: (open: boolean) => void;
+  open: boolean;
   userId: string | null;
 }
 

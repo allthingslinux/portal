@@ -13,40 +13,37 @@ interface NavItemProps {
 export function NavItem({ route }: NavItemProps) {
   const pathname = usePathname();
 
-  // Check if breadcrumb config specifies exact matching
   const isExact = route.breadcrumb?.exact === true;
-
-  // If route has children, only be active if pathname exactly matches
-  // (children will be handled by NavCollapsible)
   const hasChildren =
     route.navigation?.children && route.navigation.children.length > 0;
 
-  let isActive: boolean;
-  if (isExact || hasChildren) {
-    // For exact routes or routes with children, only match exactly
-    isActive = pathname === route.path;
-  } else {
-    // For routes without exact flag and no children, match pathname or paths that start with it
-    isActive = pathname === route.path || pathname.startsWith(`${route.path}/`);
-  }
+  const isActive =
+    isExact || hasChildren
+      ? pathname === route.path
+      : pathname === route.path || pathname.startsWith(`${route.path}/`);
+
+  const Icon = route.icon;
 
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
         isActive={isActive}
-        render={
-          <Link href={route.path as Parameters<typeof Link>[0]["href"]} />
-        }
-        tooltip={route.label}
-      >
-        {route.icon && <route.icon />}
-        <span>{route.label}</span>
-        {route.navigation?.badge && (
-          <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs">
-            {route.navigation.badge}
-          </span>
+        render={(props) => (
+          <Link
+            {...props}
+            href={route.path as Parameters<typeof Link>[0]["href"]}
+          >
+            {Icon && <Icon />}
+            <span>{route.label}</span>
+            {route.navigation?.badge && (
+              <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs">
+                {route.navigation.badge}
+              </span>
+            )}
+          </Link>
         )}
-      </SidebarMenuButton>
+        tooltip={route.label}
+      />
     </SidebarMenuItem>
   );
 }

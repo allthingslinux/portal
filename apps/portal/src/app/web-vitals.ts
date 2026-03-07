@@ -28,29 +28,29 @@ type ReportWebVitalsCallback = Parameters<typeof useReportWebVitals>[0];
  * detailed performance event information
  */
 interface WebVitalsMetric {
-  id: string;
-  name: string;
-  value: number;
-  label: "web-vital" | "custom";
   delta?: number;
   entries?: readonly PerformanceEntry[];
+  id: string;
+  label: "web-vital" | "custom";
+  name: string;
   navigationType?: string;
   rating?: "good" | "needs-improvement" | "poor";
+  value: number;
 }
 
 /**
  * Layout shift attribution types
  */
 interface LayoutShiftAttribution {
+  currentRect?: DOMRectReadOnly;
   node?: Node | null;
   previousRect?: DOMRectReadOnly;
-  currentRect?: DOMRectReadOnly;
 }
 
 interface LayoutShiftEntry extends PerformanceEntry {
-  value?: number;
   hadRecentInput?: boolean;
   sources?: readonly LayoutShiftAttribution[];
+  value?: number;
 }
 
 /**
@@ -58,10 +58,10 @@ interface LayoutShiftEntry extends PerformanceEntry {
  */
 interface LCPEntry extends PerformanceEntry {
   element?: Element | null;
-  url?: string;
-  size?: number;
-  renderTime?: number;
   loadTime?: number;
+  renderTime?: number;
+  size?: number;
+  url?: string;
 }
 
 /**

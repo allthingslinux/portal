@@ -14,7 +14,7 @@ export type {
 } from "@portal/schemas/integrations/mailcow";
 
 export interface MailcowResponseEntry {
-  type: "success" | "danger" | "error";
-  msg: string | string[];
   log?: unknown;
+  msg: string | string[];
+  type: "success" | "danger" | "error";
 }

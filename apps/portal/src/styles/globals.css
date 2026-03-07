@@ -4,6 +4,9 @@
 @import "shadcn/tailwind.css";
 @import "@daveyplate/better-auth-ui/css";
 
+@source "../../../../packages/ui/src/**/*.{ts,tsx}";
+@source "../../../../packages/utils/src/**/*.{ts,tsx}";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {

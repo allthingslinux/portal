@@ -11,14 +11,14 @@ import type { Permission } from "./auth";
  * Route metadata for SEO
  */
 export interface RouteMetadata {
-  title?: string; // Optional - comes from translations
   description?: string; // Optional - comes from translations
   keywords?: string[];
+  openGraph?: Metadata["openGraph"];
   robots?: {
     index?: boolean;
     follow?: boolean;
   };
-  openGraph?: Metadata["openGraph"];
+  title?: string; // Optional - comes from translations
   twitter?: Metadata["twitter"];
 }
 
@@ -27,45 +27,44 @@ export interface RouteMetadata {
  * Falls back to metadata if not provided
  */
 export interface UIDisplay {
-  title?: string; // UI title (shorter, user-friendly)
   description?: string; // UI description (shorter, user-friendly)
+  title?: string; // UI title (shorter, user-friendly)
 }
 
 /**
  * Breadcrumb configuration
  */
 export interface BreadcrumbConfig {
-  label?: string; // Optional - comes from translations
   exact?: boolean; // If true, only matches exact path
+  label?: string; // Optional - comes from translations
 }
 
 /**
  * Navigation configuration
  */
 export interface NavigationConfig {
+  badge?: string | number;
+  children?: RouteChild[];
   group: string;
   order: number;
   permissions?: Permission[];
-  children?: RouteChild[];
-  badge?: string | number;
 }
 
 /**
  * Route child configuration
  */
 export interface RouteChild {
-  id: string;
-  path: string;
-  label?: string; // Optional - comes from translations
   breadcrumb?: BreadcrumbConfig;
+  id: string;
+  label?: string; // Optional - comes from translations
   metadata?: Partial<RouteMetadata>;
+  path: string;
 }
 
 /**
  * Sitemap configuration
  */
 export interface SitemapConfig {
-  priority?: number; // 0.0 to 1.0
   changeFrequency?:
     | "always"
     | "hourly"
@@ -75,19 +74,20 @@ export interface SitemapConfig {
     | "yearly"
     | "never";
   lastModified?: Date;
+  priority?: number; // 0.0 to 1.0
 }
 
 /**
  * Base route configuration
  */
 export interface BaseRoute {
+  breadcrumb?: BreadcrumbConfig;
   id: string;
-  path: string;
   label?: string; // Optional - comes from translations
   metadata: RouteMetadata; // title/description come from translations
-  ui?: UIDisplay; // Optional UI display (falls back to metadata)
-  breadcrumb?: BreadcrumbConfig;
+  path: string;
   sitemap?: SitemapConfig;
+  ui?: UIDisplay; // Optional UI display (falls back to metadata)
 }
 
 /**
@@ -110,13 +110,13 @@ export interface PublicRoute extends BaseRoute {
  * Footer action configuration
  */
 export interface FooterAction {
+  action?: "logout" | string; // Special actions
+  icon: LucideIcon;
   id: string;
   label?: string; // Optional - comes from translations
-  icon: LucideIcon;
-  path?: string;
-  action?: "logout" | string; // Special actions
-  variant?: "default" | "destructive";
   metadata?: Partial<RouteMetadata>;
+  path?: string;
+  variant?: "default" | "destructive";
 }
 
 /**
@@ -132,16 +132,16 @@ export interface NavigationGroup {
  * Complete route configuration
  */
 export interface RouteConfig {
-  public: PublicRoute[];
-  protected: ProtectedRoute[];
-  navigationGroups: NavigationGroup[];
   footerActions: FooterAction[];
+  navigationGroups: NavigationGroup[];
+  protected: ProtectedRoute[];
+  public: PublicRoute[];
 }
 
 /**
  * Breadcrumb item for rendering
  */
 export interface BreadcrumbItem {
-  label: string;
   href?: string;
+  label: string;
 }

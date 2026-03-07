@@ -20,9 +20,9 @@ import * as Sentry from "@sentry/nextjs";
 import { useResetIntegrationPassword } from "@/features/integrations/hooks/use-integration";
 
 interface ResetPasswordDialogProps {
+  accountId: string;
   integrationId: string;
   integrationName: string;
-  accountId: string;
   /**
    * "user-chosen" — user enters a new password (XMPP).
    * "generated" — server generates a random password and returns it (IRC).
@@ -249,7 +249,9 @@ export function ResetPasswordDialog({
       }}
       open={open}
     >
-      <DialogTrigger render={<Button size="sm" variant="outline" />}>
+      <DialogTrigger
+        render={<Button className="w-full" size="sm" variant="secondary" />}
+      >
         <KeyRound className="mr-2 h-4 w-4" />
         Reset Password
       </DialogTrigger>

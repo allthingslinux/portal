@@ -4,10 +4,10 @@ import type { RouteTranslationResolver } from "@/features/routing/lib";
 import { getUIDisplay, routeConfig } from "@/features/routing/lib";
 
 interface PageHeaderProps {
-  title?: ReactNode;
   description?: string;
   pathname?: string;
   resolver?: RouteTranslationResolver;
+  title?: ReactNode;
 }
 
 export function PageHeader({

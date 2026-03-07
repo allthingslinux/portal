@@ -4,10 +4,10 @@
 // Used by the Donate page. Override via env vars if needed.
 
 export interface DonationOption {
+  description?: string;
+  href: string;
   id: string;
   name: string;
-  href: string;
-  description?: string;
 }
 
 const getEnv = (key: string, fallback: string) =>

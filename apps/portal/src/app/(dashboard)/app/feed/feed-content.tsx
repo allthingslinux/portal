@@ -86,16 +86,16 @@ function SourceFavicon({
 type FeedSourceClient = Omit<FeedSource, "categoryPattern">;
 
 interface FilterPanelProps {
-  search: string;
-  onSearchChange: (v: string) => void;
   availableCategories: FeedCategory[];
-  selectedCategories: Set<FeedCategory>;
-  onToggleCategory: (cat: FeedCategory) => void;
   enabledSources: FeedSourceClient[];
-  selectedSources: Set<string>;
-  onToggleSource: (id: string) => void;
   hasActiveFilters: boolean;
   onClear: () => void;
+  onSearchChange: (v: string) => void;
+  onToggleCategory: (cat: FeedCategory) => void;
+  onToggleSource: (id: string) => void;
+  search: string;
+  selectedCategories: Set<FeedCategory>;
+  selectedSources: Set<string>;
 }
 
 function FilterRow({

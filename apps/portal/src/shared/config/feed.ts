@@ -13,31 +13,31 @@ export type FeedCategory =
   | "enterprise";
 
 export interface FeedSource {
-  /** Unique identifier */
-  id: string;
-  /** Display name */
-  name: string;
-  /** Short description shown in the source filter */
-  description: string;
-  /** RSS/Atom feed URL */
-  feedUrl: string;
-  /** Link to the outlet's homepage */
-  siteUrl: string;
   /** Categories this source covers */
   categories: FeedCategory[];
-  /** Whether to include this source by default */
-  enabled: boolean;
-  /**
-   * Optional regex to extract a category from the item description when the
-   * feed provides none. The first capture group is used as the category value.
-   */
-  categoryPattern?: RegExp;
   /**
    * When true, extract the first path segment of the item link as a category
    * fallback (e.g. "news" or "review" from phoronix.com/news/…).
    * Only applied when no categories are found through other means.
    */
   categoryFromLinkPath?: boolean;
+  /**
+   * Optional regex to extract a category from the item description when the
+   * feed provides none. The first capture group is used as the category value.
+   */
+  categoryPattern?: RegExp;
+  /** Short description shown in the source filter */
+  description: string;
+  /** Whether to include this source by default */
+  enabled: boolean;
+  /** RSS/Atom feed URL */
+  feedUrl: string;
+  /** Unique identifier */
+  id: string;
+  /** Display name */
+  name: string;
+  /** Link to the outlet's homepage */
+  siteUrl: string;
 }
 
 /** Revalidate feeds every 10 minutes */

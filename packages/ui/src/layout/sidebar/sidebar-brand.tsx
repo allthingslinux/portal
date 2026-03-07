@@ -15,15 +15,16 @@ export function SidebarBrand() {
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton
-          className="gap-2"
-          render={<Link href="/app" />}
+          render={(props) => (
+            <Link {...props} className={`${props.className} gap-2`} href="/app">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <LayoutDashboard className="size-4" />
+              </div>
+              <span className="truncate font-semibold">{APP_NAME}</span>
+            </Link>
+          )}
           size="lg"
-        >
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <LayoutDashboard className="size-4" />
-          </div>
-          <span className="truncate font-semibold">{APP_NAME}</span>
-        </SidebarMenuButton>
+        />
       </SidebarMenuItem>
     </SidebarMenu>
   );

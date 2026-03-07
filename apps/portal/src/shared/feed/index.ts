@@ -9,33 +9,33 @@ const BLOG_FEED_URL = "https://allthingslinux.org/feed";
 const BLOG_FEED_REVALIDATE_SECONDS = 300;
 
 export interface BlogPost {
-  title: string;
+  isoDate?: string;
   link: string;
   pubDate?: string;
-  isoDate?: string;
   summary?: string;
+  title: string;
 }
 
 export interface FeedArticle {
-  /** Unique key composed from sourceId + link */
-  id: string;
-  title: string;
-  link: string;
-  pubDate?: string;
-  isoDate?: string;
-  summary?: string;
   /** Categories/tags extracted from the feed item */
   categories: string[];
+  /** Unique key composed from sourceId + link */
+  id: string;
+  isoDate?: string;
+  link: string;
+  pubDate?: string;
+  siteUrl: string;
   sourceId: string;
   sourceName: string;
-  siteUrl: string;
+  summary?: string;
+  title: string;
 }
 
 export interface FeedSourceResult {
-  sourceId: string;
-  sourceName: string;
   articles: FeedArticle[];
   error?: string;
+  sourceId: string;
+  sourceName: string;
 }
 
 const parser = new Parser({

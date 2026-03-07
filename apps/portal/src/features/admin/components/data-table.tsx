@@ -52,9 +52,9 @@ declare module "@tanstack/react-table" {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  enableColumnVisibility?: boolean;
   searchKey?: string;
   searchPlaceholder?: string;
-  enableColumnVisibility?: boolean;
   /** Rendered on the same row as the Columns button (left side). Use for filters. */
   toolbarContent?: React.ReactNode;
 }

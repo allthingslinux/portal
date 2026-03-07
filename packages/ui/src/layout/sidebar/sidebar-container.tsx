@@ -23,7 +23,6 @@ interface SidebarContainerProps {
 
 export function SidebarContainer({ canViewAdmin }: SidebarContainerProps) {
   const clientPermissions = usePermissions();
-  // Get translated route config (automatically resolves translations from locale file)
   const translatedConfig = useTranslatedRoutes();
 
   const permissions = {

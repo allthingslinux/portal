@@ -32,16 +32,16 @@ function getSortIcon(sorted: false | "asc" | "desc") {
 }
 
 interface UserMutations {
+  banUser: UseMutationResult<unknown, Error, { userId: string }, unknown>;
+  impersonateUser: UseMutationResult<unknown, Error, string, unknown>;
+  onViewDetails?: (userId: string) => void;
   setRole: UseMutationResult<
     unknown,
     Error,
     { userId: string; role: "user" | "staff" | "admin" },
     unknown
   >;
-  banUser: UseMutationResult<unknown, Error, { userId: string }, unknown>;
   unbanUser: UseMutationResult<unknown, Error, string, unknown>;
-  impersonateUser: UseMutationResult<unknown, Error, string, unknown>;
-  onViewDetails?: (userId: string) => void;
 }
 
 export function createUserColumns(mutations: UserMutations): ColumnDef<User>[] {

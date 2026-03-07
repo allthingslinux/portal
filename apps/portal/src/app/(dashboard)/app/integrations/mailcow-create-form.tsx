@@ -27,8 +27,8 @@ type FormValues = z.infer<typeof CreateMailboxRequestSchema>;
 
 interface MailcowDialogCreateFieldsProps {
   integrationId: string;
-  title: string;
   onSuccess: (account: MailcowAccount) => void;
+  title: string;
 }
 
 export function MailcowDialogCreateFields({
@@ -164,12 +164,12 @@ export function MailcowDialogCreateFields({
 }
 
 interface MailcowCreateFormProps {
-  integrationId: string;
-  title: string;
   description: string;
+  integrationId: string;
   onSuccess?: (account: MailcowAccount) => void;
   /** Override button label (default: `Create ${title} Account`) */
   submitLabel?: string;
+  title: string;
 }
 
 export function MailcowCreateForm({

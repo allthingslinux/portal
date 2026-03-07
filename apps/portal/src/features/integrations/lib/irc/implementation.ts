@@ -18,6 +18,7 @@ import {
   fdropNick,
   registerNick,
   resetNickPassword,
+  setVhost,
 } from "./atheme/client";
 import { ircConfig, isAthemeOperConfigured, isIrcConfigured } from "./config";
 import type { IrcAccount, UpdateIrcAccountRequest } from "./types";
@@ -27,6 +28,8 @@ import { getIntegrationRegistry } from "@/features/integrations/lib/core/registr
 import type { IntegrationCreateInput } from "@/features/integrations/lib/core/types";
 
 // Schemas are now imported from @portal/schemas/integrations/irc
+
+const IRC_SERVER_PREFIX_RE = /^irc\./;
 
 /**
  * IRC integration implementation (Atheme NickServ provisioning, soft-delete only).
@@ -156,6 +159,20 @@ export class IrcIntegration extends IntegrationBase<
         });
       }
       throw athemeError;
+    }
+
+    // 2b. Set HostServ vhost (non-fatal — account works without vanity vhost)
+    if (isAthemeOperConfigured()) {
+      try {
+        const domain =
+          ircConfig.server.replace(IRC_SERVER_PREFIX_RE, "") || "atl.chat";
+        await setVhost(nick, `${nick}@${domain}`);
+      } catch (vhostError) {
+        Sentry.captureException(vhostError, {
+          tags: { integration: "irc", step: "set_vhost" },
+          extra: { userId, nick },
+        });
+      }
     }
 
     // 3. Update to active

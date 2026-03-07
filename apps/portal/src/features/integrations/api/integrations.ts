@@ -4,11 +4,11 @@ import type { IntegrationPublicInfo } from "@/features/integrations/lib/core/typ
  * Response type from integration API endpoints
  */
 interface IntegrationApiResponse<T> {
-  ok: boolean;
-  error?: string;
   account?: T;
+  error?: string;
   integrations?: IntegrationPublicInfo[];
   message?: string;
+  ok: boolean;
 }
 
 /**
@@ -176,8 +176,8 @@ export async function deleteIntegrationAccount(
 }
 
 interface ResetPasswordResponse {
-  ok: boolean;
   message: string;
+  ok: boolean;
   /** Only present for IRC — Atheme generates a random password */
   temporaryPassword?: string;
 }

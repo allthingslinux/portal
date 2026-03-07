@@ -21,21 +21,6 @@ import { log } from "./utils";
  * High cardinality (request_id, user_id) and high dimensionality (many fields)
  */
 export interface WideEvent extends Record<string, unknown> {
-  // Request identification (high cardinality)
-  request_id: string;
-  timestamp: string;
-
-  // HTTP request context
-  method: string;
-  path: string;
-  pathname?: string;
-  search?: string;
-  user_agent?: string;
-  ip?: string;
-
-  // Response context
-  status_code?: number;
-  outcome?: "success" | "error";
   duration_ms?: number;
 
   // Error context (if applicable)
@@ -44,6 +29,20 @@ export interface WideEvent extends Record<string, unknown> {
     message: string;
     stack?: string;
   };
+  ip?: string;
+
+  // HTTP request context
+  method: string;
+  outcome?: "success" | "error";
+  path: string;
+  pathname?: string;
+  // Request identification (high cardinality)
+  request_id: string;
+  search?: string;
+
+  // Response context
+  status_code?: number;
+  timestamp: string;
 
   // Business context (enriched by handlers)
   user?: {
@@ -52,6 +51,7 @@ export interface WideEvent extends Record<string, unknown> {
     role?: string;
     [key: string]: unknown;
   };
+  user_agent?: string;
 
   // Additional context (enriched by handlers)
   [key: string]: unknown;

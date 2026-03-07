@@ -16,8 +16,8 @@ import { captureException, startSpan } from "@sentry/nextjs";
 
 export interface IrcPasswordDialogData {
   nick: string;
-  server: string;
   port: number;
+  server: string;
   temporaryPassword: string;
 }
 

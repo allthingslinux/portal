@@ -292,10 +292,10 @@ export async function resetProsodyPassword(
 // ============================================================================
 
 export interface XmppServerStats {
-  /** Total registered accounts */
-  registeredUsers: number;
   /** Users currently connected (from mod_http_user_count, -1 if unavailable) */
   onlineUsers: number;
+  /** Total registered accounts */
+  registeredUsers: number;
 }
 
 /**

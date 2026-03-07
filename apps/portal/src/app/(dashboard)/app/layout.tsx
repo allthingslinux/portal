@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { AppLayout } from "@portal/ui/layout/app-layout";
 
@@ -30,5 +31,16 @@ export default async function DashboardLayout({
     }
   }
 
-  return <AppLayout canViewAdmin={canViewAdmin}>{children}</AppLayout>;
+  const cookieStore = await cookies();
+  const defaultSidebarOpen =
+    cookieStore.get("sidebar_state")?.value !== "false";
+
+  return (
+    <AppLayout
+      canViewAdmin={canViewAdmin}
+      defaultSidebarOpen={defaultSidebarOpen}
+    >
+      {children}
+    </AppLayout>
+  );
 }

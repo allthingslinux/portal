@@ -5,12 +5,12 @@
 // Discord invite can be overridden via NEXT_PUBLIC_DISCORD_INVITE.
 
 export interface CommunityLink {
-  id: string;
-  name: string;
   description: string;
+  external?: boolean;
   href: string;
   icon: "discord" | "irc" | "xmpp" | "web" | "github" | "wiki";
-  external?: boolean;
+  id: string;
+  name: string;
 }
 
 const discordInvite =
@@ -99,9 +99,8 @@ export const COMMUNITY_LINKS: CommunityLink[] = [
 // Override via env: NEXT_PUBLIC_X_URL, NEXT_PUBLIC_YOUTUBE_URL, etc.
 
 export interface SocialMediaLink {
-  id: string;
-  name: string;
   description: string;
+  external?: boolean;
   href: string;
   icon:
     | "x"
@@ -113,7 +112,8 @@ export interface SocialMediaLink {
     | "instagram"
     | "tiktok"
     | "tumblr";
-  external?: boolean;
+  id: string;
+  name: string;
 }
 
 const getEnv = (key: string, fallback: string) =>

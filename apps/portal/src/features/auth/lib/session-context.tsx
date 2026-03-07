@@ -8,13 +8,13 @@ import { authClient } from "./client";
  * Session context value
  */
 interface SessionContextValue {
-  session: ReturnType<typeof authClient.useSession>["data"];
   isPending: boolean;
   permissions: {
     canManageUsers: boolean;
     canViewAdmin: boolean;
     loading: boolean;
   };
+  session: ReturnType<typeof authClient.useSession>["data"];
 }
 
 const SessionContext = createContext<SessionContextValue | undefined>(

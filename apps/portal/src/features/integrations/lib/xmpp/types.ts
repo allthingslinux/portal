@@ -18,21 +18,21 @@ export type {
  * util.error format (type/condition/text/code) from mod_http_admin_api >= 2025-10-01.
  */
 export interface ProsodyRestError {
+  code?: number;
+  condition?: string;
   // Legacy format
   error?: string;
   message?: string;
+  text?: string;
   // util.error format (Prosody trunk / mod_http_admin_api post-2025-10-01)
   type?: string;
-  condition?: string;
-  text?: string;
-  code?: number;
 }
 
 /**
  * Prosody REST API account creation response
  */
 export interface ProsodyRestAccountResponse {
-  success?: boolean;
   error?: string;
   message?: string;
+  success?: boolean;
 }

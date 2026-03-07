@@ -243,11 +243,11 @@ const initializeFingerprinting = (): void => {
 // ============================================================================
 
 interface SamplingContext {
-  name: string;
   attributes?: Record<string, unknown>;
+  inheritOrSampleWith: (fallbackRate: number) => number;
+  name: string;
   parentSampled?: boolean;
   parentSampleRate?: number;
-  inheritOrSampleWith: (fallbackRate: number) => number;
 }
 
 /**

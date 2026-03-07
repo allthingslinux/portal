@@ -20,31 +20,31 @@ const USERS_ONLINE_RE = /Users currently online:\s*(\d+)/;
  * for spec compliance. Atheme requires `id` as a string.
  */
 interface JsonRpcRequest {
+  id: string;
   jsonrpc: "2.0";
   method: string;
   params: string[];
-  id: string;
 }
 
 /** JSON-RPC success response — result is always a string for atheme.command */
 interface JsonRpcSuccess {
-  result: string;
   error: null;
   id: string;
+  result: string;
 }
 
 /** JSON-RPC success response with object result (atheme.ison) */
 interface JsonRpcObjectSuccess<T> {
-  result: T;
   error: null;
   id: string;
+  result: T;
 }
 
 /** JSON-RPC error response (Atheme fault) */
 interface JsonRpcError {
-  result: null;
   error: { code: number; message: string };
   id: string;
+  result: null;
 }
 
 /**
@@ -207,9 +207,9 @@ export async function setNickPassword(
 // ============================================================================
 
 export interface AthemeIsonResult {
-  online: boolean;
   /** Account name the nick is authed to, or "*" if not authed */
   accountname: string;
+  online: boolean;
 }
 
 /**
@@ -309,6 +309,48 @@ export async function fdropNick(
       await athemeLogout(cookie, operAccount);
     } catch {
       // Best-effort logout; don't mask the original error
+    }
+  }
+}
+
+/**
+ * Set a vhost on a NickServ account via HostServ VHOST (oper command).
+ * Applied immediately and on every future identify.
+ * Requires IRC_ATHEME_OPER_ACCOUNT + IRC_ATHEME_OPER_PASSWORD.
+ *
+ * @param nick - The account to set the vhost on
+ * @param vhost - The vhost string (e.g. "kaizen@atl.chat")
+ * @throws Error if oper credentials are not configured
+ * @throws AthemeFaultError on Atheme failure
+ */
+export async function setVhost(
+  nick: string,
+  vhost: string,
+  sourceIp = "127.0.0.1"
+): Promise<void> {
+  const { operAccount, operPassword } = ircConfig.atheme;
+  if (!(operAccount && operPassword)) {
+    throw new Error(
+      "IRC_ATHEME_OPER_ACCOUNT and IRC_ATHEME_OPER_PASSWORD must be configured for VHOST"
+    );
+  }
+
+  const cookie = await athemeLogin(operAccount, operPassword, sourceIp);
+  try {
+    await athemeCommand([
+      cookie,
+      operAccount,
+      sourceIp,
+      "HostServ",
+      "VHOST",
+      nick.trim(),
+      vhost,
+    ]);
+  } finally {
+    try {
+      await athemeLogout(cookie, operAccount);
+    } catch {
+      // Best-effort logout
     }
   }
 }

@@ -57,7 +57,7 @@ export class MailcowIntegration extends IntegrationBase<
       id: "mailcow",
       name: "Mailcow",
       description:
-        "Get an @allthingslinux.org email address with webmail, IMAP, and SMTP access.",
+        "Get an @atl.tools email address with webmail, IMAP, and SMTP access.",
       enabled: isMailcowConfigured(),
       createAccountSchema: CreateMailboxRequestSchema,
       updateAccountSchema: UpdateMailboxRequestSchema,

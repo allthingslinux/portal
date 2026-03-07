@@ -9,18 +9,18 @@
 // ============================================================================
 
 interface PortalUserContext {
-  id?: string;
   email?: string;
-  username?: string;
+  id?: string;
   role?: string;
   subscription?: string;
   tenant?: string;
+  username?: string;
 }
 
 interface PortalEventContext {
-  feature?: string;
-  component?: string;
   action?: string;
+  component?: string;
+  feature?: string;
   route?: string;
   userAgent?: string;
   viewport?: string;
@@ -317,8 +317,8 @@ export const scopePatterns = {
 // ============================================================================
 
 interface CacheOptions {
-  key: string | string[];
   address?: string;
+  key: string | string[];
   port?: number;
 }
 
@@ -436,29 +436,29 @@ export const cacheConfigs = {
 // ============================================================================
 
 interface TraceHeaders {
-  "sentry-trace"?: string;
   baggage?: string;
+  "sentry-trace"?: string;
 }
 
 interface QueueMessage {
-  id: string;
   body: unknown;
-  timestamp: number;
+  id: string;
   retryCount?: number;
+  timestamp: number;
 }
 
 interface QueueProducerOptions {
   messageId: string;
-  queueName: string;
   messageSize: number;
+  queueName: string;
 }
 
 interface QueueConsumerOptions {
   messageId: string;
-  queueName: string;
   messageSize: number;
-  retryCount?: number;
+  queueName: string;
   receiveLatency?: number;
+  retryCount?: number;
 }
 
 const buildQueueConsumerAttributes = (options: QueueConsumerOptions) => ({
@@ -581,8 +581,8 @@ export const calculateReceiveLatency = (message: QueueMessage): number =>
 
 interface HttpRequestOptions {
   method: string;
-  url: string;
   requestSize?: number;
+  url: string;
 }
 
 const calculateBodySize = (body: unknown): number | undefined => {
@@ -752,10 +752,10 @@ export const createManualSpan = (
 };
 
 interface Span {
+  end: () => void;
   setAttribute: (key: string, value: unknown) => void;
   setAttributes: (attributes: Record<string, unknown>) => void;
   setStatus: (status: { code: number; message: string }) => void;
-  end: () => void;
   updateName?: (name: string) => void;
 }
 

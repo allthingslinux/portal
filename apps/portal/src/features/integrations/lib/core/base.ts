@@ -12,13 +12,13 @@ export interface IntegrationBaseOptions<
   TCreateInput = unknown,
   TUpdateInput = unknown,
 > {
-  id: string;
-  name: string;
+  accountSchema?: z.ZodType<unknown>; // Use unknown here as TAccount isn't in options
+  createAccountSchema?: z.ZodType<TCreateInput>;
   description: string;
   enabled?: boolean;
-  createAccountSchema?: z.ZodType<TCreateInput>;
+  id: string;
+  name: string;
   updateAccountSchema?: z.ZodType<TUpdateInput>;
-  accountSchema?: z.ZodType<unknown>; // Use unknown here as TAccount isn't in options
 }
 
 export abstract class IntegrationBase<

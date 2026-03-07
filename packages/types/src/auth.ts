@@ -15,9 +15,9 @@
  */
 export interface SessionData<TSession = Record<string, unknown>> {
   isAuth: true;
-  userId: string;
-  session: TSession;
   role?: string;
+  session: TSession;
+  userId: string;
 }
 
 /**
@@ -41,8 +41,8 @@ export interface AuthResult<
  */
 export interface UserPermissions {
   canViewAdmin?: boolean;
-  canViewStaff?: boolean;
   canViewAnalytics?: boolean;
+  canViewStaff?: boolean;
   [key: string]: boolean | undefined;
 }
 

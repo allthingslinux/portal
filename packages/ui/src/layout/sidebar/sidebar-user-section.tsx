@@ -44,7 +44,6 @@ export function SidebarUserSection({ actions }: SidebarUserSectionProps) {
 
   return (
     <SidebarMenu>
-      {/* User Info */}
       <SidebarMenuItem>
         <SidebarMenuButton disabled size="lg" tooltip={user.name}>
           <UserAvatar
@@ -62,7 +61,6 @@ export function SidebarUserSection({ actions }: SidebarUserSectionProps) {
         </SidebarMenuButton>
       </SidebarMenuItem>
 
-      {/* Footer Actions */}
       {actions.map((action) => {
         const Icon = action.icon;
         return (
@@ -82,15 +80,16 @@ export function SidebarUserSection({ actions }: SidebarUserSectionProps) {
             ) : (
               action.path && (
                 <SidebarMenuButton
-                  render={
+                  render={(props) => (
                     <Link
+                      {...props}
                       href={action.path as Parameters<typeof Link>[0]["href"]}
-                    />
-                  }
-                >
-                  <Icon />
-                  <span>{action.label}</span>
-                </SidebarMenuButton>
+                    >
+                      <Icon />
+                      <span>{action.label}</span>
+                    </Link>
+                  )}
+                />
               )
             )}
           </SidebarMenuItem>
