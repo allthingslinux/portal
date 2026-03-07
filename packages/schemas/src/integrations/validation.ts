@@ -72,3 +72,29 @@ export function isValidMailcowLocalPart(localPart: string): boolean {
   }
   return MAILCOW_LOCAL_PART_REGEX.test(trimmed);
 }
+
+// --- MediaWiki ---
+
+/** MediaWiki maximum username length */
+export const WIKI_USERNAME_MAX_LENGTH = 85;
+
+/**
+ * MediaWiki usernames: alphanumeric characters, spaces, hyphens, and underscores.
+ * Length is validated separately via Zod min/max.
+ */
+const WIKI_USERNAME_REGEX = /^[a-zA-Z0-9 _-]+$/;
+
+/** Validate MediaWiki username format. */
+export function isValidWikiUsername(username: string): boolean {
+  if (!username || typeof username !== "string") {
+    return false;
+  }
+  if (username !== username.trim()) {
+    return false;
+  }
+  return (
+    username.length >= 1 &&
+    username.length <= WIKI_USERNAME_MAX_LENGTH &&
+    WIKI_USERNAME_REGEX.test(username)
+  );
+}
