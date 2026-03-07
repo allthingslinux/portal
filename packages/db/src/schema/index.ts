@@ -10,6 +10,7 @@ import {
 import { integrationAccount } from "./integrations/base";
 import { ircAccount } from "./irc";
 import { mailcowAccount } from "./mailcow";
+import { mediawikiAccount } from "./mediawiki";
 import {
   oauthAccessToken,
   oauthClient,
@@ -33,5 +34,6 @@ export const schema = {
   integrationAccount,
   ircAccount,
   mailcowAccount,
+  mediawikiAccount,
   xmppAccount,
 };
