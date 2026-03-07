@@ -1,26 +1,31 @@
-import { Mwn } from "mwn";
-
 import { env } from "@/env";
 
 /**
  * MediaWiki API client for read-only operations (recent changes, page info, etc.)
- * Uses mwn in anonymous mode — no login required for public wikis.
+ * Uses native fetch — no login required for public wikis.
  */
 class MediaWikiClient {
-  private bot: Mwn | null = null;
+  private readonly userAgent =
+    "Portal/1.0 (https://portal.atl.tools; contact@atl.dev)";
 
-  private getBot(): Mwn {
-    if (this.bot) {
-      return this.bot;
+  private async request(
+    params: Record<string, string | number | undefined>
+  ): Promise<Record<string, unknown>> {
+    const url = new URL(env.WIKI_API_URL);
+    url.searchParams.set("format", "json");
+    url.searchParams.set("formatversion", "2");
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        url.searchParams.set(key, String(value));
+      }
     }
-    this.bot = new Mwn({
-      apiUrl: env.WIKI_API_URL,
-      userAgent: "Portal/1.0 (https://portal.atl.tools; contact@atl.dev)",
-      defaultParams: {
-        formatversion: 2,
-      },
+    const res = await fetch(url.toString(), {
+      headers: { "User-Agent": this.userAgent },
     });
-    return this.bot;
+    if (!res.ok) {
+      throw new Error(`MediaWiki API error: ${res.status} ${res.statusText}`);
+    }
+    return res.json() as Promise<Record<string, unknown>>;
   }
 
   /**
@@ -31,10 +36,9 @@ class MediaWikiClient {
     namespace?: number;
     rctype?: "edit" | "new" | "log";
   }): Promise<RecentChange[]> {
-    const bot = this.getBot();
     const limit = options?.limit ?? 10;
 
-    const params = {
+    const data = await this.request({
       action: "query",
       list: "recentchanges",
       rcprop: "title|user|timestamp|comment|ids|sizes",
@@ -43,11 +47,12 @@ class MediaWikiClient {
         rcnamespace: options.namespace,
       }),
       ...(options?.rctype && { rctype: options.rctype }),
-    };
+    });
 
-    const data = await bot.request(params);
-
-    const changes = (data.query?.recentchanges ?? []) as RawRecentChange[];
+    const query = data.query as
+      | { recentchanges?: RawRecentChange[] }
+      | undefined;
+    const changes = query?.recentchanges ?? [];
     return changes.map((rc) => {
       const oldlen = rc.oldlen ?? 0;
       const newlen = rc.newlen ?? 0;
@@ -71,14 +76,14 @@ class MediaWikiClient {
    * Get basic site statistics.
    */
   async getSiteStats(): Promise<SiteStats> {
-    const bot = this.getBot();
-    const data = await bot.request({
+    const data = await this.request({
       action: "query",
       meta: "siteinfo",
       siprop: "statistics",
     });
 
-    const stats = (data.query?.statistics ?? {}) as RawSiteStats;
+    const query = data.query as { statistics?: RawSiteStats } | undefined;
+    const stats = query?.statistics ?? {};
     return {
       pages: Number(stats.pages) || 0,
       articles: Number(stats.articles) || 0,
@@ -92,8 +97,7 @@ class MediaWikiClient {
    * Get page info by title.
    */
   async getPageInfo(title: string): Promise<PageInfo | null> {
-    const bot = this.getBot();
-    const data = await bot.request({
+    const data = await this.request({
       action: "query",
       prop: "info|revisions",
       inprop: "url",
@@ -102,7 +106,8 @@ class MediaWikiClient {
       titles: title,
     });
 
-    const pages = data.query?.pages as Record<string, RawPage> | undefined;
+    const query = data.query as { pages?: Record<string, RawPage> } | undefined;
+    const pages = query?.pages;
     if (!pages) {
       return null;
     }
@@ -126,69 +131,69 @@ class MediaWikiClient {
 
 /** Recent change from MediaWiki API */
 export interface RecentChange {
-  pageId: number;
-  revId: number;
-  title: string;
-  user: string;
-  timestamp: string;
   comment: string;
-  type: string;
-  oldlen: number;
-  newlen: number;
   /** newlen - oldlen; positive = bytes added, negative = bytes removed */
   diff: number;
+  newlen: number;
+  oldlen: number;
+  pageId: number;
+  revId: number;
+  timestamp: string;
+  title: string;
+  type: string;
+  user: string;
 }
 
 /** Site statistics */
 export interface SiteStats {
-  pages: number;
+  activeUsers: number;
   articles: number;
   edits: number;
+  pages: number;
   users: number;
-  activeUsers: number;
 }
 
 /** Page info */
 export interface PageInfo {
-  pageId: number;
-  title: string;
   fullUrl: string;
-  lastRevId?: number;
   lastModified?: string;
   lastModifiedBy?: string;
+  lastRevId?: number;
+  pageId: number;
+  title: string;
 }
 
 interface RawRecentChange {
+  comment?: string;
+  newlen?: number;
+  oldlen?: number;
   pageid?: number;
   revid?: number;
-  title?: string;
-  user?: string;
   timestamp?: string;
-  comment?: string;
+  title?: string;
   type?: string;
-  oldlen?: number;
-  newlen?: number;
+  user?: string;
 }
 
 interface RawSiteStats {
-  pages?: number;
+  activeusers?: number;
   articles?: number;
   edits?: number;
+  pages?: number;
   users?: number;
-  activeusers?: number;
 }
 
 interface RawPage {
-  pageid?: number;
-  title?: string;
   fullurl?: string;
   missing?: boolean;
+  pageid?: number;
   revisions?: Array<{
     revid?: number;
     timestamp?: string;
     user?: string;
     comment?: string;
   }>;
+  title?: string;
 }
 
 export const mediawiki = new MediaWikiClient();

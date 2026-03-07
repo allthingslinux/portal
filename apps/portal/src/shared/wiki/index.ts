@@ -6,13 +6,13 @@ const API_PATH_REGEX = /\/w\/api\.php$/;
 const ROOT_API_REGEX = /\/api\.php$/;
 
 export interface WikiChange {
-  title: string;
-  user: string;
-  timestamp: string;
-  pageId: number;
-  url: string;
   /** bytes added (positive) or removed (negative) */
   diff: number;
+  pageId: number;
+  timestamp: string;
+  title: string;
+  url: string;
+  user: string;
 }
 
 /** Derive wiki base URL from API URL (e.g. https://atl.wiki/w/api.php -> https://atl.wiki) */
