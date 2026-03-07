@@ -13,13 +13,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@sentry/nextjs": "^10.34.0",
+    "@sentry/nextjs": "^10.42.0",
     "@t3-oss/env-nextjs": "^0.13.10",
-    "zod": "^4.3.5"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@portal/typescript-config": "workspace:*",
-    "@types/node": "^25.0.9",
+    "@types/node": "^25.3.5",
     "next": "16.1.6",
     "server-only": "^0.0.1",
     "typescript": "^5.9.3"

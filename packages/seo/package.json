@@ -18,9 +18,9 @@
   },
   "devDependencies": {
     "@portal/typescript-config": "workspace:*",
-    "@types/react": "^19.2.8",
-    "lodash": "^4.17.21",
-    "@types/lodash": "^4.17.23",
+    "@types/lodash": "^4.17.24",
+    "@types/react": "^19.2.14",
+    "lodash": "^4.17.23",
     "react": "19.2.4",
     "typescript": "^5.9.3"
   }

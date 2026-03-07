@@ -16,7 +16,7 @@
     "@portal/types": "workspace:*",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
     "@portal/typescript-config": "workspace:*",

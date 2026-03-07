@@ -17,9 +17,9 @@
     "@portal/observability": "workspace:*",
     "@portal/types": "workspace:*",
     "@portal/utils": "workspace:*",
-    "@tanstack/react-query": "^5.90.18",
+    "@tanstack/react-query": "^5.90.21",
     "drizzle-orm": "1.0.0-beta.15-859cf75",
-    "zod": "^4.3.5",
+    "zod": "^4.3.6",
     "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {

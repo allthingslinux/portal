@@ -20,7 +20,7 @@
     "@portal/db": "workspace:*",
     "@portal/types": "workspace:*",
     "drizzle-orm": "1.0.0-beta.15-859cf75",
-    "zod": "^4.3.5",
+    "zod": "^4.3.6",
     "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
