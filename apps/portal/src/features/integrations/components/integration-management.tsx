@@ -4,6 +4,7 @@ import type { ComponentType, ReactNode } from "react";
 import { useState } from "react";
 import {
   AlertCircle,
+  BookOpen,
   Hash,
   Loader2,
   Mail,
@@ -28,7 +29,7 @@ import {
   AlertDialogTrigger,
 } from "@portal/ui/ui/alert-dialog";
 import { Button } from "@portal/ui/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@portal/ui/ui/card";
+import { Card } from "@portal/ui/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -59,19 +60,31 @@ const INTEGRATION_ICONS: Record<
   irc: Hash,
   xmpp: Zap,
   mailcow: Mail,
+  mediawiki: BookOpen,
 };
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// Brand color classes per integration (bg for icon container)
+const INTEGRATION_COLORS: Record<string, string> = {
+  irc: "bg-indigo-500",
+  xmpp: "bg-amber-500",
+  mailcow: "bg-blue-500",
+  mediawiki: "bg-emerald-500",
+};
 
-function extractCreatedAt(account: Record<string, unknown>): Date | null {
-  const raw = account.createdAt;
-  if (!raw) {
-    return null;
-  }
-  const d = new Date(raw as string | number | Date);
-  return Number.isNaN(d.getTime()) ? null : d;
+// Subtle tint for the card top section background
+const INTEGRATION_TINTS: Record<string, string> = {
+  irc: "bg-indigo-500/10",
+  xmpp: "bg-amber-500/10",
+  mailcow: "bg-blue-500/10",
+  mediawiki: "bg-emerald-500/10",
+};
+
+function getIntegrationColor(integrationId: string): string {
+  return INTEGRATION_COLORS[integrationId] ?? "bg-violet-500";
+}
+
+function getIntegrationTint(integrationId: string): string {
+  return INTEGRATION_TINTS[integrationId] ?? "bg-violet-500/10";
 }
 
 // ---------------------------------------------------------------------------
@@ -92,24 +105,41 @@ function EmptyCard({
   onConfigure: () => void;
 }) {
   const Icon = icon ?? INTEGRATION_ICONS[integrationId] ?? Plug;
+  const colorClass = getIntegrationColor(integrationId);
+  const tintClass = getIntegrationTint(integrationId);
   return (
-    <Card className="flex min-h-[220px] flex-col items-center justify-center border-dashed p-8 text-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border/60 bg-muted/40">
-          <Icon className="h-5 w-5 text-muted-foreground" />
+    <div className="flex flex-col overflow-hidden rounded-xl border border-dashed bg-card text-card-foreground text-sm shadow-xs">
+      {/* Tinted header */}
+      <div
+        className={cn("flex items-center justify-between px-6 py-5", tintClass)}
+      >
+        <div
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-xl",
+            colorClass
+          )}
+        >
+          <Icon className="h-6 w-6 text-white" />
         </div>
-        <div className="space-y-1">
-          <p className="font-semibold">{title}</p>
-          <p className="max-w-[240px] text-muted-foreground text-sm leading-relaxed">
-            {description}
-          </p>
-        </div>
-        <Button onClick={onConfigure} size="sm" variant="outline">
-          <Plus className="mr-2 h-3.5 w-3.5" />
-          Configure {title}
+        <span className="rounded-full border border-muted-foreground/30 bg-muted-foreground/10 px-3 py-1 font-semibold text-muted-foreground text-xs uppercase tracking-widest">
+          Not Connected
+        </span>
+      </div>
+      {/* Body */}
+      <div className="flex-1 px-6 py-5">
+        <p className="font-bold text-xl leading-tight">{title}</p>
+        <p className="mt-1.5 text-muted-foreground text-sm leading-relaxed">
+          {description}
+        </p>
+      </div>
+      {/* Footer */}
+      <div className="border-border/40 border-t px-6 pt-4 pb-5">
+        <Button className="w-full" onClick={onConfigure} variant="secondary">
+          <Plus className="mr-2 h-4 w-4" />
+          Connect {title}
         </Button>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -120,6 +150,7 @@ function EmptyCard({
 function AccountCard<TAccount extends { id: string }>({
   integrationId,
   title,
+  description,
   account,
   icon,
   renderAccountDetails,
@@ -127,6 +158,7 @@ function AccountCard<TAccount extends { id: string }>({
 }: {
   integrationId: string;
   title: string;
+  description?: string;
   account: TAccount;
   icon?: ComponentType<{ className?: string }>;
   renderAccountDetails?: (account: TAccount) => ReactNode;
@@ -136,9 +168,10 @@ function AccountCard<TAccount extends { id: string }>({
     "status" in account && typeof account.status === "string"
       ? account.status
       : null;
-  const isActive = status === "active";
-  const createdAtDate = extractCreatedAt(account as Record<string, unknown>);
+  const isActive = status === "active" || status === null;
   const Icon = icon ?? INTEGRATION_ICONS[integrationId] ?? Plug;
+  const colorClass = getIntegrationColor(integrationId);
+  const tintClass = getIntegrationTint(integrationId);
   const deleteMutation = useDeleteIntegrationAccount(integrationId);
 
   const handleDelete = async () => {
@@ -156,113 +189,99 @@ function AccountCard<TAccount extends { id: string }>({
   };
 
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-start gap-3">
-            <div
-              className={cn(
-                "flex h-8 w-8 shrink-0 items-center justify-center rounded-md border bg-muted/40",
-                isActive ? "border-success/40" : "border-border/60"
-              )}
-            >
-              <Icon
-                className={cn(
-                  "h-4 w-4",
-                  isActive ? "text-success" : "text-muted-foreground"
-                )}
-              />
-            </div>
-            <p className="font-semibold leading-snug">{title}</p>
-          </div>
-          <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
-            <span
-              className={cn(
-                "h-2 w-2 rounded-full",
-                isActive ? "bg-success" : "bg-muted-foreground/30"
-              )}
-            />
-            <span
-              className={cn(
-                "font-medium text-xs",
-                isActive ? "text-success" : "text-muted-foreground"
-              )}
-            >
-              {isActive ? "Active" : (status ?? "Unknown")}
-            </span>
-          </div>
+    <div className="flex flex-col overflow-hidden rounded-xl bg-card text-card-foreground text-sm shadow-xs ring-1 ring-foreground/10">
+      {/* Tinted header */}
+      <div
+        className={cn("flex items-center justify-between px-6 py-5", tintClass)}
+      >
+        <div
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-xl",
+            colorClass
+          )}
+        >
+          <Icon className="h-6 w-6 text-white" />
         </div>
-      </CardHeader>
+        <span
+          className={cn(
+            "rounded-full border px-3 py-1 font-semibold text-xs uppercase tracking-widest",
+            isActive
+              ? "border-green-500/40 bg-green-500/10 text-green-400"
+              : "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
+          )}
+        >
+          {isActive ? "Connected" : (status ?? "Unknown")}
+        </span>
+      </div>
 
+      {/* Title + description */}
+      <div className="px-6 py-5">
+        <p className="font-bold text-xl leading-tight">{title}</p>
+        {description && (
+          <p className="mt-1.5 text-muted-foreground text-sm leading-relaxed">
+            {description}
+          </p>
+        )}
+      </div>
+
+      {/* Account details */}
       {renderAccountDetails && (
-        <CardContent className="border-border/40 border-t pt-4">
+        <div className="border-border/40 border-t px-6 pt-4 pb-5">
           {renderAccountDetails(account)}
-        </CardContent>
+        </div>
       )}
 
-      <CardFooter
-        className={cn(
-          "border-border/40 border-t pt-4",
-          !renderAccountDetails && "mt-auto"
+      {/* Footer actions */}
+      <div className="mt-auto flex flex-row gap-2 border-border/40 border-t px-6 pt-4 pb-5">
+        {renderActions && (
+          <div className="flex-1">{renderActions(account)}</div>
         )}
-      >
-        <div className="flex w-full items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            {renderActions?.(account)}
-            <AlertDialog>
-              <AlertDialogTrigger
-                render={
-                  <Button
-                    disabled={deleteMutation.isPending}
-                    size="sm"
-                    variant="destructive"
-                  />
-                }
-              >
-                {deleteMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                    Deleting...
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="mr-2 h-3.5 w-3.5" />
-                    Delete Account
-                  </>
-                )}
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete {title} Account?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will permanently delete your {title} account. This
-                    action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    onClick={handleDelete}
-                  >
-                    Delete Account
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-          {createdAtDate && (
-            <span className="text-muted-foreground text-xs">
-              {createdAtDate.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </span>
-          )}
+        <div className={renderActions ? "flex-1" : "w-full"}>
+          <AlertDialog>
+            <AlertDialogTrigger
+              render={
+                <Button
+                  className="w-full"
+                  disabled={deleteMutation.isPending}
+                  size="sm"
+                  variant="outline"
+                />
+              }
+            >
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-3.5 w-3.5" />
+                  Delete Account
+                </>
+              )}
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete {title} Account?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete your {title} account. This action
+                  cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={handleDelete}
+                >
+                  Delete Account
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -271,24 +290,29 @@ function AccountCard<TAccount extends { id: string }>({
 // ---------------------------------------------------------------------------
 
 export interface IntegrationManagementProps<TAccount extends { id: string }> {
-  integrationId: string;
-  title: string;
-  description: string;
-  /** Protocol icon — falls back to INTEGRATION_ICONS[integrationId] or Plug */
-  icon?: ComponentType<{ className?: string }>;
-  /** Renders additional action buttons in the account card footer (e.g. reset password, webmail) */
-  renderActions?: (account: TAccount) => ReactNode;
-  createLabel: string;
-  createInputLabel?: string;
-  createInputPlaceholder?: string;
   createInputHelp?: string;
+  createInputLabel?: string;
+  createInputName?: string;
+  createInputPlaceholder?: string;
+  /** @deprecated Use createSchema with required field instead */
+  createInputRequired?: boolean;
+  /** @deprecated Provide createSchema for validation; payload is derived from form data */
+  createInputToPayload?: (value: string) => Record<string, unknown>;
+  createLabel: string;
+  createSchema?: ZodType<unknown>;
+  createSecondInputHelp?: string;
   createSecondInputLabel?: string;
   createSecondInputName?: string;
   createSecondInputPlaceholder?: string;
-  createSecondInputHelp?: string;
   createSecondInputType?: string;
+  description: string;
+  /** Protocol icon — falls back to INTEGRATION_ICONS[integrationId] or Plug */
+  icon?: ComponentType<{ className?: string }>;
+  integrationId: string;
   onCreateSuccess?: (account: TAccount) => void;
   renderAccountDetails?: (account: TAccount) => ReactNode;
+  /** Renders additional action buttons in the account card footer (e.g. reset password, webmail) */
+  renderActions?: (account: TAccount) => ReactNode;
   /**
    * Custom create form rendered inside the setup dialog.
    * When provided, replaces the default input fields entirely.
@@ -298,12 +322,7 @@ export interface IntegrationManagementProps<TAccount extends { id: string }> {
     onSuccess: (account: TAccount) => void;
     isPending: boolean;
   }) => ReactNode;
-  createSchema?: ZodType<unknown>;
-  createInputName?: string;
-  /** @deprecated Use createSchema with required field instead */
-  createInputRequired?: boolean;
-  /** @deprecated Provide createSchema for validation; payload is derived from form data */
-  createInputToPayload?: (value: string) => Record<string, unknown>;
+  title: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -362,6 +381,7 @@ export function IntegrationManagement<TAccount extends { id: string }>({
     return (
       <AccountCard
         account={account}
+        description={description}
         icon={icon}
         integrationId={integrationId}
         renderAccountDetails={renderAccountDetails}

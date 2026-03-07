@@ -15,6 +15,7 @@ import { IrcMemberStat } from "@/features/integrations/components/irc-member-sta
 import { XmppMemberStat } from "@/features/integrations/components/xmpp-member-stat";
 import { getServerRouteResolver, routeConfig } from "@/features/routing/lib";
 import { RecentWikiChangesCard } from "@/features/wiki/components/recent-wiki-changes-card";
+import { WikiSiteStats } from "@/features/wiki/components/wiki-site-stats";
 
 export async function generateMetadata(): Promise<Metadata> {
   const resolver = await getServerRouteResolver();
@@ -79,10 +80,11 @@ export default async function AppPage() {
             <h2 className="mb-3 font-medium text-muted-foreground text-sm uppercase tracking-wider">
               Community stats
             </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <DiscordMemberStat />
               <IrcMemberStat />
               <XmppMemberStat />
+              <WikiSiteStats />
             </div>
           </section>
 

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Hash, Mail, Zap } from "lucide-react";
+import { BookOpen, Hash, Mail, Zap } from "lucide-react";
 import { CreateIrcAccountRequestSchema } from "@portal/schemas/integrations/irc";
+import { CreateMediaWikiAccountRequestSchema } from "@portal/schemas/integrations/mediawiki";
 import { CreateXmppAccountRequestSchema } from "@portal/schemas/integrations/xmpp";
 
 import { IrcAccountDetails } from "./irc-account-details";
@@ -12,6 +13,12 @@ import {
 } from "./irc-password-dialog";
 import { MailcowAccountDetails } from "./mailcow-account-details";
 import { MailcowDialogCreateFields } from "./mailcow-create-form";
+import { MediaWikiAccountDetails } from "./mediawiki-account-details";
+import {
+  MediaWikiPasswordDialog,
+  type MediaWikiPasswordDialogData,
+} from "./mediawiki-password-dialog";
+import { MediaWikiResetPassword } from "./mediawiki-reset-password";
 import { XmppAccountDetails } from "./xmpp-account-details";
 import {
   XmppPasswordDialog,
@@ -23,6 +30,7 @@ import { useIntegrations } from "@/features/integrations/hooks/use-integration";
 import type { IrcAccount } from "@/features/integrations/lib/irc/types";
 import { IRC_NICK_MAX_LENGTH } from "@/features/integrations/lib/irc/utils";
 import type { MailcowAccount } from "@/features/integrations/lib/mailcow/types";
+import type { MediaWikiAccount } from "@/features/integrations/lib/mediawiki/types";
 import type { XmppAccount } from "@/features/integrations/lib/xmpp/types";
 
 export function IntegrationsContent() {
@@ -31,6 +39,8 @@ export function IntegrationsContent() {
     useState<IrcPasswordDialogData | null>(null);
   const [xmppPasswordDialog, setXmppPasswordDialog] =
     useState<XmppPasswordDialogData | null>(null);
+  const [mediawikiPasswordDialog, setMediawikiPasswordDialog] =
+    useState<MediaWikiPasswordDialogData | null>(null);
 
   if (isPending) {
     return (
@@ -62,6 +72,12 @@ export function IntegrationsContent() {
         <XmppPasswordDialog
           data={xmppPasswordDialog}
           onClose={() => setXmppPasswordDialog(null)}
+        />
+      )}
+      {mediawikiPasswordDialog && (
+        <MediaWikiPasswordDialog
+          data={mediawikiPasswordDialog}
+          onClose={() => setMediawikiPasswordDialog(null)}
         />
       )}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -193,6 +209,49 @@ export function IntegrationsContent() {
                     onSuccess={onSuccess}
                     title={integration.name}
                   />
+                )}
+                title={integration.name}
+              />
+            );
+          }
+
+          if (integration.id === "mediawiki") {
+            return (
+              <IntegrationManagement<
+                MediaWikiAccount & { temporaryPassword?: string }
+              >
+                createInputHelp="Letters, digits, spaces, hyphens, or underscores (max 85 characters)."
+                createInputLabel="Wiki Username"
+                createInputName="wikiUsername"
+                createInputPlaceholder="Enter your wiki username"
+                createLabel="Create Wiki Account"
+                createSchema={CreateMediaWikiAccountRequestSchema}
+                createSecondInputHelp="If left empty, a random password will be generated and shown once."
+                createSecondInputLabel="Password (optional)"
+                createSecondInputName="password"
+                createSecondInputPlaceholder="Leave empty to generate a random password"
+                createSecondInputType="password"
+                description={integration.description}
+                icon={BookOpen}
+                integrationId={integration.id}
+                key={integration.id}
+                onCreateSuccess={(account) => {
+                  if (
+                    "temporaryPassword" in account &&
+                    typeof account.temporaryPassword === "string" &&
+                    "wikiUsername" in account
+                  ) {
+                    setMediawikiPasswordDialog({
+                      wikiUsername: account.wikiUsername,
+                      temporaryPassword: account.temporaryPassword,
+                    });
+                  }
+                }}
+                renderAccountDetails={(account) => (
+                  <MediaWikiAccountDetails account={account} />
+                )}
+                renderActions={(account) => (
+                  <MediaWikiResetPassword accountId={account.id} />
                 )}
                 title={integration.name}
               />

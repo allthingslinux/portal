@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@portal/ui/ui/tabs";
 import { AdminStats } from "./admin-stats";
 import { IrcAccountsManagement } from "./irc-accounts-management";
 import { MailcowAccountsManagement } from "./mailcow-accounts-management";
+import { MediawikiAccountsManagement } from "./mediawiki-accounts-management";
 import { SessionManagement } from "./session-management";
 import { UserManagement } from "./user-management";
 import { XmppAccountsManagement } from "./xmpp-accounts-management";
@@ -42,6 +43,9 @@ export function AdminDashboard() {
           <TabsTrigger value="irc-accounts">IRC Accounts</TabsTrigger>
           <TabsTrigger value="xmpp-accounts">XMPP Accounts</TabsTrigger>
           <TabsTrigger value="mailcow-accounts">Mailcow Accounts</TabsTrigger>
+          <TabsTrigger value="mediawiki-accounts">
+            MediaWiki Accounts
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="users">
@@ -62,6 +66,10 @@ export function AdminDashboard() {
 
         <TabsContent value="mailcow-accounts">
           <MailcowAccountsManagement />
+        </TabsContent>
+
+        <TabsContent value="mediawiki-accounts">
+          <MediawikiAccountsManagement />
         </TabsContent>
       </Tabs>
     </div>
