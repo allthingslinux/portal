@@ -24,6 +24,8 @@ export type {
   IrcAccountWithUser,
   MailcowAccountListResponse,
   MailcowAccountWithUser,
+  MediawikiAccountListResponse,
+  MediawikiAccountWithUser,
   OAuthClientListFilters,
   OAuthClientListResponse,
   SessionListFilters,

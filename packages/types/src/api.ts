@@ -6,16 +6,16 @@
  * Standard API success response
  */
 export interface APIResponse<T = unknown> {
-  ok: true;
   data?: T;
+  ok: true;
 }
 
 /**
  * Standard API error response
  */
 export interface APIErrorResponse {
-  ok: false;
   error: string;
+  ok: false;
 }
 
 /**
@@ -27,10 +27,10 @@ export type APIResult<T = unknown> = APIResponse<T> | APIErrorResponse;
  * Pagination metadata
  */
 export interface PaginationMeta {
-  total: number;
+  hasMore: boolean;
   limit: number;
   offset: number;
-  hasMore: boolean;
+  total: number;
 }
 
 /**
@@ -45,9 +45,9 @@ export interface PaginatedResponse<T> {
  * API error with status code
  */
 export interface APIErrorInfo {
+  code?: string;
   message: string;
   status: number;
-  code?: string;
 }
 
 /**
@@ -111,41 +111,41 @@ export interface FilteredListQueryParams extends ListQueryParams {
  * Filter parameters for user list endpoints
  */
 export interface UserListFilters {
-  role?: string;
   banned?: boolean;
-  search?: string;
   limit?: number;
   offset?: number;
+  role?: string;
+  search?: string;
 }
 
 /**
  * Filter parameters for session list endpoints
  */
 export interface SessionListFilters {
-  userId?: string;
   active?: boolean;
   limit?: number;
   offset?: number;
+  userId?: string;
 }
 
 /**
  * Filter parameters for API key list endpoints
  */
 export interface ApiKeyListFilters {
-  userId?: string;
   enabled?: boolean;
   limit?: number;
   offset?: number;
+  userId?: string;
 }
 
 /**
  * Filter parameters for OAuth client list endpoints
  */
 export interface OAuthClientListFilters {
-  userId?: string;
   disabled?: boolean;
   limit?: number;
   offset?: number;
+  userId?: string;
 }
 
 // ============================================================================
@@ -156,31 +156,31 @@ export interface OAuthClientListFilters {
  * Input for updating a user
  */
 export interface UpdateUserInput {
-  name?: string;
-  email?: string;
-  role?: string;
+  banExpires?: string | null;
   banned?: boolean;
   banReason?: string | null;
-  banExpires?: string | null;
+  email?: string;
+  name?: string;
+  role?: string;
 }
 
 /**
  * Input for creating an API key
  */
 export interface CreateApiKeyInput {
-  name?: string;
-  prefix?: string;
   expiresAt?: string;
-  permissions?: string;
   metadata?: string;
+  name?: string;
+  permissions?: string;
+  prefix?: string;
 }
 
 /**
  * Input for updating an API key
  */
 export interface UpdateApiKeyInput {
-  name?: string;
   enabled?: boolean;
+  name?: string;
   rateLimitEnabled?: boolean;
   rateLimitMax?: number;
   rateLimitTimeWindow?: number;
@@ -194,10 +194,10 @@ export interface UpdateApiKeyInput {
  * Pagination metadata for list responses
  */
 export interface ListPaginationMeta {
-  total: number;
+  hasMore: boolean;
   limit: number;
   offset: number;
-  hasMore: boolean;
+  total: number;
 }
 
 /**
@@ -205,8 +205,8 @@ export interface ListPaginationMeta {
  * Note: User type is defined in src/lib/api/types.ts as it uses Drizzle inference
  */
 export interface UserListResponse<TUser = unknown> {
-  users: TUser[];
   pagination: ListPaginationMeta;
+  users: TUser[];
 }
 
 /**
@@ -237,17 +237,6 @@ export interface OAuthClientListResponse<TOAuthClient = unknown> {
  * Admin statistics response
  */
 export interface AdminStats {
-  users: {
-    total: number;
-    admins: number;
-    staff: number;
-    banned: number;
-    regular: number;
-  };
-  sessions: {
-    total: number;
-    active: number;
-  };
   apiKeys: {
     total: number;
     enabled: number;
@@ -256,6 +245,17 @@ export interface AdminStats {
     total: number;
     disabled: number;
   };
+  sessions: {
+    total: number;
+    active: number;
+  };
+  users: {
+    total: number;
+    admins: number;
+    staff: number;
+    banned: number;
+    regular: number;
+  };
 }
 
 /**
@@ -263,15 +263,15 @@ export interface AdminStats {
  * Dates are ISO-8601 strings (JSON wire format).
  */
 export interface AdminIrcAccount {
-  id: string;
-  userId: string;
-  nick: string;
-  server: string;
-  port: number;
-  status: string;
   createdAt: string;
-  updatedAt: string;
+  id: string;
   metadata?: Record<string, unknown> | null;
+  nick: string;
+  port: number;
+  server: string;
+  status: string;
+  updatedAt: string;
+  userId: string;
 }
 
 /**
@@ -279,14 +279,14 @@ export interface AdminIrcAccount {
  * Dates are ISO-8601 strings (JSON wire format).
  */
 export interface AdminXmppAccount {
-  id: string;
-  userId: string;
-  jid: string;
-  username: string;
-  status: string;
   createdAt: string;
-  updatedAt: string;
+  id: string;
+  jid: string;
   metadata?: Record<string, unknown> | null;
+  status: string;
+  updatedAt: string;
+  userId: string;
+  username: string;
 }
 
 /**
@@ -294,15 +294,15 @@ export interface AdminXmppAccount {
  * Dates are ISO-8601 strings (JSON wire format).
  */
 export interface AdminMailcowAccount {
-  id: string;
-  userId: string;
-  email: string;
-  domain: string;
-  localPart: string;
-  status: string;
   createdAt: string;
-  updatedAt: string;
+  domain: string;
+  email: string;
+  id: string;
+  localPart: string;
   metadata?: Record<string, unknown> | null;
+  status: string;
+  updatedAt: string;
+  userId: string;
 }
 
 /**
@@ -310,12 +310,12 @@ export interface AdminMailcowAccount {
  * Dates are ISO-8601 strings (JSON wire format).
  */
 export interface AdminUserRow {
-  id: string;
-  email: string;
-  name: string | null;
-  role: string;
   banned: boolean | null;
   createdAt: string;
+  email: string;
+  id: string;
+  name: string | null;
+  role: string;
   updatedAt: string;
 }
 
@@ -323,9 +323,9 @@ export interface AdminUserRow {
  * Admin user detail response (GET /api/admin/users/[id]) including integration accounts
  */
 export interface AdminUserDetailResponse {
-  user: AdminUserRow;
   ircAccount: AdminIrcAccount | null;
   mailcowAccount: AdminMailcowAccount | null;
+  user: AdminUserRow;
   xmppAccount: AdminXmppAccount | null;
 }
 
@@ -363,8 +363,8 @@ export interface XmppAccountWithUser extends AdminXmppAccount {
  * Admin XMPP accounts list response (GET /api/admin/xmpp-accounts)
  */
 export interface XmppAccountListResponse {
-  xmppAccounts: XmppAccountWithUser[];
   pagination: ListPaginationMeta;
+  xmppAccounts: XmppAccountWithUser[];
 }
 
 /**
@@ -383,5 +383,65 @@ export interface MailcowAccountWithUser extends AdminMailcowAccount {
  */
 export interface MailcowAccountListResponse {
   mailcowAccounts: MailcowAccountWithUser[];
+  pagination: ListPaginationMeta;
+}
+
+/**
+ * MediaWiki account shape as returned by admin APIs.
+ * Dates are ISO-8601 strings (JSON wire format).
+ */
+export interface AdminMediawikiAccount {
+  createdAt: string;
+  id: string;
+  metadata?: Record<string, unknown> | null;
+  status: string;
+  updatedAt: string;
+  userId: string;
+  wikiUserId: number | null;
+  wikiUsername: string;
+}
+
+/**
+ * MediaWiki account with optional user info for admin list
+ */
+export interface MediawikiAccountWithUser extends AdminMediawikiAccount {
+  user?: {
+    id: string;
+    email: string;
+    name: string | null;
+  };
+}
+
+/**
+ * MediaWiki account shape as returned by admin APIs.
+ * Dates are ISO-8601 strings (JSON wire format).
+ */
+export interface AdminMediawikiAccount {
+  createdAt: string;
+  id: string;
+  metadata?: Record<string, unknown> | null;
+  status: string;
+  updatedAt: string;
+  userId: string;
+  wikiUserId: number | null;
+  wikiUsername: string;
+}
+
+/**
+ * MediaWiki account with optional user info for admin list
+ */
+export interface MediawikiAccountWithUser extends AdminMediawikiAccount {
+  user?: {
+    id: string;
+    email: string;
+    name: string | null;
+  };
+}
+
+/**
+ * Admin MediaWiki accounts list response (GET /api/admin/mediawiki-accounts)
+ */
+export interface MediawikiAccountListResponse {
+  mediawikiAccounts: MediawikiAccountWithUser[];
   pagination: ListPaginationMeta;
 }

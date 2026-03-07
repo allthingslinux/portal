@@ -80,6 +80,12 @@ export const queryKeys = {
       list: (filters?: { status?: string; limit?: number; offset?: number }) =>
         [...queryKeys.admin.mailcowAccounts.lists(), { filters }] as const,
     },
+    mediawikiAccounts: {
+      lists: () =>
+        [...queryKeys.admin.all, "mediawikiAccounts", "list"] as const,
+      list: (filters?: { status?: string; limit?: number; offset?: number }) =>
+        [...queryKeys.admin.mediawikiAccounts.lists(), { filters }] as const,
+    },
   },
 
   // Integration queries

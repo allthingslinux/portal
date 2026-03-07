@@ -20,6 +20,7 @@ import {
   fetchApiKeys,
   fetchIrcAccounts,
   fetchMailcowAccounts,
+  fetchMediawikiAccounts,
   fetchOAuthClientById,
   fetchOAuthClients,
   fetchSessionById,
@@ -263,6 +264,19 @@ export function useAdminMailcowAccounts(filters?: {
   return useQuery({
     queryKey: queryKeys.admin.mailcowAccounts.list(filters),
     queryFn: () => fetchMailcowAccounts(filters),
+    staleTime: QUERY_CACHE.STALE_TIME_SHORT,
+  });
+}
+
+// MediaWiki accounts (admin list)
+export function useAdminMediawikiAccounts(filters?: {
+  status?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  return useQuery({
+    queryKey: queryKeys.admin.mediawikiAccounts.list(filters),
+    queryFn: () => fetchMediawikiAccounts(filters),
     staleTime: QUERY_CACHE.STALE_TIME_SHORT,
   });
 }

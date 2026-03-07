@@ -5,6 +5,8 @@
     "paths": {
       "@/auth": ["../../apps/portal/src/features/auth/lib"],
       "@/auth/*": ["../../apps/portal/src/features/auth/lib/*"],
+      "@/config": ["../../apps/portal/src/shared/config"],
+      "@/config/*": ["../../apps/portal/src/shared/config/*"],
       "@/*": ["../../apps/portal/src/*"]
     },
     "skipLibCheck": true

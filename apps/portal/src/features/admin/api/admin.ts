@@ -10,6 +10,7 @@ import type {
   ApiKeyListResponse,
   IrcAccountListResponse,
   MailcowAccountListResponse,
+  MediawikiAccountListResponse,
   OAuthClient,
   OAuthClientListResponse,
   Session,
@@ -466,4 +467,39 @@ export async function deleteOAuthClient(clientId: string): Promise<void> {
       error.error || `Failed to delete OAuth client: ${response.statusText}`
     );
   }
+}
+
+/**
+ * Fetch list of MediaWiki accounts (admin-only) with optional status filter and pagination
+ */
+export async function fetchMediawikiAccounts(filters?: {
+  status?: string;
+  limit?: number;
+  offset?: number;
+}): Promise<MediawikiAccountListResponse> {
+  const params = new URLSearchParams();
+  if (filters?.status) {
+    params.append("status", filters.status);
+  }
+  if (filters?.limit) {
+    params.append("limit", String(filters.limit));
+  }
+  if (filters?.offset) {
+    params.append("offset", String(filters.offset));
+  }
+
+  const url = `/api/admin/mediawiki-accounts${params.toString() ? `?${params}` : ""}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ error: "Unknown error" }));
+    throw new Error(
+      error.error ||
+        `Failed to fetch MediaWiki accounts: ${response.statusText}`
+    );
+  }
+
+  return response.json();
 }
