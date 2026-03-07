@@ -17,6 +17,7 @@ vi.mock("@/features/integrations/lib/irc/config", () => ({
   ircConfig: { server: "irc.mock.chat", port: 6697 },
   isIrcConfigured: () => true,
   isUnrealConfigured: () => true,
+  isAthemeOperConfigured: () => false,
 }));
 
 // Mock DB with chainable methods
