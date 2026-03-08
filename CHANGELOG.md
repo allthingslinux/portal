@@ -1,3 +1,28 @@
+# [2.1.0](https://github.com/allthingslinux/portal/compare/v2.0.2...v2.1.0) (2026-03-08)
+
+
+### Bug Fixes
+
+* **ui:** resolve recharts type errors in chart component ([ddad201](https://github.com/allthingslinux/portal/commit/ddad201177f76af5a62211c40bf88527eb082dce))
+
+
+### Features
+
+* **api:** add mediawiki admin and user-stats API routes ([5656e91](https://github.com/allthingslinux/portal/commit/5656e9166bbad72e77669d38cd4087bdeaac5b4f))
+* **changelog:** add core types, parser, service, and config ([dc76421](https://github.com/allthingslinux/portal/commit/dc76421cf926f3435642cac1e6ff782c16cf3c58))
+* **changelog:** add filter components ([2b25a1b](https://github.com/allthingslinux/portal/commit/2b25a1b51ae1baf3e468a7e84e547d2784dee516))
+* **changelog:** add page, route config, and i18n ([2bbeac3](https://github.com/allthingslinux/portal/commit/2bbeac3bd8b56e6fabd8aeef0bd2595875ec4310))
+* **changelog:** add timeline UI components ([ca1b5ef](https://github.com/allthingslinux/portal/commit/ca1b5ef43138f8920b847b270cfef68b4c182ff8))
+* **db:** add mediawiki_account schema and migration ([db851de](https://github.com/allthingslinux/portal/commit/db851de1b9ed3cb7280b2ccc16681bf0e9506ef2))
+* **integrations:** add mediawiki bot client and integration ([98baf5a](https://github.com/allthingslinux/portal/commit/98baf5a0f63340245a8697c7810533e1c003efef))
+* **schemas:** add mediawiki validation schemas ([7212ac9](https://github.com/allthingslinux/portal/commit/7212ac97c3d91b0e950a28ea9bc84fe4ae9af695))
+* **ui:** add mediawiki user and admin UI components ([a2f6b77](https://github.com/allthingslinux/portal/commit/a2f6b770d36f58197ecbfec9e53a1210accbf3cb))
+
+
+### Performance Improvements
+
+* **auth:** use TanStack Query-backed useSession to prevent redundant fetches ([9759d80](https://github.com/allthingslinux/portal/commit/9759d809e81f3fc66fc31f51fab863990f64a416))
+
 ## [2.0.2](https://github.com/allthingslinux/portal/compare/v2.0.1...v2.0.2) (2026-03-04)
 
 
