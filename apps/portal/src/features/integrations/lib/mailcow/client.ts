@@ -201,6 +201,28 @@ export function updateMailbox(
 }
 
 /**
+ * Extract a single valid record from a mailcow API response,
+ * which may be an object or an array. Returns null if the response
+ * is empty, an error, or missing the required field.
+ */
+function extractRecord(
+  result: Record<string, unknown> | Record<string, unknown>[],
+  requiredField: string
+): Record<string, unknown> | null {
+  const entry = Array.isArray(result)
+    ? (result[0] as Record<string, unknown> | undefined)
+    : result;
+
+  if (!entry || typeof entry !== "object") {
+    return null;
+  }
+  if (entry.type === "error" || entry.type === "danger") {
+    return null;
+  }
+  return requiredField in entry ? entry : null;
+}
+
+/**
  * Get mailbox from mailcow (returns single object or null if not found).
  */
 export function getMailbox(
@@ -220,28 +242,7 @@ export function getMailbox(
         Record<string, unknown> | Record<string, unknown>[]
       >(`/api/v1/get/mailbox/${encoded}`);
 
-      if (Array.isArray(result)) {
-        const first = result[0] as Record<string, unknown> | undefined;
-        if (!first || typeof first !== "object") {
-          return null;
-        }
-        // Mailcow sometimes returns error objects in the list
-        if (first.type === "error" || first.type === "danger") {
-          return null;
-        }
-        // Ensure it's a real mailbox object by checking for a known field
-        return "username" in first ? first : null;
-      }
-
-      if (result && typeof result === "object") {
-        const res = result as Record<string, unknown>;
-        if (res.type === "error" || res.type === "danger") {
-          return null;
-        }
-        return "username" in res ? res : null;
-      }
-
-      return null;
+      return extractRecord(result, "username");
     }
   );
 }
@@ -266,27 +267,9 @@ export function getDomain(
         Record<string, unknown> | Record<string, unknown>[]
       >(`/api/v1/get/domain/${encoded}`);
 
-      if (Array.isArray(result)) {
-        const first = result[0] as Record<string, unknown> | undefined;
-        if (!first || typeof first !== "object") {
-          return null;
-        }
-        if (first.type === "error" || first.type === "danger") {
-          return null;
-        }
-        // Ensure it's a real domain object
-        return "domain_name" in first || "domain" in first ? first : null;
-      }
-
-      if (result && typeof result === "object") {
-        const res = result as Record<string, unknown>;
-        if (res.type === "error" || res.type === "danger") {
-          return null;
-        }
-        return "domain_name" in res || "domain" in res ? res : null;
-      }
-
-      return null;
+      return (
+        extractRecord(result, "domain_name") ?? extractRecord(result, "domain")
+      );
     }
   );
 }
