@@ -17,7 +17,10 @@ Key files in `lib/`:
 - `server-client.ts` — Server-side auth client
 - `dal.ts` — Data Access Layer for auth (server-only, wraps DB queries)
 - `permissions.ts` — Permission check helpers (`checkPermission`, guards)
+- `check-role.ts` — Server-only role check against the DB (server-only)
+- `auth-hooks.ts` — TanStack-backed auth hooks via `@daveyplate/better-auth-tanstack`
 - `session-context.tsx` — React context providing session to client components
+- `index.ts` — Barrel export (re-exports `auth`, `authClient`, `usePermissions`, etc.)
 - `keys.ts` — Auth env vars (`keys()` function via t3-env)
 - `localization.ts` — BetterAuth i18n setup
 - `email.ts` — Transactional email for auth flows (verification, password reset)

@@ -33,10 +33,14 @@ apps/
     │   ├── features/       # Feature modules (colocated UI + logic)
     │   │   ├── admin/      # Admin dashboard → see AGENTS.md
     │   │   ├── auth/       # Auth UI, session context → see AGENTS.md
+    │   │   ├── blog/       # Blog feed UI
+    │   │   ├── changelog/  # Changelog viewer
+    │   │   ├── feed/       # Linux news RSS feed reader
     │   │   ├── integrations/ # IRC, XMPP, Discord → see AGENTS.md
     │   │   ├── routing/    # Route config, middleware → see AGENTS.md
-    │   │   └── user/       # User profile & settings → see AGENTS.md
-    │   ├── shared/         # App-specific shared code (config, security, wiki)
+    │   │   ├── user/       # User profile & settings → see AGENTS.md
+    │   │   └── wiki/       # Wiki integration UI
+    │   ├── shared/         # App-specific shared code (config, feed, security, wiki, etc.)
     │   ├── hooks/          # Shared React hooks
     │   └── i18n/           # next-intl routing config
     ├── locale/             # i18n translation files (en, es, fr, de, pt, zh)

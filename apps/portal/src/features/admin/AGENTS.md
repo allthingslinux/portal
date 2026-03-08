@@ -25,7 +25,7 @@ All admin functionality requires explicit permission checks. **Never render admi
 ```typescript
 // Server-side — in route handlers or server actions
 import { auth } from "@/auth"
-import { USER_ROLES } from "@/shared/utils/constants"
+import { USER_ROLES } from "@portal/utils/constants"
 
 const session = await auth.api.getSession({ headers: await headers() })
 if (session?.user.role !== USER_ROLES.ADMIN) {

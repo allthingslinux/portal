@@ -9,6 +9,7 @@
 | `lib/` | User-specific business logic |
 | `components/` | Profile and settings UI components |
 | `hooks/` | TanStack Query hooks for user data |
+| `api/` | User API route handler wrappers |
 
 ## Data Patterns
 
