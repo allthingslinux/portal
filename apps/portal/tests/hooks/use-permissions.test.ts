@@ -5,14 +5,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { usePermissions } from "@/hooks/use-permissions";
 import { authClient } from "@/auth/client";
 import { SessionProvider } from "@/auth/session-context";
+import { useAuthSession } from "@/features/auth/lib/auth-hooks";
 
 vi.mock("@/auth/client", () => ({
   authClient: {
-    useSession: vi.fn(),
     admin: {
       checkRolePermission: vi.fn(),
     },
   },
+}));
+
+vi.mock("@/features/auth/lib/auth-hooks", () => ({
+  useAuthSession: vi.fn(),
 }));
 
 function TestWrapper({ children }: { children: ReactNode }) {
@@ -25,7 +29,7 @@ describe("usePermissions", () => {
   });
 
   it("should return loading state when session is pending", () => {
-    vi.mocked(authClient.useSession).mockReturnValue({
+    vi.mocked(useAuthSession).mockReturnValue({
       data: null,
       isPending: true,
       error: null,
@@ -43,7 +47,7 @@ describe("usePermissions", () => {
   });
 
   it("should return loading state when session is null", () => {
-    vi.mocked(authClient.useSession).mockReturnValue({
+    vi.mocked(useAuthSession).mockReturnValue({
       data: null,
       isPending: false,
       error: null,
@@ -61,7 +65,7 @@ describe("usePermissions", () => {
   });
 
   it("should return permissions for admin user", () => {
-    vi.mocked(authClient.useSession).mockReturnValue({
+    vi.mocked(useAuthSession).mockReturnValue({
       data: {
         user: {
           id: "1",
@@ -93,7 +97,7 @@ describe("usePermissions", () => {
   });
 
   it("should return permissions for regular user", () => {
-    vi.mocked(authClient.useSession).mockReturnValue({
+    vi.mocked(useAuthSession).mockReturnValue({
       data: {
         user: {
           id: "1",
@@ -118,7 +122,7 @@ describe("usePermissions", () => {
   });
 
   it("should handle errors gracefully", () => {
-    vi.mocked(authClient.useSession).mockReturnValue({
+    vi.mocked(useAuthSession).mockReturnValue({
       data: {
         user: {
           id: "1",
@@ -157,7 +161,7 @@ describe("usePermissions", () => {
   });
 
   it("should default to user role when role is undefined", () => {
-    vi.mocked(authClient.useSession).mockReturnValue({
+    vi.mocked(useAuthSession).mockReturnValue({
       data: {
         user: {
           id: "1",

@@ -2,6 +2,8 @@
 
 import { createContext, type ReactNode, useContext, useMemo } from "react";
 
+import type { useAuthSession as UseAuthSessionFn } from "./auth-hooks";
+import { useAuthSession } from "./auth-hooks";
 import { authClient } from "./client";
 
 /**
@@ -14,7 +16,7 @@ interface SessionContextValue {
     canViewAdmin: boolean;
     loading: boolean;
   };
-  session: ReturnType<typeof authClient.useSession>["data"];
+  session: ReturnType<typeof UseAuthSessionFn>["data"];
 }
 
 const SessionContext = createContext<SessionContextValue | undefined>(
@@ -27,8 +29,9 @@ const SessionContext = createContext<SessionContextValue | undefined>(
  * This consolidates session usage to a single query instead of multiple hooks.
  */
 export function SessionProvider({ children }: { children: ReactNode }) {
-  // Single source of truth for session data
-  const { data: session, isPending } = authClient.useSession();
+  // Single source of truth for session data — backed by TanStack Query
+  // so it respects staleTime and won't refetch on every re-render.
+  const { data: session, isPending } = useAuthSession();
 
   // Compute permissions once and share via context
   const permissions = useMemo(() => {
