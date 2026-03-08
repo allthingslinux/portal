@@ -90,6 +90,20 @@
       "label": "Feed"
     }
   },
+  "changelog": {
+    "label": "Changelog",
+    "metadata": {
+      "title": "Changelog",
+      "description": "Unified changelog of releases and commits across ATL projects"
+    },
+    "ui": {
+      "title": "Changelog",
+      "description": "Releases and commits from across All Things Linux projects, aggregated into a single timeline."
+    },
+    "breadcrumb": {
+      "label": "Changelog"
+    }
+  },
   "integrations": {
     "label": "Integrations",
     "metadata": {

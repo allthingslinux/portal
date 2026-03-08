@@ -2,6 +2,7 @@ import {
   DollarSign,
   Globe,
   HelpCircle,
+  History,
   LogOut,
   Mail,
   MessageSquare,
@@ -127,6 +128,19 @@ export const routeConfig = {
       },
     },
     {
+      id: "changelog",
+      path: "/app/changelog",
+      icon: History,
+      metadata: {
+        robots: { index: false, follow: false },
+      },
+      breadcrumb: {},
+      navigation: {
+        group: "platform",
+        order: 7,
+      },
+    },
+    {
       id: "integrations",
       path: "/app/integrations",
       icon: MessageSquare,
@@ -135,7 +149,7 @@ export const routeConfig = {
       },
       navigation: {
         group: "platform",
-        order: 7,
+        order: 8,
       },
     },
     {
@@ -148,7 +162,7 @@ export const routeConfig = {
       breadcrumb: {},
       navigation: {
         group: "platform",
-        order: 8,
+        order: 9,
       },
     },
     {
@@ -160,7 +174,7 @@ export const routeConfig = {
       },
       navigation: {
         group: "platform",
-        order: 9,
+        order: 10,
         permissions: ["canViewAdmin"], // Role-based access
       },
     },
