@@ -120,6 +120,10 @@ function ChartTooltipContent({
   labelKey,
 }: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
   React.ComponentProps<"div"> & {
+    active?: boolean
+    // biome-ignore lint/suspicious/noExplicitAny: recharts payload type
+    payload?: any[]
+    label?: string
     hideLabel?: boolean
     hideIndicator?: boolean
     indicator?: "line" | "dot" | "dashed"
@@ -256,7 +260,9 @@ function ChartLegendContent({
   verticalAlign = "bottom",
   nameKey,
 }: React.ComponentProps<"div"> &
-  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+  Omit<Pick<RechartsPrimitive.LegendProps, "verticalAlign">, "payload"> & {
+    // biome-ignore lint/suspicious/noExplicitAny: recharts payload type
+    payload?: any[]
     hideIcon?: boolean
     nameKey?: string
   }) {
