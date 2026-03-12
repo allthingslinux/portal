@@ -1,10 +1,10 @@
 import type { NextRequest } from "next/server";
 import { APIError, handleAPIError, requireAuth } from "@portal/api/utils";
 import { db } from "@portal/db/client";
-import { account } from "@portal/db/schema/auth";
+import { account, user } from "@portal/db/schema/auth";
 import { ircAccount } from "@portal/db/schema/irc";
 import { xmppAccount } from "@portal/db/schema/xmpp";
-import { and, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 
 // With cacheComponents, route handlers are dynamic by default.
 
@@ -23,7 +23,8 @@ import { and, eq } from "drizzle-orm";
  *
  * Response body (HTTP 200):
  *   { ok: true, identity: { user_id, discord_id, irc_nick, irc_status,
- *                            xmpp_jid, xmpp_username, xmpp_status } }
+ *                            xmpp_jid, xmpp_username, xmpp_status,
+ *                            avatar_url } }
  *
  * Note: irc_server is intentionally omitted — single-server deployment (irc.atl.chat).
  *
@@ -50,7 +51,7 @@ async function fetchIrcForUser(userId: string) {
   const [irc] = await db
     .select({ nick: ircAccount.nick, status: ircAccount.status })
     .from(ircAccount)
-    .where(eq(ircAccount.userId, userId))
+    .where(and(eq(ircAccount.userId, userId), ne(ircAccount.status, "deleted")))
     .limit(1);
   return irc ?? null;
 }
@@ -63,7 +64,9 @@ async function fetchXmppForUser(userId: string) {
       status: xmppAccount.status,
     })
     .from(xmppAccount)
-    .where(eq(xmppAccount.userId, userId))
+    .where(
+      and(eq(xmppAccount.userId, userId), ne(xmppAccount.status, "deleted"))
+    )
     .limit(1);
   return xmpp ?? null;
 }
@@ -75,6 +78,15 @@ async function fetchDiscordForUser(userId: string) {
     .where(and(eq(account.userId, userId), eq(account.providerId, "discord")))
     .limit(1);
   return discord ?? null;
+}
+
+async function fetchUserAvatar(userId: string) {
+  const [row] = await db
+    .select({ image: user.image })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+  return row?.image ?? null;
 }
 
 async function lookupByDiscordId(discordId: string) {
@@ -94,9 +106,10 @@ async function lookupByDiscordId(discordId: string) {
   }
 
   const { userId } = discordAccount;
-  const [irc, xmpp] = await Promise.all([
+  const [irc, xmpp, avatarUrl] = await Promise.all([
     fetchIrcForUser(userId),
     fetchXmppForUser(userId),
+    fetchUserAvatar(userId),
   ]);
 
   return Response.json({
@@ -109,6 +122,7 @@ async function lookupByDiscordId(discordId: string) {
       xmpp_jid: xmpp?.jid ?? null,
       xmpp_username: xmpp?.username ?? null,
       xmpp_status: xmpp?.status ?? null,
+      avatar_url: avatarUrl ?? null,
     },
   });
 }
@@ -117,7 +131,7 @@ async function lookupByIrcNick(ircNick: string) {
   const [active] = await db
     .select()
     .from(ircAccount)
-    .where(eq(ircAccount.nick, ircNick))
+    .where(and(eq(ircAccount.nick, ircNick), ne(ircAccount.status, "deleted")))
     .limit(1);
 
   if (!active) {
@@ -127,9 +141,10 @@ async function lookupByIrcNick(ircNick: string) {
     );
   }
 
-  const [xmpp, discordAcc] = await Promise.all([
+  const [xmpp, discordAcc, avatarUrl] = await Promise.all([
     fetchXmppForUser(active.userId),
     fetchDiscordForUser(active.userId),
+    fetchUserAvatar(active.userId),
   ]);
 
   return Response.json({
@@ -142,6 +157,7 @@ async function lookupByIrcNick(ircNick: string) {
       xmpp_jid: xmpp?.jid ?? null,
       xmpp_username: xmpp?.username ?? null,
       xmpp_status: xmpp?.status ?? null,
+      avatar_url: avatarUrl ?? null,
     },
   });
 }
@@ -150,7 +166,7 @@ async function lookupByXmppJid(xmppJid: string) {
   const [xmpp] = await db
     .select()
     .from(xmppAccount)
-    .where(eq(xmppAccount.jid, xmppJid))
+    .where(and(eq(xmppAccount.jid, xmppJid), ne(xmppAccount.status, "deleted")))
     .limit(1);
 
   if (!xmpp) {
@@ -160,9 +176,10 @@ async function lookupByXmppJid(xmppJid: string) {
     );
   }
 
-  const [irc, discordAcc] = await Promise.all([
+  const [irc, discordAcc, avatarUrl] = await Promise.all([
     fetchIrcForUser(xmpp.userId),
     fetchDiscordForUser(xmpp.userId),
+    fetchUserAvatar(xmpp.userId),
   ]);
 
   return Response.json({
@@ -175,6 +192,7 @@ async function lookupByXmppJid(xmppJid: string) {
       xmpp_jid: xmpp.jid,
       xmpp_username: xmpp.username,
       xmpp_status: xmpp.status,
+      avatar_url: avatarUrl ?? null,
     },
   });
 }
