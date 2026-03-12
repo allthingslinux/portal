@@ -35,6 +35,8 @@ src/features/integrations/lib/irc/
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `IRC_ATHEME_JSONRPC_URL` | Yes | Full URL to Atheme JSON-RPC endpoint (e.g. `https://irc.atl.chat:8081/jsonrpc`) |
+
+> **Deployment note:** When Portal runs in a different deployment than atl.chat (e.g. separate containers or hosts), use a **publicly reachable** Atheme URL. atl.chat's internal hostname (e.g. `http://atl-irc-server:8081/jsonrpc`) is only valid within the atl.chat Docker network. Use the external hostname and port (e.g. `https://irc.atl.chat:8081/jsonrpc`) or a reverse-proxy path that resolves from Portal's network.
 | `IRC_ATHEME_INSECURE_SKIP_VERIFY` | No | `true` or `1` to skip TLS verification (internal/self-signed) |
 | `IRC_SERVER` | No | Server host for UI connect instructions (default: `irc.atl.chat`) |
 | `IRC_PORT` | No | Port for UI (default: `6697`, TLS) |

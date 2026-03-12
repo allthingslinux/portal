@@ -206,6 +206,10 @@ Update your `apps/portal/.env` file with the database connection string:
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/portal
 ```
 
+### Bridge ↔ atl.chat token
+
+When integrating with the atl.chat bridge (identity API), set `BRIDGE_SERVICE_TOKEN` to the same value as atl.chat's `BRIDGE_PORTAL_TOKEN`. Both sides use the same secret; the env var names differ per repo.
+
 ## Architecture
 
 ### Import Aliases
