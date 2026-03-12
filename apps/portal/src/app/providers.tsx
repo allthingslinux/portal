@@ -14,6 +14,7 @@ import { MailcowIcon } from "@portal/ui/icons/mailcow-icon";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 
+import { useListApiKeys } from "@/auth/auth-hooks";
 // import { ErrorBoundary } from "@portal/ui/error-boundary";
 import { authClient } from "@/auth/client";
 import { useBetterAuthUILocalization } from "@/auth/localization";
@@ -164,6 +165,11 @@ export function Providers({ children }: { children: ReactNode }) {
                     }
                   : undefined
               }
+              // Normalize Better Auth 1.5 list response { apiKeys } → array for ApiKeysCard.
+              // Pending upstream fix: https://github.com/better-auth-ui/better-auth-ui/issues/345
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- AuthHook expects BetterFetchError; TanStack Query uses Error
+              // biome-ignore lint/suspicious/noExplicitAny: pending upstream fix
+              hooks={{ useListApiKeys: useListApiKeys as any }}
               // Multiple device session management
               Link={LinkWrapper}
               // Programmatic navigation function
