@@ -38,12 +38,16 @@ describe("UnrealIRCd Client", () => {
   });
 
   describe("userList", () => {
-    it("fetches user list with correct payload", async () => {
-      // Arrange
+    it("fetches user list with correct payload (UnrealIRCd returns { list: [...] })", async () => {
+      // Arrange — UnrealIRCd list methods return { list: [...] }
       const mockUsers = [{ nick: "alice", realname: "Alice" }];
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ jsonrpc: "2.0", result: mockUsers, id: 1 }),
+        json: async () => ({
+          jsonrpc: "2.0",
+          result: { list: mockUsers },
+          id: 1,
+        }),
       });
 
       // Act
@@ -80,12 +84,16 @@ describe("UnrealIRCd Client", () => {
   });
 
   describe("channelList", () => {
-    it("fetches channel list", async () => {
-      // Arrange
+    it("fetches channel list (UnrealIRCd returns { list: [...] })", async () => {
+      // Arrange — UnrealIRCd list methods return { list: [...] }
       const mockChannels = [{ name: "#allthingslinux" }];
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ jsonrpc: "2.0", result: mockChannels, id: 1 }),
+        json: async () => ({
+          jsonrpc: "2.0",
+          result: { list: mockChannels },
+          id: 1,
+        }),
       });
 
       // Act
@@ -112,12 +120,16 @@ describe("UnrealIRCd Client", () => {
   });
 
   describe("userGet", () => {
-    it("fetches a single user by nick", async () => {
-      // Arrange
+    it("fetches a single user by nick (UnrealIRCd returns { client: {...} })", async () => {
+      // Arrange — UnrealIRCd user.get returns { client: {...} }
       const mockUser = { nick: "alice", realname: "Alice" };
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ jsonrpc: "2.0", result: mockUser, id: 1 }),
+        json: async () => ({
+          jsonrpc: "2.0",
+          result: { client: mockUser },
+          id: 1,
+        }),
       });
 
       // Act
@@ -150,12 +162,16 @@ describe("UnrealIRCd Client", () => {
   });
 
   describe("channelGet", () => {
-    it("fetches a single channel by name", async () => {
-      // Arrange
+    it("fetches a single channel by name (UnrealIRCd returns { channel: {...} })", async () => {
+      // Arrange — UnrealIRCd channel.get returns { channel: {...} }
       const mockChannel = { name: "#test" };
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ jsonrpc: "2.0", result: mockChannel, id: 1 }),
+        json: async () => ({
+          jsonrpc: "2.0",
+          result: { channel: mockChannel },
+          id: 1,
+        }),
       });
 
       // Act

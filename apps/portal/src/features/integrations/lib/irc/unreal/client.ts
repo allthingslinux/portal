@@ -62,6 +62,18 @@ function sanitize(value: string): string {
   return value.replace(NEWLINES_REGEX, "").slice(0, 510);
 }
 
+/** UnrealIRCd list methods return { list: T[] }, not a raw array. */
+function extractList<T>(result: { list?: T[] } | T[] | null | undefined): T[] {
+  if (Array.isArray(result)) {
+    return result;
+  }
+  if (result && typeof result === "object" && "list" in result) {
+    const list = (result as { list?: T[] }).list;
+    return Array.isArray(list) ? list : [];
+  }
+  return [];
+}
+
 async function unrealRequest<T>(
   method: string,
   params: Record<string, unknown> = {}
@@ -150,8 +162,10 @@ export const unrealRpcClient = {
       params.object_detail_level = objectDetailLevel;
     }
     try {
-      const result = await unrealRequest<UnrealClient[]>("user.list", params);
-      return Array.isArray(result) ? result : [];
+      const result = await unrealRequest<
+        { list?: UnrealClient[] } | UnrealClient[]
+      >("user.list", params);
+      return extractList(result);
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "user.list" },
@@ -172,8 +186,13 @@ export const unrealRpcClient = {
       params.object_detail_level = objectDetailLevel;
     }
     try {
-      const result = await unrealRequest<UnrealClient>("user.get", params);
-      return result ?? null;
+      const result = await unrealRequest<
+        { client?: UnrealClient } | UnrealClient
+      >("user.get", params);
+      if (result && typeof result === "object" && "client" in result) {
+        return (result as { client?: UnrealClient }).client ?? null;
+      }
+      return (result as UnrealClient) ?? null;
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "user.get" },
@@ -238,11 +257,10 @@ export const unrealRpcClient = {
       params.object_detail_level = objectDetailLevel;
     }
     try {
-      const result = await unrealRequest<UnrealChannel[]>(
-        "channel.list",
-        params
-      );
-      return Array.isArray(result) ? result : [];
+      const result = await unrealRequest<
+        { list?: UnrealChannel[] } | UnrealChannel[]
+      >("channel.list", params);
+      return extractList(result);
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "channel.list" },
@@ -263,8 +281,13 @@ export const unrealRpcClient = {
       params.object_detail_level = objectDetailLevel;
     }
     try {
-      const result = await unrealRequest<UnrealChannel>("channel.get", params);
-      return result ?? null;
+      const result = await unrealRequest<
+        { channel?: UnrealChannel } | UnrealChannel
+      >("channel.get", params);
+      if (result && typeof result === "object" && "channel" in result) {
+        return (result as { channel?: UnrealChannel }).channel ?? null;
+      }
+      return (result as UnrealChannel) ?? null;
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "channel.get" },
@@ -358,8 +381,10 @@ export const unrealRpcClient = {
   /** List all active server bans. */
   async serverBanList(): Promise<UnrealTkl[]> {
     try {
-      const result = await unrealRequest<UnrealTkl[]>("server_ban.list");
-      return Array.isArray(result) ? result : [];
+      const result = await unrealRequest<{ list?: UnrealTkl[] } | UnrealTkl[]>(
+        "server_ban.list"
+      );
+      return extractList(result);
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "server_ban.list" },
@@ -421,8 +446,10 @@ export const unrealRpcClient = {
   /** List all name bans. */
   async nameBanList(): Promise<UnrealTkl[]> {
     try {
-      const result = await unrealRequest<UnrealTkl[]>("name_ban.list");
-      return Array.isArray(result) ? result : [];
+      const result = await unrealRequest<{ list?: UnrealTkl[] } | UnrealTkl[]>(
+        "name_ban.list"
+      );
+      return extractList(result);
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "name_ban.list" },
@@ -485,10 +512,10 @@ export const unrealRpcClient = {
   /** List all ban exceptions. */
   async serverBanExceptionList(): Promise<UnrealTkl[]> {
     try {
-      const result = await unrealRequest<UnrealTkl[]>(
+      const result = await unrealRequest<{ list?: UnrealTkl[] } | UnrealTkl[]>(
         "server_ban_exception.list"
       );
-      return Array.isArray(result) ? result : [];
+      return extractList(result);
     } catch (err) {
       Sentry.captureException(err, {
         tags: {
@@ -552,8 +579,10 @@ export const unrealRpcClient = {
       params.ip = sanitize(ip);
     }
     try {
-      const result = await unrealRequest<UnrealWhowas[]>("whowas.get", params);
-      return Array.isArray(result) ? result : [];
+      const result = await unrealRequest<
+        { list?: UnrealWhowas[] } | UnrealWhowas[]
+      >("whowas.get", params);
+      return extractList(result);
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "whowas.get" },
@@ -569,8 +598,10 @@ export const unrealRpcClient = {
   /** List linked servers. */
   async serverList(): Promise<UnrealServer[]> {
     try {
-      const result = await unrealRequest<UnrealServer[]>("server.list");
-      return Array.isArray(result) ? result : [];
+      const result = await unrealRequest<
+        { list?: UnrealServer[] } | UnrealServer[]
+      >("server.list");
+      return extractList(result);
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "server.list" },
@@ -586,8 +617,13 @@ export const unrealRpcClient = {
       params.server = sanitize(server);
     }
     try {
-      const result = await unrealRequest<UnrealServer>("server.get", params);
-      return result ?? null;
+      const result = await unrealRequest<
+        { server?: UnrealServer } | UnrealServer
+      >("server.get", params);
+      if (result && typeof result === "object" && "server" in result) {
+        return (result as { server?: UnrealServer }).server ?? null;
+      }
+      return (result as UnrealServer) ?? null;
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "server.get" },
@@ -721,8 +757,10 @@ export const unrealRpcClient = {
   /** List all active spamfilters. */
   async spamfilterList(): Promise<UnrealSpamfilter[]> {
     try {
-      const result = await unrealRequest<UnrealSpamfilter[]>("spamfilter.list");
-      return Array.isArray(result) ? result : [];
+      const result = await unrealRequest<
+        { list?: UnrealSpamfilter[] } | UnrealSpamfilter[]
+      >("spamfilter.list");
+      return extractList(result);
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "spamfilter.list" },
@@ -802,8 +840,10 @@ export const unrealRpcClient = {
   /** List recent log entries. */
   async logList(): Promise<UnrealLogEntry[]> {
     try {
-      const result = await unrealRequest<UnrealLogEntry[]>("log.list");
-      return Array.isArray(result) ? result : [];
+      const result = await unrealRequest<
+        { list?: UnrealLogEntry[] } | UnrealLogEntry[]
+      >("log.list");
+      return extractList(result);
     } catch (err) {
       Sentry.captureException(err, {
         tags: { integration: "irc-unreal", method: "log.list" },

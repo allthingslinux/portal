@@ -109,6 +109,7 @@ const REQUIRED_FIELDS = [
   "xmpp_jid",
   "xmpp_username",
   "xmpp_status",
+  "avatar_url",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -216,11 +217,12 @@ describe("Property 12: Identity API Response Never Contains irc_server", () => {
           username: fc.string({ minLength: 1, maxLength: 20 }),
         }),
         async ({ userId, nick, status, jid, username }) => {
-          // Sequence: discordAccount, ircAccount, xmppAccount
+          // Sequence: discordAccount, ircAccount, xmppAccount, user (avatar)
           mockSelectSequence(
             [{ userId }],
             [{ nick, status, server: "irc.atl.chat" }],
-            [{ jid, username, status }]
+            [{ jid, username, status }],
+            [{ image: null }]
           );
           const req = new NextRequest(
             "http://localhost/api/bridge/identity?discordId=123456789"
@@ -248,11 +250,12 @@ describe("Property 12: Identity API Response Never Contains irc_server", () => {
           status: fc.constantFrom("active", "pending"),
         }),
         async ({ userId, nick, status }) => {
-          // Sequence: ircAccount, xmppAccount, discordAccount
+          // Sequence: ircAccount, xmppAccount, discordAccount, user (avatar)
           mockSelectSequence(
             [{ userId, nick, status, server: "irc.atl.chat" }],
             [],
-            []
+            [],
+            [{ image: null }]
           );
           const req = new NextRequest(
             `http://localhost/api/bridge/identity?ircNick=${encodeURIComponent(nick)}`
@@ -281,8 +284,13 @@ describe("Property 12: Identity API Response Never Contains irc_server", () => {
           status: fc.constantFrom("active", "pending"),
         }),
         async ({ userId, jid, username, status }) => {
-          // Sequence: xmppAccount, ircAccount, discordAccount
-          mockSelectSequence([{ userId, jid, username, status }], [], []);
+          // Sequence: xmppAccount, ircAccount, discordAccount, user (avatar)
+          mockSelectSequence(
+            [{ userId, jid, username, status }],
+            [],
+            [],
+            [{ image: null }]
+          );
           const req = new NextRequest(
             `http://localhost/api/bridge/identity?xmppJid=${encodeURIComponent(jid)}`
           );
@@ -310,10 +318,10 @@ describe("Property 13: Identity API Response Shape Completeness", () => {
     vi.clearAllMocks();
   });
 
-  it("discordId 200 response contains exactly the 7 required fields", async () => {
+  it("discordId 200 response contains exactly the 8 required fields", async () => {
     await fc.assert(
       fc.asyncProperty(fc.uuid(), async (userId) => {
-        mockSelectSequence([{ userId }], [], []);
+        mockSelectSequence([{ userId }], [], [], [{ image: null }]);
         const req = new NextRequest(
           "http://localhost/api/bridge/identity?discordId=999"
         );
@@ -331,7 +339,7 @@ describe("Property 13: Identity API Response Shape Completeness", () => {
     );
   });
 
-  it("ircNick 200 response contains exactly the 7 required fields", async () => {
+  it("ircNick 200 response contains exactly the 8 required fields", async () => {
     await fc.assert(
       fc.asyncProperty(
         fc.record({
@@ -343,7 +351,8 @@ describe("Property 13: Identity API Response Shape Completeness", () => {
           mockSelectSequence(
             [{ userId, nick, status, server: "irc.atl.chat" }],
             [],
-            []
+            [],
+            [{ image: null }]
           );
           const req = new NextRequest(
             `http://localhost/api/bridge/identity?ircNick=${encodeURIComponent(nick)}`
@@ -363,7 +372,7 @@ describe("Property 13: Identity API Response Shape Completeness", () => {
     );
   });
 
-  it("xmppJid 200 response contains exactly the 7 required fields", async () => {
+  it("xmppJid 200 response contains exactly the 8 required fields", async () => {
     await fc.assert(
       fc.asyncProperty(
         fc.record({
@@ -373,7 +382,12 @@ describe("Property 13: Identity API Response Shape Completeness", () => {
           status: fc.constantFrom("active", "pending"),
         }),
         async ({ userId, jid, username, status }) => {
-          mockSelectSequence([{ userId, jid, username, status }], [], []);
+          mockSelectSequence(
+            [{ userId, jid, username, status }],
+            [],
+            [],
+            [{ image: null }]
+          );
           const req = new NextRequest(
             `http://localhost/api/bridge/identity?xmppJid=${encodeURIComponent(jid)}`
           );
