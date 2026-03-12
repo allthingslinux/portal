@@ -1,3 +1,17 @@
+# [2.2.0](https://github.com/allthingslinux/portal/compare/v2.1.0...v2.2.0) (2026-03-12)
+
+
+### Bug Fixes
+
+* **auth:** normalize Better Auth 1.5 API key list response for ApiKeysCard ([1fa98f1](https://github.com/allthingslinux/portal/commit/1fa98f11de65240c89bbca69a8bbad165230a5f7)), closes [better-auth-ui/better-auth-ui#345](https://github.com/better-auth-ui/better-auth-ui/issues/345)
+
+
+### Features
+
+* **api:** add health check endpoint for application status ([e28ab2d](https://github.com/allthingslinux/portal/commit/e28ab2dbd1acc70b341b491951db2e15dfb590e2))
+* **api:** enhance identity route to include user avatar and improve data fetching ([76df516](https://github.com/allthingslinux/portal/commit/76df516d4b5593545c23368df955f7ee1a8381a8))
+* **auth:** integrate useListApiKeys hook and improve LinkWrapper component formatting ([f2b2608](https://github.com/allthingslinux/portal/commit/f2b26086f6dad34e947dce188f7b8c4f56d51081))
+
 # [2.1.0](https://github.com/allthingslinux/portal/compare/v2.0.2...v2.1.0) (2026-03-08)
 
 
