@@ -63,26 +63,25 @@ export function sendVerificationEmail(
 
 /**
  * Send OTP email for two-factor authentication
- * Fire and forget to prevent timing attacks
- * Matches Better Auth sendOTP signature: ({ user, otp }, ctx) => void
+ * Matches Better Auth sendOTP signature: ({ user, otp }, ctx) => void | Promise<void>
+ * Returns a Promise so serverless platforms can wait for delivery before terminating.
+ * Swallows errors in catch to prevent timing attacks (per sendResetPasswordEmail pattern).
  */
 export function sendOTPEmail(
   { user, otp }: { user: { email: string }; otp: string },
   _ctx?: unknown
-): void {
-  // Fire and forget - don't await to prevent timing attacks
-  Promise.resolve(
+): Promise<void> {
+  return Promise.resolve(
     sendEmail({
       to: user.email,
       subject: "Your OTP - Portal",
       html: `
         <h2>Your One-Time Password</h2>
         <p>Your OTP is: <strong>${otp}</strong></p>
-        <p>This code will expire in 10 minutes.</p>
+        <p>This code will expire in 3 minutes.</p>
       `,
     })
   ).catch((error: unknown) => {
-    // Log error but don't throw to prevent timing attacks
     console.error("Failed to send OTP email:", error);
   });
 }

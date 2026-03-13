@@ -109,11 +109,9 @@ const plugins = [
   }), // Track and display the last authentication method used
   oneTimeTokenClient(), // One-time tokens for cross-domain authentication
   twoFactorClient({
-    // Handle 2FA redirect when user needs to verify second factor
-    // onTwoFactorRedirect: () => {
-    //   // Redirect to 2FA verification page
-    //   window.location.href = "/auth/2fa";
-    // },
+    onTwoFactorRedirect: () => {
+      window.location.href = "/auth/two-factor";
+    },
   }),
   oauthProviderClient(), // OAuth provider functionality
   adminClient({

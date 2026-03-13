@@ -570,21 +570,10 @@ const plugins = [
     // },
   }), // Single-use tokens for cross-domain authentication
   twoFactor({
-    // Issuer name for TOTP (shown in authenticator apps)
-    // Defaults to appName if not provided
-    // issuer: "Portal",
-    // Skip verification when enabling 2FA (not recommended)
-    // skipVerificationOnEnable: false,
-    // TOTP configuration
-    // totpOptions: {
-    //   digits: 6, // Number of digits in TOTP code (default: 6)
-    //   period: 30, // Period in seconds (default: 30)
-    // },
-    // OTP configuration
+    issuer: "Portal", // Shown in authenticator apps (e.g. Google Authenticator)
     otpOptions: {
-      sendOTP: sendOTPEmail, // Send OTP via email
-      // period: 3, // OTP validity period in minutes (default: 3)
-      // storeOTP: "plain", // Storage method: "plain", "encrypted", or "hashed" (default: "plain")
+      sendOTP: sendOTPEmail,
+      period: 3, // OTP validity in minutes (default: 3)
     },
     // Backup codes configuration
     // backupCodesOptions: {
