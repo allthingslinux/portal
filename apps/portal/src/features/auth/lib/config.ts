@@ -448,14 +448,8 @@ const oauthProviderConfig = {
 
 const plugins = [
   passkey({
-    // Relying Party ID: unique identifier for your website based on auth server origin
-    // 'localhost' is okay for local dev. Can use domain or subdomain (e.g., 'example.com' or 'www.example.com')
-    // rpID: "localhost", // Defaults to baseURL hostname
-    // Relying Party Name: human-readable title for your website
-    // rpName: "Portal", // Defaults to appName
-    // Origin URL: the origin at which your better-auth server is hosted
-    // Do NOT include trailing /
-    // origin: baseURL, // Defaults to baseURL
+    rpName: "Portal", // Shown in WebAuthn prompts (defaults to appName)
+    // rpID, origin default to baseURL hostname; override for multi-domain setups
     // Authenticator selection criteria
     // authenticatorSelection: {
     //   authenticatorAttachment: "platform" | "cross-platform", // Default: not set (both allowed, platform preferred)
