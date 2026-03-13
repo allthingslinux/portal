@@ -93,7 +93,7 @@ function UserActionsCell({
           {mutations.onViewDetails && (
             <>
               <DropdownMenuItem
-                onSelect={() => mutations.onViewDetails?.(user.id)}
+                onClick={() => mutations.onViewDetails?.(user.id)}
               >
                 <UserCircle className="h-4 w-4" />
                 View details
@@ -104,14 +104,14 @@ function UserActionsCell({
           {user.banned ? (
             <DropdownMenuItem
               disabled={mutations.unbanUser.isPending}
-              onSelect={() => mutations.unbanUser.mutate(user.id)}
+              onClick={() => mutations.unbanUser.mutate(user.id)}
             >
               Unban user
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
               disabled={mutations.banUser.isPending}
-              onSelect={() => setPendingBanUser(user)}
+              onClick={() => setPendingBanUser(user)}
               variant="destructive"
             >
               <Ban className="h-4 w-4" />
@@ -125,18 +125,23 @@ function UserActionsCell({
         onOpenChange={(open) => !open && setPendingBanUser(null)}
         open={!!pendingBanUser}
       >
-        <AlertDialogContent>
-          <AlertDialogHeader>
+        <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader className="gap-3">
             <AlertDialogTitle>Ban user?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-[15px] leading-relaxed">
               {pendingBanUser && (
-                <>
+                <span className="block">
                   This will ban{" "}
                   <span className="font-medium">
                     {pendingBanUser.name || pendingBanUser.email}
                   </span>
-                  . They will not be able to sign in until unbanned.
-                </>
+                  .
+                </span>
+              )}
+              {pendingBanUser && (
+                <span className="mt-2 block">
+                  They will not be able to sign in until unbanned.
+                </span>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
