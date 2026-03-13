@@ -1,9 +1,34 @@
 "use client";
 
-import { ArrowDown, ArrowUp, ArrowUpDown, Ban, UserCircle } from "lucide-react";
+import { useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Ban,
+  MoreHorizontal,
+  UserCircle,
+} from "lucide-react";
 import type { User } from "@portal/api/types";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@portal/ui/ui/alert-dialog";
 import { Badge } from "@portal/ui/ui/badge";
 import { Button } from "@portal/ui/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@portal/ui/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -34,6 +59,100 @@ interface UserMutations {
     unknown
   >;
   unbanUser: UseMutationResult<unknown, Error, string, unknown>;
+}
+
+function UserActionsCell({
+  user,
+  mutations,
+}: {
+  user: User;
+  mutations: UserMutations;
+}) {
+  const [pendingBanUser, setPendingBanUser] = useState<User | null>(null);
+  const isBanUnbanPending =
+    mutations.banUser.isPending || mutations.unbanUser.isPending;
+
+  const handleBanConfirm = () => {
+    if (pendingBanUser) {
+      mutations.banUser.mutate({ userId: pendingBanUser.id });
+      setPendingBanUser(null);
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          aria-label="User actions"
+          disabled={isBanUnbanPending}
+          render={<Button size="sm" variant="ghost" />}
+        >
+          <MoreHorizontal className="h-4 w-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {mutations.onViewDetails && (
+            <>
+              <DropdownMenuItem
+                onSelect={() => mutations.onViewDetails?.(user.id)}
+              >
+                <UserCircle className="h-4 w-4" />
+                View details
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
+          {user.banned ? (
+            <DropdownMenuItem
+              disabled={mutations.unbanUser.isPending}
+              onSelect={() => mutations.unbanUser.mutate(user.id)}
+            >
+              Unban user
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem
+              disabled={mutations.banUser.isPending}
+              onSelect={() => setPendingBanUser(user)}
+              variant="destructive"
+            >
+              <Ban className="h-4 w-4" />
+              Ban user
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog
+        onOpenChange={(open) => !open && setPendingBanUser(null)}
+        open={!!pendingBanUser}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ban user?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingBanUser && (
+                <>
+                  This will ban{" "}
+                  <span className="font-medium">
+                    {pendingBanUser.name || pendingBanUser.email}
+                  </span>
+                  . They will not be able to sign in until unbanned.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleBanConfirm}
+            >
+              Ban user
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
 }
 
 export function createUserColumns(mutations: UserMutations): ColumnDef<User>[] {
@@ -148,43 +267,9 @@ export function createUserColumns(mutations: UserMutations): ColumnDef<User>[] {
         align: "right",
       },
       header: "Actions",
-      cell: ({ row }) => {
-        const user = row.original;
-
-        return (
-          <div className="flex justify-end gap-2">
-            {mutations.onViewDetails && (
-              <Button
-                aria-label="View user details"
-                onClick={() => mutations.onViewDetails?.(user.id)}
-                size="sm"
-                variant="outline"
-              >
-                <UserCircle className="h-4 w-4" />
-              </Button>
-            )}
-            {user.banned ? (
-              <Button
-                disabled={mutations.unbanUser.isPending}
-                onClick={() => mutations.unbanUser.mutate(user.id)}
-                size="sm"
-                variant="outline"
-              >
-                Unban
-              </Button>
-            ) : (
-              <Button
-                disabled={mutations.banUser.isPending}
-                onClick={() => mutations.banUser.mutate({ userId: user.id })}
-                size="sm"
-                variant="outline"
-              >
-                <Ban className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <UserActionsCell mutations={mutations} user={row.original} />
+      ),
     }),
   ] as unknown as ColumnDef<User>[];
 }
