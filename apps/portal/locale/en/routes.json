@@ -165,6 +165,13 @@
     }
   },
   "footer": {
+    "settings": {
+      "label": "Settings",
+      "metadata": {
+        "title": "Settings",
+        "description": "Manage your account and security settings"
+      }
+    },
     "support": {
       "label": "Support",
       "metadata": {

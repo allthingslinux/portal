@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@portal/ui/ui/dropdown-menu";
 import { Input } from "@portal/ui/ui/input";
+import { Label } from "@portal/ui/ui/label";
 import {
   Select,
   SelectContent,
@@ -54,6 +55,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   enableColumnVisibility?: boolean;
   searchKey?: string;
+  /** When set, renders search with a label in a grid (matches user table toolbar style). */
+  searchLabel?: string;
   searchPlaceholder?: string;
   /** Rendered on the same row as the Columns button (left side). Use for filters. */
   toolbarContent?: React.ReactNode;
@@ -63,10 +66,12 @@ function DataTableInner<TData, TValue>({
   columns,
   data,
   searchKey,
+  searchLabel,
   searchPlaceholder = "Search...",
   enableColumnVisibility = true,
   toolbarContent,
 }: DataTableProps<TData, TValue>) {
+  const searchId = React.useId();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -102,18 +107,48 @@ function DataTableInner<TData, TValue>({
           {toolbarContent && (
             <div className="min-w-0 flex-1">{toolbarContent}</div>
           )}
-          {searchKey && !toolbarContent && (
-            <Input
-              className="max-w-sm"
-              onChange={(event) =>
-                table.getColumn(searchKey)?.setFilterValue(event.target.value)
-              }
-              placeholder={searchPlaceholder}
-              value={
-                (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
-              }
-            />
-          )}
+          {searchKey &&
+            !toolbarContent &&
+            (searchLabel ? (
+              <search
+                aria-label="Filter table"
+                className="grid min-w-0 flex-1 gap-x-4 gap-y-2 sm:grid-cols-[minmax(280px,1fr)]"
+              >
+                <Label className="self-end" htmlFor={searchId}>
+                  {searchLabel}
+                </Label>
+                <div className="min-w-0">
+                  <Input
+                    autoComplete="off"
+                    className="h-9 w-full"
+                    id={searchId}
+                    onChange={(event) =>
+                      table
+                        .getColumn(searchKey)
+                        ?.setFilterValue(event.target.value)
+                    }
+                    placeholder={searchPlaceholder}
+                    type="search"
+                    value={
+                      (table
+                        .getColumn(searchKey)
+                        ?.getFilterValue() as string) ?? ""
+                    }
+                  />
+                </div>
+              </search>
+            ) : (
+              <Input
+                className="max-w-sm"
+                onChange={(event) =>
+                  table.getColumn(searchKey)?.setFilterValue(event.target.value)
+                }
+                placeholder={searchPlaceholder}
+                value={
+                  (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+                }
+              />
+            ))}
           {enableColumnVisibility && (
             <DropdownMenu>
               <DropdownMenuTrigger

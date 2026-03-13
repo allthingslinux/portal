@@ -96,10 +96,6 @@ export const routeConfig = {
       metadata: {
         robots: { index: false, follow: false },
       },
-      navigation: {
-        group: "platform",
-        order: 4,
-      },
     },
     {
       id: "mail",
@@ -194,6 +190,14 @@ export const routeConfig = {
 
   // Footer actions (user actions in sidebar)
   footerActions: [
+    {
+      id: "settings",
+      icon: Settings2,
+      path: "/app/settings",
+      metadata: {
+        robots: { index: false, follow: false },
+      },
+    },
     {
       id: "support",
       icon: HelpCircle,

@@ -63,11 +63,12 @@ function SessionManagementInner() {
           View and manage active user sessions across the platform.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <DataTable<Session, unknown>
           columns={columns}
           data={sessions}
           searchKey="userId"
+          searchLabel="Search"
           searchPlaceholder="Search sessions by user ID..."
         />
       </CardContent>

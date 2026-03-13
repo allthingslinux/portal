@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,11 +35,22 @@ export function NavCollapsible({ route }: NavCollapsibleProps) {
   const isRouteActive =
     pathname === route.path || pathname.startsWith(`${route.path}/`);
 
+  const shouldBeOpen = isActive || isRouteActive;
+  const [open, setOpen] = useState(shouldBeOpen);
+
+  // Sync open state when route becomes active (e.g. after navigation)
+  useEffect(() => {
+    if (shouldBeOpen) {
+      setOpen(true);
+    }
+  }, [shouldBeOpen]);
+
   const Icon = route.icon;
 
   return (
     <Collapsible
-      defaultOpen={isActive || isRouteActive}
+      onOpenChange={setOpen}
+      open={open}
       render={<SidebarMenuItem className="group/collapsible" />}
     >
       <div className="flex w-full items-center gap-2">

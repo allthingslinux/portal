@@ -172,12 +172,12 @@ function UserManagementInner() {
                     className="h-9 w-full"
                     id="users-search"
                     onChange={(e) => setUrlState({ search: e.target.value })}
-                    placeholder="Search users by email..."
+                    placeholder="Search users by email or name..."
                     type="search"
                     value={urlState.search}
                   />
                   <span className="sr-only" id="users-search-desc">
-                    Filters the list by email; updates on change
+                    Filters the list by email or name; updates on change
                   </span>
                 </div>
                 <Select

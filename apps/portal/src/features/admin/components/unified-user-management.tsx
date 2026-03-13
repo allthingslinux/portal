@@ -158,7 +158,7 @@ function UnifiedUserManagementInner() {
                 className="grid gap-x-4 gap-y-2 sm:grid-cols-[minmax(180px,1fr)_140px_140px]"
               >
                 <Label className="self-end" htmlFor="users-search">
-                  Search by email
+                  Search
                 </Label>
                 <Label className="self-end" htmlFor="users-role">
                   Role
@@ -173,12 +173,12 @@ function UnifiedUserManagementInner() {
                     className="h-9 w-full"
                     id="users-search"
                     onChange={(e) => setUrlState({ search: e.target.value })}
-                    placeholder="Search users by email..."
+                    placeholder="Search users by email or name..."
                     type="search"
                     value={urlState.search}
                   />
                   <span className="sr-only" id="users-search-desc">
-                    Filters the list by email; updates on change
+                    Filters the list by email or name; updates on change
                   </span>
                 </div>
                 <Select
