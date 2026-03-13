@@ -112,6 +112,7 @@ export interface FilteredListQueryParams extends ListQueryParams {
  */
 export interface UserListFilters {
   banned?: boolean;
+  expandIntegrations?: boolean;
   limit?: number;
   offset?: number;
   role?: string;
@@ -325,8 +326,27 @@ export interface AdminUserRow {
 export interface AdminUserDetailResponse {
   ircAccount: AdminIrcAccount | null;
   mailcowAccount: AdminMailcowAccount | null;
+  mediawikiAccount: AdminMediawikiAccount | null;
   user: AdminUserRow;
   xmppAccount: AdminXmppAccount | null;
+}
+
+/**
+ * User with optional integration accounts (for unified admin list)
+ */
+export interface UserWithIntegrations extends AdminUserRow {
+  ircAccount: { nick: string; status: string } | null;
+  mailcowAccount: { email: string; status: string } | null;
+  mediawikiAccount: { wikiUsername: string; status: string } | null;
+  xmppAccount: { jid: string; username: string; status: string } | null;
+}
+
+/**
+ * User list response with integration data (expand=integrations)
+ */
+export interface UserListWithIntegrationsResponse {
+  pagination: ListPaginationMeta;
+  users: UserWithIntegrations[];
 }
 
 /**
@@ -384,32 +404,6 @@ export interface MailcowAccountWithUser extends AdminMailcowAccount {
 export interface MailcowAccountListResponse {
   mailcowAccounts: MailcowAccountWithUser[];
   pagination: ListPaginationMeta;
-}
-
-/**
- * MediaWiki account shape as returned by admin APIs.
- * Dates are ISO-8601 strings (JSON wire format).
- */
-export interface AdminMediawikiAccount {
-  createdAt: string;
-  id: string;
-  metadata?: Record<string, unknown> | null;
-  status: string;
-  updatedAt: string;
-  userId: string;
-  wikiUserId: number | null;
-  wikiUsername: string;
-}
-
-/**
- * MediaWiki account with optional user info for admin list
- */
-export interface MediawikiAccountWithUser extends AdminMediawikiAccount {
-  user?: {
-    id: string;
-    email: string;
-    name: string | null;
-  };
 }
 
 /**

@@ -64,6 +64,10 @@ export const UserSearchSchema = z.object({
     .transform((val) => val === "true")
     .optional(),
   search: z.string().optional(),
+  expand: z
+    .string()
+    .optional()
+    .transform((val) => (val === "integrations" ? "integrations" : undefined)),
   limit: z.coerce.number().int().positive().default(50),
   offset: z.coerce.number().int().nonnegative().default(0),
 });

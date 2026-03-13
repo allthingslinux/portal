@@ -8,6 +8,7 @@ import { db } from "@portal/db/client";
 import { user } from "@portal/db/schema/auth";
 import { ircAccount } from "@portal/db/schema/irc";
 import { mailcowAccount } from "@portal/db/schema/mailcow";
+import { mediawikiAccount } from "@portal/db/schema/mediawiki";
 import { xmppAccount } from "@portal/db/schema/xmpp";
 import { AdminUpdateUserSchema } from "@portal/schemas/user";
 import { eq } from "drizzle-orm";
@@ -38,21 +39,32 @@ export async function GET(
       );
     }
 
-    const [[ircRow], [mailcowRow], [xmppRow]] = await Promise.all([
-      db.select().from(ircAccount).where(eq(ircAccount.userId, id)).limit(1),
-      db
-        .select()
-        .from(mailcowAccount)
-        .where(eq(mailcowAccount.userId, id))
-        .limit(1),
-      db.select().from(xmppAccount).where(eq(xmppAccount.userId, id)).limit(1),
-    ]);
+    const [[ircRow], [mailcowRow], [xmppRow], [mediawikiRow]] =
+      await Promise.all([
+        db.select().from(ircAccount).where(eq(ircAccount.userId, id)).limit(1),
+        db
+          .select()
+          .from(mailcowAccount)
+          .where(eq(mailcowAccount.userId, id))
+          .limit(1),
+        db
+          .select()
+          .from(xmppAccount)
+          .where(eq(xmppAccount.userId, id))
+          .limit(1),
+        db
+          .select()
+          .from(mediawikiAccount)
+          .where(eq(mediawikiAccount.userId, id))
+          .limit(1),
+      ]);
 
     return Response.json({
       user: userData,
       ircAccount: ircRow ?? null,
       mailcowAccount: mailcowRow ?? null,
       xmppAccount: xmppRow ?? null,
+      mediawikiAccount: mediawikiRow ?? null,
     });
   } catch (error) {
     return handleAPIError(error);

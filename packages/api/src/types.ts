@@ -34,6 +34,8 @@ export type {
   UpdateUserInput,
   UserListFilters,
   UserListResponse,
+  UserListWithIntegrationsResponse,
+  UserWithIntegrations,
   XmppAccountListResponse,
   XmppAccountWithUser,
 } from "@portal/types/api";

@@ -9,8 +9,12 @@ import "server-only";
 import { db } from "@portal/db/client";
 import { apikey } from "@portal/db/schema/api-keys";
 import { session, user } from "@portal/db/schema/auth";
+import { ircAccount } from "@portal/db/schema/irc";
+import { mailcowAccount } from "@portal/db/schema/mailcow";
+import { mediawikiAccount } from "@portal/db/schema/mediawiki";
 import { oauthClient } from "@portal/db/schema/oauth";
-import { and, count, desc, eq, gt, ilike, or, sql } from "drizzle-orm";
+import { xmppAccount } from "@portal/db/schema/xmpp";
+import { and, count, desc, eq, gt, ilike, ne, or, sql } from "drizzle-orm";
 
 import type {
   AdminStats,
@@ -23,6 +27,7 @@ import type {
   User,
   UserListFilters,
   UserListResponse,
+  UserListWithIntegrationsResponse,
 } from "./types";
 
 /**
@@ -30,14 +35,14 @@ import type {
  */
 export async function fetchUsersServer(
   filters?: UserListFilters
-): Promise<UserListResponse> {
+): Promise<UserListResponse | UserListWithIntegrationsResponse> {
   const role = filters?.role;
   const banned = filters?.banned;
   const search = filters?.search;
   const limit = filters?.limit ?? 50;
   const offset = filters?.offset ?? 0;
+  const expandIntegrations = filters?.expandIntegrations ?? false;
 
-  // Build where conditions
   const conditions: ReturnType<typeof eq | typeof or>[] = [];
   if (role) {
     conditions.push(eq(user.role, role));
@@ -57,6 +62,111 @@ export async function fetchUsersServer(
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
+  if (expandIntegrations) {
+    const [rows, [totalResult]] = await Promise.all([
+      db
+        .select({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role,
+          banned: user.banned,
+          banReason: user.banReason,
+          banExpires: user.banExpires,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          emailVerified: user.emailVerified,
+          twoFactorEnabled: user.twoFactorEnabled,
+          ircNick: ircAccount.nick,
+          ircStatus: ircAccount.status,
+          xmppJid: xmppAccount.jid,
+          xmppUsername: xmppAccount.username,
+          xmppStatus: xmppAccount.status,
+          mailcowEmail: mailcowAccount.email,
+          mailcowStatus: mailcowAccount.status,
+          mediawikiWikiUsername: mediawikiAccount.wikiUsername,
+          mediawikiStatus: mediawikiAccount.status,
+        })
+        .from(user)
+        .leftJoin(
+          ircAccount,
+          and(eq(ircAccount.userId, user.id), ne(ircAccount.status, "deleted"))
+        )
+        .leftJoin(
+          xmppAccount,
+          and(
+            eq(xmppAccount.userId, user.id),
+            ne(xmppAccount.status, "deleted")
+          )
+        )
+        .leftJoin(
+          mailcowAccount,
+          and(
+            eq(mailcowAccount.userId, user.id),
+            ne(mailcowAccount.status, "deleted")
+          )
+        )
+        .leftJoin(
+          mediawikiAccount,
+          and(
+            eq(mediawikiAccount.userId, user.id),
+            ne(mediawikiAccount.status, "deleted")
+          )
+        )
+        .where(whereClause)
+        .orderBy(desc(user.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db.select({ count: count() }).from(user).where(whereClause),
+    ]);
+
+    const total = totalResult?.count ?? 0;
+    const users = rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      image: row.image,
+      role: row.role,
+      banned: row.banned,
+      banReason: row.banReason,
+      banExpires: row.banExpires,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+      emailVerified: row.emailVerified,
+      twoFactorEnabled: row.twoFactorEnabled,
+      ircAccount: row.ircNick
+        ? { nick: row.ircNick, status: row.ircStatus }
+        : null,
+      xmppAccount: row.xmppJid
+        ? {
+            jid: row.xmppJid,
+            username: row.xmppUsername,
+            status: row.xmppStatus,
+          }
+        : null,
+      mailcowAccount: row.mailcowEmail
+        ? { email: row.mailcowEmail, status: row.mailcowStatus }
+        : null,
+      mediawikiAccount: row.mediawikiWikiUsername
+        ? {
+            wikiUsername: row.mediawikiWikiUsername,
+            status: row.mediawikiStatus,
+          }
+        : null,
+    }));
+
+    return {
+      users,
+      pagination: {
+        total: Number(total),
+        limit,
+        offset,
+        hasMore: offset + limit < total,
+      },
+    };
+  }
+
   const users = await db
     .select()
     .from(user)
@@ -65,7 +175,6 @@ export async function fetchUsersServer(
     .limit(limit)
     .offset(offset);
 
-  // Get total count
   const [totalResult] = await db
     .select({ count: count() })
     .from(user)

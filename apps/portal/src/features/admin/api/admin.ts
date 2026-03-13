@@ -20,6 +20,7 @@ import type {
   User,
   UserListFilters,
   UserListResponse,
+  UserListWithIntegrationsResponse,
   XmppAccountListResponse,
 } from "@portal/api/types";
 
@@ -28,7 +29,7 @@ import type {
  */
 export async function fetchUsers(
   filters?: UserListFilters
-): Promise<UserListResponse> {
+): Promise<UserListResponse | UserListWithIntegrationsResponse> {
   const params = new URLSearchParams();
   if (filters?.role) {
     params.append("role", filters.role);
@@ -38,6 +39,9 @@ export async function fetchUsers(
   }
   if (filters?.search) {
     params.append("search", filters.search);
+  }
+  if (filters?.expandIntegrations) {
+    params.append("expand", "integrations");
   }
   if (filters?.limit) {
     params.append("limit", String(filters.limit));

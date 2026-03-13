@@ -41,7 +41,8 @@ export function UserDetailSheet({
         <SheetHeader className="p-0 pr-12 pb-6">
           <SheetTitle>User details</SheetTitle>
           <SheetDescription>
-            User profile and integration accounts (IRC, XMPP, mailcow).
+            User profile and integration accounts (IRC, XMPP, Mailcow,
+            MediaWiki).
           </SheetDescription>
         </SheetHeader>
 
@@ -70,7 +71,13 @@ function UserDetailContent({
 }: {
   userDetail: AdminUserDetailResponse;
 }) {
-  const { user: userRow, ircAccount, xmppAccount, mailcowAccount } = userDetail;
+  const {
+    user: userRow,
+    ircAccount,
+    xmppAccount,
+    mailcowAccount,
+    mediawikiAccount,
+  } = userDetail;
 
   return (
     <div className="flex flex-col gap-8">
@@ -207,7 +214,33 @@ function UserDetailContent({
             </div>
           ) : (
             <div className="rounded-lg border border-dashed p-4 text-muted-foreground text-sm">
-              No mailcow account
+              No Mailcow account
+            </div>
+          )}
+
+          {mediawikiAccount ? (
+            <div className="rounded-lg border p-4">
+              <div className="mb-3 font-medium">MediaWiki</div>
+              <dl className="space-y-3 text-sm">
+                <div className="space-y-1">
+                  <dt className="text-muted-foreground">Wiki Username</dt>
+                  <dd className="font-mono">{mediawikiAccount.wikiUsername}</dd>
+                </div>
+                <div className="space-y-1">
+                  <dt className="text-muted-foreground">Status</dt>
+                  <dd>
+                    <Badge variant="outline">
+                      {integrationStatusLabels[
+                        mediawikiAccount.status as keyof typeof integrationStatusLabels
+                      ] ?? mediawikiAccount.status}
+                    </Badge>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed p-4 text-muted-foreground text-sm">
+              No MediaWiki account
             </div>
           )}
         </div>

@@ -175,7 +175,11 @@ export const routeConfig = {
       navigation: {
         group: "platform",
         order: 10,
-        permissions: ["canViewAdmin"], // Role-based access
+        permissions: ["canViewAdmin"],
+        children: [
+          { id: "admin-users", path: "/app/admin/users" },
+          { id: "admin-sessions", path: "/app/admin/sessions" },
+        ],
       },
     },
   ],

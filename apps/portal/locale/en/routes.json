@@ -139,6 +139,26 @@
       "label": "Admin"
     }
   },
+  "admin-users": {
+    "label": "Users",
+    "metadata": {
+      "title": "User Management",
+      "description": "Manage users and integration accounts"
+    },
+    "breadcrumb": {
+      "label": "Users"
+    }
+  },
+  "admin-sessions": {
+    "label": "Sessions",
+    "metadata": {
+      "title": "Session Management",
+      "description": "View and manage active user sessions"
+    },
+    "breadcrumb": {
+      "label": "Sessions"
+    }
+  },
   "group": {
     "platform": {
       "label": "Platform"

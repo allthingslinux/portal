@@ -22,11 +22,21 @@ export function getUIDisplay(
     ? getTranslatedRouteConfig(config, resolver)
     : config;
 
-  // Find route in config
+  // Find route in config (include navigation children for sub-routes)
   const allRoutes = [...resolvedConfig.public, ...resolvedConfig.protected];
   const route = allRoutes.find((r) => r.path === cleanPath);
 
   if (!route) {
+    const protectedRoutes = resolvedConfig.protected;
+    for (const r of protectedRoutes) {
+      const child = r.navigation?.children?.find((c) => c.path === cleanPath);
+      if (child) {
+        return {
+          title: child.label ?? child.id,
+          description: child.metadata?.description,
+        };
+      }
+    }
     return { title: undefined, description: undefined };
   }
 
