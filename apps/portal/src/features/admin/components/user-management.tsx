@@ -28,7 +28,6 @@ import { UserDetailSheet } from "./user-detail-sheet";
 import { useUsers } from "@/features/admin/hooks/use-admin";
 import {
   useBanUser,
-  useImpersonateUser,
   useSetUserRole,
   useUnbanUser,
 } from "@/features/admin/hooks/use-admin-actions";
@@ -84,7 +83,6 @@ function UserManagementInner() {
   const setRole = useSetUserRole();
   const banUser = useBanUser();
   const unbanUser = useUnbanUser();
-  const impersonateUser = useImpersonateUser();
 
   // Create columns with mutations
   const columns = useMemo(
@@ -93,10 +91,9 @@ function UserManagementInner() {
         setRole,
         banUser,
         unbanUser,
-        impersonateUser,
         onViewDetails: (id) => setDetailUserId(id),
       }),
-    [setRole, banUser, unbanUser, impersonateUser]
+    [setRole, banUser, unbanUser]
   );
 
   // Stable data reference for table (TanStack Table: memoize data to prevent infinite re-renders)

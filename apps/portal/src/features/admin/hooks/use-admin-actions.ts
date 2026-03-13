@@ -1,7 +1,6 @@
 "use client";
 
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { queryKeys } from "@portal/api/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -140,35 +139,6 @@ export function useUnbanUser() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to unban user");
-    },
-  });
-}
-
-/**
- * Impersonate user mutation
- */
-export function useImpersonateUser() {
-  const router = useRouter();
-
-  return useMutation({
-    mutationFn: async (userId: string) => {
-      const result = await authClient.admin.impersonateUser({
-        userId,
-      });
-
-      if (result.error) {
-        throw new Error(result.error.message);
-      }
-
-      return result.data;
-    },
-    onSuccess: () => {
-      toast.success("Now impersonating user");
-      // Redirect after successful impersonation using Next.js router
-      router.push("/app");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to impersonate user");
     },
   });
 }

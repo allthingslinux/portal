@@ -27,11 +27,11 @@ export const user = ac.newRole({
   session: [], // No session permissions
 });
 
-// Staff role: Limited admin permissions (can manage users and sessions, but not create users or impersonate)
+// Staff role: Limited admin permissions (can manage users and sessions, but not create users)
 export const staff = ac.newRole({
   user: ["list", "ban"], // Can list users and ban them
   session: ["list", "revoke"], // Can list sessions and revoke them
-  // Cannot: create users, set roles, impersonate, delete users, set passwords
+  // Cannot: create users, set roles, delete users, set passwords
 });
 
 // Admin role: Full admin permissions (all user and session operations)

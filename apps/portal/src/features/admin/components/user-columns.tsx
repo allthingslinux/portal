@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpDown,
-  Ban,
-  Eye,
-  UserCircle,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Ban, UserCircle } from "lucide-react";
 import type { User } from "@portal/api/types";
 import { Badge } from "@portal/ui/ui/badge";
 import { Button } from "@portal/ui/ui/button";
@@ -33,7 +26,6 @@ function getSortIcon(sorted: false | "asc" | "desc") {
 
 interface UserMutations {
   banUser: UseMutationResult<unknown, Error, { userId: string }, unknown>;
-  impersonateUser: UseMutationResult<unknown, Error, string, unknown>;
   onViewDetails?: (userId: string) => void;
   setRole: UseMutationResult<
     unknown,
@@ -171,15 +163,6 @@ export function createUserColumns(mutations: UserMutations): ColumnDef<User>[] {
                 <UserCircle className="h-4 w-4" />
               </Button>
             )}
-            <Button
-              aria-label="Impersonate user"
-              disabled={mutations.impersonateUser.isPending}
-              onClick={() => mutations.impersonateUser.mutate(user.id)}
-              size="sm"
-              variant="outline"
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
             {user.banned ? (
               <Button
                 disabled={mutations.unbanUser.isPending}

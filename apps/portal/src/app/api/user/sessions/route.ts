@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
         ipAddress: session.ipAddress,
         userAgent: session.userAgent,
         userId: session.userId,
-        impersonatedBy: session.impersonatedBy,
       })
       .from(session)
       .where(whereClause)

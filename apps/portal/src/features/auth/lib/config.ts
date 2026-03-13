@@ -632,8 +632,6 @@ const plugins = [
     // Array of user IDs that should be considered as admin (default: [])
     // Users in this list can perform any admin operation regardless of role
     // adminUserIds: ["user_id_1", "user_id_2"],
-    // Duration of impersonation session in seconds (default: 1 hour = 3600)
-    // impersonationSessionDuration: 60 * 60, // 1 hour
     // Default ban reason when banning a user (default: "No reason")
     defaultBanReason: "Violation of terms of service",
     // Default ban expiration in seconds (default: undefined = never expires)
@@ -643,9 +641,6 @@ const plugins = [
     // Default: "You have been banned from this application. Please contact support if you believe this is an error."
     bannedUserMessage:
       "Your account has been suspended. Contact support for assistance.",
-    // Whether to allow impersonating other admin users (default: false)
-    // Set to true to allow admins to impersonate other admins
-    allowImpersonatingAdmins: false,
   }),
   nextCookies(),
 ];
