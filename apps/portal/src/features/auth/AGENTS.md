@@ -12,6 +12,7 @@
 | `api/` | Auth-related API route handlers |
 
 Key files in `lib/`:
+
 - `config.ts` — BetterAuth server configuration (plugins, email, OAuth providers)
 - `client.ts` — BetterAuth client (`authClient`) — import this in client components
 - `server-client.ts` — Server-side auth client
@@ -29,7 +30,7 @@ Key files in `lib/`:
 
 - **API Key plugin** is now a separate package: `@better-auth/api-key` (moved out of core `better-auth`)
 - **API Key schema changes**: `userId` → `referenceId`, new `configId` field (see `@portal/db` schema)
-- **Auth schema generation**: `pnpm auth:init-schema` outputs to `packages/db/src/schema/auth-schema.ts`. The CLI may fail due to `server-only` imports in the config chain — apply schema changes manually if needed by referencing the BetterAuth source on GitHub.
+- **Auth schema generation**: `pnpm auth:init-schema` (see `apps/portal/package.json`) targets `packages/db/src/schema/auth-schema.ts`. The checked-in BetterAuth tables live in `packages/db/src/schema/auth.ts` — reconcile after generation. The CLI may fail due to `server-only` imports in the config chain; apply schema changes manually if needed by referencing the BetterAuth source on GitHub.
 
 ## Auth Flow
 
@@ -40,6 +41,7 @@ Login page → BetterAuth email/OAuth → Email verification → Dashboard
 ## Usage Patterns
 
 ### Server-side (route handlers, server actions, server components)
+
 ```typescript
 import { auth } from "@/auth"
 
@@ -48,6 +50,7 @@ if (!session) redirect("/auth/login")
 ```
 
 ### Client-side (client components)
+
 ```typescript
 import { authClient } from "@/auth"
 
