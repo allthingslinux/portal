@@ -17,14 +17,17 @@ import {
   oneTimeToken,
   openAPI,
   twoFactor,
+  username,
 } from "better-auth/plugins";
 
 import "server-only";
 
 import { db } from "@portal/db/client";
 import { schema } from "@portal/db/schema";
+import { user as authUser } from "@portal/db/schema/auth";
 import { ircAccount } from "@portal/db/schema/irc";
 import { xmppAccount } from "@portal/db/schema/xmpp";
+import { isValidCanonicalUsername } from "@portal/schemas/integrations/validation";
 import { and, eq } from "drizzle-orm";
 
 import {
@@ -204,12 +207,16 @@ const socialProviders = {
   //   // For OAuth Proxy: redirectURI must be your production app's callback URL
   //   // redirectURI: "https://my-main-app.com/api/auth/callback/github",
   // },
-  discord: {
-    clientId: process.env.DISCORD_CLIENT_ID as string,
-    clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
-    // For OAuth Proxy: redirectURI must be your production app's callback URL
-    // redirectURI: "https://my-main-app.com/api/auth/callback/discord",
-  },
+  ...(env.DISCORD_CLIENT_ID && env.DISCORD_CLIENT_SECRET
+    ? {
+        discord: {
+          clientId: env.DISCORD_CLIENT_ID,
+          clientSecret: env.DISCORD_CLIENT_SECRET,
+          // For OAuth Proxy: redirectURI must be your production app's callback URL
+          // redirectURI: "https://my-main-app.com/api/auth/callback/discord",
+        },
+      }
+    : {}),
 };
 
 // ============================================================================
@@ -447,6 +454,13 @@ const oauthProviderConfig = {
 // ============================================================================
 
 const plugins = [
+  username({
+    minUsernameLength: 3,
+    maxUsernameLength: 30,
+    usernameValidator: (value: string) => isValidCanonicalUsername(value),
+    usernameNormalization: (value: string) => value.toLowerCase(),
+    displayUsernameNormalization: (value: string) => value,
+  }),
   passkey({
     rpName: "Portal", // Shown in WebAuthn prompts (defaults to appName)
     // rpID, origin default to baseURL hostname; override for multi-domain setups
@@ -786,27 +800,39 @@ const onAPIError = {
 // ============================================================================
 
 const databaseHooks = {
-  // User lifecycle hooks
-  // user: {
-  //   create: {
-  //     before: async (user) => {
-  //       // Modify user data before creation
-  //       return { data: { ...user, customField: "value" } };
-  //     },
-  //     after: async (user) => {
-  //       // Perform actions after user creation
-  //     },
-  //   },
-  //   update: {
-  //     before: async (userData) => {
-  //       // Modify user data before update
-  //       return { data: { ...userData, updatedAt: new Date() } };
-  //     },
-  //     after: async (user) => {
-  //       // Perform actions after user update
-  //     },
-  //   },
-  // },
+  user: {
+    // Lock canonical username after it has been set once.
+    update: {
+      before: async (payload: {
+        data?: {
+          id?: string;
+          username?: string | null;
+          [key: string]: unknown;
+        };
+      }) => {
+        const data = payload.data;
+        const userId = typeof data?.id === "string" ? data.id : undefined;
+        const nextUsername =
+          typeof data?.username === "string" ? data.username : undefined;
+
+        if (!userId || nextUsername === undefined) {
+          return { data };
+        }
+
+        const [existing] = await db
+          .select({ username: authUser.username })
+          .from(authUser)
+          .where(eq(authUser.id, userId))
+          .limit(1);
+
+        if (existing?.username && existing.username !== nextUsername) {
+          throw new Error("Username is locked and cannot be changed");
+        }
+
+        return { data };
+      },
+    },
+  },
   // Session lifecycle hooks
   // session: {
   //   create: {
