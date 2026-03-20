@@ -19,7 +19,7 @@ import {
 } from "@/features/admin/hooks/use-admin";
 
 function SessionManagementInner() {
-  const { data, error } = useSessions();
+  const { data, error } = useSessions({ limit: 100 });
   const deleteSession = useDeleteSession();
 
   // Create columns with mutations
