@@ -46,9 +46,9 @@ All services are accessible across multiple domains: `atl.dev`, `atl.sh`, `atl.t
 pnpm install
 
 # Set up environment variables
-# Create apps/portal/.env with your configuration. Required variables include
-# DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL, etc. Environment is
-# validated via @t3-oss/env-nextjs in apps/portal/src/env.ts (extends module keys).
+cp apps/portal/.env.example apps/portal/.env
+# Edit apps/portal/.env with your configuration. See docs/ENV_VARS.md for the
+# canonical variable list and cross-repo bridge token mapping.
 
 # Start PostgreSQL database (Docker Compose)
 pnpm compose:db
@@ -518,5 +518,6 @@ export async function GET(request: NextRequest) {
 - **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)** - Deployment guide
 - **[docs/INTEGRATIONS.md](./docs/INTEGRATIONS.md)** - Integration framework documentation
 - **[docs/LOGGING.md](./docs/LOGGING.md)** - Logging and observability
+- **[docs/ENV_VARS.md](./docs/ENV_VARS.md)** - Canonical env vars and bridge mappings
 - **[docs/PATH_ALIASES.md](./docs/PATH_ALIASES.md)** - TypeScript path alias usage
 - **[docs/TSCONFIG.md](./docs/TSCONFIG.md)** - TypeScript configuration reference
