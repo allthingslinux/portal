@@ -26,11 +26,7 @@ import type {
   UpdateXmppAccountRequest,
   XmppAccount,
 } from "./types";
-import {
-  formatJid,
-  generateUsernameFromEmail,
-  isValidXmppUsername,
-} from "./utils";
+import { formatJid, isValidXmppUsername } from "./utils";
 import { IntegrationBase } from "@/features/integrations/lib/core/base";
 import { getIntegrationRegistry } from "@/features/integrations/lib/core/registry";
 
@@ -56,40 +52,6 @@ export class XmppIntegration extends IntegrationBase<
       // Cast is safe as XmppAccountSchema matches XmppAccount
       accountSchema: XmppAccountSchema as unknown as z.ZodType<XmppAccount>,
     });
-  }
-
-  /**
-   * Determine username from request input or user email.
-   */
-  private determineUsername(
-    providedUsername: string | undefined,
-    userEmail: string
-  ): { username: string } | { error: APIError } {
-    if (providedUsername) {
-      if (!isValidXmppUsername(providedUsername)) {
-        return {
-          error: new APIError(
-            "Invalid username format. Username must be alphanumeric with underscores, hyphens, or dots, and start with a letter or number.",
-            400
-          ),
-        };
-      }
-      return { username: providedUsername.toLowerCase() };
-    }
-
-    try {
-      return { username: generateUsernameFromEmail(userEmail) };
-    } catch (error) {
-      return {
-        error:
-          error instanceof APIError
-            ? error
-            : new APIError(
-                "Could not generate username from email. Please provide a custom username.",
-                400
-              ),
-      };
-    }
   }
 
   /**
@@ -173,7 +135,7 @@ export class XmppIntegration extends IntegrationBase<
       throw new APIError("User already has an XMPP account", 409);
     }
     const [userData] = await db
-      .select({ email: user.email })
+      .select({ username: user.username })
       .from(user)
       .where(eq(user.id, userId))
       .limit(1);
@@ -182,14 +144,19 @@ export class XmppIntegration extends IntegrationBase<
       throw new APIError("User not found", 404);
     }
 
-    const usernameResult = this.determineUsername(
-      input.username,
-      userData.email
-    );
-    if ("error" in usernameResult) {
-      throw usernameResult.error;
+    if (!userData.username) {
+      throw new APIError(
+        "Set your username in account settings before creating an XMPP account",
+        400
+      );
     }
-    const { username } = usernameResult;
+    const username = userData.username.toLowerCase();
+    if (!isValidXmppUsername(username)) {
+      throw new APIError(
+        "Your username is not compatible with XMPP constraints",
+        400
+      );
+    }
     const availabilityResult = await this.checkUsernameAvailability(username);
     if (!availabilityResult.available) {
       throw availabilityResult.error;
