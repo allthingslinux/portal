@@ -35,6 +35,7 @@ export const GET = withWideEvent(
         .select({
           id: user.id,
           name: user.name,
+          username: user.username,
           email: user.email,
           image: user.image,
           role: user.role,
@@ -101,6 +102,7 @@ export const PATCH = withWideEvent(
           // DTO: Only return necessary fields in response
           id: user.id,
           name: user.name,
+          username: user.username,
           email: user.email,
           image: user.image,
           role: user.role,
