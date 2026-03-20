@@ -10,7 +10,6 @@ import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
 import { getQueryClient } from "@portal/api/query-client";
 import { CommandMenu } from "@portal/ui/command-menu";
 import { ReactQueryDevtools } from "@portal/ui/dev-tools";
-import { MailcowIcon } from "@portal/ui/icons/mailcow-icon";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 
@@ -147,24 +146,24 @@ export function Providers({ children }: { children: ReactNode }) {
               avatar
               // Localization: Maps next-intl translations to Better Auth UI format
               // All strings are automatically translated using our locale files
-              credentials
+              credentials={{
+                username: true,
+                usernameRequired: true,
+              }}
               // Next.js Link component for client-side navigation
               // Wrapper needed for Better Auth UI compatibility with Next.js typed routes
-              genericOAuth={
-                process.env.NEXT_PUBLIC_MAILCOW_OAUTH_ENABLED === "true"
-                  ? {
-                      providers: [
-                        {
-                          provider: "mailcow",
-                          name: "Mailcow",
-                          icon: ({ className }) => (
-                            <MailcowIcon className={className} size={20} />
-                          ),
-                        },
-                      ],
-                    }
-                  : undefined
-              }
+              // genericOAuth={
+              //   process.env.NEXT_PUBLIC_MAILCOW_OAUTH_ENABLED === "true"
+              //     ? {
+              //         providers: [
+              //           {
+              //             provider: "mailcow",
+              //             name: "Mailcow",
+              //           },
+              //         ],
+              //       }
+              //     : undefined
+              // }
               // Normalize Better Auth 1.5 list response { apiKeys } → array for ApiKeysCard.
               // Pending upstream fix: https://github.com/better-auth-ui/better-auth-ui/issues/345
               // eslint-disable-next-line @typescript-eslint/no-explicit-any -- AuthHook expects BetterFetchError; TanStack Query uses Error
@@ -176,6 +175,7 @@ export function Providers({ children }: { children: ReactNode }) {
               localization={localization}
               // Callback when session changes (refreshes server components)
               multiSession
+              nameRequired={false}
               // Persist client for offline auth (set to true if using persistQueryClient)
               navigate={navigate}
               // WebAuthn/passkey authentication
@@ -189,8 +189,9 @@ export function Providers({ children }: { children: ReactNode }) {
               redirectTo="/app"
               // Social OAuth providers to display in the sign-in UI
               replace={replace}
+              signUp={{ fields: [] }}
               // Generic OAuth (mailcow). Show when NEXT_PUBLIC_MAILCOW_OAUTH_ENABLED=true
-              social={{ providers: ["discord"] }}
+              // social={{ providers: ["discord"] }}
               // Additional configuration options (uncomment if needed):
               // additionalFields={{
               //   company: {
