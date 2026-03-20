@@ -10,6 +10,7 @@ import {
   IrcAccountSchema,
   UpdateIrcAccountRequestSchema,
 } from "@portal/schemas/integrations/irc";
+import { isValidCanonicalUsername } from "@portal/schemas/integrations/validation";
 import * as Sentry from "@sentry/nextjs";
 import { and, eq, ne } from "drizzle-orm";
 
@@ -39,47 +40,23 @@ export class IrcIntegration extends IntegrationBase<
   IntegrationCreateInput,
   UpdateIrcAccountRequest
 > {
-  constructor() {
-    super({
-      id: "irc",
-      name: "IRC",
-      description:
-        "Register a nick on irc.atl.chat and connect to our community IRC network.",
-      enabled: isIrcConfigured(),
-      createAccountSchema: CreateIrcAccountRequestSchema,
-      updateAccountSchema: UpdateIrcAccountRequestSchema,
-      // Cast is safe as IrcAccountSchema matches IrcAccount
-      accountSchema: IrcAccountSchema as unknown as z.ZodType<
-        IrcAccount & { temporaryPassword?: string }
-      >,
-    });
-  }
-
-  /**
-   * Create an IRC account: validate nick, generate password, REGISTER with Atheme, insert irc_account.
-   * Returns account with temporaryPassword (one-time; not stored).
-   */
-  async createAccount(
-    userId: string,
-    input: IntegrationCreateInput
-  ): Promise<IrcAccount & { temporaryPassword: string }> {
-    if (!this.enabled) {
-      throw new Error("IRC integration is not configured");
-    }
-
+  private parseCreateInput(input: IntegrationCreateInput): {
+    userProvidedPassword?: string;
+  } {
     const parsed = CreateIrcAccountRequestSchema.safeParse(input);
     if (!parsed.success) {
       const msg =
-        parsed.error.issues[0]?.message ??
-        "Invalid input: nick is required and must be valid";
+        parsed.error.issues[0]?.message ?? "Invalid input: password is invalid";
       throw new Error(msg);
     }
-    const { nick } = parsed.data;
+    return { userProvidedPassword: parsed.data.password };
+  }
 
-    await this.ensureUserCanCreateIrcAccount(userId, nick);
-
+  private async resolveUserIdentity(
+    userId: string
+  ): Promise<{ email: string; nick: string }> {
     const [userRow] = await db
-      .select({ email: user.email })
+      .select({ email: user.email, username: user.username })
       .from(user)
       .where(eq(user.id, userId))
       .limit(1);
@@ -87,11 +64,25 @@ export class IrcIntegration extends IntegrationBase<
     if (!userRow?.email) {
       throw new Error("User not found");
     }
+    if (!userRow.username) {
+      throw new APIError(
+        "Set your username in account settings before creating an IRC account",
+        400
+      );
+    }
+    if (!isValidCanonicalUsername(userRow.username)) {
+      throw new APIError(
+        "Your username is not compatible with IRC/XMPP constraints",
+        400
+      );
+    }
+    return { email: userRow.email, nick: userRow.username };
+  }
 
-    const userProvidedPassword =
-      "password" in parsed.data ? parsed.data.password : undefined;
-    const temporaryPassword = userProvidedPassword ?? generateIrcPassword();
-
+  private async initializePendingAccount(
+    userId: string,
+    nick: string
+  ): Promise<typeof ircAccount.$inferSelect> {
     const [deletedAccount] = await db
       .select()
       .from(ircAccount)
@@ -101,8 +92,6 @@ export class IrcIntegration extends IntegrationBase<
       .limit(1);
 
     let accountRow: typeof ircAccount.$inferSelect | undefined;
-
-    // 1. Initial DB entry (pending)
     try {
       if (deletedAccount) {
         [accountRow] = await db
@@ -140,28 +129,30 @@ export class IrcIntegration extends IntegrationBase<
     if (!accountRow) {
       throw new Error("Failed to initialize IRC account record");
     }
+    return accountRow;
+  }
 
-    // 2. Atheme registration
+  private async registerAndConfigureNick(
+    userId: string,
+    nick: string,
+    email: string,
+    temporaryPassword: string,
+    accountId: string
+  ): Promise<void> {
     try {
-      await this.registerNickWithAtheme(nick, temporaryPassword, userRow.email);
+      await this.registerNickWithAtheme(nick, temporaryPassword, email);
     } catch (athemeError) {
-      // Cleanup the pending record on Atheme failure
       try {
-        await db.delete(ircAccount).where(eq(ircAccount.id, accountRow.id));
+        await db.delete(ircAccount).where(eq(ircAccount.id, accountId));
       } catch (cleanupError) {
         Sentry.captureException(cleanupError, {
           tags: { integration: "irc", step: "cleanup_after_atheme_failure" },
-          extra: {
-            userId,
-            accountId: accountRow.id,
-            originalError: athemeError,
-          },
+          extra: { userId, accountId, originalError: athemeError },
         });
       }
       throw athemeError;
     }
 
-    // 2b. Set HostServ vhost (non-fatal — account works without vanity vhost)
     if (isAthemeOperConfigured()) {
       try {
         const domain =
@@ -174,28 +165,116 @@ export class IrcIntegration extends IntegrationBase<
         });
       }
     }
+  }
 
-    // 3. Update to active
-    const [finalRow] = await db
-      .update(ircAccount)
-      .set({
-        status: "active",
-        updatedAt: new Date(),
-      })
-      .where(eq(ircAccount.id, accountRow.id))
-      .returning();
+  private async activateAccountOrThrow(
+    accountId: string,
+    userId: string,
+    nick: string
+  ): Promise<typeof ircAccount.$inferSelect> {
+    let finalRow: typeof ircAccount.$inferSelect | null = null;
+    try {
+      finalRow = await this.activateAccountRecord(accountId, userId, nick);
+    } catch (activationError) {
+      Sentry.captureException(activationError, {
+        tags: { integration: "irc", step: "db_activate_exception" },
+        extra: { userId, nick, accountId },
+      });
+    }
 
     if (!finalRow) {
-      // This is a rare edge case where Atheme succeeded but final update failed.
-      // The account is now orphaned on Atheme but exists in Portal as 'pending'.
       Sentry.captureException(new Error("Failed to activate IRC account"), {
         tags: { integration: "irc", step: "db_activate" },
-        extra: { userId, nick, accountId: accountRow.id },
+        extra: { userId, nick, accountId },
       });
       throw new Error(
         "IRC account registration partially succeeded but failed to activate. Please contact an administrator."
       );
     }
+    return finalRow;
+  }
+
+  private async activateAccountRecord(
+    accountId: string,
+    userId: string,
+    nick: string
+  ): Promise<typeof ircAccount.$inferSelect | null> {
+    const [byId] = await db
+      .update(ircAccount)
+      .set({
+        status: "active",
+        updatedAt: new Date(),
+      })
+      .where(eq(ircAccount.id, accountId))
+      .returning();
+    if (byId) {
+      return byId;
+    }
+
+    // Reconcile by active identity when an ID-based update unexpectedly misses.
+    const [byIdentity] = await db
+      .update(ircAccount)
+      .set({
+        status: "active",
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(ircAccount.userId, userId),
+          eq(ircAccount.nick, nick),
+          ne(ircAccount.status, "deleted")
+        )
+      )
+      .returning();
+    return byIdentity ?? null;
+  }
+
+  constructor() {
+    super({
+      id: "irc",
+      name: "IRC",
+      description:
+        "Register a nick on irc.atl.chat and connect to our community IRC network.",
+      enabled: isIrcConfigured(),
+      createAccountSchema: CreateIrcAccountRequestSchema,
+      updateAccountSchema: UpdateIrcAccountRequestSchema,
+      // Cast is safe as IrcAccountSchema matches IrcAccount
+      accountSchema: IrcAccountSchema as unknown as z.ZodType<
+        IrcAccount & { temporaryPassword?: string }
+      >,
+    });
+  }
+
+  /**
+   * Create an IRC account using the canonical Portal username as nick.
+   * Returns account with temporaryPassword (one-time; not stored).
+   */
+  async createAccount(
+    userId: string,
+    input: IntegrationCreateInput
+  ): Promise<IrcAccount & { temporaryPassword: string }> {
+    if (!this.enabled) {
+      throw new Error("IRC integration is not configured");
+    }
+
+    const { userProvidedPassword } = this.parseCreateInput(input);
+    const { email, nick } = await this.resolveUserIdentity(userId);
+
+    await this.ensureUserCanCreateIrcAccount(userId, nick);
+    const temporaryPassword = userProvidedPassword ?? generateIrcPassword();
+    const accountRow = await this.initializePendingAccount(userId, nick);
+    await this.registerAndConfigureNick(
+      userId,
+      nick,
+      email,
+      temporaryPassword,
+      accountRow.id
+    );
+    const finalRow = await this.activateAccountOrThrow(
+      accountRow.id,
+      userId,
+      nick
+    );
 
     const account = rowToAccount(finalRow);
 
@@ -331,7 +410,7 @@ export class IrcIntegration extends IntegrationBase<
     if (!parsed.success) {
       throw new Error("Invalid update request");
     }
-    const data = parsed.data;
+    const { status, metadata, nick } = parsed.data;
 
     const [account] = await db
       .select()
@@ -347,13 +426,13 @@ export class IrcIntegration extends IntegrationBase<
 
     const updates: Partial<typeof ircAccount.$inferInsert> = {};
 
-    if (data.status != null && data.status !== account.status) {
-      updates.status = data.status;
+    if (status != null && status !== account.status) {
+      updates.status = status;
     }
-    if (data.metadata !== undefined) {
-      updates.metadata = data.metadata;
+    if (metadata !== undefined) {
+      updates.metadata = metadata;
     }
-    if (data.nick != null && data.nick.trim() !== account.nick) {
+    if (nick != null && nick.trim() !== account.nick) {
       throw new Error(
         "Nick cannot be changed. Delete your account and create a new one with the desired nick."
       );
