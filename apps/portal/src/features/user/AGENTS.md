@@ -33,9 +33,10 @@ queryClient.invalidateQueries({ queryKey: queryKeys.users.current() })
 
 ## Common Tasks
 
-- **Update profile**: Mutation → POST to `src/app/api/users/[id]` → invalidate `queryKeys.users.current()`
-- **Change password**: Goes through BetterAuth (`authClient.changePassword()`) — not a custom API
-- **API Keys**: Managed via `src/app/api/users/[id]/api-keys/` routes
+- **Read / update current user**: `GET` / `PATCH` `app/api/user/me/route.ts` — client helpers in `features/user/api/user.ts`; invalidate `queryKeys.users.current()` after updates
+- **Sessions**: `app/api/user/sessions/` and `app/api/user/sessions/[id]/` — list and revoke
+- **Change password**: BetterAuth (`authClient.changePassword()`) — not a custom portal route
+- **API keys (self-service)**: Better Auth API Key plugin via settings UI; **admin** listing/mutations under `app/api/admin/api-keys/`
 
 ## Critical Rules
 
