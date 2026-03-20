@@ -11,6 +11,13 @@
 process.env.SKIP_ENV_VALIDATION = "true";
 
 import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+// Mock env to avoid full key chain; route needs BRIDGE_SERVICE_TOKEN (optional)
+vi.mock("@/env", () => ({
+  env: { BRIDGE_SERVICE_TOKEN: undefined },
+}));
+
 import {
   asyncProperty,
   constantFrom,
@@ -30,9 +37,7 @@ const fc = {
   uuid,
 };
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
-
-// Mock env keys before importing route
+// Mock env keys before importing route (backup for modules that import env indirectly)
 vi.mock("@/features/integrations/lib/xmpp/keys", () => ({ keys: () => ({}) }));
 vi.mock("@/features/integrations/lib/irc/keys", () => ({ keys: () => ({}) }));
 vi.mock("@portal/db/keys", () => ({ keys: () => ({}) }));
@@ -103,6 +108,7 @@ function mockSelectSequence(...rowSets: unknown[][]) {
 
 const REQUIRED_FIELDS = [
   "user_id",
+  "username",
   "discord_id",
   "irc_nick",
   "irc_status",
@@ -318,7 +324,7 @@ describe("Property 13: Identity API Response Shape Completeness", () => {
     vi.clearAllMocks();
   });
 
-  it("discordId 200 response contains exactly the 8 required fields", async () => {
+  it("discordId 200 response contains exactly the required fields", async () => {
     await fc.assert(
       fc.asyncProperty(fc.uuid(), async (userId) => {
         mockSelectSequence([{ userId }], [], [], [{ image: null }]);
@@ -339,7 +345,7 @@ describe("Property 13: Identity API Response Shape Completeness", () => {
     );
   });
 
-  it("ircNick 200 response contains exactly the 8 required fields", async () => {
+  it("ircNick 200 response contains exactly the required fields", async () => {
     await fc.assert(
       fc.asyncProperty(
         fc.record({
@@ -372,7 +378,7 @@ describe("Property 13: Identity API Response Shape Completeness", () => {
     );
   });
 
-  it("xmppJid 200 response contains exactly the 8 required fields", async () => {
+  it("xmppJid 200 response contains exactly the required fields", async () => {
     await fc.assert(
       fc.asyncProperty(
         fc.record({
