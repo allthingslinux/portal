@@ -52,6 +52,21 @@ export function isValidXmppUsername(username: string): boolean {
   return XMPP_USERNAME_REGEX.test(username);
 }
 
+// --- Canonical username (shared across auth + IRC + XMPP) ---
+
+export const CANONICAL_USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_-]{2,29}$/;
+
+/** Validate canonical Portal username used across integrations. */
+export function isValidCanonicalUsername(username: string): boolean {
+  if (!username || typeof username !== "string") {
+    return false;
+  }
+  if (username !== username.trim()) {
+    return false;
+  }
+  return CANONICAL_USERNAME_REGEX.test(username);
+}
+
 // --- Mailcow ---
 
 const MAILCOW_LOCAL_PART_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/;
