@@ -20,6 +20,7 @@
 > ⚠️ The Next.js middleware file is **`src/proxy.ts`**, not `middleware.ts`.
 
 The middleware handles:
+
 1. Authentication redirects (unauthenticated → login)
 2. Role-based route protection
 3. Locale detection and routing (next-intl)
@@ -38,14 +39,15 @@ import { type RouteConfig } from "@portal/types/routes"
 
 ## Breadcrumbs
 
-Breadcrumbs are **generated from the route config** — don't hardcode them in page components:
+Breadcrumbs are **generated from the route config** via `generateBreadcrumbs` — don't hardcode trail logic in page components:
 
 ```typescript
-import { getBreadcrumbs } from "@/features/routing/lib/breadcrumbs"
+import { generateBreadcrumbs, routeConfig } from "@/features/routing/lib"
 
-// In server components
-const crumbs = getBreadcrumbs(pathname)
+const crumbs = generateBreadcrumbs(pathname, routeConfig, resolver)
 ```
+
+Dashboard pages often use `@portal/ui` `PageHeader` with `pathname` + `getServerRouteResolver()` instead of assembling crumbs manually.
 
 ## i18n
 
