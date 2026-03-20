@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
     if (search) {
       const searchCondition = or(
         ilike(user.email, `%${search}%`),
-        ilike(user.name, `%${search}%`)
+        ilike(user.name, `%${search}%`),
+        ilike(user.username, `%${search}%`)
       );
       if (searchCondition) {
         conditions.push(searchCondition);
@@ -45,6 +46,7 @@ export async function GET(request: NextRequest) {
           .select({
             id: user.id,
             name: user.name,
+            username: user.username,
             email: user.email,
             image: user.image,
             role: user.role,
@@ -107,6 +109,7 @@ export async function GET(request: NextRequest) {
       const users = rows.map((row) => ({
         id: row.id,
         name: row.name,
+        username: row.username,
         email: row.email,
         image: row.image,
         role: row.role,
