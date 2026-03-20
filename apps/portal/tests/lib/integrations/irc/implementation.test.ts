@@ -80,19 +80,19 @@ describe("IrcIntegration Logic", () => {
       (db.select as any)
         .mockReturnValueOnce({
           from: vi.fn(() => ({
-            where: vi.fn(() => ({ limit: vi.fn(() => []) })),
-          })),
-        })
-        .mockReturnValueOnce({
-          from: vi.fn(() => ({
-            where: vi.fn(() => ({ limit: vi.fn(() => []) })),
-          })),
-        })
-        .mockReturnValueOnce({
-          from: vi.fn(() => ({
             where: vi.fn(() => ({
-              limit: vi.fn(() => [{ email: userEmail }]),
+              limit: vi.fn(() => [{ email: userEmail, username: nick }]),
             })),
+          })),
+        })
+        .mockReturnValueOnce({
+          from: vi.fn(() => ({
+            where: vi.fn(() => ({ limit: vi.fn(() => []) })),
+          })),
+        })
+        .mockReturnValueOnce({
+          from: vi.fn(() => ({
+            where: vi.fn(() => ({ limit: vi.fn(() => []) })),
           })),
         })
         .mockReturnValueOnce({
@@ -120,7 +120,7 @@ describe("IrcIntegration Logic", () => {
       });
 
       // Act
-      const result = await ircIntegration.createAccount(userId, { nick });
+      const result = await ircIntegration.createAccount(userId, {});
 
       // Assert
       expect(result.nick).toBe(nick);
@@ -138,19 +138,19 @@ describe("IrcIntegration Logic", () => {
       (db.select as any)
         .mockReturnValueOnce({
           from: vi.fn(() => ({
-            where: vi.fn(() => ({ limit: vi.fn(() => []) })),
-          })),
-        })
-        .mockReturnValueOnce({
-          from: vi.fn(() => ({
-            where: vi.fn(() => ({ limit: vi.fn(() => []) })),
-          })),
-        })
-        .mockReturnValueOnce({
-          from: vi.fn(() => ({
             where: vi.fn(() => ({
-              limit: vi.fn(() => [{ email: userEmail }]),
+              limit: vi.fn(() => [{ email: userEmail, username: nick }]),
             })),
+          })),
+        })
+        .mockReturnValueOnce({
+          from: vi.fn(() => ({
+            where: vi.fn(() => ({ limit: vi.fn(() => []) })),
+          })),
+        })
+        .mockReturnValueOnce({
+          from: vi.fn(() => ({
+            where: vi.fn(() => ({ limit: vi.fn(() => []) })),
           })),
         })
         .mockReturnValueOnce({
@@ -170,9 +170,9 @@ describe("IrcIntegration Logic", () => {
       (registerNick as any).mockRejectedValueOnce(new Error("Atheme down"));
 
       // Act & Assert
-      await expect(
-        ircIntegration.createAccount(userId, { nick })
-      ).rejects.toThrow("Atheme down");
+      await expect(ircIntegration.createAccount(userId, {})).rejects.toThrow(
+        "Atheme down"
+      );
       expect(db.delete).toHaveBeenCalled();
     });
   });

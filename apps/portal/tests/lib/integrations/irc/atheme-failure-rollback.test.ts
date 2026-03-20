@@ -95,9 +95,8 @@ const ACCOUNT_ID = "acc-001";
 
 /**
  * Set up DB mocks for a fresh account creation flow:
- * - No existing active account
- * - No nick conflict
- * - User email lookup returns userEmail
+ * - resolveUserIdentity: user row with email + username (= nick)
+ * - No existing active account / nick conflict
  * - No deleted account to reuse
  * - Insert returns a pending account row
  * - Delete returns successfully
@@ -108,16 +107,16 @@ function setupDbMocks(nick: string) {
     const call = selectCall++;
     let rows: unknown[];
     if (call === 0) {
+      // resolveUserIdentity: Portal user row (IRC nick = username)
+      rows = [{ email: USER_EMAIL, username: nick }];
+    } else if (call === 1) {
       // ensureUserCanCreateIrcAccount: no existing active account
       rows = [];
-    } else if (call === 1) {
+    } else if (call === 2) {
       // ensureUserCanCreateIrcAccount: no nick conflict
       rows = [];
-    } else if (call === 2) {
-      // user email lookup
-      rows = [{ email: USER_EMAIL }];
     } else {
-      // deleted account check
+      // initializePendingAccount: no deleted account to reuse
       rows = [];
     }
     const chain = {
@@ -166,11 +165,10 @@ describe("Property 7: Atheme Provisioning Failure Rolls Back", () => {
   it("network error: pending irc_account is deleted and error is thrown", async () => {
     await fc.assert(
       fc.asyncProperty(
-        // Generate valid IRC nicks: 1-9 chars, alphanumeric + underscore, starts with letter
+        // Canonical Portal usernames (nick): 3–10 chars, letter + [a-zA-Z0-9_]
         fc
-          .string({ minLength: 1, maxLength: 9 })
-          .map((s) => `a${s.replace(/[^a-zA-Z0-9_]/g, "x")}`)
-          .filter((s) => s.length >= 1 && s.length <= 9),
+          .string({ minLength: 2, maxLength: 9 })
+          .map((s) => `a${s.replace(/[^a-zA-Z0-9_]/g, "x")}`),
         fc
           .string({ minLength: 1, maxLength: 50 })
           .map((s) => `Network error: ${s}`),
@@ -182,7 +180,7 @@ describe("Property 7: Atheme Provisioning Failure Rolls Back", () => {
 
           const integration = new IrcIntegration();
           await expect(
-            integration.createAccount(USER_ID, { nick })
+            integration.createAccount(USER_ID, {})
           ).rejects.toThrow();
 
           // The pending record must have been deleted (rollback)
@@ -197,9 +195,8 @@ describe("Property 7: Atheme Provisioning Failure Rolls Back", () => {
     await fc.assert(
       fc.asyncProperty(
         fc
-          .string({ minLength: 1, maxLength: 9 })
-          .map((s) => `a${s.replace(/[^a-zA-Z0-9_]/g, "x")}`)
-          .filter((s) => s.length >= 1 && s.length <= 9),
+          .string({ minLength: 2, maxLength: 9 })
+          .map((s) => `a${s.replace(/[^a-zA-Z0-9_]/g, "x")}`),
         // Atheme fault codes: 1,2,5,6,8,9,10,15,16
         fc.constantFrom(1, 2, 5, 6, 8, 9, 10, 15, 16),
         fc.string({ minLength: 1, maxLength: 40 }),
@@ -211,7 +208,7 @@ describe("Property 7: Atheme Provisioning Failure Rolls Back", () => {
 
           const integration = new IrcIntegration();
           await expect(
-            integration.createAccount(USER_ID, { nick })
+            integration.createAccount(USER_ID, {})
           ).rejects.toThrow();
 
           // The pending record must have been deleted (rollback)
@@ -226,9 +223,8 @@ describe("Property 7: Atheme Provisioning Failure Rolls Back", () => {
     await fc.assert(
       fc.asyncProperty(
         fc
-          .string({ minLength: 1, maxLength: 9 })
-          .map((s) => `a${s.replace(/[^a-zA-Z0-9_]/g, "x")}`)
-          .filter((s) => s.length >= 1 && s.length <= 9),
+          .string({ minLength: 2, maxLength: 9 })
+          .map((s) => `a${s.replace(/[^a-zA-Z0-9_]/g, "x")}`),
         async (nick) => {
           setupDbMocks(nick);
           const abortError = new DOMException(
@@ -241,7 +237,7 @@ describe("Property 7: Atheme Provisioning Failure Rolls Back", () => {
 
           const integration = new IrcIntegration();
           await expect(
-            integration.createAccount(USER_ID, { nick })
+            integration.createAccount(USER_ID, {})
           ).rejects.toThrow();
 
           // The pending record must have been deleted (rollback)
