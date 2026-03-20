@@ -89,7 +89,7 @@ compose.yaml
 # Linting / Formatting (not needed for build)
 **/biome.jsonc
 .lintstagedrc.json
-.commitlintrc.json
+commitlint.config.cjs
 .eslintrc*
 .prettierrc*
 .releaserc.json

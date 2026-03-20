@@ -133,6 +133,7 @@ sequenceDiagram
 **Purpose**: Orchestrates the monorepo — defines workspaces, task graph, caching rules, and environment variable passthrough.
 
 **Key Files**:
+
 - `turbo.json` — Task pipeline definitions, cache inputs/outputs, env vars
 - `pnpm-workspace.yaml` — Workspace glob patterns
 - `package.json` — Root scripts delegating to `turbo run`
@@ -141,6 +142,7 @@ sequenceDiagram
 **Note**: No root `tsconfig.json` is needed. Each package extends `@portal/typescript-config` presets directly. A root tsconfig would cause all tasks to miss cache when it changes.
 
 **Responsibilities**:
+
 - Define task dependency graph (`build`, `check`, `type-check`, `test`, `dev`)
 - Configure cache inputs (source files, configs) and outputs (`.next`, `dist`)
 - Declare environment variable passthrough for Next.js build
@@ -151,6 +153,7 @@ sequenceDiagram
 **Purpose**: Shared TypeScript configuration presets that all packages and apps extend.
 
 **Interface**:
+
 ```typescript
 // Exported tsconfig presets (JSON files, no code)
 // packages/typescript-config/base.json     — Strict base config
@@ -159,6 +162,7 @@ sequenceDiagram
 ```
 
 **Responsibilities**:
+
 - Single source of truth for compiler options (`strict`, `target`, `module`, etc.)
 - Next.js preset includes JSX, App Router plugin, incremental builds
 - Library preset uses `noEmit: true` for JIT packages (no build step needed)
@@ -170,6 +174,7 @@ sequenceDiagram
 **Purpose**: Shared Biome linting/formatting configuration built on Ultracite presets.
 
 **Interface**:
+
 ```typescript
 // packages/biome-config/biome.jsonc — Base Biome config
 // Extended by each package's local biome.jsonc via "extends"
@@ -178,6 +183,7 @@ sequenceDiagram
 **Key detail**: The project uses **Ultracite** (`ultracite` npm package) as a zero-config Biome preset wrapper. The current `biome.jsonc` extends `ultracite/biome/core`, `ultracite/biome/react`, and `ultracite/biome/next`. The shared config must preserve this, not replace it.
 
 **Current rules that must be preserved**:
+
 - `noBarrelFile: "error"` with overrides for specific allowed barrel files (schemas, api, types index files)
 - `noNamespaceImport: "error"` with overrides for integration implementations, Sentry files
 - Complex import ordering config in `assist.actions.source.organizeImports` (React → UI libs → Next.js → form/validation → packages → internal aliases → relative)
@@ -186,6 +192,7 @@ sequenceDiagram
 **New barrel file overrides needed**: Since packages use direct exports via the wildcard `"./*"` pattern instead of barrel `index.ts` files, no new barrel file overrides are needed. The existing `noBarrelFile: "error"` rule applies cleanly to all packages. The only exception is `@portal/email` which has a single `"."` entry pointing to `./src/index.ts` (a single-file module, not a barrel re-export).
 
 **Responsibilities**:
+
 - Extend Ultracite presets (`ultracite/biome/core`, `ultracite/biome/react`, `ultracite/biome/next`)
 - Centralize the `noBarrelFile` and `noNamespaceImport` rules with overrides
 - Provide consistent import ordering rules (updated for `@portal/*` package imports)
@@ -199,6 +206,7 @@ sequenceDiagram
 **Purpose**: Shared TypeScript type definitions used across packages and the app.
 
 **Interface**:
+
 ```typescript
 // Current: src/shared/types/
 // Becomes: packages/types/src/
@@ -212,6 +220,7 @@ import type { EmailOptions } from "@portal/types/email";
 ```
 
 **Responsibilities**:
+
 - Provide type-only exports (no runtime code)
 - Zero dependencies on other internal packages
 - Foundation layer that other packages depend on
@@ -222,6 +231,7 @@ import type { EmailOptions } from "@portal/types/email";
 **Purpose**: Shared utility functions and constants.
 
 **Interface**:
+
 ```typescript
 // Current: src/shared/utils/
 // Becomes: packages/utils/src/
@@ -238,6 +248,7 @@ import { USER_ROLES, PERMISSIONS, HTTP_STATUS, API_ERROR_CODES,
 ```
 
 **Responsibilities**:
+
 - Pure utility functions with no side effects
 - Constants used across the app and packages
 - Dependencies: `clsx`, `tailwind-merge`, `date-fns`
@@ -247,6 +258,7 @@ import { USER_ROLES, PERMISSIONS, HTTP_STATUS, API_ERROR_CODES,
 **Purpose**: Shared Zod validation schemas.
 
 **Interface**:
+
 ```typescript
 // Current: src/shared/schemas/
 // Becomes: packages/schemas/src/
@@ -258,6 +270,7 @@ import { createPaginatedSchema, ... } from "@portal/schemas/utils";
 ```
 
 **Responsibilities**:
+
 - Zod schemas for API request/response validation
 - Depends on `@portal/types` for type alignment
 - Dependencies: `zod`, `zod-validation-error`
@@ -267,6 +280,7 @@ import { createPaginatedSchema, ... } from "@portal/schemas/utils";
 **Purpose**: Database layer — Drizzle ORM schema, client, relations, migrations.
 
 **Interface**:
+
 ```typescript
 // Current: src/shared/db/
 // Becomes: packages/db/src/
@@ -279,6 +293,7 @@ import { keys } from "@portal/db/keys";
 ```
 
 **Responsibilities**:
+
 - Drizzle schema definitions and relations
 - Database client singleton with connection pooling
 - Environment variable validation via `keys()`
@@ -290,6 +305,7 @@ import { keys } from "@portal/db/keys";
 **Purpose**: Shared UI component library (shadcn/ui primitives + custom components).
 
 **Interface**:
+
 ```typescript
 // Current: src/components/
 // Becomes: packages/ui/src/
@@ -307,6 +323,7 @@ import { MailcowIcon } from "@portal/ui/icons/mailcow-icon";
 ```
 
 **Responsibilities**:
+
 - All shadcn/ui primitives (button, card, dialog, etc.)
 - Layout components (app-layout, sidebar, header, navigation)
 - Icon components
@@ -318,6 +335,7 @@ import { MailcowIcon } from "@portal/ui/icons/mailcow-icon";
 **Purpose**: Sentry integration, OpenTelemetry, web vitals reporting.
 
 **Interface**:
+
 ```typescript
 // Current: src/shared/observability/
 // Becomes: packages/observability/src/
@@ -331,6 +349,7 @@ import { captureException, setUser, ... } from "@portal/observability/helpers";
 ```
 
 **Responsibilities**:
+
 - Sentry SDK initialization for client, server, and edge runtimes
 - Environment variable validation for Sentry config
 - Web vitals attribution helpers
@@ -341,6 +360,7 @@ import { captureException, setUser, ... } from "@portal/observability/helpers";
 **Purpose**: Email sending service abstraction.
 
 **Interface**:
+
 ```typescript
 // Current: src/shared/email/
 // Becomes: packages/email/src/
@@ -350,6 +370,7 @@ import { sendEmail } from "@portal/email";
 ```
 
 **Responsibilities**:
+
 - Email provider abstraction (currently placeholder, future Resend integration)
 - Depends on `@portal/types` for `EmailOptions`
 
@@ -358,6 +379,7 @@ import { sendEmail } from "@portal/email";
 **Purpose**: SEO utilities — metadata generation, robots.txt, sitemap.
 
 **Interface**:
+
 ```typescript
 // Current: src/shared/seo/
 // Becomes: packages/seo/src/
@@ -370,6 +392,7 @@ import { JsonLd } from "@portal/seo/json-ld";
 ```
 
 **Responsibilities**:
+
 - Next.js metadata generation helpers
 - Structured data (JSON-LD) components
 - Dependencies: `next`, `schema-dts`
@@ -379,6 +402,7 @@ import { JsonLd } from "@portal/seo/json-ld";
 **Purpose**: TanStack Query infrastructure — query client, keys, hydration, server queries.
 
 **Interface**:
+
 ```typescript
 // Current: src/shared/api/
 // Becomes: packages/api/src/
@@ -391,6 +415,7 @@ import { createServerQuery } from "@portal/api/server-queries";
 ```
 
 **Responsibilities**:
+
 - TanStack Query client factory with default options
 - Centralized query key factory
 - Server-side query prefetching and hydration
@@ -402,6 +427,7 @@ import { createServerQuery } from "@portal/api/server-queries";
 **Purpose**: The main deployable application — all routes, features, middleware, and app-specific logic.
 
 **Interface**:
+
 ```typescript
 // Consumes all @portal/* packages
 // Retains: app/, features/, hooks/, i18n/, styles/, env.ts, proxy.ts,
@@ -410,6 +436,7 @@ import { createServerQuery } from "@portal/api/server-queries";
 ```
 
 **Responsibilities**:
+
 - Next.js App Router pages and API routes
 - Feature modules (admin, auth, integrations, blog, wiki, feed, user)
 - React hooks specific to the app
@@ -580,10 +607,12 @@ The migration rewrites `@/` path aliases to package imports:
 Note: `@/` inside `apps/portal` still resolves to `apps/portal/src/` for app-internal imports. Only shared modules become package imports. Packages use direct subpath imports (e.g., `@portal/utils/constants`) instead of barrel re-exports, aligning with the `noBarrelFile: "error"` Biome rule. The exception is `@portal/email` which uses `"."` since it's a single-file module.
 
 **Existing dedicated aliases that change**:
+
 - `@/db` / `@/db/*` → `@portal/db` / `@portal/db/*` (currently aliased to `src/shared/db`)
 - `@/ui/*` → `@portal/ui/ui/*` (currently aliased to `src/components/ui/*`)
 
 **Existing dedicated aliases that stay**:
+
 - `@/auth` / `@/auth/*` → stays (maps to `src/features/auth/lib`, app-internal)
 - `@/config` / `@/config/*` → stays (maps to `src/shared/config`, app-internal)
 
@@ -623,11 +652,13 @@ Note: `@/` inside `apps/portal` still resolves to `apps/portal/src/` for app-int
 **Note on exports**: Packages use only the wildcard export `"./*"` instead of a `"."` barrel entry. This aligns with the project's `noBarrelFile: "error"` Biome rule. Consumers import specific subpaths (e.g., `@portal/utils/constants`, `@portal/utils/utils`). For packages with a single file like `@portal/email`, `"."` points directly to that file (not a barrel re-export).
 
 **Preconditions:**
+
 - Package `exports` field points directly to TypeScript source files (no build step needed)
 - The consuming app's bundler (Next.js/Turbopack) transpiles the source at build time
 - `private: true` prevents accidental publishing to npm
 
 **Postconditions:**
+
 - `import { cn } from "@portal/utils/utils"` resolves to `packages/utils/src/utils.ts`
 - `import { USER_ROLES } from "@portal/utils/constants"` resolves to `packages/utils/src/constants.ts`
 - TypeScript types are resolved from source via the `types` condition in `exports`
@@ -729,6 +760,7 @@ Note: `@/` inside `apps/portal` still resolves to `apps/portal/src/` for app-int
 **Note on `.env` in task inputs**: Turbo does NOT load `.env` files — the framework (Next.js) does. But Turbo needs to know about `.env` changes to invalidate cache correctly. The `.env` and `.env.*` patterns are included in `build` and `test` inputs so that env var changes trigger rebuilds. Since `.env` lives in `apps/portal/`, the inputs are relative to that package.
 
 **Note on `fix` task**: The `fix` task runs `ultracite fix` (not `biome fix`). It's not cached because it modifies files in place. The `check` task runs `ultracite check` and can be cached.
+
 ```
 
 **Preconditions:**
@@ -762,10 +794,12 @@ onlyBuiltDependencies:
 ```
 
 **Preconditions:**
+
 - All directories under `apps/` and `packages/` contain valid `package.json` files
 - Each package has a unique `name` field
 
 **Postconditions:**
+
 - `pnpm install` links all workspace packages
 - `workspace:*` protocol resolves to local packages
 - `pnpm --filter @portal/ui add react` installs to the correct package
@@ -821,11 +855,12 @@ onlyBuiltDependencies:
 }
 ```
 
-**Note on Husky/lint-staged/commitlint**: These tools must remain at the monorepo root level. `husky` hooks run from the git root, `lint-staged` runs Biome on staged files, and `commitlint` validates commit messages. Their configs (`.husky/`, `.lintstagedrc.json`, `.commitlintrc.json`) stay at root. The `lint-staged` config may need path updates if it references `src/` directly.
+**Note on Husky/lint-staged/commitlint**: These tools must remain at the monorepo root level. `husky` hooks run from the git root, `lint-staged` runs Biome on staged files, and `commitlint` validates commit messages. Their configs (`.husky/`, `.lintstagedrc.json`, `commitlint.config.cjs`) stay at root. The `lint-staged` config may need path updates if it references `src/` directly.
 
 **Note on semantic-release**: The `release` script delegates to `apps/portal` where `semantic-release` and its plugins (`@semantic-release/changelog`, `@semantic-release/git`, `@semantic-release/exec`) remain as devDependencies. The `.releaserc.json` stays at root or moves to `apps/portal/`.
 
 **Note on typegen gotcha**: `pnpm typegen` (which runs `next typegen`) must execute before `pnpm type-check`. In the turbo pipeline, `apps/portal/turbo.json` overrides `type-check` to depend on `typegen`, so this is handled automatically when running `turbo run type-check`.
+
 ```
 
 **Preconditions:**
@@ -885,10 +920,12 @@ onlyBuiltDependencies:
 ```
 
 **Preconditions:**
+
 - All packages reference these via `"extends": "@portal/typescript-config/library.json"`
 - The app references via `"extends": "@portal/typescript-config/nextjs.json"`
 
 **Postconditions:**
+
 - Consistent compiler options across all packages
 - JIT packages use `noEmit: true` — types resolve from `.ts` source via `exports`
 - Next.js app config includes JSX and App Router plugin
@@ -933,12 +970,14 @@ onlyBuiltDependencies:
 ```
 
 **Preconditions:**
+
 - `exports` points to raw `.ts` source (no build step)
 - `workspace:*` resolves to local packages
 - No `build` script needed — the consuming bundler handles transpilation
 - Each package has `check`, `fix`, and `type-check` scripts for Turborepo parallel execution
 
 **Postconditions:**
+
 - Package is immediately usable after `pnpm install`
 - TypeScript resolves types from source
 - Changes to source files trigger Turbo cache invalidation in consumers
@@ -1048,7 +1087,7 @@ STEP 25: Move .env from root to apps/portal/.env
     anti-pattern
 STEP 26: Move husky/lint-staged/commitlint to monorepo root
   - .husky/ stays at root (git hooks run from git root)
-  - .commitlintrc.json stays at root
+  - commitlint.config.cjs stays at root
   - .lintstagedrc.json stays at root, update paths if needed
   - husky remains a root devDependency
 STEP 27: Update semantic-release config
@@ -1062,11 +1101,13 @@ STEP 27: Update semantic-release config
 ```
 
 **Preconditions:**
+
 - Git working tree is clean before starting
 - All existing tests pass before migration
 - Node.js >= 20.19.0 and pnpm 10.28.2 are available
 
 **Postconditions:**
+
 - All existing functionality is preserved
 - All tests pass
 - CI pipeline works with Turborepo caching
@@ -1075,6 +1116,7 @@ STEP 27: Update semantic-release config
 - Import paths are updated consistently
 
 **Loop Invariants:**
+
 - After each STEP, `pnpm install` succeeds
 - After each package extraction, `pnpm type-check` passes
 - The app can be built and run at any intermediate step
@@ -1110,10 +1152,12 @@ COPY standalone output + static + public
 ```
 
 **Preconditions:**
+
 - `turbo` CLI is available in the Docker build context
 - `turbo prune` correctly identifies all transitive dependencies
 
 **Postconditions:**
+
 - Docker image contains only the production runtime (standalone output)
 - Layer caching is maximized: dependency install layer only rebuilds when lockfile changes
 - Image size is comparable to current single-app image
@@ -1261,6 +1305,7 @@ import { usePermissions } from "@/hooks/use-permissions";
 ### CI workflow usage
 
 The existing CI workflow structure (separate jobs for lint, type-check, build, test with change detection) should be preserved but updated to use `turbo run`. The current CI has:
+
 - A `changes` job that detects file changes (TypeScript, config, tests) using `tj-actions/changed-files`
 - Conditional job execution based on changed files
 - Next.js build cache via `actions/cache`
@@ -1268,6 +1313,7 @@ The existing CI workflow structure (separate jobs for lint, type-check, build, t
 - Build env var placeholders (`DATABASE_URL`, `BETTER_AUTH_SECRET`)
 
 Key updates for monorepo:
+
 - Change detection paths must include `packages/**` in addition to `apps/portal/src/**`
 - Each job replaces direct commands with `turbo run` equivalents
 - Next.js build cache path changes from `.next/cache` to `apps/portal/.next/cache`
@@ -1483,6 +1529,7 @@ jobs:
 **Property Test Library**: fast-check (already a devDependency)
 
 Key properties to test:
+
 1. **Import resolution**: For every `@portal/*` import in the codebase, the target file exists and exports the referenced symbol
 2. **Package boundary**: No file in `packages/X/src/` imports from `@/` (app-internal alias) or from another package's `src/` directly (must go through package exports)
 3. **Dependency completeness**: For every package P, all runtime imports resolve to either P's own files, a declared dependency in P's `package.json`, or a Node.js built-in
@@ -1561,6 +1608,7 @@ Dependencies are redistributed from the single root `package.json` to individual
 ### Root devDependencies (monorepo-level)
 
 These stay at the monorepo root, not in individual packages:
+
 - `turbo` — Turborepo CLI (new)
 - `ultracite` / `@biomejs/biome` — Linting/formatting
 - `husky` — Git hooks
