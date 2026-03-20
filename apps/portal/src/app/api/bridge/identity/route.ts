@@ -6,6 +6,8 @@ import { ircAccount } from "@portal/db/schema/irc";
 import { xmppAccount } from "@portal/db/schema/xmpp";
 import { and, eq, ne } from "drizzle-orm";
 
+import { env } from "@/env";
+
 // With cacheComponents, route handlers are dynamic by default.
 
 /**
@@ -22,7 +24,7 @@ import { and, eq, ne } from "drizzle-orm";
  *   - xmppJid:   look up by XMPP JID
  *
  * Response body (HTTP 200):
- *   { ok: true, identity: { user_id, discord_id, irc_nick, irc_status,
+ *   { ok: true, identity: { user_id, username, discord_id, irc_nick, irc_status,
  *                            xmpp_jid, xmpp_username, xmpp_status,
  *                            avatar_url } }
  *
@@ -33,15 +35,17 @@ import { and, eq, ne } from "drizzle-orm";
  */
 
 /**
- * Authenticate via BRIDGE_SERVICE_TOKEN or fall back to better-auth session.
+ * Authenticate via BRIDGE_SERVICE_TOKEN when configured,
+ * otherwise fall back to better-auth session.
  */
 async function requireBridgeAuth(request: NextRequest): Promise<void> {
-  const serviceToken = process.env.BRIDGE_SERVICE_TOKEN;
+  const serviceToken = env.BRIDGE_SERVICE_TOKEN;
   if (serviceToken) {
     const authHeader = request.headers.get("authorization");
     if (authHeader === `Bearer ${serviceToken}`) {
       return; // Service token matched
     }
+    throw new APIError("Unauthorized bridge request", 401);
   }
   // Fall back to better-auth session (user sessions still work)
   await requireAuth(request);
@@ -80,13 +84,16 @@ async function fetchDiscordForUser(userId: string) {
   return discord ?? null;
 }
 
-async function fetchUserAvatar(userId: string) {
+async function fetchUserProfile(userId: string) {
   const [row] = await db
-    .select({ image: user.image })
+    .select({ image: user.image, username: user.username })
     .from(user)
     .where(eq(user.id, userId))
     .limit(1);
-  return row?.image ?? null;
+  return {
+    avatarUrl: row?.image ?? null,
+    username: row?.username ?? null,
+  };
 }
 
 async function lookupByDiscordId(discordId: string) {
@@ -106,23 +113,24 @@ async function lookupByDiscordId(discordId: string) {
   }
 
   const { userId } = discordAccount;
-  const [irc, xmpp, avatarUrl] = await Promise.all([
+  const [irc, xmpp, profile] = await Promise.all([
     fetchIrcForUser(userId),
     fetchXmppForUser(userId),
-    fetchUserAvatar(userId),
+    fetchUserProfile(userId),
   ]);
 
   return Response.json({
     ok: true,
     identity: {
       user_id: userId,
+      username: profile.username,
       discord_id: discordId,
       irc_nick: irc?.nick ?? null,
       irc_status: irc?.status ?? null,
       xmpp_jid: xmpp?.jid ?? null,
       xmpp_username: xmpp?.username ?? null,
       xmpp_status: xmpp?.status ?? null,
-      avatar_url: avatarUrl ?? null,
+      avatar_url: profile.avatarUrl ?? null,
     },
   });
 }
@@ -141,23 +149,24 @@ async function lookupByIrcNick(ircNick: string) {
     );
   }
 
-  const [xmpp, discordAcc, avatarUrl] = await Promise.all([
+  const [xmpp, discordAcc, profile] = await Promise.all([
     fetchXmppForUser(active.userId),
     fetchDiscordForUser(active.userId),
-    fetchUserAvatar(active.userId),
+    fetchUserProfile(active.userId),
   ]);
 
   return Response.json({
     ok: true,
     identity: {
       user_id: active.userId,
+      username: profile.username,
       discord_id: discordAcc?.accountId ?? null,
       irc_nick: active.nick,
       irc_status: active.status,
       xmpp_jid: xmpp?.jid ?? null,
       xmpp_username: xmpp?.username ?? null,
       xmpp_status: xmpp?.status ?? null,
-      avatar_url: avatarUrl ?? null,
+      avatar_url: profile.avatarUrl ?? null,
     },
   });
 }
@@ -176,23 +185,24 @@ async function lookupByXmppJid(xmppJid: string) {
     );
   }
 
-  const [irc, discordAcc, avatarUrl] = await Promise.all([
+  const [irc, discordAcc, profile] = await Promise.all([
     fetchIrcForUser(xmpp.userId),
     fetchDiscordForUser(xmpp.userId),
-    fetchUserAvatar(xmpp.userId),
+    fetchUserProfile(xmpp.userId),
   ]);
 
   return Response.json({
     ok: true,
     identity: {
       user_id: xmpp.userId,
+      username: profile.username,
       discord_id: discordAcc?.accountId ?? null,
       irc_nick: irc?.nick ?? null,
       irc_status: irc?.status ?? null,
       xmpp_jid: xmpp.jid,
       xmpp_username: xmpp.username,
       xmpp_status: xmpp.status,
-      avatar_url: avatarUrl ?? null,
+      avatar_url: profile.avatarUrl ?? null,
     },
   });
 }
