@@ -1,3 +1,22 @@
+# [2.3.0](https://github.com/allthingslinux/portal/compare/v2.2.0...v2.3.0) (2026-03-20)
+
+
+### Bug Fixes
+
+* **api:** update apps/portal/src/app/api/admin/users/route.ts ([2209bf0](https://github.com/allthingslinux/portal/commit/2209bf0c371a315bbe9eb2a35e03d83f0e89838c))
+* **api:** update apps/portal/src/app/api/bridge/identity/route.ts ([982807f](https://github.com/allthingslinux/portal/commit/982807fc7086d54cdc545b6d9f3ff42e250724dc))
+* **api:** update apps/portal/src/app/api/user/me/route.ts ([b485fa2](https://github.com/allthingslinux/portal/commit/b485fa298be3933cc59913c11fb127f845f67056))
+* **api:** update apps/portal/tests/app/api/bridge/identity/route.test.ts ([b34eafb](https://github.com/allthingslinux/portal/commit/b34eafb8d56c1b4a1c2aaa3c511c5d5d2e614858))
+* **auth:** update two-factor authentication redirect and OTP email settings ([47f154b](https://github.com/allthingslinux/portal/commit/47f154ba0b4d41672962ed72e022fd73076d6881))
+
+
+### Features
+
+* **admin:** add user action dropdown with ban/unban functionality and alert dialog for confirmation ([3214f28](https://github.com/allthingslinux/portal/commit/3214f2874bb781153ddcda6bca25cdd44195e392))
+* **admin:** enhance user management and settings navigation ([49c45b4](https://github.com/allthingslinux/portal/commit/49c45b4facd54c4208a377c965e5959fcdb51c3a))
+* **admin:** seperate admin user management ([57a62ee](https://github.com/allthingslinux/portal/commit/57a62ee4b5ef8ab6469d85f87d7c6cd04c13d79f))
+* **integrations:** add apps/portal/src/features/integrations/lib/bridge/keys.ts ([1cde170](https://github.com/allthingslinux/portal/commit/1cde1709037734af627218e1277b3f890d851fb8))
+
 # [2.2.0](https://github.com/allthingslinux/portal/compare/v2.1.0...v2.2.0) (2026-03-12)
 
 
