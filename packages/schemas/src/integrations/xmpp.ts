@@ -41,7 +41,6 @@ export const XmppUsernameSchema = brandedString<"XmppUsername">(
  * Password is optional — if omitted a random one is generated and shown once.
  */
 export const CreateXmppAccountRequestSchema = z.object({
-  username: XmppUsernameSchema,
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -54,8 +53,17 @@ export const CreateXmppAccountRequestSchema = z.object({
  * Schema for updating an XMPP account via API
  * Derives from create schema to reuse validation, then extends with update-specific fields
  */
-export const UpdateXmppAccountRequestSchema =
-  CreateXmppAccountRequestSchema.partial().extend({
+export const UpdateXmppAccountRequestSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(128, "Password must be 128 characters or less")
+      .optional()
+      .or(z.literal("").transform(() => undefined)),
+  })
+  .extend({
+    username: XmppUsernameSchema,
     status: UpdateXmppAccountStatusSchema.optional(),
     metadata: metadataSchema,
   });
