@@ -14,6 +14,7 @@ export const selectUserSchema = createSelectSchema(user);
 export const UserDtoSchema = selectUserSchema.pick({
   id: true,
   name: true,
+  username: true,
   email: true,
   image: true,
   role: true,
