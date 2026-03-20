@@ -53,7 +53,8 @@ export async function fetchUsersServer(
   if (search) {
     const searchCondition = or(
       ilike(user.email, `%${search}%`),
-      ilike(user.name, `%${search}%`)
+      ilike(user.name, `%${search}%`),
+      ilike(user.username, `%${search}%`)
     );
     if (searchCondition) {
       conditions.push(searchCondition);
@@ -68,6 +69,7 @@ export async function fetchUsersServer(
         .select({
           id: user.id,
           name: user.name,
+          username: user.username,
           email: user.email,
           image: user.image,
           role: user.role,
@@ -125,6 +127,7 @@ export async function fetchUsersServer(
     const users = rows.map((row) => ({
       id: row.id,
       name: row.name,
+      username: row.username,
       email: row.email,
       image: row.image,
       role: row.role,
