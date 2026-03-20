@@ -10,6 +10,7 @@ import {
   multiSessionClient,
   oneTimeTokenClient,
   twoFactorClient,
+  usernameClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
@@ -108,6 +109,7 @@ const plugins = [
     // cookieName: "better-auth.last_used_login_method", // Default: "better-auth.last_used_login_method"
   }), // Track and display the last authentication method used
   oneTimeTokenClient(), // One-time tokens for cross-domain authentication
+  usernameClient(),
   twoFactorClient({
     onTwoFactorRedirect: () => {
       window.location.href = "/auth/two-factor";
