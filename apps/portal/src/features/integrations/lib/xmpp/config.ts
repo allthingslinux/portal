@@ -14,8 +14,8 @@ import { keys } from "./keys";
 const env = keys();
 
 export const xmppConfig = {
-  // XMPP domain (e.g., "xmpp.atl.chat")
-  domain: env.XMPP_DOMAIN || "xmpp.atl.chat",
+  // XMPP domain (e.g., "atl.chat")
+  domain: env.XMPP_DOMAIN || "atl.chat",
 
   // Prosody REST API configuration
   prosody: {
