@@ -32,7 +32,7 @@ All services are accessible across multiple domains: `atl.dev`, `atl.sh`, `atl.t
 
 ## Prerequisites
 
-- Node.js >= 22.18.0 (LTS recommended, managed via `mise` if available)
+- Node.js >= 20.19.0 (22.x LTS recommended; use `mise` if available)
 - pnpm 10.28.2
 - PostgreSQL database (PostgreSQL 18 recommended)
 - Docker and Docker Compose (for local database setup)
@@ -450,7 +450,7 @@ export async function GET(request: NextRequest) {
 **Required Services**:
 
 - PostgreSQL 18+ (via Docker Compose)
-- Node.js 22.18.0+
+- Node.js >= 20.19.0 (22.x recommended)
 - pnpm 10.28.2
 
 **Environment Variables**:
@@ -488,7 +488,7 @@ export async function GET(request: NextRequest) {
 
 **Build Requirements**:
 
-- Node.js >= 22.18.0
+- Node.js >= 20.19.0 (22.x recommended)
 - pnpm 10.28.2
 - PostgreSQL 18+
 

@@ -816,7 +816,7 @@ onlyBuiltDependencies:
   "packageManager": "pnpm@10.28.2",
   "engines": {
     "pnpm": "10.28.2",
-    "node": ">=22.18.0"
+    "node": ">=20.19.0"
   }
 }
 ```
@@ -1064,7 +1064,7 @@ STEP 27: Update semantic-release config
 **Preconditions:**
 - Git working tree is clean before starting
 - All existing tests pass before migration
-- Node.js >= 22.18.0 and pnpm 10.28.2 are available
+- Node.js >= 20.19.0 and pnpm 10.28.2 are available
 
 **Postconditions:**
 - All existing functionality is preserved

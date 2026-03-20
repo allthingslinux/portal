@@ -6,8 +6,8 @@ Thank you for your interest in contributing to Portal! This document provides gu
 
 ### Prerequisites
 
-- Node.js >= 22.18.0 (LTS recommended)
-- pnpm 10.27.0
+- Node.js >= 20.19.0 (22.x LTS recommended)
+- pnpm 10.28.2
 - PostgreSQL database (PostgreSQL 18 recommended)
 - Docker and Docker Compose (for local database setup)
 
