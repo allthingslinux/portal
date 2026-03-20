@@ -9,8 +9,10 @@
 // and back/forward work.
 
 import dynamic from "next/dynamic";
+import { Card } from "@portal/ui/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@portal/ui/ui/tabs";
 
+import { useSession } from "@/auth/session-context";
 import type { SettingsTabUrlState } from "./settings-search-params";
 import { useSettingsSearchParams } from "./use-settings-search-params";
 
@@ -20,10 +22,50 @@ import { useSettingsSearchParams } from "./use-settings-search-params";
 // This component contains the tabs and Better Auth UI settings components.
 // It's a Client Component because we disable SSR for Better Auth UI components.
 
-const AccountSettingsCards = dynamic(
+const UpdateAvatarCard = dynamic(
   () =>
     import("@daveyplate/better-auth-ui").then((m) => ({
-      default: m.AccountSettingsCards,
+      default: m.UpdateAvatarCard,
+    })),
+  {
+    ssr: false,
+  }
+);
+
+const UpdateNameCard = dynamic(
+  () =>
+    import("@daveyplate/better-auth-ui").then((m) => ({
+      default: m.UpdateNameCard,
+    })),
+  {
+    ssr: false,
+  }
+);
+
+const ChangeEmailCard = dynamic(
+  () =>
+    import("@daveyplate/better-auth-ui").then((m) => ({
+      default: m.ChangeEmailCard,
+    })),
+  {
+    ssr: false,
+  }
+);
+
+const ProvidersCard = dynamic(
+  () =>
+    import("@daveyplate/better-auth-ui").then((m) => ({
+      default: m.ProvidersCard,
+    })),
+  {
+    ssr: false,
+  }
+);
+
+const UpdateUsernameCard = dynamic(
+  () =>
+    import("@daveyplate/better-auth-ui").then((m) => ({
+      default: m.UpdateUsernameCard,
     })),
   {
     ssr: false,
@@ -52,6 +94,10 @@ const ApiKeysCard = dynamic(
 
 export function SettingsContent() {
   const [urlState, setUrlState] = useSettingsSearchParams();
+  const { session } = useSession();
+  const username = session?.user
+    ? (session.user as { username?: string | null }).username
+    : null;
 
   return (
     <div className="max-w-4xl">
@@ -68,7 +114,21 @@ export function SettingsContent() {
         </TabsList>
 
         <TabsContent className="mt-6 space-y-6" value="account">
-          <AccountSettingsCards />
+          <UpdateAvatarCard />
+          {username ? (
+            <Card className="p-6">
+              <p className="text-muted-foreground">Username</p>
+              <p className="mt-1 font-mono text-base">{username}</p>
+              <p className="text-muted-foreground">
+                Username is locked after it is set.
+              </p>
+            </Card>
+          ) : (
+            <UpdateUsernameCard />
+          )}
+          <UpdateNameCard />
+          <ChangeEmailCard />
+          <ProvidersCard />
         </TabsContent>
 
         <TabsContent className="mt-6 space-y-6" value="security">
