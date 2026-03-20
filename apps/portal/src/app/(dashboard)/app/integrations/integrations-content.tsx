@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { BookOpen, Hash, Mail, Zap } from "lucide-react";
-import { CreateIrcAccountRequestSchema } from "@portal/schemas/integrations/irc";
+import { z } from "zod";
 import { CreateMediaWikiAccountRequestSchema } from "@portal/schemas/integrations/mediawiki";
-import { CreateXmppAccountRequestSchema } from "@portal/schemas/integrations/xmpp";
 
+import { useSession } from "@/auth/session-context";
 import { IrcAccountDetails } from "./irc-account-details";
 import {
   IrcPasswordDialog,
@@ -28,13 +28,25 @@ import { IntegrationManagement } from "@/features/integrations/components/integr
 import { ResetPasswordDialog } from "@/features/integrations/components/reset-password-dialog";
 import { useIntegrations } from "@/features/integrations/hooks/use-integration";
 import type { IrcAccount } from "@/features/integrations/lib/irc/types";
-import { IRC_NICK_MAX_LENGTH } from "@/features/integrations/lib/irc/utils";
 import type { MailcowAccount } from "@/features/integrations/lib/mailcow/types";
 import type { MediaWikiAccount } from "@/features/integrations/lib/mediawiki/types";
 import type { XmppAccount } from "@/features/integrations/lib/xmpp/types";
 
+const PasswordOnlyCreateSchema = z.object({
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password must be 128 characters or less")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+});
+
 export function IntegrationsContent() {
   const { data: integrations, isPending } = useIntegrations();
+  const { session } = useSession();
+  const username = session?.user
+    ? (session.user as { username?: string | null }).username
+    : null;
   const [ircPasswordDialog, setIrcPasswordDialog] =
     useState<IrcPasswordDialogData | null>(null);
   const [xmppPasswordDialog, setXmppPasswordDialog] =
@@ -87,22 +99,18 @@ export function IntegrationsContent() {
               <IntegrationManagement<
                 IrcAccount & { temporaryPassword?: string }
               >
-                createInputHelp={
-                  "Letters, digits, or [ ] \\ ^ _ ` { | } ~ - (max " +
-                  String(IRC_NICK_MAX_LENGTH) +
-                  " characters)."
-                }
-                createInputLabel="Nick (required)"
-                createInputName="nick"
-                createInputPlaceholder="Enter your IRC nick"
                 createLabel="Create IRC Account"
-                createSchema={CreateIrcAccountRequestSchema}
+                createSchema={PasswordOnlyCreateSchema}
                 createSecondInputHelp="If left empty, a random password will be generated and shown once."
                 createSecondInputLabel="Password (optional)"
                 createSecondInputName="password"
                 createSecondInputPlaceholder="Leave empty to generate a random password"
                 createSecondInputType="password"
-                description={integration.description}
+                description={
+                  username
+                    ? `${integration.description} Your IRC nick will be: ${username}`
+                    : `${integration.description} Set a username in account settings first.`
+                }
                 icon={Hash}
                 integrationId={integration.id}
                 key={integration.id}
@@ -143,18 +151,18 @@ export function IntegrationsContent() {
               <IntegrationManagement<
                 XmppAccount & { temporaryPassword?: string }
               >
-                createInputHelp="If left empty, your username will be generated from your email address. Username must be alphanumeric with underscores, hyphens, or dots."
-                createInputLabel="Username (optional)"
-                createInputName="username"
-                createInputPlaceholder="Leave empty to use your email username"
                 createLabel="Create XMPP Account"
-                createSchema={CreateXmppAccountRequestSchema}
+                createSchema={PasswordOnlyCreateSchema}
                 createSecondInputHelp="If left empty, a random password will be generated and shown once."
                 createSecondInputLabel="Password (optional)"
                 createSecondInputName="password"
                 createSecondInputPlaceholder="Leave empty to generate a random password"
                 createSecondInputType="password"
-                description={integration.description}
+                description={
+                  username
+                    ? `${integration.description} Your XMPP address will be: ${username}@xmpp.atl.chat`
+                    : `${integration.description} Set a username in account settings first.`
+                }
                 icon={Zap}
                 integrationId={integration.id}
                 key={integration.id}
