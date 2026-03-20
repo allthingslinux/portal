@@ -61,6 +61,7 @@ packages/
 ```
 
 Supporting files:
+
 ```
 .agents/
 ├── code-standards.md       # Coding rules beyond what Biome enforces
@@ -89,17 +90,20 @@ turbo.json                  # Turborepo pipeline configuration
 All commands run from the monorepo root. Turborepo orchestrates cross-package builds.
 
 ### Development
+
 - `pnpm dev` — Start development server via Turborepo (**request user to run, never run directly**)
 - `pnpm build` — Build all packages + app for production
 - `pnpm start` — Start production server (`apps/portal`)
 
 ### Quality
+
 - `pnpm fix` — Format & lint fix (Biome/Ultracite) — **run before committing**
 - `pnpm check` — Check formatting & linting without fixing
 - `pnpm type-check` — TypeScript validation across all packages (via Turborepo)
 - `pnpm typegen` — Generate Next.js route types (run before `type-check`)
 
 ### Database
+
 - `pnpm db:generate` — Generate migration files from schema changes (`@portal/db`)
 - `pnpm db:migrate` — Run pending migrations (safe for production)
 - `pnpm db:push` — Push schema directly (dev only, never production)
@@ -108,11 +112,13 @@ All commands run from the monorepo root. Turborepo orchestrates cross-package bu
 - `pnpm compose:db` — Start PostgreSQL via Docker Compose
 
 ### Auth & Admin
+
 - `pnpm auth:init-schema` — Regenerate BetterAuth schema
 - `pnpm create-admin` — Create an admin user
 
 ### Testing
-- Tests live in `apps/portal/tests/` — see `tests/` for conventions
+
+- Tests live in `apps/portal/tests/` — see [apps/portal/tests/AGENTS.md](apps/portal/tests/AGENTS.md)
 - `pnpm test` — Run all tests (CI mode, via Turborepo)
 
 ## Import Aliases
@@ -139,12 +145,14 @@ import { Button } from "@portal/ui/button"            // UI components
 ## Types & Constants
 
 Types in `packages/types/src/`:
+
 - `@portal/types/auth` — `SessionData`, `AuthResult`, `UserPermissions`, `Permission`
 - `@portal/types/api` — filters, inputs, responses, error types
 - `@portal/types/routes` — `RouteConfig`, `ProtectedRoute`, `BreadcrumbItem`
 - `@portal/types/common` — DTOs (`UserDTO`, `SessionDTO`, `ApiKeyDTO`)
 
 Constants in `packages/utils/src/constants.ts`:
+
 - `USER_ROLES`, `PERMISSIONS`, `HTTP_STATUS`, `API_ERROR_CODES`
 - `QUERY_CACHE` — TanStack Query stale/gc times
 - `RATE_LIMIT`, `INTEGRATION_STATUSES`, `PAGINATION`, `VALIDATION_PATTERNS`
@@ -154,6 +162,8 @@ Constants in `packages/utils/src/constants.ts`:
 Each module has its own `keys.ts` file using `@t3-oss/env-nextjs`. The central `apps/portal/src/env.ts` extends all module keys. **Never access `process.env` directly** — always use the `keys()` function from the relevant module.
 
 The `.env` file lives at `apps/portal/.env`.
+
+Canonical reference: `docs/ENV_VARS.md`.
 
 ## Critical Rules
 
@@ -169,6 +179,17 @@ The `.env` file lives at `apps/portal/.env`.
 
 - [Code Standards](.agents/code-standards.md) — Rules beyond what Biome enforces
 - [Project Skills](.agents/skills.md) — Available agent skills index
+
+## Per-feature AGENTS.md (`apps/portal`)
+
+- [features/admin/AGENTS.md](apps/portal/src/features/admin/AGENTS.md)
+- [features/auth/AGENTS.md](apps/portal/src/features/auth/AGENTS.md)
+- [features/integrations/AGENTS.md](apps/portal/src/features/integrations/AGENTS.md)
+- [features/routing/AGENTS.md](apps/portal/src/features/routing/AGENTS.md)
+- [features/user/AGENTS.md](apps/portal/src/features/user/AGENTS.md)
+- [shared/db/AGENTS.md](apps/portal/src/shared/db/AGENTS.md) — redirect doc: schema lives in `@portal/db`
+- [shared/schemas/AGENTS.md](apps/portal/src/shared/schemas/AGENTS.md) — redirect doc: schemas live in `@portal/schemas`
+- [apps/portal/tests/AGENTS.md](apps/portal/tests/AGENTS.md) — Vitest layout and commands
 
 ## Cursor Cloud specific instructions
 
