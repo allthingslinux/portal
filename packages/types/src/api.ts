@@ -318,6 +318,7 @@ export interface AdminUserRow {
   name: string | null;
   role: string;
   updatedAt: string;
+  username: string | null;
 }
 
 /**
