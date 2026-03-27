@@ -8,7 +8,7 @@
 # ============================================================================
 
 # Base image pinned for reproducibility
-ARG NODE_IMAGE=node:22-alpine@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34
+ARG NODE_IMAGE=node:24-alpine@sha256:7fddd9ddeae8196abf4a3ef2de34e11f7b1a722119f91f28ddf1e99dcafdf114
 
 # ============================================================================
 # Stage 1: Pruner — generate minimal workspace subset
